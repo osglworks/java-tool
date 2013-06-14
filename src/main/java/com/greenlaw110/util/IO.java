@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2013 The Rythm Engine project
+ * Copyright (C) 2013 The Java Tool project
  * Gelin Luo <greenlaw110(at)gmail.com>
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
