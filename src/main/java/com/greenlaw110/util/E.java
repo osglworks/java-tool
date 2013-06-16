@@ -19,19 +19,15 @@
 */
 package com.greenlaw110.util;
 
-import com.greenlaw110.exception.UnexpectedException;
+import com.greenlaw110.exception.*;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Utility class to throw common exceptions
  */
 public class E {
-    private static String msg(String tmpl, Object... args) {
-        if (args.length == 0) {
-            return tmpl;
-        } else {
-            return String.format(tmpl, args);
-        }
-    }
 
     /**
      * Throw out {@link IllegalStateException}
@@ -46,7 +42,7 @@ public class E {
      * @param args message arguments
      */
     public static IllegalStateException illegalState(String msg, Object... args) {
-        return new IllegalStateException(msg(msg, args));
+        return new IllegalStateException(S.fmt(msg, args));
     }
 
     /**
@@ -79,7 +75,7 @@ public class E {
      * @param args the message arguments
      */
     public static UnexpectedException unexpected(String msg, Object... args) {
-        throw new UnexpectedException(msg(msg, args));
+        throw new UnexpectedException(msg, args);
     }
     
     /**
@@ -99,6 +95,64 @@ public class E {
      * @param args the message arguments
      */
     public static UnexpectedException unexpected(Throwable cause, String msg, Object... args) {
-        throw new UnexpectedException(cause, msg(msg, args));
+        throw new UnexpectedException(cause, msg, args);
     }
+
+
+    /**
+     * Throw out {@link com.greenlaw110.exception.UnexpectedIOException}
+     * 
+     * @param cause the IOException caused this unexpected IO issue
+     */
+    public static UnexpectedIOException ioException(IOException cause) {
+        throw new UnexpectedIOException(cause);
+    }
+
+    public static UnexpectedIOException ioException(String msg, Object... args) {
+        throw new UnexpectedIOException(msg, args);
+    }
+    
+    /**
+     * Throw out {@link com.greenlaw110.exception.UnexpectedEncodingException}
+     * 
+     * @param cause the UnsupportedEncodingException caused this unexpected encoding issue
+     */
+    public static UnexpectedEncodingException encodingException(UnsupportedEncodingException cause) {
+        throw new UnexpectedEncodingException(cause);
+    }
+
+    public static ConfigurationException configException(Throwable cause, String message, Object... args) {
+        throw new ConfigurationException(cause, message, args);
+    }
+
+    public static ConfigurationException configException(String message, Object... args) {
+        throw new ConfigurationException(message, args);
+    }
+    
+    public static UnsupportedException unsupport() {
+        throw new UnsupportedException();
+    }
+    
+    public static InvalidArgException invalidArg() {
+        throw new InvalidArgException();
+    }
+
+    public static void invalidArg(boolean test) {
+        if (test) {
+            throw new InvalidArgException();
+        }
+    }
+
+    public static InvalidArgException invalidArg(String msg, Object... args) {
+        throw new InvalidArgException(msg, args);
+    }
+    
+    public static void invalidArg(boolean test, String msg, Object... args) {
+        if (test) {
+            throw new InvalidArgException(msg, args);
+        }
+    }
+    
+    
+    
 }

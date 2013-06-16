@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * Common String utilities
@@ -42,21 +43,49 @@ public class S {
      */
     public final static S instance = INSTANCE;
 
+    public final static String fmt(String tmpl, Object... args) {
+        if (args.length == 0) {
+            return tmpl;
+        } else {
+            return String.format(tmpl, args);
+        }
+    }
+
+    public final static String format(String tmpl, Object... args) {
+        return fmt(tmpl, args);
+    }
+
     /**
      * Get string representation of an object instance
      *
-     * @param o the instance to be displayed
+     * @param o      the instance to be displayed
      * @param quoted whether display quotation mark
      */
     public final static String str(Object o, boolean quoted) {
         return quoted ? String.format("\"%s\"", o) : null == o ? "" : o.toString();
     }
 
+    public final static String str(Object o) {
+        return null == o ? "" : o.toString();
+    }
+
+    public final static String str(byte[] ba) {
+        return new String(ba);
+    }
+
+    public static String str(byte[] ba, String encode) {
+        try {
+            return new String(ba, encode);
+        } catch (UnsupportedEncodingException e) {
+            throw E.encodingException(e);
+        }
+    }
+
     /**
      * Join a list of object into a string
      *
      * @param separator the symbol used to separate the listed itmes
-     * @param list a list of object instances
+     * @param list      a list of object instances
      * @return a string representation of the listed objects
      */
     public static String join(String separator, Collection<?> list) {
@@ -67,29 +96,29 @@ public class S {
      * Join a list of object into a string, prefix and suffix will be added if supplied
      *
      * @param separator the symbols used to separate the listed items and prefix and suffix
-     * @param prefix the symbols prepended to the beginning of the item list
-     * @param suffix the symbols appended to the end of the item list
-     * @param list the string representation of the listed objects
+     * @param prefix    the symbols prepended to the beginning of the item list
+     * @param suffix    the symbols appended to the end of the item list
+     * @param list      the string representation of the listed objects
      * @return a string representation of the listed objects
      */
     public static String join(String separator, String prefix, String suffix,
-            Collection<?> list) {
+                              Collection<?> list) {
         return join(separator, prefix, suffix, list, false, true);
     }
 
     /**
      * Join a list of object into a string, prefix and suffix will be added if supplied
      *
-     * @param separator the symbols used to separate the listed items and prefix and suffix
-     * @param prefix the symbols prepended to the beginning of the item list
-     * @param suffix the symbols appended to the end of the item list
-     * @param list the string representation of the listed objects
-     * @param quoted if true then each listed item will be quoted with quotation mark
+     * @param separator     the symbols used to separate the listed items and prefix and suffix
+     * @param prefix        the symbols prepended to the beginning of the item list
+     * @param suffix        the symbols appended to the end of the item list
+     * @param list          the string representation of the listed objects
+     * @param quoted        if true then each listed item will be quoted with quotation mark
      * @param separateFixes if false then no separator after prefix and no separator before suffix
      * @return a string representation of the listed objects
      */
     public static String join(String separator, String prefix, String suffix,
-            Collection<?> list, boolean quoted, boolean separateFixes) {
+                              Collection<?> list, boolean quoted, boolean separateFixes) {
         StringBuilder sb = new StringBuilder();
 
         if (null != prefix) {
@@ -99,8 +128,11 @@ public class S {
         }
 
         Iterator<?> itr = list.iterator();
-        if (itr.hasNext())
+        
+        if (itr.hasNext()) {
             sb.append(str(itr.next(), quoted));
+        }
+        
         while (itr.hasNext()) {
             sb.append(separator).append(str(itr.next(), quoted));
         }
@@ -117,7 +149,7 @@ public class S {
      * Join an array of strings into a string
      *
      * @param separator the symbol used to separate the listed itmes
-     * @param list the array of strings
+     * @param list      the array of strings
      * @return a string joined
      */
     public static String join(String separator, String... list) {
@@ -134,12 +166,12 @@ public class S {
 
     /**
      * <p>Return a string no longer than specified max length.
-     *
+     * <p/>
      * <p>If the string supplied is longer than the specified max length
      * then only it's part that is less than the max length returned, appended
      * with "..."
      *
-     * @param s the original string
+     * @param s   the original string
      * @param max the maximum length of the result
      * @return
      */
@@ -149,12 +181,12 @@ public class S {
 
     /**
      * <p>Return a string no longer than specified max length.
-     *
+     * <p/>
      * <p>If the string supplied is longer than the specified max length
      * then only it's part that is less than the max length returned, appended
      * with "..."
      *
-     * @param s the original string
+     * @param s   the original string
      * @param max the maximum length of the result
      * @return
      */
@@ -173,12 +205,11 @@ public class S {
      * @param str
      * @return decoded string
      */
-    public static String decodeBase64(String str) {
+    public static String decodeBASE64(String str) {
         try {
             return new String(Codec.decodeBASE64(str), "utf-8");
         } catch (UnsupportedEncodingException e) {
-            // shouldn't occur
-            throw new RuntimeException(e);
+            throw E.encodingException(e);
         }
     }
 
@@ -188,13 +219,13 @@ public class S {
      * @param str
      * @return encoded string
      */
-    public static String encodeBase64(String str) {
+    public static String encodeBASE64(String str) {
         return Codec.encodeBASE64(str);
     }
 
     /**
      * alias of {@link #empty(String)}
-     * 
+     *
      * @param s
      * @return
      */
@@ -214,6 +245,7 @@ public class S {
 
     /**
      * alias of {@link #notEmpty(String)}
+     *
      * @param s
      * @return true if <code>s</code> is <code>null</code> or empty or all in blank
      */
@@ -223,7 +255,7 @@ public class S {
 
     /**
      * Antonym of {@link #empty(String)}
-     * 
+     *
      * @param s
      * @return true if <code>s</code> is not <code>null</code> or empty or all in blank
      */
@@ -233,7 +265,7 @@ public class S {
 
     /**
      * Check if all of the specified string is {@link #empty(String) empty}
-     * 
+     *
      * @param sa
      * @return true if all of the specified string is empty
      */
@@ -243,19 +275,20 @@ public class S {
 
     /**
      * Alias of {@link #isAllEmpty(String...)}
+     *
      * @param sa
      * @return true if all of the specified string is empty
      */
     public static boolean allEmpty(String... sa) {
-        for (String s: sa) {
+        for (String s : sa) {
             if (!empty(s)) return false;
         }
         return true;
     }
 
     /**
-     * Check if anyone of the specified string is {@link #empty(String) empty} 
-     * 
+     * Check if anyone of the specified string is {@link #empty(String) empty}
+     *
      * @param sa
      * @return <code>true</code> if anyone of the specified string is empty
      */
@@ -265,20 +298,20 @@ public class S {
 
     /**
      * Alias of {@link #isAnyEmpty(String...)}
-     * 
+     *
      * @param sa
      * @return <code>true</code> if anyone of the specified string is empty
      */
     public static boolean anyEmpty(String... sa) {
-        for (String s: sa) {
+        for (String s : sa) {
             if (empty(s)) return true;
         }
         return false;
     }
 
     /**
-     * Antonym of {@link #anyEmpty(String...)}  
-     * 
+     * Antonym of {@link #anyEmpty(String...)}
+     *
      * @param sa
      * @return <code>false</code> if anyone of the specified string is empty
      */
@@ -287,7 +320,7 @@ public class S {
     }
 
     /**
-     * equal modifier: specify {@link #equal(String, String, int) equal} comparison 
+     * equal modifier: specify {@link #equal(String, String, int) equal} comparison
      * should ignore leading and after spaces. i.e. it will call <code>trim()</code>
      * method on strings before comparison
      */
@@ -301,7 +334,7 @@ public class S {
 
     /**
      * alias of {@link #equal(String, String)}
-     * 
+     *
      * @param s1
      * @param s2
      * @return <code>true</code> if s1 equals to s2
@@ -312,6 +345,7 @@ public class S {
 
     /**
      * Alias of {@link #equal(String, String, int)}
+     *
      * @param s1
      * @param s2
      * @param modifier
@@ -323,7 +357,7 @@ public class S {
 
     /**
      * Antonym of {@link #equal(String, String)}
-     * 
+     *
      * @param s1
      * @param s2
      * @return <code>true</code> if s1 doesn't equal to s2
@@ -334,7 +368,7 @@ public class S {
 
     /**
      * Antonym of {@link #equal(String, String, int)}
-     * 
+     *
      * @param s1
      * @param s2
      * @param modifier
@@ -345,9 +379,9 @@ public class S {
     }
 
     /**
-     * Return true if 2 strings are equals to each other without 
+     * Return true if 2 strings are equals to each other without
      * ignore space and case sensitive.
-     * 
+     *
      * @param s1
      * @param s2
      * @return <code>true</code> if s1 equals to s2
@@ -369,7 +403,7 @@ public class S {
 
     /**
      * alias of {@link #eq(String, String)}
-     * 
+     *
      * @param s1
      * @param s2
      * @return <code>true</code> if s1 equals to s2
@@ -405,9 +439,9 @@ public class S {
 
     /**
      * Check if all strings are equal to each other
-     * 
+     *
      * @param modifier specify whether ignore space or case sensitive
-     * @param sa the list of strings
+     * @param sa       the list of strings
      * @return <code>true</code> if all strings are equal to each other as per modifier specified
      */
     public static boolean equal(int modifier, String... sa) {
@@ -427,6 +461,7 @@ public class S {
 
     /**
      * Alias of {@link #equal(String, String, int)}
+     *
      * @param s1
      * @param s2
      * @param modifier
@@ -434,6 +469,31 @@ public class S {
      */
     public static boolean isEqual(String s1, String s2, int modifier) {
         return equal(s1, s2, modifier);
+    }
+
+    /**
+     * Strip the prefix and suffix from an object's String representation and
+     * return the result
+     * <p/>
+     * <p>For example: </p>
+     * <p/>
+     * <pre><code>Object o = "xxBByy";
+     * String s = S.strip(o, "xx", "yy")</code></pre>
+     * <p/>
+     * <p>At the end above code, <code>s</code> should be "BB"</p>
+     *
+     * @param o
+     * @param prefix
+     * @param suffix
+     * @return the String result
+     */
+    public static String strip(Object o, String prefix, String suffix) {
+        if (null == o) return "";
+        String s = o.toString();
+        s = s.trim();
+        if (s.startsWith(prefix)) s = s.substring(prefix.length());
+        if (s.endsWith(suffix)) s = s.substring(0, s.length() - suffix.length());
+        return s;
     }
 
     /**
@@ -452,18 +512,20 @@ public class S {
 
     /**
      * Get the extension of a filename
+     *
      * @param fileName
      * @return the extension
      */
     public static String fileExtension(String fileName) {
-        int mid= fileName.lastIndexOf(".");
-        return fileName.substring(mid+1, fileName.length());
+        int mid = fileName.lastIndexOf(".");
+        return fileName.substring(mid + 1, fileName.length());
     }
 
     /**
      * Generate random string.
-     *
+     * <p/>
      * The generated string is safe to be used as filename
+     *
      * @param len
      * @return a random string with specified number of chars
      */
@@ -481,7 +543,7 @@ public class S {
         final int max = chars.length;
         Random r = new Random();
         StringBuffer sb = new StringBuffer(len);
-        while(len-- > 0) {
+        while (len-- > 0) {
             int i = r.nextInt(max);
             sb.append(chars[i]);
         }
@@ -493,6 +555,80 @@ public class S {
      */
     public static String random() {
         return random(8);
+    }
+
+    // --- functors 
+    public static class f {
+        public static F.If<String> startsWith(final String prefix) {
+            return new F.If<String>() {
+                @Override
+                public boolean eval(String s) {
+                    return s.startsWith(prefix);
+                }
+            };
+        }
+
+        public static F.If<String> endsWith(final String suffix) {
+            return new F.If<String>() {
+                @Override
+                public boolean eval(String s) {
+                    return s.endsWith(suffix);
+                }
+            };
+        }
+
+        public static F.If<String> matches(final String reg) {
+            final Pattern pattern = Pattern.compile(reg);
+            return new F.If<String>() {
+                @Override
+                public boolean eval(String s) {
+                    return pattern.matcher(s).matches();
+                }
+            };
+        }
+
+        public static F.Transformer<String, Integer> size() {
+            return size;
+        }
+
+        public static F.Transformer<String, Integer> size =
+                new F.Transformer<String, Integer>() {
+                    @Override
+                    public Integer transform(String s) {
+                        return null == s ? 0 : s.length();
+                    }
+                };
+
+        public static F.IFunc2<StringBuilder, StringBuilder, String> concat() {
+            return concat;
+        }
+
+        public static F.IFunc2<StringBuilder, StringBuilder, String> concat =
+                new com.greenlaw110.util.F.F2<StringBuilder, StringBuilder, String>() {
+                    @Override
+                    public StringBuilder run(StringBuilder sb, String s2) {
+                        return sb.append(s2);
+                    }
+                };
+    
+        public static F.IFunc2<StringBuilder, StringBuilder, String> join(final String sep) {
+            return new com.greenlaw110.util.F.F2<StringBuilder, StringBuilder, String>() {
+                @Override
+                public StringBuilder run(StringBuilder sb, String s2) {
+                    return sb.append(sep).append(s2);
+                }
+            };
+        }
+
+        public static <T> F.Transformer<T, String> format(final String tmpl) {
+            return new F.Transformer<T, String>() {
+                @Override
+                public String transform(T t) {
+                    return String.format(tmpl, t);
+                }
+            };
+        }
+        
     }
 
     public static void main(String[] args) {

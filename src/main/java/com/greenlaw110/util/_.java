@@ -21,6 +21,8 @@ package com.greenlaw110.util;
 
 import com.greenlaw110.exception.UnexpectedException;
 
+import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,6 +34,10 @@ public class _ {
      */
     public final _ INSTANCE = new _();
     public final _ instance = INSTANCE;
+
+    public final static String fmt(String tmpl, Object... args) {
+        return S.fmt(tmpl, args);
+    }
 
     /**
      * Throw out NullPointerException if any one of the passed objects is null
@@ -118,5 +124,285 @@ public class _ {
     public final static <T> List<T> list(T... el) {
         return C.list(el);
     }
+    
+    public final static <T> T times(F.IFunc0<T> func, int n) {
+        if (n < 0) {
+            throw E.invalidArg("the number of times must not be negative");
+        }
+        if (n == 0) {
+            return null;
+        }
+        T result = func.run();
+        for (int i = 1; i < n; ++i) {
+            func.run();
+        }
+        return result;
+    }
+    
+    public final static <T> T times(F.IFunc1<T, T> func, T initVal, int n) {
+        if (n < 0) {
+            throw E.invalidArg("the number of times must not be negative");
+        }
+        if (n == 0) {
+            return initVal;
+        }
+        T retVal = initVal;
+        for (int i = 1; i < n; ++i) {
+            retVal = func.run(retVal);
+        }
+        return retVal;
+    }
+    
+    // -- functors
+    public static class f {
 
+        public static <T> F.If<T> and(final F.IFunc1<Boolean, T>... conds) {
+            return and(C.list(conds));
+        }
+    
+        public static <T> F.If<T> or(final java.util.List<F.IFunc1<Boolean, T>> conds) {
+            return not(and(conds));
+        }
+        
+        public static <T> F.If<T> or(final F.IFunc1<Boolean, T>... conds) {
+            return not(and(conds));
+        }
+    
+        public static <T> F.If<T> not(final F.IFunc1<Boolean, T> cond) {
+            return new F.If<T>() {
+                @Override
+                public boolean eval(T t) {
+                    return !cond.run(t);
+                }
+            };
+        }
+        
+        
+        public static <T> F.If<T> and(final java.util.List<F.IFunc1<Boolean, T>> conds) {
+            return new F.If<T>() {
+                @Override
+                public boolean eval(T t) {
+                    for (F.IFunc1<Boolean, T> cond : conds) {
+                        if (!cond.run(t)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            };
+        }
+        
+        public static <T> F.IFunc0<T> next(final Iterator<T> itr) {
+            final T t = itr.next();
+            return new F.IFunc0<T>() {
+                @Override
+                public T run() {
+                    return t;
+                }
+            };
+        }
+    
+        public static F.IFunc0<Integer> next(final int i) {
+            return new F.IFunc0<Integer>() {
+                @Override
+                public Integer run() {
+                    return i + 1;
+                }
+            };
+        }
+    
+        public static F.IFunc0<Integer> prev(final int i) {
+            return new F.IFunc0<Integer>() {
+                @Override
+                public Integer run() {
+                    return i - 1;
+                }
+            };
+        }
+    
+        public static F.IFunc0<Character> next(final char c) {
+            return new F.IFunc0<Character>() {
+                @Override
+                public Character run() {
+                    return (char)(c + 1);
+                }
+            };
+        }
+    
+        public static F.IFunc0<Character> prev(final char c) {
+            return new F.IFunc0<Character>() {
+                @Override
+                public Character run() {
+                    return (char)(c - 1);
+                }
+            };
+        }
+    
+        public static <T> F.IFunc1<List<T>, T> repeat(final Class<T> clz, final int times) {
+            return new F.F2<List<T>, T, Integer>() {
+                @Override
+                public List<T> run(T t, Integer times) {
+                    E.invalidArg(times < 0, "times[%s] is less than zero");
+                    if (times == 0) {
+                        return C.emptyList();
+                    } else {
+                        List<T> l = C.newList();
+                        for (int i = 0; i < times; ++i) {
+                            l.add(t);
+                        }
+                        return l;
+                    }
+                }
+            }.curry(times);
+        }
+        
+        public static <T> F.Transformer<T, String> toStr() {
+            return new F.Transformer<T, String>() {
+                @Override
+                public String transform(T t) {
+                    return null == t ? "" : t.toString();
+                }
+            };
+        }
+        
+        public static <T extends Number> F.If<T> lt(final T guard) {
+            return lessThan(guard);
+        }
+        
+        public static <T extends Number> F.If<T> lessThan(final T guard) {
+            return new F.If<T>() {
+                @Override
+                public boolean eval(Number number) {
+                    return number.doubleValue() < guard.doubleValue();
+                }
+            };
+        }
+        
+        public static <T extends Number> F.If<T> gt(final T guard) {
+            return greatThan(guard);
+        }
+    
+        public static <T extends Number> F.If<T> greatThan(final T guard) {
+            return new F.If<T>() {
+                @Override
+                public boolean eval(Number number) {
+                    return number.doubleValue() > guard.doubleValue();
+                }
+            };
+        }
+        
+        public static <T extends Number> F.IFunc2<T, T, T> sum(Class<T> clz) {
+            return sum();
+        }
+        
+        public static <T extends Number> F.IFunc2<T, T, T> sum() {
+            return new com.greenlaw110.util.F.F2<T, T, T>() {
+                @Override
+                public T run(T t, T t2) {
+                    if (t instanceof Integer) {
+                        return (T)(Integer)(((Integer)t).intValue() + ((Integer)t2).intValue());
+                    } else if (t instanceof Long) {
+                        return (T)(Long)(((Long)t).longValue() + ((Long)t2).longValue());
+                    } else if (t instanceof Double) {
+                        return (T)(Double)(((Double)t).doubleValue() + ((Double)t2).doubleValue());
+                    } else if (t instanceof Float) {
+                        return (T)(Float)(((Float)t).floatValue() + ((Float)t2).floatValue());
+                    } else if (t instanceof Short) {
+                        return (T)(Integer)(((Short)t).shortValue() + ((Short)t2).shortValue());
+                    } else if (t instanceof Byte) {
+                        return (T)(Integer)(((Byte)t).byteValue() + ((Byte)t2).byteValue());
+                    }
+                    return (T)(Integer)(((Integer)t).intValue() + ((Integer)t2).intValue());
+                }
+            };
+        } 
+        
+        public static <T> F.IFunc1<T, T> dbl(Class<T> clz) {
+            return multiply(clz, 2);
+        };
+        
+        public static <T> F.IFunc1<T, T> dbl() {
+            return multiply(2);
+        }
+        
+        public static <T> F.IFunc1<T, T> multiply(final int fact) {
+            return new F.F1<T, T>() {
+                @Override
+                public T run(T t) {
+                    if (t instanceof Number) {
+                        if (fact == 0) {
+                            return (T)(Integer)0;
+                        }
+                        Number n = (Number)t;
+                        if (n instanceof Integer) {
+                            return (T)(Integer)(n.intValue() * fact);
+                        } else if (n instanceof Long) {
+                            return (T)(Long)(n.longValue() * fact);
+                        } else if (n instanceof Float) {
+                            return (T)(Float)(n.floatValue() * fact);
+                        } else if (n instanceof Double) {
+                            return (T)(Double)(n.doubleValue() * fact);
+                        } else if (n instanceof Short) {
+                            return (T)(Integer)(n.shortValue() * fact);
+                        } else if (n instanceof Byte) {
+                            return (T)(Integer)(n.byteValue() * fact);
+                        } else {
+                            return (T)(Integer)(n.intValue() * fact);
+                        }
+                    } else if (t instanceof String) {
+                        if (fact == 0) {
+                            return (T)"";
+                        } 
+                        String s = (String)t;
+                        char[] chars = s.toCharArray();
+                        int times = fact;
+                        if (fact < 0) {
+                            chars = C.reverse(chars);
+                            times *= -1;
+                        }
+                        s = new String(chars);
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < times; ++i) {
+                            sb.append(s);
+                        }
+                        return (T)sb.toString();
+                    }
+                    throw E.invalidArg("multiply doesn't support the type [%s]", t.getClass().getName());
+                }
+            };
+        }
+        
+        public static <T> F.IFunc1<T, T> multiply(final Class<T> clz, final int fact) {
+            return multiply(fact);
+        }
+        
+        public static <T extends Number> F.Aggregator<T> aggregate() {
+            return aggregate((T)(Integer)0);
+        }
+        
+        public static <T extends Number> F.Aggregator<T> aggregate(T initVal) {
+            return new F.Aggregator<T>(initVal);
+        }
+        
+        public static <T> F.IFunc1<?, T> println() {
+            return println("", "", System.out);
+        }
+        
+        public static <T> F.IFunc1<?, T> println(String prefix, String suffix) {
+            return println(prefix, suffix, System.out);
+        }
+        
+        public static <T> F.IFunc1<?, T> println(String prefix, String suffix, PrintStream ps) {
+            return new F.Op4<T, String, String, PrintStream>() {
+                @Override
+                public void operate(T t, String prefix, String suffix, PrintStream ps) {
+                    StringBuilder sb = new StringBuilder(prefix).append(t).append(suffix);
+                    ps.println(sb);
+                }
+            }.curry(prefix, suffix, ps);
+        }
+        
+    }
+    
+    
 }

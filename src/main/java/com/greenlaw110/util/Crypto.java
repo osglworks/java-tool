@@ -22,11 +22,12 @@ package com.greenlaw110.util;
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Cryptography utils. Comes from play!framework 
+ * Cryptography utils. Comes from play!framework under apache license
  */
 public class Crypto {
     /**
@@ -72,12 +73,14 @@ public class Crypto {
             char[] hexChars = new char[len * 2];
 
 
-            for (int charIndex = 0, startIndex = 0; charIndex < hexChars.length;) {
+            for (int charIndex = 0, startIndex = 0; charIndex < hexChars.length; ) {
                 int bite = result[startIndex++] & 0xff;
                 hexChars[charIndex++] = HEX_CHARS[bite >> 4];
                 hexChars[charIndex++] = HEX_CHARS[bite & 0xf];
             }
             return new String(hexChars);
+        } catch (UnsupportedEncodingException ex) {
+            throw E.encodingException(ex);
         } catch (Exception ex) {
             throw E.unexpected(ex);
         }

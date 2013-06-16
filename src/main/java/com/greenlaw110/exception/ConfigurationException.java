@@ -19,27 +19,20 @@
 */
 package com.greenlaw110.exception;
 
-import com.greenlaw110.util.S;
-
 /**
- * Runtime exception without fill the stack trace. Which
- * makes it much faster
+ * Indicate a configuration error
  */
-public class FastRuntimeException extends RuntimeException {
+public class ConfigurationException extends UnexpectedException {
 
-    public FastRuntimeException(){
-        super();
-    }
-
-    public FastRuntimeException(String message){
+    public ConfigurationException(String message){
         super(message);
     }
 
-    public FastRuntimeException(String message, Object... args) {
-        super(S.fmt(message, args));
+    public ConfigurationException(String message, Object... args){
+        super(message, args);
     }
 
-    public FastRuntimeException(Throwable cause){
+    public ConfigurationException(Throwable cause){
         super(cause);
     }
 
@@ -49,12 +42,7 @@ public class FastRuntimeException extends RuntimeException {
      * @param message
      * @param args
      */
-    public FastRuntimeException(Throwable cause, String message, Object... args) {
-        super(S.fmt(message, args), cause);
-    }
-
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return null;
+    public ConfigurationException(Throwable cause, String message, Object... args) {
+        super(cause, message, args);
     }
 }

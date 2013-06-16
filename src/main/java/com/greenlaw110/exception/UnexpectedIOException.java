@@ -19,42 +19,23 @@
 */
 package com.greenlaw110.exception;
 
-import com.greenlaw110.util.S;
+import java.io.IOException;
 
 /**
- * Runtime exception without fill the stack trace. Which
- * makes it much faster
+ * Wrap java's {@link IOException} into runtime exception
  */
-public class FastRuntimeException extends RuntimeException {
+public class UnexpectedIOException extends UnexpectedException {
 
-    public FastRuntimeException(){
-        super();
-    }
-
-    public FastRuntimeException(String message){
-        super(message);
-    }
-
-    public FastRuntimeException(String message, Object... args) {
-        super(S.fmt(message, args));
-    }
-
-    public FastRuntimeException(Throwable cause){
+    public UnexpectedIOException(IOException cause){
         super(cause);
     }
 
-    /**
-     * Construct a FastRuntimeException with cause, message and message arguments
-     * @param cause
-     * @param message
-     * @param args
-     */
-    public FastRuntimeException(Throwable cause, String message, Object... args) {
-        super(S.fmt(message, args), cause);
+    public UnexpectedIOException(String msg, Object... args) {
+        super(msg, args);
     }
 
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return null;
+    public UnexpectedIOException(Throwable cause, String msg, Object... args) {
+        super(cause, msg, args);
     }
+
 }

@@ -20,6 +20,7 @@
 package com.greenlaw110.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ import java.util.UUID;
 /**
  * Utility class for encoding and decoding
  * 
- * <p>Part of the code comes from play!framework</p>
+ * <p>Part of the code comes from play!framework under apache license</p>
  */
 public class Codec {
 
@@ -48,7 +49,7 @@ public class Codec {
         try {
             return new String(Base64.encode(value.getBytes("utf-8")));
         } catch (UnsupportedEncodingException ex) {
-            throw E.unexpected(ex);
+            throw E.encodingException(ex);
         }
     }
 
@@ -77,8 +78,8 @@ public class Codec {
     public static String toHexString(String s, String encode) {
         try {
             return toHexString(s.getBytes(encode));
-        } catch (Throwable e) {
-            throw E.unexpected(e);
+        } catch (UnsupportedEncodingException e) {
+            throw E.encodingException(e);
         }
     }
     
@@ -94,8 +95,8 @@ public class Codec {
     public static String fromHexString(String hex, String encode) {
         try {
             return new String(bytesFromHexString(hex), encode);
-        } catch (Exception e) {
-            throw E.unexpected(e);
+        } catch (UnsupportedEncodingException e) {
+            throw E.encodingException(e);
         }
     }
     
@@ -113,8 +114,8 @@ public class Codec {
                 }
             }
             return bout.toByteArray();
-        } catch (Exception e) {
-            throw E.unexpected(e);
+        } catch (IOException e) {
+            throw E.ioException(e);
         }
     }
 

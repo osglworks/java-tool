@@ -33,8 +33,8 @@ public class UnexpectedException extends FastRuntimeException {
         super(message);
     }
 
-    public UnexpectedException(String message, Throwable cause){
-        super(message, cause);
+    public UnexpectedException(String message, Object... args){
+        super(message, args);
     }
 
     public UnexpectedException(Throwable cause){
@@ -48,6 +48,6 @@ public class UnexpectedException extends FastRuntimeException {
      * @param args
      */
     public UnexpectedException(Throwable cause, String message, Object... args) {
-        super(String.format(message, args), cause);
+        super(cause, message, args);
     }
 }

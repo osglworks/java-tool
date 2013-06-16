@@ -19,242 +19,503 @@
 */
 package com.greenlaw110.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import com.greenlaw110.exception.FastRuntimeException;
+
+import java.util.*;
 
 /**
  * Utilities to simulate functional programming in Java
  */
 // Most of the code come from Play!Framework F.java, under Apache License 2.0
 public class F {
-    public static interface Action0 {
 
-        void invoke();
+    // Define Function Interfaces and their base implementation
+    public static interface IFunc0<R> {
+        R run();
+    }
+    
+    public static abstract class F0<R> implements IFunc0<R> {}
+
+    public static interface IFunc1<R, P1> {
+        R run(P1 p1);
+        IFunc0<R> curry(final P1 p1);
     }
 
-    public static interface Action<T> {
-
-        void invoke(T result);
-    }
-
-    public static abstract class Option<T> implements Iterable<T> {
-
-        public abstract boolean isDefined();
-
-        public abstract T get();
-
-        public static <T> None<T> None() {
-            return (None<T>) (Object) None;
+    public static abstract class F1<R, P1> implements IFunc1<R, P1> {
+        @Override
+        public final IFunc0<R> curry(final P1 p1) {
+            final IFunc1<R, P1> me = this;
+            return new IFunc0<R>() {
+                @Override
+                public R run() {
+                    return me.run(p1);
+                }
+            };
         }
+    }
+    
+    public static interface IFunc2<R, P1, P2> {
+        R run(P1 p1, P2 p2);
+        IFunc0<R> curry(final P1 p1, final P2 p2);
+        IFunc1<R, P1> curry(final P2 p2);
+    }
 
-        public static <T> Some<T> Some(T value) {
-            return new Some<T>(value);
+    public static abstract class F2<R, P1, P2> implements IFunc2<R, P1, P2> {
+        @Override
+        public final IFunc0<R> curry(final P1 p1, final P2 p2) {
+            return curry(p2).curry(p1);
         }
-    }
-
-    public static <A> Some<A> Some(A a) {
-        return new Some(a);
-    }
-
-    public static class None<T> extends Option<T> {
 
         @Override
-        public boolean isDefined() {
-            return false;
+        public final IFunc1<R, P1> curry(final P2 p2) {
+            final F2<R, P1, P2> me = this;
+            return new F1<R, P1>(){
+                @Override
+                public R run(P1 p1) {
+                    return me.run(p1, p2);
+                }
+            };
+        }
+    }
+    
+    
+    public static interface IFunc3<R, P1, P2, P3> {
+        R run(P1 p1, P2 p2, P3 p3);
+        IFunc0<R> curry(final P1 p1, final P2 p2, final P3 p3);
+        IFunc1<R, P1> curry(final P2 p2, final P3 p3);
+        IFunc2<R, P1, P2> curry(final P3 p3);
+    }
+
+    public static abstract class F3<R, P1, P2, P3> implements IFunc3<R, P1, P2, P3> {
+        @Override
+        public final IFunc0<R> curry(final P1 p1, final P2 p2, final P3 p3) {
+            return curry(p2, p3).curry(p1);
         }
 
         @Override
+        public final IFunc1<R, P1> curry(final P2 p2, final P3 p3) {
+            return curry(p3).curry(p2);
+        }
+
+        @Override
+        public final IFunc2<R, P1, P2> curry(final P3 p3) {
+            final F3<R, P1, P2, P3> me = this;
+            return new F2<R, P1, P2>(){
+                @Override
+                public R run(P1 p1, P2 p2) {
+                    return me.run(p1, p2, p3);
+                }
+            };
+        }
+    }
+    
+    public static interface IFunc4<R, P1, P2, P3, P4> {
+        R run(P1 p1, P2 p2, P3 p3, P4 p4);
+        IFunc0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4);
+        IFunc1<R, P1> curry(final P2 p2, final P3 p3, final P4 p4);
+        IFunc2<R, P1, P2> curry(final P3 p3, final P4 p4);
+        IFunc3<R, P1, P2, P3> curry(final P4 p4);
+    }
+
+    public static abstract class F4<R, P1, P2, P3, P4> implements IFunc4<R, P1, P2, P3, P4> {
+        @Override
+        public final IFunc0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4) {
+            return curry(p2, p3, p4).curry(p1);
+        }
+
+        @Override
+        public final IFunc1<R, P1> curry(final P2 p2, final P3 p3, final P4 p4) {
+            return curry(p3, p4).curry(p2);
+        }
+
+        @Override
+        public final IFunc2<R, P1, P2> curry(final P3 p3, final P4 p4) {
+            return curry(p4).curry(p3);
+        }
+
+        @Override
+        public final IFunc3<R, P1, P2, P3> curry(final P4 p4) {
+            final F4<R, P1, P2, P3, P4> me = this;
+            return new F3<R, P1, P2, P3>(){
+                @Override
+                public R run(P1 p1, P2 p2, P3 p3) {
+                    return me.run(p1, p2, p3, p4);
+                }
+            };
+        }
+    }
+    
+    public static interface IFunc5<R, P1, P2, P3, P4, P5> {
+        R run(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5);
+        IFunc0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4, final P5 p5);
+        IFunc1<R, P1> curry(final P2 p2, final P3 p3, final P4 p4, final P5 p5);
+        IFunc2<R, P1, P2> curry(final P3 p3, final P4 p4, final P5 p5);
+        IFunc3<R, P1, P2, P3> curry(final P4 p4, final P5 p5);
+        IFunc4<R, P1, P2, P3, P4> curry(final P5 p5);
+    }
+
+    public static abstract class F5<R, P1, P2, P3, P4, P5> implements IFunc5<R, P1, P2, P3, P4, P5> {
+        @Override
+        public final IFunc0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4, final P5 p5) {
+            return curry(p2, p3, p4, p5).curry(p1);
+        }
+
+        @Override
+        public final IFunc1<R, P1> curry(final P2 p2, final P3 p3, final P4 p4, final P5 p5) {
+            return curry(p3, p4, p5).curry(p2);
+        }
+
+        @Override
+        public final IFunc2<R, P1, P2> curry(final P3 p3, final P4 p4, final P5 p5) {
+            return curry(p4, p5).curry(p3);
+        }
+
+        @Override
+        public final IFunc3<R, P1, P2, P3> curry(P4 p4, P5 p5) {
+            return curry(p5).curry(p4);
+        }
+
+        @Override
+        public final IFunc4<R, P1, P2, P3, P4> curry(final P5 p5) {
+            final F5<R, P1, P2, P3, P4, P5> me = this;
+            return new F4<R, P1, P2, P3, P4>(){
+                @Override
+                public R run(P1 p1, P2 p2, P3 p3, P4 p4) {
+                    return me.run(p1, p2, p3, p4, p5);
+                }
+            };
+        }
+    }
+    
+    // Define common used Function classes including If and Visitor
+    public static abstract class If<T> extends F.F1<Boolean, T> {
+        @Override
+        public final Boolean run(T t) {
+            return eval(t);
+        }
+        
+        public If<T> and(F.IFunc1<Boolean, T>... conds) {
+            return _.f.and(C.prepend(C.list(conds), this));
+        }
+
+        public If<T> or(F.IFunc1<Boolean, T>... conds) {
+            return _.f.or(C.prepend(C.list(conds), this));
+        }
+        
+        public abstract boolean eval(T t);
+
+    }
+    
+    public abstract static class Visitor<T> extends F.F1<Void, T> {
+
+        protected Map<String, ?> _attr = C.newMap();
+        protected T _t;
+        protected String _s;
+        protected boolean _b;
+        protected int _i;
+        protected float _f;
+        protected double _d;
+        protected byte _by;
+        protected char _c;
+        protected long _l;
+        
+        public Visitor() {
+        }
+        
+        public Visitor(Map<String, ?> map) {
+            _attr = C.newMap(map);
+        }
+        
+        public Visitor(T t) {
+            _t = t;
+        }
+
+        public Visitor(String s) {
+            _s = s;
+        }
+
+        public Visitor(boolean b) {
+            _b = b;
+        }
+
+        public Visitor(int i) {
+            _i = i;
+        }
+
+        public Visitor(long l) {
+            _l = l;
+        }
+
+        public Visitor(double d) {
+            _d = d;
+        }
+
+        public Visitor(float f) {
+            _f = f;
+        }
+        
+        public Visitor(byte b) {
+            _by = b;
+        }
+        
+        public Visitor(char c) {
+            _c = c;
+        }
+        
         public T get() {
-            throw new IllegalStateException("No value");
+            return _t;
+        }
+        
+        public String getStr() {
+            return _s;
+        }
+        
+        public boolean getBoolea() {
+            return _b;
+        }
+        
+        public int getInt() {
+            return _i;
+        }
+        
+        public long getLong() {
+            return _l;
+        }
+        
+        public float getFloat() {
+            return _f;
+        }
+        
+        public double getDouble() {
+            return _d;
+        }
+        
+        public char getChar() {
+            return _c;
+        }
+        
+        public byte getByte() {
+            return _by;
         }
 
-        public Iterator<T> iterator() {
-            return Collections.<T>emptyList().iterator();
+        public <E> E get(String key) {
+            return (E) _attr.get(key);
+        }
+    
+        public static class Break extends FastRuntimeException {
+            private Object payload;
+            public Break() {}
+            public Break(Object payload) {
+                this.payload = payload;
+            }
+            public <T> T get() {
+                return (T)payload;
+            }
         }
 
+        public static final Break BREAK = new Break();
+        
         @Override
-        public String toString() {
-            return "None";
+        public final Void run(T t) {
+            visit(t);
+            return null;
         }
+        
+        public abstract void visit(T t) throws Break;
     }
+    
+    public static <T> Visitor<T> guardedVisitor(final F.IFunc1<Boolean, T> guard, final Visitor<T> visitor) {
+        return new Visitor<T>() {
+            @Override
+            public void visit(T t) throws Break {
+                if (guard.run(t)) {
+                    visitor.run(t);
+                }
+            }
+        };
+    }
+    
+    public static abstract class IndexedVisitor<T>  extends F.F2<Void, Integer, T> {
 
-    public static None<Object> None = new None<Object>();
-
-    public static class Some<T> extends Option<T> {
-
-        final T value;
-
-        public Some(T value) {
-            this.value = value;
+        protected Map<String, ?> _attr = C.newMap();
+        protected T _t;
+        protected String _s;
+        protected boolean _b;
+        protected int _i;
+        protected float _f;
+        protected double _d;
+        protected byte _by;
+        protected char _c;
+        protected long _l;
+        
+        public IndexedVisitor() {
+        }
+        
+        public IndexedVisitor(Map<String, ?> map) {
+            _attr = C.newMap(map);
+        }
+        
+        public IndexedVisitor(T t) {
+            _t = t;
         }
 
-        @Override
-        public boolean isDefined() {
-            return true;
+        public IndexedVisitor(String s) {
+            _s = s;
         }
 
-        @Override
+        public IndexedVisitor(boolean b) {
+            _b = b;
+        }
+
+        public IndexedVisitor(int i) {
+            _i = i;
+        }
+
+        public IndexedVisitor(long l) {
+            _l = l;
+        }
+
+        public IndexedVisitor(double d) {
+            _d = d;
+        }
+
+        public IndexedVisitor(float f) {
+            _f = f;
+        }
+        
+        public IndexedVisitor(byte b) {
+            _by = b;
+        }
+        
+        public IndexedVisitor(char c) {
+            _c = c;
+        }
+        
         public T get() {
-            return value;
+            return _t;
+        }
+        
+        public String getStr() {
+            return _s;
+        }
+        
+        public boolean getBoolea() {
+            return _b;
+        }
+        
+        public int getInt() {
+            return _i;
+        }
+        
+        public long getLong() {
+            return _l;
+        }
+        
+        public float getFloat() {
+            return _f;
+        }
+        
+        public double getDouble() {
+            return _d;
+        }
+        
+        public char getChar() {
+            return _c;
+        }
+        
+        public byte getByte() {
+            return _by;
         }
 
-        public Iterator<T> iterator() {
-            return Collections.singletonList(value).iterator();
-        }
-
-        @Override
-        public String toString() {
-            return "Some(" + value + ")";
-        }
-    }
-
-    public static class Either<A, B> {
-
-        final public Option<A> _1;
-        final public Option<B> _2;
-
-        private Either(Option<A> _1, Option<B> _2) {
-            this._1 = _1;
-            this._2 = _2;
-        }
-
-        public static <A, B> Either<A, B> _1(A value) {
-            return new Either(Some(value), None);
-        }
-
-        public static <A, B> Either<A, B> _2(B value) {
-            return new Either(None, Some(value));
-        }
-
-        @Override
-        public String toString() {
-            return "E2(_1: " + _1 + ", _2: " + _2 + ")";
-        }
-    }
-
-    public static class E2<A, B> extends Either<A, B> {
-
-        private E2(Option<A> _1, Option<B> _2) {
-            super(_1, _2);
-        }
-    }
-
-    public static class E3<A, B, C> {
-
-        final public Option<A> _1;
-        final public Option<B> _2;
-        final public Option<C> _3;
-
-        private E3(Option<A> _1, Option<B> _2, Option<C> _3) {
-            this._1 = _1;
-            this._2 = _2;
-            this._3 = _3;
-        }
-
-        public static <A, B, C> E3<A, B, C> _1(A value) {
-            return new E3(Some(value), None, None);
-        }
-
-        public static <A, B, C> E3<A, B, C> _2(B value) {
-            return new E3(None, Some(value), None);
-        }
-
-        public static <A, B, C> E3<A, B, C> _3(C value) {
-            return new E3(None, None, Some(value));
+        public <E> E get(String key) {
+            return (E) _attr.get(key);
         }
 
         @Override
-        public String toString() {
-            return "E3(_1: " + _1 + ", _2: " + _2 + ", _3:" + _3 + ")";
+        public final Void run(Integer id, T t) {
+            visit(id, t);
+            return null;
         }
+        
+        public abstract void visit(Integer id, T t);
+    }
+    
+    public static <T> IndexedVisitor<T> indexGuardedVisitor(final F.IFunc1<Boolean, Integer> guard, final Visitor<T> visitor) {
+        return new IndexedVisitor<T>() {
+            @Override
+            public void visit(Integer id, T t) throws Visitor.Break {
+                if (guard.run(id)) {
+                    visitor.run(t);
+                }
+            }
+        };
     }
 
-    public static class E4<A, B, C, D> {
-
-        final public Option<A> _1;
-        final public Option<B> _2;
-        final public Option<C> _3;
-        final public Option<D> _4;
-
-        private E4(Option<A> _1, Option<B> _2, Option<C> _3, Option<D> _4) {
-            this._1 = _1;
-            this._2 = _2;
-            this._3 = _3;
-            this._4 = _4;
+    public static class Aggregator<T extends Number> extends F.Visitor<T> {
+        public Aggregator(T initVal) {
+            super(initVal);
         }
-
-        public static <A, B, C, D> E4<A, B, C, D> _1(A value) {
-            return new E4(Option.Some(value), None, None, None);
-        }
-
-        public static <A, B, C, D> E4<A, B, C, D> _2(B value) {
-            return new E4(None, Some(value), None, None);
-        }
-
-        public static <A, B, C, D> E4<A, B, C, D> _3(C value) {
-            return new E4(None, None, Some(value), None);
-        }
-
-        public static <A, B, C, D> E4<A, B, C, D> _4(D value) {
-            return new E4(None, None, None, Some(value));
-        }
-
         @Override
-        public String toString() {
-            return "E4(_1: " + _1 + ", _2: " + _2 + ", _3:" + _3 + ", _4:" + _4 + ")";
+        public void visit(T t) throws F.Visitor.Break {
+            if (t instanceof Integer) {
+                _t = (T)(Integer)(_t.intValue() + t.intValue()); 
+            } else if (t instanceof Long) {
+                _t = (T)(Long)(_t.longValue() + t.longValue()); 
+            } else if (t instanceof Double) {
+                _t = (T)(Double)(_t.doubleValue() + t.doubleValue()); 
+            } else if (t instanceof Float) {
+                _t = (T)(Float)(_t.floatValue() + t.floatValue()); 
+            } else {
+                _t = (T)(Integer)(_t.intValue() + t.intValue()); 
+            }
         }
     }
-
-    public static class E5<A, B, C, D, E> {
-
-        final public Option<A> _1;
-        final public Option<B> _2;
-        final public Option<C> _3;
-        final public Option<D> _4;
-        final public Option<E> _5;
-
-        private E5(Option<A> _1, Option<B> _2, Option<C> _3, Option<D> _4, Option<E> _5) {
-            this._1 = _1;
-            this._2 = _2;
-            this._3 = _3;
-            this._4 = _4;
-            this._5 = _5;
-        }
-
-        public static <A, B, C, D, E> E5<A, B, C, D, E> _1(A value) {
-            return new E5(Option.Some(value), None, None, None, None);
-        }
-
-        public static <A, B, C, D, E> E5<A, B, C, D, E> _2(B value) {
-            return new E5(None, Option.Some(value), None, None, None);
-        }
-
-        public static <A, B, C, D, E> E5<A, B, C, D, E> _3(C value) {
-            return new E5(None, None, Option.Some(value), None, None);
-        }
-
-        public static <A, B, C, D, E> E5<A, B, C, D, E> _4(D value) {
-            return new E5(None, None, None, Option.Some(value), None);
-        }
-
-        public static <A, B, C, D, E> E5<A, B, C, D, E> _5(E value) {
-            return new E5(None, None, None, None, Option.Some(value));
-        }
-
+    
+    public static abstract class Transformer<FROM, TO> extends F.F1<TO, FROM> {
         @Override
-        public String toString() {
-            return "E5(_1: " + _1 + ", _2: " + _2 + ", _3:" + _3 + ", _4:" + _4 + ", _5:" + _5 + ")";
+        public TO run(FROM from) {
+            return transform(from);
         }
+        public abstract TO transform(FROM from);
     }
-
-    private static boolean eq(Object a, Object b) {
-        if (a == b) return true;
-        if (null == a) return null == b;
-        return a.equals(b);
+    
+    public static abstract class Op1<T> extends F.F1<T, T> {
+        @Override
+        public T run(T t) {
+            operate(t);
+            return t;
+        }
+        public abstract void operate(T t);
     }
-
+    
+    public static abstract class Op2<T, P1> extends F.F2<T, T, P1> {
+        @Override
+        public T run(T t, P1 p1) {
+            operate(t, p1);
+            return t;
+        }
+        public abstract void operate(T t, P1 p1);
+    }
+    
+    public static abstract class Op3<T, P1, P2> extends F.F3<T, T, P1, P2> {
+        @Override
+        public T run(T t, P1 p1, P2 p2) {
+            operate(t, p1, p2);
+            return t;
+        }
+        public abstract void operate(T t, P1 p1, P2 p2);
+    }
+    
+    public static abstract class Op4<T, P1, P2, P3> extends F.F4<T, T, P1, P2, P3> {
+        @Override
+        public T run(T t, P1 p1, P2 p2, P3 p3) {
+            operate(t, p1, p2, p3);
+            return t;
+        }
+        public abstract void operate(T t, P1 p1, P2 p2, P3 p3);
+    }
+    
+    // --- Tuple
     public static class Tuple<A, B> {
 
         final public A _1;
@@ -270,17 +531,14 @@ public class F {
             if (this == o) return true;
             if (o instanceof Tuple) {
                 Tuple that = (Tuple) o;
-                return eq(that._1, _1) && eq(that._2, _2);
+                return _.eq(that._1, _1) && _.eq(that._2, _2);
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            int i = 17;
-            if (null != _1) i = i * 31 + _1.hashCode();
-            if (null != _2) i = i * 31 + _2.hashCode();
-            return i;
+            return _.hc(_1, _2);
         }
 
         @Override
@@ -327,18 +585,14 @@ public class F {
             if (this == o) return true;
             if (o instanceof T3) {
                 T3 that = (T3) o;
-                return eq(that._1, _1) && eq(that._2, _2) && eq(that._3, _3);
+                return _.eq(that._1, _1) && _.eq(that._2, _2) && _.eq(that._3, _3);
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            int i = 17;
-            if (null != _1) i = i * 31 + _1.hashCode();
-            if (null != _2) i = i * 31 + _2.hashCode();
-            if (null != _3) i = i * 31 + _3.hashCode();
-            return i;
+            return _.hc(_1, _2, _3);
         }
 
         @Override
@@ -370,19 +624,14 @@ public class F {
             if (this == o) return true;
             if (o instanceof T4) {
                 T4 that = (T4) o;
-                return eq(that._1, _1) && eq(that._2, _2) && eq(that._3, _3) && eq(that._4, _4);
+                return _.eq(that._1, _1) && _.eq(that._2, _2) && _.eq(that._3, _3) && _.eq(that._4, _4);
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            int i = 17;
-            if (null != _1) i = i * 31 + _1.hashCode();
-            if (null != _2) i = i * 31 + _2.hashCode();
-            if (null != _3) i = i * 31 + _3.hashCode();
-            if (null != _4) i = i * 31 + _4.hashCode();
-            return i;
+            return _.hc(_1, _2, _3, _4);
         }
 
         @Override
@@ -416,20 +665,14 @@ public class F {
             if (this == o) return true;
             if (o instanceof T5) {
                 T5 that = (T5) o;
-                return eq(that._1, _1) && eq(that._2, _2) && eq(that._3, _3) && eq(that._4, _4) && eq(that._5, _5);
+                return _.eq(that._1, _1) && _.eq(that._2, _2) && _.eq(that._3, _3) && _.eq(that._4, _4) && _.eq(that._5, _5);
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            int i = 17;
-            if (null != _1) i = i * 31 + _1.hashCode();
-            if (null != _2) i = i * 31 + _2.hashCode();
-            if (null != _3) i = i * 31 + _3.hashCode();
-            if (null != _4) i = i * 31 + _4.hashCode();
-            if (null != _5) i = i * 31 + _5.hashCode();
-            return i;
+            return _.hc(_1, _2, _3, _4, _5);
         }
 
         @Override
@@ -442,95 +685,170 @@ public class F {
         return new T5<A, B, C, D, E>(a, b, c, d, e);
     }
 
-    public static abstract class Matcher<T, R> {
+    
+    // --- Collections support functional programming
 
-        public abstract Option<R> match(T o);
+    public static class List<T> extends AbstractList<T> implements java.util.List<T> {
+        private final java.util.List<T> _l;
+        private final boolean readonly;
 
-        public Option<R> match(Option<T> o) {
-            if (o.isDefined()) {
-                return match(o.get());
-            }
-            return Option.None();
+        public List(java.util.List<T> list, boolean readonly) {
+            E.NPE(list);
+            _l = list;
+            this.readonly = readonly;
         }
 
-        public <NR> Matcher<T, NR> and(final Matcher<R, NR> nextMatcher) {
-            final Matcher<T, R> firstMatcher = this;
-            return new Matcher<T, NR>() {
-
-                @Override
-                public Option<NR> match(T o) {
-                    for (R r : firstMatcher.match(o)) {
-                        return nextMatcher.match(r);
-                    }
-                    return Option.None();
-                }
-            };
+        @Override
+        public int size() {
+            return _l.size();
         }
 
-        public static Matcher<Object, String> String = new Matcher<Object, String>() {
-
-            @Override
-            public Option<String> match(Object o) {
-                if (o instanceof String) {
-                    return Option.Some((String) o);
-                }
-                return Option.None();
-            }
-        };
-
-        public static <K> Matcher<Object, K> ClassOf(final Class<K> clazz) {
-            return new Matcher<Object, K>() {
-
-                @Override
-                public Option<K> match(Object o) {
-                    if (o instanceof Option && ((Option) o).isDefined()) {
-                        o = ((Option) o).get();
-                    }
-                    if (clazz.isInstance(o)) {
-                        return Option.Some((K) o);
-                    }
-                    return Option.None();
-                }
-            };
+        @Override
+        public boolean isEmpty() {
+            return _l.isEmpty();
         }
 
-        public static Matcher<String, String> StartsWith(final String prefix) {
-            return new Matcher<String, String>() {
-
-                @Override
-                public Option<String> match(String o) {
-                    if (o.startsWith(prefix)) {
-                        return Option.Some(o);
-                    }
-                    return Option.None();
-                }
-            };
+        @Override
+        public boolean contains(Object o) {
+            return _l.contains(o);
         }
 
-        public static Matcher<String, String> Re(final String pattern) {
-            return new Matcher<String, String>() {
-
-                @Override
-                public Option<String> match(String o) {
-                    if (o.matches(pattern)) {
-                        return Option.Some(o);
-                    }
-                    return Option.None();
-                }
-            };
+        @Override
+        public Iterator<T> iterator() {
+            return _l.iterator();
         }
 
-        public static <X> Matcher<X, X> Equals(final X other) {
-            return new Matcher<X, X>() {
-
-                @Override
-                public Option<X> match(X o) {
-                    if (o.equals(other)) {
-                        return Option.Some(o);
-                    }
-                    return Option.None();
-                }
-            };
+        @Override
+        public Object[] toArray() {
+            return _l.toArray();
         }
-    }
+
+        @Override
+        public <T1> T1[] toArray(T1[] a) {
+            return _l.toArray(a);
+        }
+
+        @Override
+        public boolean add(T t) {
+            return _l.add(t);
+        }
+        
+        @Override
+        public boolean remove(Object o) {
+            return _l.remove(o);
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c) {
+            return _l.containsAll(c);
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends T> c) {
+            return _l.addAll(c);
+        }
+
+        @Override
+        public boolean addAll(int index, Collection<? extends T> c) {
+            return _l.addAll(index, c);
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            return _l.removeAll(c);
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            return _l.retainAll(c);
+        }
+
+        @Override
+        public void clear() {
+            _l.clear();
+        }
+
+        @Override
+        public T get(int index) {
+            return _l.get(index);
+        }
+
+        @Override
+        public T set(int index, T element) {
+            return _l.set(index, element);
+        }
+
+        @Override
+        public void add(int index, T element) {
+            _l.add(index, element);
+        }
+
+        @Override
+        public T remove(int index) {
+            return _l.remove(index);
+        }
+
+        @Override
+        public int indexOf(Object o) {
+            return _l.indexOf(o);
+        }
+
+        @Override
+        public int lastIndexOf(Object o) {
+            return _l.lastIndexOf(o);
+        }
+
+        @Override
+        public ListIterator<T> listIterator() {
+            return _l.listIterator();
+        }
+
+        @Override
+        public ListIterator<T> listIterator(int index) {
+            return _l.listIterator(index);
+        }
+
+        @Override
+        public java.util.List<T> subList(int fromIndex, int toIndex) {
+            return _l.subList(fromIndex, toIndex);
+        }
+        
+        // --- added methods
+        
+        public java.util.List<T> get() {
+            return _l;
+        }
+        
+        public boolean isReadonly() {
+            return readonly;
+        }
+        
+        public ListComprehension<T> lc() {
+            return C.lc(this);
+        }
+        
+        public List<T> each(IFunc1<?, T> visitor) {
+            lc().each(visitor);
+            return this;
+        }
+        
+        public List<T> println() {
+            IFunc1<?, T> visitor = _.f.println();
+            return each(visitor);
+        }
+
+        public List<T> prepend(T... ts) {
+            return C.prepend(this, ts);
+        }
+        
+        public List<T> append(T... ts) {
+            return C.append(this, ts);
+        }
+        
+        public Set<T> uniq() {
+            return C.uniq(this);
+        }
+        
+    } 
+    
 }
