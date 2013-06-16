@@ -869,7 +869,7 @@ public class F {
          * @return
          */
         public List<T> compact() {
-            return lc().digest(NOT_NULL).asList(readonly());
+            return lc().filter(NOT_NULL).asList(readonly());
         }
         
         public T first(final F.IFunc1<Boolean, T> cond) {
@@ -890,6 +890,10 @@ public class F {
             List<T> l0 = C.newList(get());
             l0.retainAll(c);
             return l0.readonly(readonly());
+        }
+        
+        public List<T> filter(final F.IFunc1<Boolean, T>... filters) {
+            return lc().filter(filters).asList(readonly());
         }
     }
     

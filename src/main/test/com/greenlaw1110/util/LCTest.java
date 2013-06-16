@@ -52,9 +52,13 @@ public class LCTest extends TestBase {
         int[] a1 = {0, 1, 2};
         
         int[] a2 = {1, 2};
-        List<Integer> l2 = C.listp(a2);
+        F.List<Integer> l2 = C.listp(a2);
 
-        eq(l2, C.lc(a1).digest(gt(0)).asList());
+        eq(l2, C.lc(a1).filter(gt(0)).asList());
+        
+        F.List<String> l = C.list("Aristotle", "Plato", "Socrates", "Pythagoras");
+        F.List<String> l0 = C.list("Plato", "Pythagoras");
+        eq(l0, l.filter(startsWith("P")));
     }
     
     @Test

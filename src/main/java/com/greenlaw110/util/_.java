@@ -177,7 +177,6 @@ public class _ {
             };
         }
         
-        
         public static <T> F.If<T> and(final java.util.List<F.IFunc1<Boolean, T>> conds) {
             return new F.If<T>() {
                 @Override
@@ -188,6 +187,15 @@ public class _ {
                         }
                     }
                     return true;
+                }
+            };
+        }
+        
+        public static <T> F.IFunc1<T, T> on(Class<T> clz) {
+            return new F.F1<T, T>(){
+                @Override
+                public T run(T t) {
+                    return t;
                 }
             };
         }

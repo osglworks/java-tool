@@ -413,7 +413,7 @@ public class C {
         } else if (n < 0) {
             return tail(list, size + n);
         } else {
-            return lc(list).digestOnIndex(_.f.lessThan(n)).asList();
+            return lc(list).filterOnIndex(_.f.lessThan(n)).asList();
         }
     }
 
@@ -429,7 +429,7 @@ public class C {
             return head(list, size + n);
         } else {
             int n0 = size - n - 1;
-            return lc(list).digestOnIndex(_.f.greatThan(n0)).asList();
+            return lc(list).filterOnIndex(_.f.greatThan(n0)).asList();
         }
     }
 

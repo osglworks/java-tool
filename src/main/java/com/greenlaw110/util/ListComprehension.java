@@ -129,28 +129,28 @@ public class ListComprehension<T> implements Iterable<T> {
         return !all(_.f.not(test));
     }
 
-    public ListComprehension<T> digest(final F.IFunc1<Boolean, T>... filters) {
-        return digest(C.list(filters));
+    public ListComprehension<T> filter(final F.IFunc1<Boolean, T>... filters) {
+        return filter(C.list(filters));
     }
     
-    public ListComprehension<T> digest(final List<F.IFunc1<Boolean, T>> filters) {
+    public ListComprehension<T> filter(final List<F.IFunc1<Boolean, T>> filters) {
         switch (filters.size()) {
             case 0:
                 return this;
             case 1:
-                return digest_(filters.get(0));
+                return filter_(filters.get(0));
             default:
-                return digest(C.head(filters, -1));
+                return filter(C.head(filters, -1));
         }
     }
     
-    private ListComprehension<T> digest_(F.IFunc1< Boolean, T> filter) {
+    private ListComprehension<T> filter_(F.IFunc1<Boolean, T> filter) {
         List<T> l = C.newList();
         accept(F.guardedVisitor(filter, C.f.addTo(l)));
         return valueOf(l);
     }
     
-    public ListComprehension<T> digestOnIndex(F.IFunc1<Boolean, Integer> filter) {
+    public ListComprehension<T> filterOnIndex(F.IFunc1<Boolean, Integer> filter) {
         List<T> l = C.newList();
         accept(F.indexGuardedVisitor(filter, C.f.addTo(l)));
         return valueOf(l);
