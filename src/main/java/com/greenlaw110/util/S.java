@@ -599,23 +599,44 @@ public class S {
                     }
                 };
 
-        public static F.IFunc2<StringBuilder, StringBuilder, String> concat() {
-            return concat;
+        public static F.IFunc1<StringBuilder, ?> build(final StringBuilder sb) {
+            return BUILD.curry(sb);
         }
 
-        public static F.IFunc2<StringBuilder, StringBuilder, String> concat =
-                new com.greenlaw110.util.F.F2<StringBuilder, StringBuilder, String>() {
+        public static F.IFunc2<StringBuilder, ?, StringBuilder> build() {
+            return BUILD;
+        }
+
+        public static F.IFunc2<StringBuilder, ?, StringBuilder> BUILD =
+                new com.greenlaw110.util.F.F2<StringBuilder, Object, StringBuilder>() {
                     @Override
-                    public StringBuilder run(StringBuilder sb, String s2) {
+                    public StringBuilder run(Object s2, StringBuilder sb) {
                         return sb.append(s2);
                     }
                 };
     
-        public static F.IFunc2<StringBuilder, StringBuilder, String> join(final String sep) {
-            return new com.greenlaw110.util.F.F2<StringBuilder, StringBuilder, String>() {
+        public static <T> F.IFunc2<StringBuilder, StringBuilder, T> concat() {
+            return CONCAT;
+        }
+    
+        public static F.IFunc2 CONCAT = 
+                new F.F2<StringBuilder, StringBuilder, Object>() {
+                    @Override
+                    public StringBuilder run(StringBuilder sb, Object o) {
+                        return sb.append(o);
+                    }
+                };
+    
+        public static F.IFunc1<Void, ?> append(final Object sep, final StringBuilder sb) {
+            return append(sep).curry(sb);
+        }
+    
+        public static F.IFunc2<Void, ?, StringBuilder> append(final Object sep) {
+            return new com.greenlaw110.util.F.F2<Void, Object, StringBuilder>() {
                 @Override
-                public StringBuilder run(StringBuilder sb, String s2) {
-                    return sb.append(sep).append(s2);
+                public Void run(Object s, StringBuilder sb) {
+                    sb.append(sep).append(s);
+                    return null;
                 }
             };
         }

@@ -44,7 +44,7 @@ public class LCTest extends TestBase {
         int[] a1 = {0, 1, 2};
         yes(C.lc(a1).any(gt(0)));
         yes(C.lc(a1).any(gt(0)));
-        no(C.lc(a1).any(gt(0)));
+        no(C.lc(a1).any(lt(0)));
     }
     
     @Test
@@ -64,10 +64,10 @@ public class LCTest extends TestBase {
     @Test
     public void testReduce() {
         int[] a1 = {0, 1, 2};
-        eq(3, C.lc(a1).reduce(0, _.f.sum(Integer.class)));
+        eq(3, C.lc(a1).reduce(0, sum(Integer.class)));
     }
     
-    private static int sum(List<Integer> list) {
+    private static int _aggregate(List<Integer> list) {
         int sum = 0;
         for (int i : list) {
             sum += i;
@@ -80,10 +80,10 @@ public class LCTest extends TestBase {
         final Range<Integer> r = Range.valueOf(0, 1000);
         final List l = C.list(r);
         final ListComprehension<Integer> lc = C.lc(r);
-        int sum = lc.reduce(0, _.f.sum(Integer.class));
-        eq(sum, sum(l));
+        int sum = lc.reduce(0, sum(Integer.class));
+        eq(sum, _aggregate(l));
 
-        F.Aggregator<Integer> agg = _.f.aggregate(0);
+        F.Aggregator<Integer> agg = aggregate(0);
         lc.each(agg);
         eq(sum, agg.get());
 
@@ -92,7 +92,7 @@ public class LCTest extends TestBase {
         _.times(new F.F0<Integer>() {
             @Override
             public Integer run() {
-                return sum(l);  //To change body of implemented methods use File | Settings | File Templates.
+                return _aggregate(l);  //To change body of implemented methods use File | Settings | File Templates.
             }
         }, times);
         long t0 = System.currentTimeMillis() - ts;

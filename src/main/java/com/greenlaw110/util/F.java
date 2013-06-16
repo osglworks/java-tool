@@ -821,8 +821,20 @@ public class F {
             return _l;
         }
         
+        public boolean ro() {
+            return readonly;
+        }
+        
         public boolean readonly() {
             return readonly;
+        }
+        
+        public boolean rw() {
+            return !readonly;
+        }
+        
+        public boolean readwrite() {
+            return !readonly;
         }
         
         public List<T> readonly(boolean readonly) {
@@ -886,14 +898,26 @@ public class F {
             return l0.readonly(readonly());
         }
         
+        public List<T> without(T ... ts) {
+            return without(C.list(ts));
+        }
+        
         public List<T> intersect(Collection<T> c) {
             List<T> l0 = C.newList(get());
             l0.retainAll(c);
             return l0.readonly(readonly());
         }
+
+        public List<T> intersect(T... ts) {
+            return intersect(C.list(ts));
+        }
         
         public List<T> filter(final F.IFunc1<Boolean, T>... filters) {
             return lc().filter(filters).asList(readonly());
+        }
+        
+        public <E> E reduce(final E initVal, final F.IFunc2<E, E, T> func2) {
+            return lc().reduce(initVal, func2);
         }
     }
     
