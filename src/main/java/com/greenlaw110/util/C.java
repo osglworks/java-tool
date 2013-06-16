@@ -145,7 +145,7 @@ public class C {
     private static <T> F.List<T> flist(List l, boolean readOnly) {
         if (l instanceof F.List) {
             F.List<T> fl = (F.List) l;
-            if (fl.isReadonly() ^ readOnly) {
+            if (fl.readonly() ^ readOnly) {
                 l = fl.get();
             } else {
                 return fl;
@@ -202,8 +202,20 @@ public class C {
     }
 
     public static <T> F.List<T> list(Iterable<T> it) {
+        if (it instanceof List) {
+            return ro((List)it);
+        }
         return ro(newList(it));
     }
+    
+    public static <T> F.List<T> list(Iterable<T> it, boolean readonly) {
+        if (!readonly) {
+            return newList(it);
+        } else {
+            return list(it);
+        }
+    }
+    
 
     public static <T> F.List<T> newList(T... t) {
         return rw(Arrays.asList(t));
@@ -274,6 +286,9 @@ public class C {
     }
 
     public static <T> F.List<T> newList(Iterable<T> it) {
+        if (it instanceof List) {
+            return rw((List)it);
+        }
         F.List<T> l = newList();
         for (T t : it) {
             l.add(t);

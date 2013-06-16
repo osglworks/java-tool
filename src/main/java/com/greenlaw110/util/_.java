@@ -256,6 +256,23 @@ public class _ {
             }.curry(times);
         }
         
+        public static <T> F.If<T> isNull() {
+            return IS_NULL;
+        }
+        
+        public static F.If IS_NULL = new F.If(){
+            @Override
+            public boolean eval(Object o) {
+                return null == o;
+            }
+        };
+
+        public static <T> F.If<T> notNull() {
+            return NOT_NULL;
+        }
+
+        public static F.If NOT_NULL = _.f.not(IS_NULL);
+        
         public static <T> F.Transformer<T, String> toStr() {
             return new F.Transformer<T, String>() {
                 @Override
@@ -265,28 +282,41 @@ public class _ {
             };
         }
         
-        public static <T extends Number> F.If<T> lt(final T guard) {
-            return lessThan(guard);
+        public static <T extends Comparable<T>> F.If<T> lt(final T o) {
+            return lessThan(o);
         }
         
-        public static <T extends Number> F.If<T> lessThan(final T guard) {
+        public static <T extends Comparable<T>> F.If<T> lessThan(final T o) {
             return new F.If<T>() {
                 @Override
-                public boolean eval(Number number) {
-                    return number.doubleValue() < guard.doubleValue();
+                public boolean eval(T t) {
+                    return t.compareTo(o) < 0;
                 }
             };
         }
         
-        public static <T extends Number> F.If<T> gt(final T guard) {
-            return greatThan(guard);
+        public static <T extends Comparable<T>> F.If<T> gt(final T o) {
+            return greatThan(o);
         }
     
-        public static <T extends Number> F.If<T> greatThan(final T guard) {
+        public static <T extends Comparable<T>> F.If<T> greatThan(final T o) {
             return new F.If<T>() {
                 @Override
-                public boolean eval(Number number) {
-                    return number.doubleValue() > guard.doubleValue();
+                public boolean eval(T t) {
+                    return t.compareTo(o) > 0;
+                }
+            };
+        }
+        
+        public static <T> F.If<T> eq(final T o) {
+            return equal(o);
+        }
+        
+        public static <T> F.If<T> equal(final T o) {
+            return new F.If<T>() {
+                @Override
+                public boolean eval(T t) {
+                    return _.eq(t, o);
                 }
             };
         }
@@ -380,13 +410,17 @@ public class _ {
             return aggregate((T)(Integer)0);
         }
         
+        public static F.Aggregator AGGREGATE = aggregate(0);
+        
         public static <T extends Number> F.Aggregator<T> aggregate(T initVal) {
             return new F.Aggregator<T>(initVal);
         }
         
         public static <T> F.IFunc1<?, T> println() {
-            return println("", "", System.out);
+            return PRINTLN;
         }
+        
+        public static F.IFunc1 PRINTLN = println("", "", System.out);
         
         public static <T> F.IFunc1<?, T> println(String prefix, String suffix) {
             return println(prefix, suffix, System.out);

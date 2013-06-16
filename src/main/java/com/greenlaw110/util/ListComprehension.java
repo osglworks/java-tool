@@ -19,8 +19,12 @@ public class ListComprehension<T> implements Iterable<T> {
         return itr.iterator();
     }
     
-    public List<T> asList() {
+    public F.List<T> asList() {
         return C.list(itr);
+    }
+    
+    public F.List<T> asList(boolean readonly) {
+        return readonly ? C.list(itr) : C.newList(itr);
     }
     
     public <TYPE> ListComprehension<TYPE> map(Class<TYPE> clz, F.IFunc1... mappers) {

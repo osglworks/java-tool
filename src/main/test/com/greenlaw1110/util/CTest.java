@@ -35,17 +35,24 @@ public class CTest extends TestBase{
     @Test(expected = UnsupportedOperationException.class)
     public void testList() {
         F.List<Integer> l = C.list(1, 2, 3, 4, 5);
-        yes(l.isReadonly());
+        yes(l.readonly());
         l.remove(2);
     }
     
     @Test
     public void testNewList() {
         F.List<Integer> l = C.newList(1, 2, 3, 4, 5);
-        no(l.isReadonly());
+        no(l.readonly());
         l.remove(2);
         eq(l.size(), 4);
         eq(l.get(2), 4);
+    }
+    
+    @Test
+    public void testCompact() {
+        F.List<String> l = C.list("A", null, "C", "D");
+        eq(l.size(), 4);
+        eq(l.compact().size(), 3);
     }
 
     public static void main(String[] args) {

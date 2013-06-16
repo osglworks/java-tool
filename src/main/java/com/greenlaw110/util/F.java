@@ -23,6 +23,8 @@ import com.greenlaw110.exception.FastRuntimeException;
 
 import java.util.*;
 
+import static com.greenlaw110.util._.f.*;
+
 /**
  * Utilities to simulate functional programming in Java
  */
@@ -819,8 +821,16 @@ public class F {
             return _l;
         }
         
-        public boolean isReadonly() {
+        public boolean readonly() {
             return readonly;
+        }
+        
+        public List<T> readonly(boolean readonly) {
+            if (readonly() == readonly) {
+                return this;
+            } else {
+                return C.list(this, readonly);
+            }
         }
         
         public ListComprehension<T> lc() {
@@ -833,22 +843,54 @@ public class F {
         }
         
         public List<T> println() {
-            IFunc1<?, T> visitor = _.f.println();
+            IFunc1<?, T> visitor = PRINTLN;
             return each(visitor);
         }
 
         public List<T> prepend(T... ts) {
-            return C.prepend(this, ts);
+            return C.prepend(this, ts).readonly(readonly());
         }
         
         public List<T> append(T... ts) {
-            return C.append(this, ts);
+            return C.append(this, ts).readonly(readonly());
         }
         
         public Set<T> uniq() {
             return C.uniq(this);
         }
         
-    } 
+        public List<T> reverse() {
+            return C.lc(C.reverse(this)).asList(readonly());
+        }
+
+        /**
+         * Return a list of all elements of this list without null
+         * 
+         * @return
+         */
+        public List<T> compact() {
+            return lc().digest(NOT_NULL).asList(readonly());
+        }
+        
+        public T first(final F.IFunc1<Boolean, T> cond) {
+            return lc().first(cond);
+        }
+        
+        public T last(final F.IFunc1<Boolean, T> cond) {
+            return reverse().first(cond);
+        }
+        
+        public List<T> without(Collection<T> c) {
+            List<T> l0 = C.newList(get());
+            l0.removeAll(c);
+            return l0.readonly(readonly());
+        }
+        
+        public List<T> intersect(Collection<T> c) {
+            List<T> l0 = C.newList(get());
+            l0.retainAll(c);
+            return l0.readonly(readonly());
+        }
+    }
     
 }
