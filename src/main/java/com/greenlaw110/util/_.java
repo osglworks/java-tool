@@ -191,15 +191,6 @@ public class _ {
             };
         }
         
-        public static <T> F.IFunc1<T, T> on(Class<T> clz) {
-            return new F.F1<T, T>(){
-                @Override
-                public T run(T t) {
-                    return t;
-                }
-            };
-        }
-        
         public static <T> F.IFunc0<T> next(final Iterator<T> itr) {
             final T t = itr.next();
             return new F.IFunc0<T>() {
@@ -263,23 +254,6 @@ public class _ {
                 }
             }.curry(times);
         }
-        
-        public static <T> F.If<T> isNull() {
-            return IS_NULL;
-        }
-        
-        public static F.If IS_NULL = new F.If(){
-            @Override
-            public boolean eval(Object o) {
-                return null == o;
-            }
-        };
-
-        public static <T> F.If<T> notNull() {
-            return NOT_NULL;
-        }
-
-        public static F.If NOT_NULL = _.f.not(IS_NULL);
         
         public static <T> F.Transformer<T, String> toStr() {
             return new F.Transformer<T, String>() {

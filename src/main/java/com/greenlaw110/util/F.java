@@ -206,6 +206,39 @@ public class F {
         
         public abstract boolean eval(T t);
 
+        public static <T> F.If<T> yes() {
+            return TRUE;
+        } 
+        
+        public static F.If TRUE = new F.If(){
+            @Override
+            public boolean eval(Object o) {
+                return true;
+            }
+        };
+        
+        public static <T> F.If<T> no() {
+            return FALSE;
+        }
+        
+        public static F.If FALSE = not(TRUE);
+
+        public static <T> F.If<T> isNull() {
+            return IS_NULL;
+        }
+        
+        public static F.If IS_NULL = new F.If(){
+            @Override
+            public boolean eval(Object o) {
+                return null == o;
+            }
+        };
+
+        public static <T> F.If<T> notNull() {
+            return NOT_NULL;
+        }
+
+        public static F.If NOT_NULL = not(IS_NULL);
     }
     
     public abstract static class Visitor<T> extends F.F1<Void, T> {
@@ -881,7 +914,7 @@ public class F {
          * @return
          */
         public List<T> compact() {
-            return lc().filter(NOT_NULL).asList(readonly());
+            return lc().filter(If.NOT_NULL).asList(readonly());
         }
         
         public T first(final F.IFunc1<Boolean, T> cond) {

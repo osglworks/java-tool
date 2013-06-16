@@ -520,6 +520,10 @@ public class S {
         int mid = fileName.lastIndexOf(".");
         return fileName.substring(mid + 1, fileName.length());
     }
+    
+    public static String trim(String s) {
+        return null == s ? "" : s.trim();
+    }
 
     /**
      * Generate random string.
