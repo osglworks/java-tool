@@ -405,4 +405,32 @@ public class IO {
             }
         }
     }
+    
+    public static final class f {
+        public static <T> F.IFunc1<?, T> println() {
+            return PRINTLN;
+        }
+        
+        public static F.IFunc1 PRINTLN = print("", "\n", System.out);
+
+        public static <T> F.IFunc1<?, T> print() {
+            return PRINT;
+        }
+        
+        public static F.IFunc1 PRINT = print("", "", System.out);
+        
+        public static <T> F.IFunc1<?, T> print(String prefix, String suffix) {
+            return print(prefix, suffix, System.out);
+        }
+        
+        public static <T> F.IFunc1<?, T> print(String prefix, String suffix, PrintStream ps) {
+            return new F.Op4<T, String, String, PrintStream>() {
+                @Override
+                public void operate(T t, String prefix, String suffix, PrintStream ps) {
+                    StringBuilder sb = new StringBuilder(prefix).append(t).append(suffix);
+                    ps.print(sb);
+                }
+            }.curry(prefix, suffix, ps);
+        }
+    }
 }

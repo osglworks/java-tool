@@ -1,13 +1,10 @@
-package com.greenlaw1110.util;
+package com.greenlaw110.util;
 
 import com.greenlaw110.TestBase;
-import com.greenlaw110.util.C;
-import com.greenlaw110.util.F;
-import com.greenlaw110.util.S;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.greenlaw110.util._.f.lt;
+import static com.greenlaw110.util._.f.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -72,12 +69,22 @@ public class FListTest extends TestBase {
     
     @Test
     public void testFirst() {
+        /* 5, 4, 3, 2, 1*/
         eq(liro.first(lt(4)), 3);
     }
     
     @Test
     public void testLast() {
+        /* 5, 4, 3, 2, 1*/
         eq(liro.last(lt(4)), 1);
+    }
+    
+    @Test
+    public void foo() {
+        F.List<Integer> list2 = C.list(1, 2, 3);
+        F.IFunc2<Integer, Integer, Integer> func2 = _.f.sum();
+        int x = list2.reduce(0, func2);
+        System.out.println(x);
     }
     
 }

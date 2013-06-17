@@ -619,8 +619,22 @@ public class S {
                     }
                 };
     
-        public static <T> F.IFunc2<StringBuilder, StringBuilder, T> concat() {
-            return CONCAT;
+        public static <T> F.IFunc2<StringBuilder, StringBuilder, T> concat(final String suffix) {
+            return new F.F2<StringBuilder, StringBuilder, T>() {
+                @Override
+                public StringBuilder run(StringBuilder sb, T o) {
+                    return sb.append(o).append(suffix);
+                }
+            };
+        }
+    
+        public static <T> F.IFunc2<StringBuilder, StringBuilder, T> concat(final String prefix, final String suffix) {
+            return new F.F2<StringBuilder, StringBuilder, T>() {
+                @Override
+                public StringBuilder run(StringBuilder sb, T o) {
+                    return sb.append(prefix).append(o).append(suffix);
+                }
+            };
         }
     
         public static F.IFunc2 CONCAT = 
@@ -631,16 +645,16 @@ public class S {
                     }
                 };
     
-        public static F.IFunc1<Void, ?> append(final Object sep, final StringBuilder sb) {
+        public static F.IFunc1<StringBuilder, ?> append(final Object sep, final StringBuilder sb) {
             return append(sep).curry(sb);
         }
     
-        public static F.IFunc2<Void, ?, StringBuilder> append(final Object sep) {
-            return new com.greenlaw110.util.F.F2<Void, Object, StringBuilder>() {
+        public static F.IFunc2<StringBuilder, ?, StringBuilder> append(final Object sep) {
+            return new com.greenlaw110.util.F.F2<StringBuilder, Object, StringBuilder>() {
                 @Override
-                public Void run(Object s, StringBuilder sb) {
+                public StringBuilder run(Object s, StringBuilder sb) {
                     sb.append(sep).append(s);
-                    return null;
+                    return sb;
                 }
             };
         }

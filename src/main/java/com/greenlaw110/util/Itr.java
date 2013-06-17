@@ -33,10 +33,7 @@ public class Itr<T> implements Iterable<T>  {
 
     @Override
     public Iterator<T> iterator() {
-        if (null == iterator) {
-            iterator = new ItrItr<T>(this);
-        }
-        return iterator;
+        return new ItrItr<T>(this);
     }
 
     protected static class ItrItr<T> implements Iterator<T> {

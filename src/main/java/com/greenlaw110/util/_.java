@@ -21,7 +21,6 @@ package com.greenlaw110.util;
 
 import com.greenlaw110.exception.UnexpectedException;
 
-import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -396,26 +395,6 @@ public class _ {
         
         public static <T extends Number> F.Aggregator<T> aggregate(T initVal) {
             return new F.Aggregator<T>(initVal);
-        }
-        
-        public static <T> F.IFunc1<?, T> println() {
-            return PRINTLN;
-        }
-        
-        public static F.IFunc1 PRINTLN = println("", "", System.out);
-        
-        public static <T> F.IFunc1<?, T> println(String prefix, String suffix) {
-            return println(prefix, suffix, System.out);
-        }
-        
-        public static <T> F.IFunc1<?, T> println(String prefix, String suffix, PrintStream ps) {
-            return new F.Op4<T, String, String, PrintStream>() {
-                @Override
-                public void operate(T t, String prefix, String suffix, PrintStream ps) {
-                    StringBuilder sb = new StringBuilder(prefix).append(t).append(suffix);
-                    ps.println(sb);
-                }
-            }.curry(prefix, suffix, ps);
         }
         
     }

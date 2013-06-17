@@ -179,6 +179,23 @@ public class ListComprehension<T> implements Iterable<T> {
         }
     }
     
+    public <E> E reduce2(final E initVal, final F.IFunc2<E, T, E> func2) {
+        return ListComprehension.reduce2(initVal, this, func2);
+    }
+    
+    public static <E, T> E reduce2(final E initVal, final ListComprehension<T> lc, final F.IFunc2<E, T, E> func) {
+        if (lc.iterator().hasNext()) {
+            F.T2<T, ListComprehension<T>> t2 = lc.pop();
+            try {
+                return reduce2(func.run(t2._1, initVal), t2._2, func);
+            } catch (F.Visitor.Break b) {
+                return b.get();
+            }
+        } else {
+            return initVal;
+        }
+    }
+    
     public T first(final F.IFunc1<Boolean, T> cond) {
         return C.fold(map(new F.Visitor<T>() {
             @Override
@@ -228,7 +245,7 @@ public class ListComprehension<T> implements Iterable<T> {
     }
     
     public void println() {
-        apply(_.f.println());
+        apply(IO.f.println());
     }
     
     public static <E> ListComprehension<E> valueOf(Iterable<E> it) {

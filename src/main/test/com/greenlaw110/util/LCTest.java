@@ -1,7 +1,6 @@
-package com.greenlaw1110.util;
+package com.greenlaw110.util;
 
 import com.greenlaw110.TestBase;
-import com.greenlaw110.util.*;
 import org.junit.Test;
 
 import java.util.List;
