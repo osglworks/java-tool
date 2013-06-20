@@ -615,6 +615,18 @@ public class F {
             this._3 = _3;
         }
 
+        public T3 set1(A a) {
+            return T3(a, _2, _3);
+        }
+
+        public T3 set2(B b) {
+            return T3(_1, b, _3);
+        }
+
+        public T3 set3(C c) {
+            return T3(_1, _2, c);
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -718,6 +730,180 @@ public class F {
 
     public static <A, B, C, D, E> T5<A, B, C, D, E> T5(A a, B b, C c, D d, E e) {
         return new T5<A, B, C, D, E>(a, b, c, d, e);
+    }
+    
+    // --- 
+    public static class Meta<T> {
+        private T o;
+
+        public Meta(T obj) {
+            _.NPE(obj);
+            o = obj;
+        }
+        
+        public boolean is(Class<?> clz) {
+            return clz.isAssignableFrom(o.getClass());
+        }
+
+        public boolean isNot(Class<?> clz) {
+            return !is(clz);
+        }
+
+        public boolean kindOf(Object object) {
+            return is(object.getClass());
+        }
+        
+    }
+    
+    // --- An easy to use String wrapper
+    
+    public static class Str {
+        private String s;
+        public Str(String s) {
+            _.NPE(s);
+            this.s = s;
+        }
+        
+        public String get() {
+            return s;
+        }
+        
+        @Override
+        public String toString() {
+            return s;
+        }
+
+        @Override
+        public int hashCode() {
+            return s.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (null == obj) {
+                return false;
+            }
+            if (obj instanceof Str) {
+                return ((Str) obj).s.equals(s);
+            }
+            return false;
+        }
+
+        public static Str valueOf(Object o) {
+            return new Str(S.string(o));
+        }
+
+        public static Str valueOf(int i) {
+            return new Str(String.valueOf(i));
+        }
+
+        public static Str valueOf(boolean b) {
+            return new Str(String.valueOf(b));
+        }
+
+        public static Str valueOf(char[] ca) {
+            return new Str(String.valueOf(ca));
+        }
+
+        public static Str valueOf(long l) {
+            return new Str(String.valueOf(l));
+        }
+
+        public static Str valueOf(char c) {
+            return new Str(String.valueOf(c));
+        }
+
+        public static Str valueOf(double d) {
+            return new Str(String.valueOf(d));
+        }
+
+        public static Str valueOf(float f) {
+            return new Str(String.valueOf(f));
+        }
+        // -- helpers
+        public Str after(String s) {
+            return valueOf(S.after(this.s, s));
+        }
+
+        public Str afterFirst(String s) {
+            return valueOf(S.afterFirst(this.s, s));
+        }
+
+        public Str afterLast(String s) {
+            return valueOf(S.afterLast(this.s, s));
+        }
+
+        public Str before(String s) {
+            return valueOf(S.before(this.s, s));
+        }
+
+        public Str beforeFirst(String s) {
+            return valueOf(S.beforeFirst(this.s, s));
+        }
+
+        public Str beforeLast(String s) {
+            return valueOf(S.beforeLast(this.s, s));
+        }
+        
+        public Str trim() {
+            return valueOf(s.trim());
+        }
+        
+        public Str upperCase() {
+            return valueOf(s.toUpperCase());
+        }
+        
+        public Str lowerCase() {
+            return valueOf(s.toLowerCase());
+        }
+        
+        public Str replace(CharSequence target, CharSequence replacement) {
+            return valueOf(s.replace(target, replacement));
+        }
+        
+        public Str replaceAll(String regex, String replacement) {
+            return valueOf(s.replaceAll(regex, replacement));
+        }
+
+        public Str capFirst() {
+            return valueOf(S.capFirst(s));
+        }
+
+        public Str strip(String prefix, String suffix) {
+            return valueOf(S.strip(s, prefix, suffix));
+        }
+
+        public Str urlEncode() {
+            return valueOf(S.urlEncode(s));
+        }
+        
+        public Str decodeBASE64() {
+            return valueOf(S.decodeBASE64(s));
+        }
+        
+        public Str encodeBASE64() {
+            return valueOf(S.encodeBASE64(s));
+        }
+        
+        public Str cutOff(int n) {
+            return valueOf(S.cutOff(s, n));
+        }
+        
+        public Str first(int n) {
+            return valueOf(S.first(s, n));
+        }
+
+        public Str last(int n) {
+            return valueOf(S.last(s, n));
+        }
+
+        public boolean startsWith(String prefix) {
+            return s.startsWith(prefix);
+        }
+
+        public boolean endsWith(String suffix) {
+            return s.endsWith(suffix);
+        }
     }
 
     

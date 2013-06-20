@@ -19,8 +19,10 @@
 */
 package com.greenlaw110.util;
 
+import com.greenlaw110.exception.InvalidStateException;
 import com.greenlaw110.exception.UnexpectedException;
 
+import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,12 +49,12 @@ public class _ {
         E.NPE(args);
     }
 
-    public final static IllegalStateException illegalState() {
-        return E.illegalState();
+    public final static InvalidStateException invalidState() {
+        return E.invalidState();
     }
 
-    public final static IllegalStateException illegalState(String message, String args) {
-        return E.illegalState(message, args);
+    public final static InvalidStateException invalidState(String message, String args) {
+        return E.invalidState(message, args);
     }
 
     public final static UnexpectedException unexpected(Throwable cause) {
@@ -63,12 +65,12 @@ public class _ {
         return E.unexpected(message, args);
     }
 
-    public final static String str(Object o, boolean quoted) {
-        return S.str(o, quoted);
+    public final static F.Str str(Object o) {
+        return F.Str.valueOf(o);
     }
 
-    public final static String str(Object o) {
-        return S.str(o, false);
+    public final static F.Meta meta(Object o) {
+        return new F.Meta(o);
     }
 
     public final static boolean equal(Object a, Object b) {
@@ -123,6 +125,137 @@ public class _ {
     public final static <T> List<T> list(T... el) {
         return C.list(el);
     }
+
+    public final static <T> Class<T> classForName(String className) {
+        try {
+            return (Class<T>)Class.forName(className);
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+    
+    public final static <T> T newInstance(Class<T> c) {
+        try {
+            return c.newInstance();
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+    
+    private static boolean testConstructor(Constructor c, Object p, int pos) {
+        E.invalidArgIf(pos < 0);
+        Class[] pts = c.getParameterTypes();
+        if (pos < pts.length) {
+            Class pt = pts[pos];
+            return (pt.isAssignableFrom(p.getClass()));
+        } else {
+            return false;
+        }
+    }
+    
+    public final static <T, P1> T newInstance(Class<T> c, P1 p1) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (testConstructor(ct, p1, 0)) {
+                    return ct.newInstance(p1);
+                }
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+    
+    public final static <T, P1, P2> T newInstance(Class<T> c, P1 p1, P2 p2) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (!testConstructor(ct, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p2, 1)) {
+                    continue;
+                }
+                return ct.newInstance(p1, p2);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+    
+    public final static <T, P1, P2, P3> T newInstance(Class<T> c, P1 p1, P2 p2, P3 p3) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (!testConstructor(ct, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p2, 1)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p3, 2)) {
+                    continue;
+                }
+                return ct.newInstance(p1, p2, p3);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+    
+    public final static <T, P1, P2, P3, P4> T newInstance(Class<T> c, P1 p1, P2 p2, P3 p3, P4 p4) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (!testConstructor(ct, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p2, 1)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p3, 2)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p4, 4)) {
+                    continue;
+                }
+                return ct.newInstance(p1, p2, p3, p4);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+    
+    public final static <T, P1, P2, P3, P4, P5> T newInstance(Class<T> c, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (!testConstructor(ct, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p2, 1)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p3, 2)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p4, 4)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p5, 5)) {
+                    continue;
+                }
+                return ct.newInstance(p1, p2, p3, p4, p5);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
     
     public final static <T> T times(F.IFunc0<T> func, int n) {
         if (n < 0) {
@@ -136,6 +269,51 @@ public class _ {
             func.run();
         }
         return result;
+    }
+    
+    public final static <T> T ensureGet(T t1, T def1) {
+        if (null != t1) {
+            return t1;
+        }
+        E.invalidArgIf(null == def1);
+        return def1;
+    }
+    
+    public final static <T> T ensureGet(T t1, T def1, T def2) {
+        if (null != t1) {
+            return t1;
+        }
+        if (null != def1) {
+            return def1;
+        }
+        E.npeIf(null == def2);
+        return def2;
+    }
+    
+    public final static <T> T ensureGet(T t1, T def1, T def2, T def3) {
+        if (null != t1) {
+            return t1;
+        }
+        if (null != def1) {
+            return def1;
+        }
+        if (null != def2) {
+            return def2;
+        }
+        E.npeIf(null == def3);
+        return def2;
+    }
+    
+    public final static <T> T ensureGet(T t1, List<T> defs) {
+        if (null != t1) {
+            return t1;
+        }
+        for (T t : defs) {
+            if (null != t) {
+                return t;
+            }
+        }
+        throw new NullPointerException();
     }
     
     public final static <T> T times(F.IFunc1<T, T> func, T initVal, int n) {
@@ -240,7 +418,7 @@ public class _ {
             return new F.F2<List<T>, T, Integer>() {
                 @Override
                 public List<T> run(T t, Integer times) {
-                    E.invalidArg(times < 0, "times[%s] is less than zero");
+                    E.invalidArgIf(times < 0, "times[%s] is less than zero");
                     if (times == 0) {
                         return C.emptyList();
                     } else {

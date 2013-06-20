@@ -55,17 +55,57 @@ public class S {
         return fmt(tmpl, args);
     }
 
+    public final static F.Str str(Object o) {
+        return F.Str.valueOf(o);
+    }
+
+    public static F.Str valueOf(Object o) {
+        return F.Str.valueOf(S.string(o));
+    }
+
+    public static F.Str valueOf(int i) {
+        return F.Str.valueOf(i);
+    }
+
+    public static F.Str valueOf(boolean b) {
+        return F.Str.valueOf(b);
+    }
+
+    public static F.Str valueOf(char[] ca) {
+        return F.Str.valueOf(ca);
+    }
+
+    public static F.Str valueOf(long l) {
+        return F.Str.valueOf(l);
+    }
+
+    public static F.Str valueOf(char c) {
+        return F.Str.valueOf(c);
+    }
+
+    public static F.Str valueOf(double d) {
+        return F.Str.valueOf(d);
+    }
+
+    public static F.Str valueOf(float f) {
+        return F.Str.valueOf(f);
+    }
+    
+    public final static StringBuilder builder(Object ... objs) {
+        return C.lc(objs).reduce2(new StringBuilder(), S.f.append());
+    }
+
     /**
      * Get string representation of an object instance
      *
      * @param o      the instance to be displayed
      * @param quoted whether display quotation mark
      */
-    public final static String str(Object o, boolean quoted) {
+    public final static String string(Object o, boolean quoted) {
         return quoted ? String.format("\"%s\"", o) : null == o ? "" : o.toString();
     }
 
-    public final static String str(Object o) {
+    public final static String string(Object o) {
         return null == o ? "" : o.toString();
     }
 
@@ -130,11 +170,11 @@ public class S {
         Iterator<?> itr = list.iterator();
         
         if (itr.hasNext()) {
-            sb.append(str(itr.next(), quoted));
+            sb.append(string(itr.next(), quoted));
         }
         
         while (itr.hasNext()) {
-            sb.append(separator).append(str(itr.next(), quoted));
+            sb.append(separator).append(string(itr.next(), quoted));
         }
 
         if (null != suffix) {
@@ -175,8 +215,29 @@ public class S {
      * @param max the maximum length of the result
      * @return
      */
-    public static String max(String s, int max) {
+    public static String cutOff(String s, int max) {
         return maxSize(s, max);
+    }
+
+    /**
+     * Return first N chars
+     * @param s
+     * @param n
+     * @return
+     */
+    public static String first(String s, int n) {
+        return s.substring(0, n);
+    }
+
+    /**
+     * Return last n chars
+     * @param s
+     * @param n
+     * @return
+     */
+    public static String last(String s, int n) {
+        int len = s.length();
+        return s.substring(len - n, s.length());
     }
 
     /**
@@ -317,6 +378,69 @@ public class S {
      */
     public static boolean noEmpty(String... sa) {
         return !anyEmpty(sa);
+    }
+    
+    public static String after(String s0, String search) {
+        return after(s0, search, false);
+    }
+    
+    public static String after(String s0, String search, boolean first) {
+        if (first) {
+            return afterFirst(s0, search);
+        } else {
+            return afterLast(s0, search);
+        }
+    }
+    
+    public static String afterLast(String s0, String search) {
+        int i = s0.lastIndexOf(search);
+        if (i == -1) {
+            return "";
+        }
+        return s0.substring(i + search.length(), s0.length());
+    }
+
+    public static String afterFirst(String s0, String search) {
+        int i = s0.indexOf(search);
+        if (i == -1) {
+            return "";
+        }
+        return s0.substring(i + search.length(), s0.length());
+    }
+
+    public static String before(String s0, String search) {
+        return before(s0, search, false);
+    }
+    
+    public static String before(String s0, String search, boolean last) {
+        if (last) {
+            return beforeLast(s0, search);
+        } else {
+            return beforeFirst(s0, search);
+        }
+    }
+    
+    public static String beforeFirst(String s0, String search) {
+        int i = s0.indexOf(search);
+        if (i == -1) {
+            return "";
+        }
+        return s0.substring(0, i);
+    }
+
+    public static String beforeLast(String s0, String search) {
+        int i = s0.lastIndexOf(search);
+        if (i == -1) {
+            return "";
+        }
+        return s0.substring(0, i);
+    }
+    
+    public static String capFirst(String s) {
+        if (s.length() == 0) {
+            return s;
+        }
+        return ("" + s.charAt(0)).toUpperCase() + s.substring(1);
     }
 
     /**
@@ -517,8 +641,7 @@ public class S {
      * @return the extension
      */
     public static String fileExtension(String fileName) {
-        int mid = fileName.lastIndexOf(".");
-        return fileName.substring(mid + 1, fileName.length());
+        return S.after(fileName, ".");
     }
     
     public static String trim(String s) {
@@ -645,20 +768,29 @@ public class S {
                     }
                 };
     
-        public static F.IFunc1<StringBuilder, ?> append(final Object sep, final StringBuilder sb) {
-            return append(sep).curry(sb);
-        }
-    
-        public static F.IFunc2<StringBuilder, ?, StringBuilder> append(final Object sep) {
-            return new com.greenlaw110.util.F.F2<StringBuilder, Object, StringBuilder>() {
+        public static F.IFunc2<StringBuilder, StringBuilder, Object> append(final Object sep) {
+            return new com.greenlaw110.util.F.F2<StringBuilder, StringBuilder, Object>() {
                 @Override
-                public StringBuilder run(Object s, StringBuilder sb) {
+                public StringBuilder run(StringBuilder sb, Object s) {
                     sb.append(sep).append(s);
                     return sb;
                 }
             };
         }
-
+        
+        public static <T> F.IFunc2<StringBuilder, T, StringBuilder> append() {
+            return APPEND;
+        }
+        
+        public static F.IFunc2 APPEND = 
+            new com.greenlaw110.util.F.F2<StringBuilder, Object, StringBuilder>() {
+                @Override
+                public StringBuilder run(Object s, StringBuilder sb) {
+                    sb.append(s);
+                    return sb;
+                }
+            };
+        
         public static <T> F.Transformer<T, String> format(final String tmpl) {
             return new F.Transformer<T, String>() {
                 @Override

@@ -297,7 +297,7 @@ public class C {
     }
 
     public static <T> T[] array(Collection<T> col) {
-        E.invalidArg(col.isEmpty(), "Class type must be present if collection is empty");
+        E.invalidArgIf(col.isEmpty(), "Class type must be present if collection is empty");
         Class<T> clz = (Class<T>) col.iterator().next().getClass();
         return array(col, clz);
     }
@@ -309,6 +309,10 @@ public class C {
 
     public static <T> Set<T> set(T... t) {
         return readOnly(new HashSet<T>(Arrays.asList(t)));
+    }
+
+    public static <T> Set<T> set(Collection<T> c) {
+        return readOnly(new HashSet<T>(c));
     }
 
     public static <T> Set<T> newSet(T... t) {
@@ -329,9 +333,20 @@ public class C {
         return readOnly(map);
     }
 
+    public static <K, V> Map<K, V> map(Map<K, V> map) {
+        if (null == map) {
+            return EMPTY_MAP;
+        }
+        return readOnly(map);
+    }
+
     public static <K, V> Map<K, V> newMap(Object... args) {
         Map<K, V> ro = map(args);
         return new HashMap<K, V>(ro);
+    }
+
+    public static <K, V> Map<K, V> newMap(Map<K, V> map) {
+        return new HashMap<K, V>(map);
     }
 
     public static <T> Iterable<T> reverse(final List<T> l) {

@@ -72,7 +72,7 @@ public class IO {
             throw E.ioException(e);
         }
     }
-
+    
     public static OutputStream os(File file) {
         try {
             return new FileOutputStream(file);

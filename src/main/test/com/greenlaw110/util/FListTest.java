@@ -86,5 +86,9 @@ public class FListTest extends TestBase {
         int x = list2.reduce(0, func2);
         System.out.println(x);
     }
+
+    public static void main(String[] args) {
+        run(FListTest.class);
+    }
     
 }

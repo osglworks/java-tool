@@ -19,37 +19,24 @@
 */
 package com.greenlaw110.exception;
 
-import com.greenlaw110.util.S;
-
 /**
- * Could be used when programmer think it is not logic to reach somewhere. 
- * For example, the default branch of a switch case on an enum value
+ * Indicate a certain state of the object is not valid when accepting a message
  */
-public class UnexpectedException extends RuntimeException {
+public class InvalidStateException extends UnexpectedException {
 
-    public UnexpectedException(){
-        super();
+    public InvalidStateException() {
     }
-
-    public UnexpectedException(String message){
+    
+    public InvalidStateException(String message){
         super(message);
     }
 
-    public UnexpectedException(String message, Object... args){
-        super(S.fmt(message, args));
+    public InvalidStateException(String message, Object... args){
+        super(message, args);
     }
 
-    public UnexpectedException(Throwable cause){
+    public InvalidStateException(Throwable cause){
         super(cause);
     }
 
-    /**
-     * Construct a FastRuntimeException with cause, message and message arguments
-     * @param cause
-     * @param message
-     * @param args
-     */
-    public UnexpectedException(Throwable cause, String message, Object... args) {
-        super(S.fmt(message, args), cause);
-    }
 }

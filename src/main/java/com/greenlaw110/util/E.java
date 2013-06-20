@@ -32,8 +32,8 @@ public class E {
     /**
      * Throw out {@link IllegalStateException}
      */
-    public static IllegalStateException illegalState() {
-        throw new IllegalStateException();
+    public static InvalidStateException invalidState() {
+        throw new InvalidStateException();
     }
 
     /**
@@ -41,8 +41,20 @@ public class E {
      * @param msg message template
      * @param args message arguments
      */
-    public static IllegalStateException illegalState(String msg, Object... args) {
-        return new IllegalStateException(S.fmt(msg, args));
+    public static InvalidStateException invalidState(String msg, Object... args) {
+        throw new InvalidStateException(S.fmt(msg, args));
+    }
+    
+    public static void invalidStateIf(boolean tester) {
+        if (tester) {
+            invalidState();
+        }
+    }
+
+    public static void invalidStateIf(boolean tester, String msg, Object... args) {
+        if (tester) {
+            invalidState(msg, args);
+        }
     }
 
     /**
@@ -98,6 +110,12 @@ public class E {
         throw new UnexpectedException(cause, msg, args);
     }
 
+    public static void unexpectedIf(boolean tester, String msg, Object... args) {
+        if (tester) {
+            unexpected(msg, args);
+        }
+    }
+
 
     /**
      * Throw out {@link com.greenlaw110.exception.UnexpectedIOException}
@@ -121,23 +139,33 @@ public class E {
         throw new UnexpectedEncodingException(cause);
     }
 
-    public static ConfigurationException configException(Throwable cause, String message, Object... args) {
+    public static ConfigurationException invalidConfiguration(Throwable cause, String message, Object... args) {
         throw new ConfigurationException(cause, message, args);
     }
 
-    public static ConfigurationException configException(String message, Object... args) {
+    public static ConfigurationException invalidConfiguration(String message, Object... args) {
         throw new ConfigurationException(message, args);
+    }
+
+    public static void invalidConfigurationIf(boolean tester, String msg, Object... args) {
+        if (tester) {
+            invalidConfiguration(msg, args);
+        }
     }
     
     public static UnsupportedException unsupport() {
         throw new UnsupportedException();
+    }
+
+    public static UnsupportedException unsupport(String msg, Object... args) {
+        throw new UnsupportedException(msg, args);
     }
     
     public static InvalidArgException invalidArg() {
         throw new InvalidArgException();
     }
 
-    public static void invalidArg(boolean test) {
+    public static void invalidArgIf(boolean test) {
         if (test) {
             throw new InvalidArgException();
         }
@@ -147,12 +175,16 @@ public class E {
         throw new InvalidArgException(msg, args);
     }
     
-    public static void invalidArg(boolean test, String msg, Object... args) {
+    public static void invalidArgIf(boolean test, String msg, Object... args) {
         if (test) {
             throw new InvalidArgException(msg, args);
         }
     }
-    
-    
+
+    public static void npeIf(boolean test) {
+        if (test) {
+            throw new NullPointerException();
+        }
+    }
     
 }
