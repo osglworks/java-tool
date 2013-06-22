@@ -18,14 +18,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.greenlaw110</groupId>
-    <artifactId>java-tool</artifactId>
+    <groupId>org.osgl</groupId>
+    <artifactId>osgl-tool</artifactId>
     <packaging>jar</packaging>
     <version>0.1-SNAPSHOT</version>
 
     <name>Java Tool</name>
     <description>A simple Java toolkit</description>
-    <url>http://java-tool.greenlaw110.com/</url>
+    <url>http://java-tool.osgl.org/</url>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
