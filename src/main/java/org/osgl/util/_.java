@@ -22,6 +22,7 @@ package org.osgl.util;
 import org.osgl.exception.InvalidStateException;
 import org.osgl.exception.UnexpectedException;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +39,10 @@ public class _ {
 
     public final static String fmt(String tmpl, Object... args) {
         return S.fmt(tmpl, args);
+    }
+    
+    public final static long ts() {
+        return System.currentTimeMillis();
     }
 
     /**
@@ -260,7 +265,102 @@ public class _ {
             throw E.unexpected(e);
         }
     }
+
+    public static final boolean isArray(Object o) {
+        if (null == o) {
+            return false;
+        }
+        return o.getClass().isArray();
+    }
+
+    public static final <T> T[] newArray(Class<T> clz, int len) {
+        return (T[]) Array.newInstance(clz, len);
+    }
     
+    public static final <T> T[][] newArray(Class<T> clz, int len1, int len2) {
+        return (T[][]) Array.newInstance(clz, len1, len2);
+    }
+    
+    public static final <T> T[][][] newArray(Class<T> clz, int len1, int len2, int len3) {
+        return (T[][][]) Array.newInstance(clz, len1, len2, len3);
+    }
+    
+    public int arrayLength(Object array) {
+        return Array.getLength(array);
+    }
+
+    public <T> T arrayGet(Object array, int index) {
+        return (T)Array.get(array, index);
+    }
+
+    public boolean arrayGetBool(Object array, int index) {
+        return Array.getBoolean(array, index);
+    }
+
+    public byte arrayGetByte(Object array, int index) {
+        return Array.getByte(array, index);
+    }
+
+    public char arrayGetChar(Object array, int index) {
+        return Array.getChar(array, index);
+    }
+
+    public short arrayGetShort(Object array, int index) {
+        return Array.getShort(array, index);
+    }
+    
+    public int arrayGetInt(Object array, int index) {
+        return Array.getInt(array, index);
+    } 
+
+    public long arrayGetLong(Object array, int index) {
+        return Array.getLong(array, index);
+    }
+
+    public float arrayGetFloat(Object array, int index) {
+        return Array.getFloat(array, index);
+    }
+    
+    public double arrayGetDouble(Object array, int index) {
+        return Array.getDouble(array, index);
+    }
+
+    public static void arraySet(Object array, int index, Object o) {
+        Array.set(array, index, o);
+    }
+
+    public static void arraySetBool(Object array, int index, boolean o) {
+        Array.setBoolean(array, index, o);
+    }
+
+    public static void arraySetByte(Object array, int index, byte o) {
+        Array.setByte(array, index, o);
+    }
+
+    public static void arraySetChar(Object array, int index, char o) {
+        Array.setChar(array, index, o);
+    }
+
+    public static void arraySetShort(Object array, int index, short o) {
+        Array.setShort(array, index, o);
+    }
+
+    public static void arraySetInt(Object array, int index, int o) {
+        Array.setInt(array, index, o);
+    }
+
+    public static void arraySetLong(Object array, int index, long o) {
+        Array.setLong(array, index, o);
+    }
+
+    public static void arraySetFloat(Object array, int index, float o) {
+        Array.setFloat(array, index, o);
+    }
+
+    public static void arraySetDouble(Object array, int index, double o) {
+        Array.setDouble(array, index, o);
+    }
+
     public final static <T> T times(F.IFunc0<T> func, int n) {
         if (n < 0) {
             throw E.invalidArg("the number of times must not be negative");
@@ -441,24 +541,6 @@ public class _ {
             };
         }
     
-        public static <T> F.IFunc1<List<T>, T> repeat(final Class<T> clz, final int times) {
-            return new F.F2<List<T>, T, Integer>() {
-                @Override
-                public List<T> run(T t, Integer times) {
-                    E.invalidArgIf(times < 0, "times[%s] is less than zero");
-                    if (times == 0) {
-                        return C.emptyList();
-                    } else {
-                        List<T> l = C.newList();
-                        for (int i = 0; i < times; ++i) {
-                            l.add(t);
-                        }
-                        return l;
-                    }
-                }
-            }.curry(times);
-        }
-        
         public static <T> F.Transformer<T, String> toStr() {
             return new F.Transformer<T, String>() {
                 @Override
@@ -505,101 +587,6 @@ public class _ {
                     return _.eq(t, o);
                 }
             };
-        }
-        
-        public static <T extends Number> F.IFunc2<T, T, T> sum(Class<T> clz) {
-            return sum();
-        }
-        
-        public static <T extends Number> F.IFunc2<T, T, T> sum() {
-            return new F.F2<T, T, T>() {
-                @Override
-                public T run(T t, T t2) {
-                    if (t instanceof Integer) {
-                        return (T)(Integer)(((Integer)t).intValue() + ((Integer)t2).intValue());
-                    } else if (t instanceof Long) {
-                        return (T)(Long)(((Long)t).longValue() + ((Long)t2).longValue());
-                    } else if (t instanceof Double) {
-                        return (T)(Double)(((Double)t).doubleValue() + ((Double)t2).doubleValue());
-                    } else if (t instanceof Float) {
-                        return (T)(Float)(((Float)t).floatValue() + ((Float)t2).floatValue());
-                    } else if (t instanceof Short) {
-                        return (T)(Integer)(((Short)t).shortValue() + ((Short)t2).shortValue());
-                    } else if (t instanceof Byte) {
-                        return (T)(Integer)(((Byte)t).byteValue() + ((Byte)t2).byteValue());
-                    }
-                    return (T)(Integer)(((Integer)t).intValue() + ((Integer)t2).intValue());
-                }
-            };
-        } 
-        
-        public static <T> F.IFunc1<T, T> dbl(Class<T> clz) {
-            return multiply(clz, 2);
-        };
-        
-        public static <T> F.IFunc1<T, T> dbl() {
-            return multiply(2);
-        }
-        
-        public static <T> F.IFunc1<T, T> multiply(final int fact) {
-            return new F.F1<T, T>() {
-                @Override
-                public T run(T t) {
-                    if (t instanceof Number) {
-                        if (fact == 0) {
-                            return (T)(Integer)0;
-                        }
-                        Number n = (Number)t;
-                        if (n instanceof Integer) {
-                            return (T)(Integer)(n.intValue() * fact);
-                        } else if (n instanceof Long) {
-                            return (T)(Long)(n.longValue() * fact);
-                        } else if (n instanceof Float) {
-                            return (T)(Float)(n.floatValue() * fact);
-                        } else if (n instanceof Double) {
-                            return (T)(Double)(n.doubleValue() * fact);
-                        } else if (n instanceof Short) {
-                            return (T)(Integer)(n.shortValue() * fact);
-                        } else if (n instanceof Byte) {
-                            return (T)(Integer)(n.byteValue() * fact);
-                        } else {
-                            return (T)(Integer)(n.intValue() * fact);
-                        }
-                    } else if (t instanceof String) {
-                        if (fact == 0) {
-                            return (T)"";
-                        } 
-                        String s = (String)t;
-                        char[] chars = s.toCharArray();
-                        int times = fact;
-                        if (fact < 0) {
-                            chars = C.reverse(chars);
-                            times *= -1;
-                        }
-                        s = new String(chars);
-                        StringBuilder sb = new StringBuilder();
-                        for (int i = 0; i < times; ++i) {
-                            sb.append(s);
-                        }
-                        return (T)sb.toString();
-                    }
-                    throw E.invalidArg("multiply doesn't support the type [%s]", t.getClass().getName());
-                }
-            };
-        }
-        
-        public static <T> F.IFunc1<T, T> multiply(final Class<T> clz, final int fact) {
-            return multiply(fact);
-        }
-        
-        public static <T extends Number> F.Aggregator<T> aggregate() {
-            return aggregate((T)(Integer)0);
-        }
-        
-        public static F.Aggregator AGGREGATE = aggregate(0);
-        
-        public static <T extends Number> F.Aggregator<T> aggregate(T initVal) {
-            return new F.Aggregator<T>(initVal);
         }
         
     }

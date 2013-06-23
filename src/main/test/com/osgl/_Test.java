@@ -21,4 +21,10 @@ public class _Test extends TestBase {
         s = _.ensureGet(p1, p2);
         eq(s, p1);
     }
+    
+    @Test
+    public void testNewArray() {
+        String[] sa = _.newArray(String.class, 5);
+        sa[0] = "foo";
+    }
 }

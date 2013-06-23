@@ -89,9 +89,9 @@ public class S {
     public static Str valueOf(float f) {
         return Str.valueOf(f);
     }
-    
-    public final static StringBuilder builder(Object ... objs) {
-        return C.lc(objs).reduce(new StringBuilder(), S.f.append());
+
+    public final static StringBuilder builder(Object... objs) {
+        return C.lc(objs).reduce(new StringBuilder(), f.concat());
     }
 
     /**
@@ -167,11 +167,11 @@ public class S {
         }
 
         Iterator<?> itr = iterable.iterator();
-        
+
         if (itr.hasNext()) {
             sb.append(string(itr.next(), quoted));
         }
-        
+
         while (itr.hasNext()) {
             sb.append(separator).append(string(itr.next(), quoted));
         }
@@ -220,6 +220,7 @@ public class S {
 
     /**
      * Return first N chars
+     *
      * @param s
      * @param n
      * @return
@@ -230,6 +231,7 @@ public class S {
 
     /**
      * Return last n chars
+     *
      * @param s
      * @param n
      * @return
@@ -378,11 +380,11 @@ public class S {
     public static boolean noEmpty(String... sa) {
         return !anyEmpty(sa);
     }
-    
+
     public static String after(String s0, String search) {
         return after(s0, search, false);
     }
-    
+
     public static String after(String s0, String search, boolean first) {
         if (first) {
             return afterFirst(s0, search);
@@ -390,7 +392,7 @@ public class S {
             return afterLast(s0, search);
         }
     }
-    
+
     public static String afterLast(String s0, String search) {
         if (null == s0) {
             return "";
@@ -416,7 +418,7 @@ public class S {
     public static String before(String s0, String search) {
         return before(s0, search, false);
     }
-    
+
     public static String before(String s0, String search, boolean last) {
         if (last) {
             return beforeLast(s0, search);
@@ -424,7 +426,7 @@ public class S {
             return beforeFirst(s0, search);
         }
     }
-    
+
     public static String beforeFirst(String s0, String search) {
         if (null == s0) {
             return "";
@@ -446,7 +448,7 @@ public class S {
         }
         return s0.substring(0, i);
     }
-    
+
     public final static String capFirst(String s) {
         if (null == s) {
             return "";
@@ -654,7 +656,7 @@ public class S {
     public static String fileExtension(String fileName) {
         return S.after(fileName, ".");
     }
-    
+
     public static String trim(String s) {
         return null == s ? "" : s.trim();
     }
@@ -704,18 +706,19 @@ public class S {
     }
 
     // --- An easy to use String wrapper
-    
+
     public static class Str {
         private String s;
+
         public Str(String s) {
             _.NPE(s);
             this.s = s;
         }
-        
+
         public String get() {
             return s;
         }
-        
+
         @Override
         public String toString() {
             return s;
@@ -768,6 +771,7 @@ public class S {
         public static Str valueOf(float f) {
             return new Str(String.valueOf(f));
         }
+
         // -- helpers
         public Str after(String s) {
             return valueOf(S.after(this.s, s));
@@ -792,23 +796,23 @@ public class S {
         public Str beforeLast(String s) {
             return valueOf(S.beforeLast(this.s, s));
         }
-        
+
         public Str trim() {
             return valueOf(s.trim());
         }
-        
+
         public Str upperCase() {
             return valueOf(s.toUpperCase());
         }
-        
+
         public Str lowerCase() {
             return valueOf(s.toLowerCase());
         }
-        
+
         public Str replace(CharSequence target, CharSequence replacement) {
             return valueOf(s.replace(target, replacement));
         }
-        
+
         public Str replaceAll(String regex, String replacement) {
             return valueOf(s.replaceAll(regex, replacement));
         }
@@ -824,19 +828,19 @@ public class S {
         public Str urlEncode() {
             return valueOf(S.urlEncode(s));
         }
-        
+
         public Str decodeBASE64() {
             return valueOf(S.decodeBASE64(s));
         }
-        
+
         public Str encodeBASE64() {
             return valueOf(S.encodeBASE64(s));
         }
-        
+
         public Str cutOff(int n) {
             return valueOf(S.cutOff(s, n));
         }
-        
+
         public Str first(int n) {
             return valueOf(S.first(s, n));
         }
@@ -856,41 +860,41 @@ public class S {
 
     // --- functors 
     public static class f {
-    
-        public static F.F1 TO_UPPERCASE = toUpperCase();
-        
-        public static F.F1<String, String> toUpperCase() {
-            return new F.F1<String, String>() {
-                @Override
-                public String run(String s) {
-                    return S.toUpperCase(s);
-                }
-            };
-        }
-    
-        public static F.F1 TO_LOWERCASE = toLowerCase();
-        
-        public static F.F1<String, String> toLowerCase() {
-            return new F.F1<String, String>() {
-                @Override
-                public String run(String s) {
-                    return S.toLowerCase(s);
-                }
-            };
+
+        public static final F.F1 TO_UPPERCASE = new F.F1<String, String>() {
+            @Override
+            public String run(String s) {
+                return S.toUpperCase(s);
+            }
+        };
+
+        public static final F.F1<String, String> toUpperCase() {
+            return TO_UPPERCASE;
         }
 
-        public static F.F1 CAP_FIRST = capFirst();
-        
-        public static F.F1<String, String> capFirst() {
-            return new F.F1<String, String>() {
-                @Override
-                public String run(String s) {
-                    return S.capFirst(s);
-                }
-            };
+        public static final F.F1 TO_LOWERCASE = new F.F1<String, String>() {
+            @Override
+            public String run(String s) {
+                return S.toLowerCase(s);
+            }
+        };
+
+        public static final F.F1<String, String> toLowerCase() {
+            return TO_LOWERCASE;
         }
 
-        public static F.If<String> startsWith(final String prefix) {
+        public static final F.F1 CAP_FIRST = new F.F1<String, String>() {
+            @Override
+            public String run(String s) {
+                return S.capFirst(s);
+            }
+        };
+
+        public static final F.F1<String, String> capFirst() {
+            return CAP_FIRST;
+        }
+
+        public static final F.If<String> startsWith(final String prefix) {
             return new F.If<String>() {
                 @Override
                 public boolean eval(String s) {
@@ -899,7 +903,7 @@ public class S {
             };
         }
 
-        public static F.If<String> endsWith(final String suffix) {
+        public static final F.If<String> endsWith(final String suffix) {
             return new F.If<String>() {
                 @Override
                 public boolean eval(String s) {
@@ -908,7 +912,7 @@ public class S {
             };
         }
 
-        public static F.If<String> matches(final String reg) {
+        public static final F.If<String> matches(final String reg) {
             final Pattern pattern = Pattern.compile(reg);
             return new F.If<String>() {
                 @Override
@@ -918,83 +922,32 @@ public class S {
             };
         }
 
-        public static F.Transformer<String, Integer> size() {
+        public static final F.Transformer<String, Integer> size() {
             return size;
         }
 
-        public static F.Transformer<String, Integer> size =
-                new F.Transformer<String, Integer>() {
-                    @Override
-                    public Integer transform(String s) {
-                        return null == s ? 0 : s.length();
-                    }
-                };
+        public static final F.Transformer<String, Integer> size = new F.Transformer<String, Integer>() {
+            @Override
+            public Integer transform(String s) {
+                return null == s ? 0 : s.length();
+            }
+        };
 
-        public static F.IFunc1<StringBuilder, ?> build(final StringBuilder sb) {
-            return BUILD.curry(sb);
-        }
-
-        public static F.IFunc2<StringBuilder, ?, StringBuilder> build() {
-            return BUILD;
+        public static final <T> F.IFunc1<StringBuilder, T> builder(final StringBuilder sb) {
+            return CONCAT.curry(sb);
         }
 
-        public static F.IFunc2<StringBuilder, ?, StringBuilder> BUILD =
-                new F.F2<StringBuilder, Object, StringBuilder>() {
-                    @Override
-                    public StringBuilder run(Object s2, StringBuilder sb) {
-                        return sb.append(s2);
-                    }
-                };
-    
-        public static <T> F.IFunc2<StringBuilder, StringBuilder, T> concat(final String suffix) {
-            return new F.F2<StringBuilder, StringBuilder, T>() {
-                @Override
-                public StringBuilder run(StringBuilder sb, T o) {
-                    return sb.append(o).append(suffix);
-                }
-            };
+        public static final <T> F.IFunc2<StringBuilder, T, StringBuilder> concat() {
+            return CONCAT;
         }
-    
-        public static <T> F.IFunc2<StringBuilder, StringBuilder, T> concat(final String prefix, final String suffix) {
-            return new F.F2<StringBuilder, StringBuilder, T>() {
-                @Override
-                public StringBuilder run(StringBuilder sb, T o) {
-                    return sb.append(prefix).append(o).append(suffix);
-                }
-            };
-        }
-    
-        public static F.IFunc2 CONCAT = 
-                new F.F2<StringBuilder, StringBuilder, Object>() {
-                    @Override
-                    public StringBuilder run(StringBuilder sb, Object o) {
-                        return sb.append(o);
-                    }
-                };
-    
-        public static F.IFunc2<StringBuilder, StringBuilder, Object> append(final Object sep) {
-            return new F.F2<StringBuilder, StringBuilder, Object>() {
-                @Override
-                public StringBuilder run(StringBuilder sb, Object s) {
-                    sb.append(sep).append(s);
-                    return sb;
-                }
-            };
-        }
-        
-        public static <T> F.IFunc2<StringBuilder, T, StringBuilder> append() {
-            return APPEND;
-        }
-        
-        public static F.IFunc2 APPEND = 
-            new F.F2<StringBuilder, Object, StringBuilder>() {
-                @Override
-                public StringBuilder run(Object s, StringBuilder sb) {
-                    sb.append(s);
-                    return sb;
-                }
-            };
-        
+
+        public static F.IFunc2 CONCAT = new F.F2<StringBuilder, Object, StringBuilder>() {
+            @Override
+            public StringBuilder run(Object s2, StringBuilder sb) {
+                return sb.append(s2);
+            }
+        };
+
         public static <T> F.Transformer<T, String> format(final String tmpl) {
             return new F.Transformer<T, String>() {
                 @Override
@@ -1003,7 +956,7 @@ public class S {
                 }
             };
         }
-        
+
     }
 
     public static void main(String[] args) {

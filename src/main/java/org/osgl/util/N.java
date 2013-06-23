@@ -20,36 +20,36 @@ public class N {
     public static final double PI = 3.14159265358979323846;
 
     public static double exp(double a) {
-    	return StrictMath.exp(a); // default impl. delegates to StrictMath
+        return StrictMath.exp(a); // default impl. delegates to StrictMath
     }
 
     public static double log(double a) {
-    	return StrictMath.log(a); // default impl. delegates to StrictMath
+        return StrictMath.log(a); // default impl. delegates to StrictMath
     }
 
     public static double log10(double a) {
-    	return StrictMath.log10(a); // default impl. delegates to StrictMath
+        return StrictMath.log10(a); // default impl. delegates to StrictMath
     }
 
     public static double sqrt(double a) {
-    	return StrictMath.sqrt(a);
+        return StrictMath.sqrt(a);
     }
 
 
     public static double cbrt(double a) {
-    	return StrictMath.cbrt(a);
+        return StrictMath.cbrt(a);
     }
 
     public static double ceil(double a) {
-	    return StrictMath.ceil(a);
+        return StrictMath.ceil(a);
     }
 
     public static double floor(double a) {
-    	return StrictMath.floor(a);
+        return StrictMath.floor(a);
     }
 
     public static double pow(double a, double b) {
-	    return StrictMath.pow(a, b); 
+        return StrictMath.pow(a, b);
     }
 
     public static int round(float a) {
@@ -65,23 +65,23 @@ public class N {
     }
 
     public static int abs(int a) {
-    	return (a < 0) ? -a : a;
+        return (a < 0) ? -a : a;
     }
 
     public static long abs(long a) {
-    	return (a < 0) ? -a : a;
+        return (a < 0) ? -a : a;
     }
 
     public static float abs(float a) {
         return (a <= 0.0F) ? 0.0F - a : a;
     }
-  
+
     public static double abs(double a) {
         return (a <= 0.0D) ? 0.0D - a : a;
     }
 
     public static int max(int a, int b) {
-    	return (a >= b) ? a : b;
+        return (a >= b) ? a : b;
     }
 
     public static long max(long a, long b) {
@@ -134,7 +134,7 @@ public class N {
         if (null == b) {
             return false;
         }
-        return (a.doubleValue() - b.doubleValue()) < 0.0000000001; 
+        return (a.doubleValue() - b.doubleValue()) < 0.0000000001;
     }
 
     public static final boolean lt(Number a, Number b) {
@@ -161,21 +161,41 @@ public class N {
             return new Num(Integer.parseInt(s));
         }
     }
-    
+
     public static class Num extends Number {
         private Number n;
+
         public Num(Number n) {
             this.n = n;
         }
+
         private double v() {
             return doubleValue();
         }
-        
+
+        public <T extends Number> T as(Class<T> cls) {
+            if (Integer.class.isAssignableFrom(cls)) {
+                return (T) (Integer) n.intValue();
+            } else if (Double.class.isAssignableFrom(cls)) {
+                return (T) (Double) n.doubleValue();
+            } else if (Long.class.isAssignableFrom(cls)) {
+                return (T) (Long) n.longValue();
+            } else if (Float.class.isAssignableFrom(cls)) {
+                return (T) (Float) n.floatValue();
+            } else if (Short.class.isAssignableFrom(cls)) {
+                return (T) (Short) n.shortValue();
+            } else if (Byte.class.isAssignableFrom(cls)) {
+                return (T) (Byte) n.byteValue();
+            } else {
+                throw org.osgl.util.E.unsupport("cannot cast Num to type %s", cls);
+            }
+        }
+
         @Override
         public String toString() {
             return String.valueOf(n);
         }
-        
+
         @Override
         public int intValue() {
             return n.intValue();
@@ -307,19 +327,19 @@ public class N {
         public Num div(double n) {
             return new Num(v() / n);
         }
-        
+
         public double exp() {
             return N.exp(doubleValue());
         }
-        
+
         public double log() {
             return N.log(doubleValue());
         }
-        
+
         public double log10() {
             return N.log10(doubleValue());
         }
-        
+
         public double sqrt() {
             return N.sqrt(doubleValue());
         }
@@ -327,11 +347,11 @@ public class N {
         public double cbrt() {
             return N.cbrt(doubleValue());
         }
-        
+
         public double ceil() {
             return N.ceil(doubleValue());
         }
-        
+
         public double floor() {
             return N.floor(doubleValue());
         }
@@ -339,7 +359,7 @@ public class N {
         public double pow(double b) {
             return N.pow(doubleValue(), b);
         }
-        
+
         public int sign() {
             return N.sign(n);
         }
@@ -355,17 +375,23 @@ public class N {
         public boolean gt(Number number) {
             return N.gt(this, number);
         }
-        
+
     }
 
     public static final class f {
-    
-        public static final F.F1 DBL = dbl();
-        
+
+        public static final F.F1 DBL = mul(2);
+
         public static <T extends Number> F.F1<Number, T> dbl() {
-            return mul(2);
+            return DBL;
         }
-        
+
+        public static final F.F1 HALF = div(2);
+
+        public static <T extends Number> F.F1<Number, T> half() {
+            return HALF;
+        }
+
         public static <T extends Number> F.F1<Number, T> add(final Number n) {
             return new F.F1<Number, T>() {
                 @Override
@@ -374,36 +400,34 @@ public class N {
                 }
             };
         }
-    
+
         public static <T extends Number> F.F1<Number, T> mul(final Number n) {
-            return new F.F1<Number, T>(){
+            return new F.F1<Number, T>() {
                 @Override
                 public Number run(T t) {
                     return N.num(t).mul(n);
                 }
             };
         }
-        
-    
+
+
         public static <T extends Number> F.F1<Number, T> div(final Number n) {
-            return new F.F1<Number, T>(){
+            return new F.F1<Number, T>() {
                 @Override
                 public Number run(T t) {
                     return N.num(t).div(n);
                 }
             };
         }
-        
-        public static F.F2 AGGREGATE = aggregate(Double.class);
-        
-        public static <T extends Number, E extends Number> F.F2<T, E, T> aggregate(Class<E> clz) {
-            return new F.F2<T, E, T>() {
+
+        public static <T extends Number> F.F2<T, T, T> aggregate(final Class<T> clz) {
+            return new F.F2<T, T, T>() {
                 @Override
-                public T run(E t, T e) {
-                    return (T)(Double)N.num(t).add(e).doubleValue();
+                public T run(T e, T v) {
+                    return N.num(e).add(v).as(clz);
                 }
             };
         }
     }
-    
+
 }

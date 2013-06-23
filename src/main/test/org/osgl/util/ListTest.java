@@ -87,17 +87,17 @@ public class ListTest extends TestBase {
     
     @Test
     public void testReduce() {
-        eq(liro.reduce(0, N.f.aggregate(Integer.class)).intValue(), 15);
+        eq(liro.reduce(N.f.aggregate(Integer.class)), 15);
+        eq(liro.reduce(10, N.f.aggregate(Integer.class)), 25);
     }
     
     @Test
-    public void foo() {
-        C.List<Integer> list2 = C.list(1, 2, 3);
-        F.IFunc2<Integer, Integer, Integer> func2 = _.f.sum();
-        int x = list2.reduce(0, func2);
-        System.out.println(x);
+    public void testAndOr() {
+        C.List<Integer> c1 = C.list(1, 2, 3);
+        eq(true, c1.and(_.f.gt(0)));
+        eq(true, c1.or(_.f.gt(0)));
     }
-
+    
     public static void main(String[] args) {
         run(ListTest.class);
     }

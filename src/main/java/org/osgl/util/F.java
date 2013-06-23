@@ -34,7 +34,11 @@ public class F {
         R run();
     }
     
-    public static abstract class F0<R> implements IFunc0<R> {}
+    public static abstract class F0<R> implements IFunc0<R> {
+        public Break breakOut(Object payload) {
+            return new Break(payload);
+        }
+    }
 
     public static interface IFunc1<R, P1> {
         R run(P1 p1);
@@ -52,6 +56,9 @@ public class F {
                 }
             };
         }
+        public Break breakOut(Object payload) {
+            return new Break(payload);
+        }
     }
     
     public static interface IFunc2<R, P1, P2> {
@@ -61,6 +68,9 @@ public class F {
     }
 
     public static abstract class F2<R, P1, P2> implements IFunc2<R, P1, P2> {
+        public Break breakOut(Object payload) {
+            return new Break(payload);
+        }
         @Override
         public final F0<R> curry(final P1 p1, final P2 p2) {
             return curry(p2).curry(p1);
@@ -87,6 +97,9 @@ public class F {
     }
 
     public static abstract class F3<R, P1, P2, P3> implements IFunc3<R, P1, P2, P3> {
+        public Break breakOut(Object payload) {
+            return new Break(payload);
+        }
         @Override
         public final F0<R> curry(final P1 p1, final P2 p2, final P3 p3) {
             return curry(p2, p3).curry(p1);
@@ -118,6 +131,9 @@ public class F {
     }
 
     public static abstract class F4<R, P1, P2, P3, P4> implements IFunc4<R, P1, P2, P3, P4> {
+        public Break breakOut(Object payload) {
+            return new Break(payload);
+        }
         @Override
         public final F0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4) {
             return curry(p2, p3, p4).curry(p1);
@@ -155,6 +171,9 @@ public class F {
     }
 
     public static abstract class F5<R, P1, P2, P3, P4, P5> implements IFunc5<R, P1, P2, P3, P4, P5> {
+        public Break breakOut(Object payload) {
+            return new Break(payload);
+        }
         @Override
         public final F0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4, final P5 p5) {
             return curry(p2, p3, p4, p5).curry(p1);
@@ -334,19 +353,6 @@ public class F {
         public <E> E get(String key) {
             return (E) _attr.get(key);
         }
-    
-        public static class Break extends FastRuntimeException {
-            private Object payload;
-            public Break() {}
-            public Break(Object payload) {
-                this.payload = payload;
-            }
-            public <T> T get() {
-                return (T)payload;
-            }
-        }
-
-        public static final Break BREAK = new Break();
         
         @Override
         public final Void run(T t) {
@@ -367,7 +373,24 @@ public class F {
             }
         };
     }
+
+    public static <E> Break breakOut(E e){
+        throw new Break(e);
+    }
+
+    public static Break BREAK = new Break();
     
+    public static class Break extends FastRuntimeException {
+        private Object payload;
+        public Break() {}
+        public Break(Object payload) {
+            this.payload = payload;
+        }
+        public <T> T get() {
+            return (T)payload;
+        }
+    }
+
     public static abstract class IndexedVisitor<T>  extends F.F2<Void, Integer, T> {
 
         protected Map<String, ?> _attr = C.newMap();
@@ -476,7 +499,7 @@ public class F {
     public static <T> IndexedVisitor<T> indexGuardedVisitor(final F.IFunc1<Boolean, Integer> guard, final Visitor<T> visitor) {
         return new IndexedVisitor<T>() {
             @Override
-            public void visit(Integer id, T t) throws Visitor.Break {
+            public void visit(Integer id, T t) throws Break {
                 if (guard.run(id)) {
                     visitor.run(t);
                 }
@@ -484,26 +507,6 @@ public class F {
         };
     }
 
-    public static class Aggregator<T extends Number> extends F.Visitor<T> {
-        public Aggregator(T initVal) {
-            super(initVal);
-        }
-        @Override
-        public void visit(T t) throws F.Visitor.Break {
-            if (t instanceof Integer) {
-                _t = (T)(Integer)(_t.intValue() + t.intValue()); 
-            } else if (t instanceof Long) {
-                _t = (T)(Long)(_t.longValue() + t.longValue()); 
-            } else if (t instanceof Double) {
-                _t = (T)(Double)(_t.doubleValue() + t.doubleValue()); 
-            } else if (t instanceof Float) {
-                _t = (T)(Float)(_t.floatValue() + t.floatValue()); 
-            } else {
-                _t = (T)(Integer)(_t.intValue() + t.intValue()); 
-            }
-        }
-    }
-    
     public static abstract class Transformer<FROM, TO> extends F.F1<TO, FROM> {
         @Override
         public TO run(FROM from) {
