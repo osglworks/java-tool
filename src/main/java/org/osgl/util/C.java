@@ -64,17 +64,17 @@ public class C {
      * @param c the collection
      * @return unique set of elements in <code>c</code>
      */
-    public static <T> Set<T> unique(Collection<? extends T> c) {
+    public static <T> Set<T> unique(Iterable<? extends T> c) {
         return newSet(c);
     }
 
     /**
-     * Alias of {@link #unique(java.util.Collection)}
+     * Alias of {@link #unique(Iterable)}
      *
      * @param c the collection
      * @return unique set of elements in <code>c</code>
      */
-    public static <T> Set<T> uniq(Collection<? extends T> c) {
+    public static <T> Set<T> uniq(Iterable<? extends T> c) {
         return unique(c);
     }
 

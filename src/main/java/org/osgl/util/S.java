@@ -252,7 +252,7 @@ public class S {
      * @param max the maximum length of the result
      * @return
      */
-    public static String maxSize(String s, int max) {
+    public static String maxLength(String s, int max) {
         if (null == s)
             return "";
         if (s.length() < (max - 3))
