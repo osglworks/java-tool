@@ -215,7 +215,7 @@ public class S {
      * @return
      */
     public static String cutOff(String s, int max) {
-        return maxSize(s, max);
+        return maxLength(s, max);
     }
 
     /**
