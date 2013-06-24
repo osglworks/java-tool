@@ -285,43 +285,43 @@ public class _ {
         return (T[][][]) Array.newInstance(clz, len1, len2, len3);
     }
     
-    public int arrayLength(Object array) {
+    public static int arrayLength(Object array) {
         return Array.getLength(array);
     }
 
-    public <T> T arrayGet(Object array, int index) {
+    public static <T> T arrayGet(Object array, int index) {
         return (T)Array.get(array, index);
     }
 
-    public boolean arrayGetBool(Object array, int index) {
+    public static boolean arrayGetBool(Object array, int index) {
         return Array.getBoolean(array, index);
     }
 
-    public byte arrayGetByte(Object array, int index) {
+    public static byte arrayGetByte(Object array, int index) {
         return Array.getByte(array, index);
     }
 
-    public char arrayGetChar(Object array, int index) {
+    public static char arrayGetChar(Object array, int index) {
         return Array.getChar(array, index);
     }
 
-    public short arrayGetShort(Object array, int index) {
+    public static short arrayGetShort(Object array, int index) {
         return Array.getShort(array, index);
     }
     
-    public int arrayGetInt(Object array, int index) {
+    public static int arrayGetInt(Object array, int index) {
         return Array.getInt(array, index);
     } 
 
-    public long arrayGetLong(Object array, int index) {
+    public static long arrayGetLong(Object array, int index) {
         return Array.getLong(array, index);
     }
 
-    public float arrayGetFloat(Object array, int index) {
+    public static float arrayGetFloat(Object array, int index) {
         return Array.getFloat(array, index);
     }
     
-    public double arrayGetDouble(Object array, int index) {
+    public static double arrayGetDouble(Object array, int index) {
         return Array.getDouble(array, index);
     }
 
