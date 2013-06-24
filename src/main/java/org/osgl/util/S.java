@@ -933,15 +933,15 @@ public class S {
             }
         };
 
-        public static final <T> F.IFunc1<StringBuilder, T> builder(final StringBuilder sb) {
+        public static final <T> F.F1<StringBuilder, T> builder(final StringBuilder sb) {
             return CONCAT.curry(sb);
         }
 
-        public static final <T> F.IFunc2<StringBuilder, T, StringBuilder> concat() {
+        public static final <T> F.F2<StringBuilder, T, StringBuilder> concat() {
             return CONCAT;
         }
 
-        public static F.IFunc2 CONCAT = new F.F2<StringBuilder, Object, StringBuilder>() {
+        public static F.F2 CONCAT = new F.F2<StringBuilder, Object, StringBuilder>() {
             @Override
             public StringBuilder run(Object s2, StringBuilder sb) {
                 return sb.append(s2);

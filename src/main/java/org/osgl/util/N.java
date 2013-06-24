@@ -412,24 +412,12 @@ public class N {
             return apply(o, o2);
         }
 
-        @Override
         public F.F0<Number> curry(final Number a, final Number b) {
-            return new F.F0<Number>(){
-                @Override
-                public Number run() {
-                    return apply(a, b);
-                }
-            };
+            return F.curry(this, a, b);
         }
 
-        @Override
         public F.F1<Number, Number> curry(final Number b) {
-            return new F.F1<Number, Number>(){
-                @Override
-                public Number run(Number number) {
-                    return apply(number, b);
-                }
-            };
+            return F.curry(this, b);
         }
     }
     

@@ -34,6 +34,17 @@ public class F {
         R run();
     }
     
+    public static final F0 F0 = new F0() {
+        @Override
+        public Object run() {
+            return null;
+        }
+    };
+
+    public static <T> F0<T> f0() {
+        return F0;
+    }
+    
     public static abstract class F0<R> implements IFunc0<R> {
         public Break breakOut(Object payload) {
             return new Break(payload);
@@ -44,7 +55,27 @@ public class F {
         R run(P1 p1);
         IFunc0<R> curry(final P1 p1);
     }
-
+    
+    public static final F1 F1 = new F1(){
+        @Override
+        public Object run(Object o) {
+            return null;
+        }
+    };
+    
+    public static F1 f1() {
+        return F1;
+    }
+    
+    public static <R, P1> F1 f1(final IFunc1<R, P1> f1) {
+        return new F1<R, P1>() {
+            @Override
+            public R run(P1 p1) {
+                return f1.run(p1);
+            }
+        };
+    }
+    
     public static abstract class F1<R, P1> implements IFunc1<R, P1> {
         @Override
         public final F0<R> curry(final P1 p1) {
@@ -63,28 +94,17 @@ public class F {
     
     public static interface IFunc2<R, P1, P2> {
         R run(P1 p1, P2 p2);
-        F0<R> curry(final P1 p1, final P2 p2);
-        F1<R, P1> curry(final P2 p2);
     }
 
     public static abstract class F2<R, P1, P2> implements IFunc2<R, P1, P2> {
         public Break breakOut(Object payload) {
             return new Break(payload);
         }
-        @Override
         public final F0<R> curry(final P1 p1, final P2 p2) {
-            return curry(p2).curry(p1);
+            return F.curry(this, p1, p2);
         }
-
-        @Override
         public final F1<R, P1> curry(final P2 p2) {
-            final F2<R, P1, P2> me = this;
-            return new F1<R, P1>(){
-                @Override
-                public R run(P1 p1) {
-                    return me.run(p1, p2);
-                }
-            };
+            return F.curry(this, p2);
         }
     }
     
@@ -102,108 +122,208 @@ public class F {
         }
         @Override
         public final F0<R> curry(final P1 p1, final P2 p2, final P3 p3) {
-            return curry(p2, p3).curry(p1);
+            return F.curry(this, p1, p2, p3);
         }
 
         @Override
         public final F1<R, P1> curry(final P2 p2, final P3 p3) {
-            return curry(p3).curry(p2);
+            return F.curry(this, p2, p3);
         }
 
         @Override
         public final F2<R, P1, P2> curry(final P3 p3) {
-            final F3<R, P1, P2, P3> me = this;
-            return new F2<R, P1, P2>(){
-                @Override
-                public R run(P1 p1, P2 p2) {
-                    return me.run(p1, p2, p3);
-                }
-            };
+            return F.curry(this, p3);
         }
     }
     
     public static interface IFunc4<R, P1, P2, P3, P4> {
         R run(P1 p1, P2 p2, P3 p3, P4 p4);
-        F0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4);
-        F1<R, P1> curry(final P2 p2, final P3 p3, final P4 p4);
-        F2<R, P1, P2> curry(final P3 p3, final P4 p4);
-        F3<R, P1, P2, P3> curry(final P4 p4);
     }
 
     public static abstract class F4<R, P1, P2, P3, P4> implements IFunc4<R, P1, P2, P3, P4> {
         public Break breakOut(Object payload) {
             return new Break(payload);
         }
-        @Override
+
         public final F0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4) {
-            return curry(p2, p3, p4).curry(p1);
+            return F.curry(this, p1, p2, p3, p4);
         }
 
-        @Override
         public final F1<R, P1> curry(final P2 p2, final P3 p3, final P4 p4) {
-            return curry(p3, p4).curry(p2);
+            return F.curry(this, p2, p3, p4);
         }
 
-        @Override
         public final F2<R, P1, P2> curry(final P3 p3, final P4 p4) {
-            return curry(p4).curry(p3);
+            return F.curry(this, p3, p4);
         }
 
-        @Override
         public final F3<R, P1, P2, P3> curry(final P4 p4) {
-            final F4<R, P1, P2, P3, P4> me = this;
-            return new F3<R, P1, P2, P3>(){
-                @Override
-                public R run(P1 p1, P2 p2, P3 p3) {
-                    return me.run(p1, p2, p3, p4);
-                }
-            };
+            return F.curry(this, p4);
         }
     }
     
     public static interface IFunc5<R, P1, P2, P3, P4, P5> {
         R run(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5);
-        F0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4, final P5 p5);
-        F1<R, P1> curry(final P2 p2, final P3 p3, final P4 p4, final P5 p5);
-        F2<R, P1, P2> curry(final P3 p3, final P4 p4, final P5 p5);
-        F3<R, P1, P2, P3> curry(final P4 p4, final P5 p5);
-        F4<R, P1, P2, P3, P4> curry(final P5 p5);
     }
 
     public static abstract class F5<R, P1, P2, P3, P4, P5> implements IFunc5<R, P1, P2, P3, P4, P5> {
         public Break breakOut(Object payload) {
             return new Break(payload);
         }
-        @Override
         public final F0<R> curry(final P1 p1, final P2 p2, final P3 p3, final P4 p4, final P5 p5) {
-            return curry(p2, p3, p4, p5).curry(p1);
+            return F.curry(this, p1, p2, p3, p4, p5);
         }
 
-        @Override
         public final F1<R, P1> curry(final P2 p2, final P3 p3, final P4 p4, final P5 p5) {
-            return curry(p3, p4, p5).curry(p2);
+            return F.curry(this, p2, p3, p4, p5);
         }
 
-        @Override
         public final F2<R, P1, P2> curry(final P3 p3, final P4 p4, final P5 p5) {
-            return curry(p4, p5).curry(p3);
+            return F.curry(this, p3, p4, p5);
         }
 
-        @Override
         public final F3<R, P1, P2, P3> curry(P4 p4, P5 p5) {
-            return curry(p5).curry(p4);
+            return F.curry(this, p4, p5);
         }
 
-        @Override
         public final F4<R, P1, P2, P3, P4> curry(final P5 p5) {
-            final F5<R, P1, P2, P3, P4, P5> me = this;
-            return new F4<R, P1, P2, P3, P4>(){
-                @Override
-                public R run(P1 p1, P2 p2, P3 p3, P4 p4) {
-                    return me.run(p1, p2, p3, p4, p5);
-                }
-            };
+            return F.curry(this, p5);
         }
+    }
+    
+    public static <R, P1> F0<R> curry(final IFunc1<R, P1> f1, final P1 p1) {
+        return new F0<R>() {
+            @Override
+            public R run() {
+                return f1.run(p1);
+            }
+        };
+    }
+
+    public static <R, P1, P2> F0<R> curry(final IFunc2<R, P1, P2> f2, final P1 p1, final P2 p2) {
+        return new F0<R>() {
+            @Override
+            public R run() {
+                return f2.run(p1, p2);
+            }
+        };
+    }
+    
+    public static <R, P1, P2> F1<R, P1> curry(final IFunc2<R, P1, P2> f2, final P2 p2) {
+        return new F1<R, P1>() {
+            @Override
+            public R run(P1 p1) {
+                return f2.run(p1, p2);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3> F0<R> curry(final IFunc3<R, P1, P2, P3> f3, final P1 p1, final P2 p2, final P3 p3) {
+        return new F0<R>() {
+            @Override
+            public R run() {
+                return f3.run(p1, p2, p3);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3> F1<R, P1> curry(final IFunc3<R, P1, P2, P3> f3, final P2 p2, final P3 p3) {
+        return new F1<R, P1>() {
+            @Override
+            public R run(P1 p1) {
+                return f3.run(p1, p2, p3);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3> F2<R, P1, P2> curry(final IFunc3<R, P1, P2, P3> f3, final P3 p3) {
+        return new F2<R, P1, P2>() {
+            @Override
+            public R run(P1 p1, P2 p2) {
+                return f3.run(p1, p2, p3);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4> F0<R> curry(final IFunc4<R, P1, P2, P3, P4> f4, final P1 p1, final P2 p2, final P3 p3, final P4 p4) {
+        return new F0<R>() {
+            @Override
+            public R run() {
+                return f4.run(p1, p2, p3, p4);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4> F1<R, P1> curry(final IFunc4<R, P1, P2, P3, P4> f4, final P2 p2, final P3 p3, final P4 p4) {
+        return new F1<R, P1>() {
+            @Override
+            public R run(P1 p1) {
+                return f4.run(p1, p2, p3, p4);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4> F2<R, P1, P2> curry(final IFunc4<R, P1, P2, P3, P4> f4, final P3 p3, final P4 p4) {
+        return new F2<R, P1, P2>() {
+            @Override
+            public R run(P1 p1, P2 p2) {
+                return f4.run(p1, p2, p3, p4);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4> F3<R, P1, P2, P3> curry(final IFunc4<R, P1, P2, P3, P4> f4, final P4 p4) {
+        return new F3<R, P1, P2, P3>() {
+            @Override
+            public R run(P1 p1, P2 p2, P3 p3) {
+                return f4.run(p1, p2, p3, p4);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4, P5> F0<R> curry(final IFunc5<R, P1, P2, P3, P4, P5> f5, final P1 p1, final P2 p2, final P3 p3, final P4 p4, final P5 p5) {
+        return new F0<R>() {
+            @Override
+            public R run() {
+                return f5.run(p1, p2, p3, p4, p5);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4, P5> F1<R, P1> curry(final IFunc5<R, P1, P2, P3, P4, P5> f5, final P2 p2, final P3 p3, final P4 p4, final P5 p5) {
+        return new F1<R, P1>() {
+            @Override
+            public R run(P1 p1) {
+                return f5.run(p1, p2, p3, p4, p5);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4, P5> F2<R, P1, P2> curry(final IFunc5<R, P1, P2, P3, P4, P5> f5, final P3 p3, final P4 p4, final P5 p5) {
+        return new F2<R, P1, P2>() {
+            @Override
+            public R run(P1 p1, P2 p2) {
+                return f5.run(p1, p2, p3, p4, p5);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4, P5> F3<R, P1, P2, P3> curry(final IFunc5<R, P1, P2, P3, P4, P5> f5, final P4 p4, final P5 p5) {
+        return new F3<R, P1, P2, P3>() {
+            @Override
+            public R run(P1 p1, P2 p2, P3 p3) {
+                return f5.run(p1, p2, p3, p4, p5);
+            }
+        };
+    }
+    
+    public static <R, P1, P2, P3, P4, P5> F4<R, P1, P2, P3, P4> curry(final IFunc5<R, P1, P2, P3, P4, P5> f5, final P5 p5) {
+        return new F4<R, P1, P2, P3, P4>() {
+            @Override
+            public R run(P1 p1, P2 p2, P3 p3, P4 p4) {
+                return f5.run(p1, p2, p3, p4, p5);
+            }
+        };
     }
     
     // Define common used Function classes including If and Visitor
