@@ -74,7 +74,7 @@ public class _ {
         return S.Str.valueOf(o);
     }
 
-    public final static Meta meta(Object o) {
+    public final static <T> Meta meta(T o) {
         return new Meta(o);
     }
 

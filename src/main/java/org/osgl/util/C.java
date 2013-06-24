@@ -930,6 +930,29 @@ public class C {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (o == this)
+                return true;
+            if (!(o instanceof java.util.List))
+                return false;
+
+            ListIterator<T> e1 = listIterator();
+            ListIterator e2 = ((java.util.List) o).listIterator();
+            while (e1.hasNext() && e2.hasNext()) {
+                T o1 = e1.next();
+                Object o2 = e2.next();
+                if (!(o1 == null ? o2 == null : o1.equals(o2)))
+                    return false;
+            }
+            return !(e1.hasNext() || e2.hasNext());
+        }
+
+        @Override
+        public String toString() {
+            return "[" + join() + "]";
+        }
+
+        @Override
         public boolean addAll(int index, Collection<? extends T> c) {
             return _().addAll(index, c);
         }
@@ -1093,10 +1116,10 @@ public class C {
         }
     }
 
-    
+
     public static final class Set<T> extends Col<T> implements java.util.Set<T> {
-    
-    
+
+
         public java.util.Set<T> get() {
             return _();
         }
@@ -1119,12 +1142,12 @@ public class C {
         protected <E, L extends Col<E>> L copy(ListComprehension<E> lc, boolean readonly) {
             return C.set(lc).readonly(readonly);
         }
-        
+
         public final Set<T> map(F.IFunc1... mappers) {
             return map(Set.class, mappers);
         }
     }
-    
+
 
     // --- functors
 
