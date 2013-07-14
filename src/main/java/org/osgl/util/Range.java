@@ -211,6 +211,5 @@ public abstract class Range<TYPE extends Comparable<TYPE>> implements Iterable<T
             }
         };
     }
-    
 
 }

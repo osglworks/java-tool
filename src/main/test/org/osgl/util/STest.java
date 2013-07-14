@@ -42,6 +42,21 @@ public class STest extends TestBase {
         String s = "abc123";
         eq(S.first(s, 3), "abc");
         eq(S.last(s, 3), "123");
+        eq(S.first(s, 6), "abc123");
+        eq(S.last(s, 6), "abc123");
+        eq(S.last(s, -3), "abc");
+        eq(S.first(s, -3), "123");
+    }
+    
+    @Test
+    public void testCount() {
+        String s = "abcabc";
+        eq(2, S.count(s, "abc"));
+        eq(2, S.count(s, "ab"));
+        
+        s = "aaaa";
+        eq(3, S.count(s, "aa", true));
+        eq(4, S.count(s, "a"));
     }
 
     public static void main(String[] args) {

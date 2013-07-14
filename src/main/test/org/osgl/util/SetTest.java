@@ -29,10 +29,10 @@ public class SetTest extends TestBase {
     @Test
     public void testKeepReadOnly() {
         C.Set<Integer> s = ro.map(N.f.dbl());
-        yes(s.readonly());
+        yes(s.readOnly());
 
         s = rw.map(N.f.dbl());
-        no(s.readonly());
+        no(s.readOnly());
     }
     
     @Test

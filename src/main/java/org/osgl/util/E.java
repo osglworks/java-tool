@@ -153,6 +153,10 @@ public class E {
         }
     }
     
+    public static UnsupportedException tbd() {
+        throw new UnsupportedException("to be implemented");
+    }
+    
     public static UnsupportedException unsupport() {
         throw new UnsupportedException();
     }

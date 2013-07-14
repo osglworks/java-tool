@@ -33,14 +33,14 @@ public class CTest extends TestBase {
     @Test(expected = UnsupportedOperationException.class)
     public void testList() {
         C.List<Integer> l = C.list(1, 2, 3, 4, 5);
-        yes(l.readonly());
+        yes(l.readOnly());
         l.remove(2);
     }
     
     @Test
     public void testNewList() {
         C.List<Integer> l = C.newList(1, 2, 3, 4, 5);
-        no(l.readonly());
+        no(l.readOnly());
         l.remove(2);
         eq(l.size(), 4);
         eq(l.get(2), 4);

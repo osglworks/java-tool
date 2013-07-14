@@ -207,42 +207,44 @@ public class ListComprehension<T> implements Iterable<T> {
         }
         return v;
     }
+    
+    public final ListComprehension<T> reverse() {
+        return C.lc(asList().reverse());
+    }
 
     public final boolean or(final F.IFunc1<Boolean, T> test) {
         return !and(_.f.not(test));
     }
 
     public final boolean and(final F.IFunc1<Boolean, T> test) {
-        return reduce(true, new F.F2<Boolean, T, Boolean>(){
-            @Override
-            public Boolean run(T t, Boolean aBoolean) {
-                if (!test.run(t)) {
-                    throw new F.Break(false);
-                } else {
-                    return true;
-                }
+        for (T t : itr) {
+            if (!test.run(t)) {
+                return false;
             }
-        });
+        }
+        return true;
     }
 
     public T first(final F.IFunc1<Boolean, T> cond) {
-        return C.fold(map(new F.Visitor<T>() {
-            @Override
-            public void visit(T t) throws F.Break {
-                if (cond.run(t)) {
-                    throw new F.Break(t);
-                }
+        for (T t : itr) {
+            if (cond.run(t)) {
+                return t;
             }
-        }));
+        }
+        return null;
+    }
+
+    public T last(final F.IFunc1<Boolean, T> cond) {
+        return reverse().first(cond);
     }
 
     public <E> E first(final F.IFunc1<Boolean, T> cond, final F.Transformer<T, E> transformer) {
-        return C.fold(map(F.guardedVisitor(cond, new F.Visitor<T>() {
-            @Override
-            public void visit(T t) throws F.Break {
-                throw new F.Break(transformer.run(t));
+        for (T t : itr) {
+            if (cond.run(t)) {
+                return transformer.run(t);
             }
-        })));
+        }
+        return null;
     }
 
     /**
@@ -286,6 +288,8 @@ public class ListComprehension<T> implements Iterable<T> {
     public void println() {
         apply(IO.f.println());
     }
+    
+    
 
     public static <E> ListComprehension<E> valueOf(Iterable<? extends E> it) {
         return new ListComprehension<E>(it);

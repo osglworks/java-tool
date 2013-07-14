@@ -30,119 +30,22 @@ import static org.osgl.util.ListComprehension.valueOf;
  */
 public class C {
 
-    public static final Map EMPTY_MAP = Collections.EMPTY_MAP;
-    public static final List EMPTY_LIST = list();
-    public static final Set EMPTY_SET = set();
+    public static final Map EMPTY_MAP = new Map(true);
+    public static final List EMPTY_LIST = new List(true);
+    public static final Set EMPTY_SET = new Set(true);
 
-    public static final <K, V> Map<K, V> emptyMap() {
-        return Collections.emptyMap();
+    // -- factories --
+
+    public static final <K, V> Map<K, V> map() {
+        return EMPTY_MAP;
     }
 
-    public static final <T> List<T> emptyList() {
-        return (List<T>) EMPTY_LIST;
+    public static final <T> List<T> list() {
+        return EMPTY_LIST;
     }
 
-    public static final <T> Set<T> emptySet() {
+    public static final <T> Set<T> set() {
         return EMPTY_SET;
-    }
-
-    /**
-     * Return true if the object specified can be used in for (T e: o)
-     *
-     * @param o
-     * @return
-     */
-    public static boolean isArrayOrIterable(Object o) {
-        if (o.getClass().isArray()) return true;
-        if (o instanceof Iterable) return true;
-        return false;
-    }
-
-    /**
-     * Return a unique set from a collection
-     *
-     * @param c the collection
-     * @return unique set of elements in <code>c</code>
-     */
-    public static <T> Set<T> unique(Iterable<? extends T> c) {
-        return newSet(c);
-    }
-
-    /**
-     * Alias of {@link #unique(Iterable)}
-     *
-     * @param c the collection
-     * @return unique set of elements in <code>c</code>
-     */
-    public static <T> Set<T> uniq(Iterable<? extends T> c) {
-        return unique(c);
-    }
-
-    public static <T> Set<T> readOnly(Set<? extends T> set) {
-        return set(set);
-    }
-
-    public static <K, V> Map<K, V> readOnly(Map<? extends K, ? extends V> m) {
-        return Collections.unmodifiableMap(m);
-    }
-
-    public static <E> ListComprehension<E> lc(ListComprehension<E> lc) {
-        return lc;
-    }
-
-    public static <E> ListComprehension<E> lc(E... ta) {
-        return valueOf(ta);
-    }
-
-    public static <E> ListComprehension<E> lc(Iterable<? extends E> ta) {
-        return valueOf(ta);
-    }
-
-    public static ListComprehension<Integer> lc(int[] ta) {
-        return valueOf(ta);
-    }
-
-    public static ListComprehension<Long> lc(long[] ta) {
-        return valueOf(ta);
-    }
-
-    public static ListComprehension<Boolean> lc(boolean[] ta) {
-        return valueOf(ta);
-    }
-
-
-    public static ListComprehension<Float> lc(float[] ta) {
-        return valueOf(ta);
-    }
-
-    public static ListComprehension<Double> lc(double[] ta) {
-        return valueOf(ta);
-    }
-
-
-    public static ListComprehension<Byte> lc(byte[] ta) {
-        return valueOf(ta);
-    }
-
-
-    public static ListComprehension<Short> lc(short[] ta) {
-        return valueOf(ta);
-    }
-
-
-    public static ListComprehension<Character> lc(char[] ta) {
-        return valueOf(ta);
-    }
-
-    public static <T> T[] array(Collection<T> col) {
-        E.invalidArgIf(col.isEmpty(), "Class type must be present if collection is empty");
-        Class<T> clz = (Class<T>) col.iterator().next().getClass();
-        return array(col, clz);
-    }
-
-    public static <T> T[] array(Collection<T> col, Class<T> clz) {
-        T[] ta = (T[]) Array.newInstance(clz, 0);
-        return col.toArray(ta);
     }
 
     private static <T> List<T> rw(java.util.List l) {
@@ -155,18 +58,13 @@ public class C {
 
     private static <T> List<T> _list(java.util.List l, boolean readOnly) {
         if (l instanceof List) {
-            List<T> fl = (List) l;
-            if (fl.readonly() ^ readOnly) {
-                l = fl.get();
-            } else {
-                return fl;
+            List<T> ll = (List) l;
+            if (readOnly && ll.readOnly()) {
+                return ll;
             }
+            l = ll.get();
         }
-        if (readOnly) {
-            return new List<T>(Collections.unmodifiableList(l), true);
-        } else {
-            return new List<T>(new ArrayList<T>(l), false);
-        }
+        return new List<T>(readOnly, l);
     }
 
     public static <T> List<T> list(T... t) {
@@ -212,12 +110,16 @@ public class C {
         return ro(newList(it));
     }
 
-    public static <T> List<T> list(Iterable<T> it, boolean readonly) {
-        if (!readonly) {
+    public static <T> List<T> list(Iterable<T> it, boolean readOnly) {
+        if (!readOnly) {
             return newList(it);
         } else {
             return list(it);
         }
+    }
+
+    public static <T> List<T> newSizedList(int size) {
+        return new List<T>(false, new ArrayList<T>(size));
     }
 
 
@@ -226,7 +128,7 @@ public class C {
     }
 
     public static List<Integer> newListp(int... ia) {
-        List<Integer> l = newList();
+        List<Integer> l = newSizedList(ia.length);
         for (int i : ia) {
             l.add(i);
         }
@@ -234,7 +136,7 @@ public class C {
     }
 
     public static List<Long> newListp(long... ia) {
-        List<Long> l = newList();
+        List<Long> l = newSizedList(ia.length);
         for (long i : ia) {
             l.add(i);
         }
@@ -242,7 +144,7 @@ public class C {
     }
 
     public static List<Boolean> newListp(boolean... ia) {
-        List<Boolean> l = newList();
+        List<Boolean> l = newSizedList(ia.length);
         for (boolean i : ia) {
             l.add(i);
         }
@@ -250,7 +152,7 @@ public class C {
     }
 
     public static List<Float> newListp(float... ia) {
-        List<Float> l = newList();
+        List<Float> l = newSizedList(ia.length);
         for (float i : ia) {
             l.add(i);
         }
@@ -258,7 +160,7 @@ public class C {
     }
 
     public static List<Double> newListp(double... ia) {
-        List<Double> l = newList();
+        List<Double> l = newSizedList(ia.length);
         for (double i : ia) {
             l.add(i);
         }
@@ -266,7 +168,7 @@ public class C {
     }
 
     public static List<Short> newListp(short... ia) {
-        List<Short> l = newList();
+        List<Short> l = newSizedList(ia.length);
         for (short i : ia) {
             l.add(i);
         }
@@ -274,7 +176,7 @@ public class C {
     }
 
     public static List<Byte> newListp(byte... ia) {
-        List<Byte> l = newList();
+        List<Byte> l = newSizedList(ia.length);
         for (byte i : ia) {
             l.add(i);
         }
@@ -282,7 +184,7 @@ public class C {
     }
 
     public static List<Character> newListp(char... ia) {
-        List<Character> l = newList();
+        List<Character> l = newSizedList(ia.length);
         for (char i : ia) {
             l.add(i);
         }
@@ -311,16 +213,16 @@ public class C {
     private static <T> Set<T> _set(java.util.Set l, boolean readOnly) {
         if (l instanceof Set) {
             Set<T> fl = (Set) l;
-            if (fl.readonly() ^ readOnly) {
+            if (fl.readOnly() ^ readOnly) {
                 l = fl.get();
             } else {
                 return fl;
             }
         }
         if (readOnly) {
-            return new Set<T>(Collections.unmodifiableSet(l), true);
+            return new Set<T>(true, Collections.unmodifiableSet(l));
         } else {
-            return new Set<T>(new HashSet<T>(l), false);
+            return new Set<T>(false, new HashSet<T>(l));
         }
     }
 
@@ -367,8 +269,8 @@ public class C {
         return ro(newSet(it));
     }
 
-    public static <T> Set<T> set(Iterable<T> it, boolean readonly) {
-        if (!readonly) {
+    public static <T> Set<T> set(Iterable<T> it, boolean readOnly) {
+        if (!readOnly) {
             return newSet(it);
         } else {
             return set(it);
@@ -456,20 +358,13 @@ public class C {
     }
 
     public static <K, V> Map<K, V> map(Object... args) {
-        Map<K, V> map = new HashMap<K, V>();
-        int len = args.length;
-        for (int i = 0; i < len; i += 2) {
-            K k = (K) args[i];
-            V v = null;
-            if (i + 1 < len) {
-                v = (V) args[i + 1];
-            }
-            map.put(k, v);
+        if (null == args || args.length == 0) {
+            return EMPTY_MAP;
         }
-        return readOnly(map);
+        return new Map(true, args);
     }
 
-    public static <K, V> Map<K, V> map(Map<K, V> map) {
+    public static <K, V> Map<K, V> map(java.util.Map<? extends K, ? extends V> map) {
         if (null == map) {
             return EMPTY_MAP;
         }
@@ -477,12 +372,118 @@ public class C {
     }
 
     public static <K, V> Map<K, V> newMap(Object... args) {
-        Map<K, V> ro = map(args);
-        return new HashMap<K, V>(ro);
+        return new Map(false, args);
     }
 
-    public static <K, V> Map<K, V> newMap(Map<K, V> map) {
-        return new HashMap<K, V>(map);
+    public static <K, V> Map<K, V> newMap(java.util.Map<? extends K, ? extends V> map) {
+        return new Map(false, map);
+    }
+    
+    // -- eof factories ---
+
+    /**
+     * Return true if the object specified can be used in for (T e: o)
+     *
+     * @param o
+     * @return
+     */
+    public static boolean isArrayOrIterable(Object o) {
+        if (o.getClass().isArray()) return true;
+        if (o instanceof Iterable) return true;
+        return false;
+    }
+
+    /**
+     * Return a unique set from a collection
+     *
+     * @param c the collection
+     * @return unique set of elements in <code>c</code>
+     */
+    public static <T> Set<T> unique(Iterable<? extends T> c) {
+        return newSet(c);
+    }
+
+    /**
+     * Alias of {@link #unique(Iterable)}
+     *
+     * @param c the collection
+     * @return unique set of elements in <code>c</code>
+     */
+    public static <T> Set<T> uniq(Iterable<? extends T> c) {
+        return unique(c);
+    }
+
+    public static <T> Set<T> readOnly(java.util.Set<? extends T> set) {
+        return set(set);
+    }
+
+    public static <K, V> Map<K, V> readOnly(java.util.Map<? extends K, ? extends V> m) {
+        if (m instanceof Map) {
+            Map mm = (Map)m;
+            if (mm.readOnly()) {
+                return mm;
+            }
+        }
+        return new Map(true, m);
+    }
+
+    public static <E> ListComprehension<E> lc(ListComprehension<E> lc) {
+        return lc;
+    }
+
+    public static <E> ListComprehension<E> lc(E... ta) {
+        return valueOf(ta);
+    }
+
+    public static <E> ListComprehension<E> lc(Iterable<? extends E> ta) {
+        return valueOf(ta);
+    }
+
+    public static ListComprehension<Integer> lc(int[] ta) {
+        return valueOf(ta);
+    }
+
+    public static ListComprehension<Long> lc(long[] ta) {
+        return valueOf(ta);
+    }
+
+    public static ListComprehension<Boolean> lc(boolean[] ta) {
+        return valueOf(ta);
+    }
+
+
+    public static ListComprehension<Float> lc(float[] ta) {
+        return valueOf(ta);
+    }
+
+    public static ListComprehension<Double> lc(double[] ta) {
+        return valueOf(ta);
+    }
+
+
+    public static ListComprehension<Byte> lc(byte[] ta) {
+        return valueOf(ta);
+    }
+
+
+    public static ListComprehension<Short> lc(short[] ta) {
+        return valueOf(ta);
+    }
+
+
+    public static ListComprehension<Character> lc(char[] ta) {
+        return valueOf(ta);
+    }
+
+    public static <T> T[] array(Collection<T> col) {
+        E.invalidArgIf(col.isEmpty(), "Class type must be present if collection is empty");
+        Class<T> clz = (Class<T>) col.iterator().next().getClass();
+        return array(col, clz);
+    }
+
+    public static <T> T[] array(Collection<T> col, Class<T> clz) {
+        T[] ta = (T[]) Array.newInstance(clz, 0);
+        return col.toArray(ta);
     }
 
     public static <T> Iterable<T> reverse(final List<T> l) {
@@ -583,6 +584,61 @@ public class C {
             return lc(list).filterOnIndex(_.f.greatThan(n0)).asList();
         }
     }
+    
+    public static <E1, E2> List<F.T2<E1, E2>> zip(java.util.List<E1> l1, java.util.List<E2> l2) {
+        int len = N.min(l1.size(), l2.size());
+        List<F.T2<E1, E2>> l = newSizedList(len);
+        for (int i = 0; i < len; ++i) {
+            l.add(F.T2(l1.get(i), l2.get(i)));
+        }
+        return l;
+    }
+    
+    public static <E1, E2> List<F.T2<E1, E2>> zipAll(java.util.List<E1> l1, java.util.List<E2> l2) {
+        return zipAll(l1, l2, null, null);
+    }
+
+    public static <E1, E2> List<F.T2<E1, E2>> zipAll(java.util.List<E1> l1, java.util.List<E2> l2, E1 def1, E2 def2) {
+        int len1 = l1.size(), len2 = l2.size(), lmax = N.max(len1, len2), lmin = N.min(len1, len2);
+        List<F.T2<E1, E2>> l = newSizedList(lmax);
+        for (int i = 0; i < lmin; ++i) {
+            l.add(F.T2(l1.get(i), l2.get(i)));
+        }
+        if (lmin == len1) {
+            for (int i = lmin; i < lmax; ++i) {
+                l.add(F.T2(def1, l2.get(i)));
+            }
+        } else {
+            for (int i = lmin; i < lmax; ++i) {
+                l.add(F.T2(l1.get(i), def2));
+            }
+        }
+        return l;
+    }
+
+    public static <E1, E2> F.T2<List<E1>, List<E2>> unzip(List<F.T2<E1, E2>> list) {
+        int len = list.size();
+        List<E1> l1 = newSizedList(len);
+        List<E2> l2 = newSizedList(len);
+        for (F.T2<E1, E2> t2 : list) {
+            l1.add(t2._1);
+            l2.add(t2._2);
+        }
+        return F.T2(l1, l2);
+    }
+
+    public static <E1, E2, E3> F.T3<List<E1>, List<E2>, List<E3>> unzip3(List<F.T3<E1, E2, E3>> list) {
+        int len = list.size();
+        List<E1> l1 = newSizedList(len);
+        List<E2> l2 = newSizedList(len);
+        List<E3> l3 = newSizedList(len);
+        for (F.T3<E1, E2, E3> t3 : list) {
+            l1.add(t3._1);
+            l2.add(t3._2);
+            l3.add(t3._3);
+        }
+        return F.T3(l1, l2, l3);
+    }
 
     /* --------------------------------------------------------------------------------
      * Extending java.util.Collection framework
@@ -596,13 +652,21 @@ public class C {
     public static abstract class Col<T> implements Collection<T> {
         protected final Collection<T> _c;
         protected final boolean _ro;
+        
+        protected abstract Collection<T> ensureReadOnly(boolean readOnly, Collection<T> col);
 
-        protected Col(Collection<T> col, boolean readonly) {
+        protected Col(boolean readOnly, Collection<T> col) {
             _.NPE(col);
-            _c = col;
-            _ro = readonly;
+            _c = ensureReadOnly(readOnly, col);
+            _ro = readOnly;
         }
 
+        /**
+         * Return a copy of this collection that is not read only
+         * 
+         * @param <L>
+         * @return
+         */
         protected final <L extends Col<T>> L copyNew() {
             return copy(false);
         }
@@ -613,18 +677,18 @@ public class C {
          *
          * @return an new instance of {@link Col collection}
          */
-        protected abstract <L extends Col<T>> L copy(boolean readonly);
+        protected abstract <L extends Col<T>> L copy(boolean readOnly);
 
         /**
          * Sub class overwrites this method to return an new copy of collection
          * where elements coming from the list comprehension specified
          *
          * @param lc
-         * @param readonly
+         * @param readOnly
          * @param <L>
          * @return an new copy of collection
          */
-        protected abstract <E, L extends Col<E>> L copy(ListComprehension<E> lc, boolean readonly);
+        protected abstract <E, L extends Col<E>> L copy(ListComprehension<E> lc, boolean readOnly);
 
         @Override
         public final int size() {
@@ -694,31 +758,31 @@ public class C {
         // --- start extensions ---
 
         /**
-         * Is this collection reaonly
+         * Is this collection immutable
          *
          * @return true if this list is an immutable collection
          */
-        public final boolean readonly() {
+        public final boolean readOnly() {
             return _ro;
         }
 
         /**
          * Return a list contains all elements of this list with
-         * readonly attribute specified
+         * readOnly attribute specified
          *
-         * @param readonly
-         * @return self or an new list depending on the specified readonly param and readonly attribute of this list
+         * @param readOnly
+         * @return self or an new list depending on the specified readOnly param and readOnly attribute of this list
          */
-        public final <L extends Col<T>> L readonly(boolean readonly) {
-            if (readonly() == readonly) {
+        public final <L extends Col<T>> L readOnly(boolean readOnly) {
+            if (readOnly() == readOnly) {
                 return (L) this;
             } else {
-                return copy(readonly);
+                return copy(readOnly);
             }
         }
 
         /**
-         * Alias of {@link #readonly()}
+         * Alias of {@link #readOnly()}
          *
          * @return true if this list is an immutable collection
          */
@@ -740,7 +804,7 @@ public class C {
          *
          * @return true if this list is a mutable collection
          */
-        public final boolean readwrite() {
+        public final boolean readWrite() {
             return !_ro;
         }
 
@@ -823,7 +887,7 @@ public class C {
         public final <L extends Col<T>> L without(Collection<T> c) {
             L l0 = copyNew();
             l0.removeAll(c);
-            return l0.readonly(readonly());
+            return l0.readOnly(readOnly());
         }
 
         /**
@@ -845,7 +909,7 @@ public class C {
         public final <L extends Col<T>> L intersect(Collection<T> c) {
             L l0 = copyNew();
             l0.retainAll(c);
-            return l0.readonly(readonly());
+            return l0.readOnly(readOnly());
         }
 
         /**
@@ -865,7 +929,7 @@ public class C {
          * @return an new list with mutable state the same as this list
          */
         public final <L extends Col<T>> L filter(final F.IFunc1<Boolean, T>... filters) {
-            return copy(lc().filter(filters), readonly());
+            return copy(lc().filter(filters), readOnly());
         }
 
         /**
@@ -878,7 +942,7 @@ public class C {
          */
         public final <E, L extends Col<E>> L map(Class<L> clz, F.IFunc1... mappers) {
             ListComprehension<E> lc = lc().map(mappers);
-            return copy(lc, readonly());
+            return copy(lc, readOnly());
         }
 
         /**
@@ -921,12 +985,33 @@ public class C {
      */
     public static class List<T> extends Col<T> implements java.util.List<T> {
 
-        private final java.util.List<T> _() {
+        public final java.util.List<T> _() {
             return (java.util.List<T>) _c;
         }
 
-        public List(java.util.List<T> list, boolean readonly) {
-            super(list, readonly);
+        @Override
+        protected Collection<T> ensureReadOnly(boolean readOnly, Collection<T> col) {
+            java.util.List<T> l = (java.util.List<T>)col;
+            if (l instanceof List) {
+                List<T> ll = (List<T>)l;
+                if (ll.ro() == readOnly) {
+                    return ll._c;
+                }
+                l = (List)ll._c;
+            }
+            if (readOnly) {
+                return Collections.unmodifiableList(l);
+            } else {
+                return new ArrayList<T>(l);
+            }
+        }
+        
+        protected List(boolean readOnly) {
+            super(readOnly, Collections.EMPTY_LIST);
+        }
+
+        protected List(boolean readOnly, java.util.List<T> list) {
+            super(readOnly, list);
         }
 
         @Override
@@ -1003,13 +1088,13 @@ public class C {
         }
 
         @Override
-        protected List<T> copy(boolean readonly) {
-            return C.list(_c, readonly);
+        protected List<T> copy(boolean readOnly) {
+            return new List(readOnly, _());
         }
 
         @Override
-        protected <E, L extends Col<E>> L copy(ListComprehension<E> lc, boolean readonly) {
-            return C.list(lc).readonly(readonly);
+        protected <E, L extends Col<E>> L copy(ListComprehension<E> lc, boolean readOnly) {
+            return C.list(lc).readOnly(readOnly);
         }
 
         // --- extensions to java.util.List
@@ -1029,7 +1114,7 @@ public class C {
          * @return an new list
          */
         public List<T> prepend(T... elements) {
-            return C.prepend(this, elements).readonly(readonly());
+            return C.prepend(this, elements).readOnly(readOnly());
         }
 
         /**
@@ -1043,7 +1128,7 @@ public class C {
          * @return an new list
          */
         public List<T> append(T... elements) {
-            return C.append(this, elements).readonly(readonly());
+            return C.append(this, elements).readOnly(readOnly());
         }
 
         /**
@@ -1054,7 +1139,7 @@ public class C {
          * @return an new list
          */
         public List<T> reverse() {
-            return C.lc(C.reverse(this)).asList(readonly());
+            return C.lc(C.reverse(this)).asList(readOnly());
         }
 
         /**
@@ -1065,7 +1150,7 @@ public class C {
          * @return an new list
          */
         public List<T> compact() {
-            return lc().filter(F.If.NOT_NULL).asList(readonly());
+            return lc().filter(F.If.NOT_NULL).asList(readOnly());
         }
 
         /**
@@ -1119,6 +1204,26 @@ public class C {
 
     public static final class Set<T> extends Col<T> implements java.util.Set<T> {
 
+        @Override
+        protected Collection<T> ensureReadOnly(boolean readOnly, Collection<T> col) {
+            java.util.Set<T> l = (java.util.Set<T>)col;
+            if (l instanceof Set) {
+                Set<T> ll = (Set<T>)l;
+                if (ll.ro() == readOnly) {
+                    return ll._c;
+                }
+                l = (Set)ll._c;
+            }
+            if (readOnly) {
+                return Collections.unmodifiableSet(l);
+            } else {
+                if (col instanceof SortedSet) {
+                    return new TreeSet<T>(l);
+                } else {
+                    return new HashSet<T>(l);
+                }
+            }
+        }
 
         public java.util.Set<T> get() {
             return _();
@@ -1128,23 +1233,170 @@ public class C {
             return (java.util.Set<T>) _c;
         }
 
-        public Set(java.util.Set<T> set, boolean readonly) {
-            super(set, readonly);
+        protected Set(boolean readOnly, T... ta) {
+            super(readOnly, new HashSet<T>(Arrays.asList(ta)));
         }
 
-
-        @Override
-        protected Set<T> copy(boolean readonly) {
-            return C.set(_c, readonly);
+        protected Set(boolean readOnly, java.util.Set<T> set) {
+            super(readOnly, set);
         }
 
         @Override
-        protected <E, L extends Col<E>> L copy(ListComprehension<E> lc, boolean readonly) {
-            return C.set(lc).readonly(readonly);
+        protected Set<T> copy(boolean readOnly) {
+            return C.set(_c, readOnly);
+        }
+
+        @Override
+        protected <E, L extends Col<E>> L copy(ListComprehension<E> lc, boolean readOnly) {
+            return C.set(lc).readOnly(readOnly);
         }
 
         public final Set<T> map(F.IFunc1... mappers) {
             return map(Set.class, mappers);
+        }
+    }
+    
+    public static class Map<K, V> implements java.util.Map<K, V> {
+        public static class Entry<K, V> extends F.T2<K, V> implements java.util.Map.Entry<K, V> {
+            public Entry(K _1, V _2) {
+                super(_1, _2);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public K getKey() {
+                return _1;
+            }
+
+            @Override
+            public V getValue() {
+                return _2;
+            }
+
+            @Override
+            public V setValue(V value) {
+                throw E.unsupport();
+            }
+
+            public static <K, V> Entry<K, V> valueOf(K k, V v) {
+                return new Entry<K, V>(k, v);
+            }
+        }
+        
+        private java.util.Map<K, V> _m;
+        
+        private boolean ro;
+        
+        protected Map(boolean readOnly, Object ... args) {
+            HashMap<K, V> map = new HashMap<K, V>();
+            int len = args.length;
+            for (int i = 0; i < len; i += 2) {
+                K k = (K) args[i];
+                V v = null;
+                if (i + 1 < len) {
+                    v = (V) args[i + 1];
+                }
+                map.put(k, v);
+            }
+            ro = readOnly;
+            if (readOnly) {
+                _m = Collections.unmodifiableMap(map);
+            } else {
+                _m = map;
+            }
+        }
+
+        protected Map(boolean readOnly, java.util.Map<? extends K, ? extends V> map) {
+            _.NPE(map);
+            boolean sorted = map instanceof SortedMap;
+            java.util.Map<K, V> m = sorted ? new TreeMap<K, V>() : new HashMap<K, V>();
+            for (K k : map.keySet()) {
+                V v = map.get(k);
+                m.put(k, v);
+            }
+            ro = readOnly;
+            if (readOnly) {
+                _m = Collections.unmodifiableMap(m);
+            } else {
+                _m = m;
+            }
+        }
+
+        @Override
+        public int size() {
+            return _m.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return _m.isEmpty();
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return _m.containsKey(key);
+        }
+
+        @Override
+        public boolean containsValue(Object value) {
+            return _m.containsValue(value);
+        }
+
+        @Override
+        public V get(Object key) {
+            return _m.get(key);
+        }
+
+        @Override
+        public V put(K key, V value) {
+            return _m.put(key, value);
+        }
+
+        @Override
+        public V remove(Object key) {
+            return remove(key);
+        }
+
+        @Override
+        public void putAll(java.util.Map<? extends K, ? extends V> m) {
+            _m.putAll(m);
+        }
+
+        @Override
+        public void clear() {
+            _m.clear();
+        }
+
+        @Override
+        public java.util.Set<K> keySet() {
+            return _m.keySet();
+        }
+
+        @Override
+        public Collection<V> values() {
+            return _m.values();
+        }
+
+        @Override
+        public Set<java.util.Map.Entry<K, V>> entrySet() {
+            Set<java.util.Map.Entry<K, V>> set = C.newSet();
+            for (K k : _m.keySet()) {
+                V v = _m.get(k);
+                set.add(Entry.valueOf(k, v));
+            }
+            return set;
+        }
+        
+        // --- extensions
+        public boolean readOnly() {
+            return ro;
+        }
+
+        public Map<K, V> readOnly(boolean readOnly) {
+            if (ro ^ readOnly) {
+                return new Map<K, V>(readOnly, _m);
+            } else {
+                return this;
+            }
         }
     }
 
@@ -1169,6 +1421,7 @@ public class C {
                 }
             };
         }
+        
     }
 
 

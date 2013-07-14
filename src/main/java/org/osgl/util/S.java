@@ -19,11 +19,11 @@
 */
 package org.osgl.util;
 
-import org.osgl.exception.UnexpectedException;
-
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -33,15 +33,28 @@ import java.util.regex.Pattern;
 public class S {
 
     /**
-     * Define an instance to be used in views
+     * Return a {@link StringBuilder} instance pre populated with specified objects.
+     * <p>If any object in the param list is <code>null</code>, then an empty string
+     * <code>""</code> is appended to the builder</p>
+     *
+     * @param objs
+     * @return A string builder
      */
-    public final static S INSTANCE = new S();
+    public final static StringBuilder builder(Object... objs) {
+        StringBuilder sb = new StringBuilder();
+        for (Object o : objs) {
+            sb.append(null == o ? "" : o.toString());
+        }
+        return sb;
+    }
 
     /**
-     * Define an instance to be used in views
+     * A handy alias for {@link String#format(String, Object...)}
+     *
+     * @param tmpl
+     * @param args
+     * @return the formatted string
      */
-    public final static S instance = INSTANCE;
-
     public final static String fmt(String tmpl, Object... args) {
         if (args.length == 0) {
             return tmpl;
@@ -50,48 +63,56 @@ public class S {
         }
     }
 
-    public final static String format(String tmpl, Object... args) {
-        return fmt(tmpl, args);
+    /**
+     * A handy alias for {@link String#format(java.util.Locale, String, Object...)}
+     *
+     * @param locale
+     * @param tmpl
+     * @param args
+     * @return the formatted string
+     */
+    public final static String fmt(Locale locale, String tmpl, Object... args) {
+        if (args.length == 0) {
+            return tmpl;
+        }
+        return String.format(locale, tmpl, args);
     }
 
     public final static Str str(Object o) {
-        return Str.valueOf(o);
+        _.NPE(o);
+        return new Str(o.toString());
     }
 
-    public static Str valueOf(Object o) {
-        return Str.valueOf(S.string(o));
+    public static Str str(boolean x) {
+        return new Str(String.valueOf(x));
     }
 
-    public static Str valueOf(int i) {
-        return Str.valueOf(i);
+    public static Str str(char x) {
+        return new Str(String.valueOf(x));
     }
 
-    public static Str valueOf(boolean b) {
-        return Str.valueOf(b);
+    public static Str str(short x) {
+        return new Str(String.valueOf(x));
     }
 
-    public static Str valueOf(char[] ca) {
-        return Str.valueOf(ca);
+    public static Str str(int x) {
+        return new Str(String.valueOf(x));
     }
 
-    public static Str valueOf(long l) {
-        return Str.valueOf(l);
+    public static Str str(long x) {
+        return new Str(String.valueOf(x));
     }
 
-    public static Str valueOf(char c) {
-        return Str.valueOf(c);
+    public static Str str(double x) {
+        return new Str(String.valueOf(x));
     }
 
-    public static Str valueOf(double d) {
-        return Str.valueOf(d);
+    public static Str str(float x) {
+        return new Str(String.valueOf(x));
     }
 
-    public static Str valueOf(float f) {
-        return Str.valueOf(f);
-    }
-
-    public final static StringBuilder builder(Object... objs) {
-        return C.lc(objs).reduce(new StringBuilder(), f.concat());
+    public static Str str(char[] x) {
+        return new Str(String.valueOf(x));
     }
 
     /**
@@ -219,13 +240,21 @@ public class S {
     }
 
     /**
-     * Return first N chars
+     * Return the string of first N chars.
+     * <p>If n is negative number, then return a string of the first N chars</p>
+     * <p>If n is larger than the length of the string, then return the string</p>
      *
      * @param s
      * @param n
      * @return
      */
     public static String first(String s, int n) {
+        if (n < 0) {
+            return last(s, n * -1);
+        }
+        if (n >= s.length()) {
+            return s;
+        }
         return s.substring(0, n);
     }
 
@@ -237,7 +266,13 @@ public class S {
      * @return
      */
     public static String last(String s, int n) {
+        if (n < 0) {
+            return first(s, n * -1);
+        }
         int len = s.length();
+        if (n >= len) {
+            return s;
+        }
         return s.substring(len - n, s.length());
     }
 
@@ -259,6 +294,32 @@ public class S {
             return s;
         String s0 = s.substring(0, max);
         return s0 + "...";
+    }
+
+    /**
+     * Count how many times a search string occurred in the give string
+     *
+     * @param s
+     * @param search
+     */
+    public static int count(String s, String search) {
+        return count(s, search, false);
+    }
+
+    public static int count(String s, String search, boolean overlap) {
+        int n = 0, l = search.length();
+        while (true) {
+            int i = s.indexOf(search);
+            if (-1 == i) {
+                return n;
+            }
+            n++;
+            if (overlap) {
+                s = s.substring(i + 1);
+            } else {
+                s = s.substring(i + l);
+            }
+        }
     }
 
     /**
@@ -625,7 +686,9 @@ public class S {
      * @return the String result
      */
     public static String strip(Object o, String prefix, String suffix) {
-        if (null == o) return "";
+        if (null == o) {
+            return "";
+        }
         String s = o.toString();
         s = s.trim();
         if (s.startsWith(prefix)) s = s.substring(prefix.length());
@@ -640,10 +703,24 @@ public class S {
      * @return
      */
     public static String urlEncode(String s) {
+        if (null == s) {
+            return "";
+        }
         try {
             return URLEncoder.encode(s, "utf-8");
         } catch (Exception e) {
-            throw new UnexpectedException(e);
+            throw E.unexpected(e);
+        }
+    }
+
+    public static String urlDecode(String s) {
+        if (null == s) {
+            return "";
+        }
+        try {
+            return URLDecoder.decode(s, "utf-8");
+        } catch (Exception e) {
+            throw E.unexpected(e);
         }
     }
 
@@ -657,16 +734,49 @@ public class S {
         return S.after(fileName, ".");
     }
 
+    /**
+     * Null safety trim
+     * @param s
+     * @return
+     */
     public static String trim(String s) {
         return null == s ? "" : s.trim();
     }
 
+    /**
+     * Null safety toUpperCase
+     * @param s
+     * @return
+     */
     public static final String toUpperCase(String s) {
         return null == s ? "" : s.toUpperCase();
     }
 
+    /**
+     * Alias of {@link #toUpperCase(String)}
+     * @param s
+     * @return
+     */
+    public static final String upper(String s) {
+        return toUpperCase(s);
+    }
+
+    /**
+     * Null safety toLowerCase
+     * @param s
+     * @return
+     */
     public static final String toLowerCase(String s) {
         return null == s ? "" : s.toLowerCase();
+    }
+
+    /**
+     * Alias of {@link #toLowerCase(String)}
+     * @param s
+     * @return
+     */
+    public static final String lower(String s) {
+        return toLowerCase(s);
     }
 
     /**
@@ -706,18 +816,35 @@ public class S {
     }
 
     // --- An easy to use String wrapper
+    public static class Str implements CharSequence, Comparable<Str> {
 
-    public static class Str {
         private String s;
 
+        // --- constructors
+
+        /**
+         * Construct with a String instance
+         *
+         * @param s
+         */
         public Str(String s) {
             _.NPE(s);
             this.s = s;
         }
 
+        // --- accessor
+
+        /**
+         * Get the internal String instance
+         * <p>Same effect as {@link #toString()}</p>
+         *
+         * @return the string
+         */
         public String get() {
             return s;
         }
+
+        // --- Object methods
 
         @Override
         public String toString() {
@@ -740,122 +867,755 @@ public class S {
             return false;
         }
 
-        public static Str valueOf(Object o) {
-            return new Str(S.string(o));
+        // ---- String methods and aliases
+
+        /**
+         * @return length of the internal String
+         */
+        public int length() {
+            return s.length();
         }
 
-        public static Str valueOf(int i) {
-            return new Str(String.valueOf(i));
+        /**
+         * Alias of {@link #length()}
+         *
+         * @return
+         */
+        public int size() {
+            return s.length();
         }
 
-        public static Str valueOf(boolean b) {
-            return new Str(String.valueOf(b));
+        /**
+         * @return true if the internal string is empty
+         */
+        public boolean isEmpty() {
+            return s.isEmpty();
         }
 
-        public static Str valueOf(char[] ca) {
-            return new Str(String.valueOf(ca));
+        /**
+         * Alias of {@link #isEmpty()}
+         *
+         * @return
+         */
+        public boolean empty() {
+            return s.isEmpty();
         }
 
-        public static Str valueOf(long l) {
-            return new Str(String.valueOf(l));
+        /**
+         * antonym of {@link #isEmpty()}
+         *
+         * @return
+         */
+        public boolean notEmpty() {
+            return !s.isEmpty();
         }
 
-        public static Str valueOf(char c) {
-            return new Str(String.valueOf(c));
+        /**
+         * Wrapper of {@link String#charAt(int)}
+         *
+         * @param id
+         * @return the char at the index
+         */
+        public char charAt(int id) {
+            return s.charAt(id);
         }
 
-        public static Str valueOf(double d) {
-            return new Str(String.valueOf(d));
+        /**
+         * alias of {@link #charAt(int)}
+         *
+         * @param id
+         * @return the char at the index
+         */
+        public char get(int id) {
+            return s.charAt(id);
         }
 
-        public static Str valueOf(float f) {
-            return new Str(String.valueOf(f));
+        /**
+         * Wrapper of {@link String#getChars(int, int, char[], int)}
+         *
+         * @param srcBegin
+         * @param srcEnd
+         * @param dst
+         * @param dstBegin
+         */
+        public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
+            s.getChars(srcBegin, srcEnd, dst, dstBegin);
         }
 
-        // -- helpers
-        public Str after(String s) {
-            return valueOf(S.after(this.s, s));
+        /**
+         * Alias of {@link #getChars(int, int, char[], int)}
+         *
+         * @param srcBegin
+         * @param srcEnd
+         * @param dst
+         * @param dstBegin
+         */
+        public void copy(int srcBegin, int srcEnd, char dst[], int dstBegin) {
+            s.getChars(srcBegin, srcEnd, dst, dstBegin);
         }
 
-        public Str afterFirst(String s) {
-            return valueOf(S.afterFirst(this.s, s));
+        /**
+         * Wrapper of {@link String#getBytes(java.nio.charset.Charset)}. However this method
+         * converts checked exception to runtime exception
+         *
+         * @param charsetName
+         * @return the byte array
+         */
+        public byte[] getBytes(String charsetName) {
+            try {
+                return s.getBytes(charsetName);
+            } catch (UnsupportedEncodingException e) {
+                throw E.encodingException(e);
+            }
         }
 
-        public Str afterLast(String s) {
-            return valueOf(S.afterLast(this.s, s));
+        /**
+         * Wrapper of {@link String#getBytes()}
+         *
+         * @return
+         */
+        public byte[] getBytes() {
+            return s.getBytes();
         }
 
-        public Str before(String s) {
-            return valueOf(S.before(this.s, s));
+        /**
+         * Wrapper of {@link String#contentEquals(StringBuffer)}
+         *
+         * @param stringBuffer
+         * @return true if content equals the content of the specified buffer
+         */
+        public boolean contentEquals(StringBuffer stringBuffer) {
+            return s.contentEquals(stringBuffer);
         }
 
-        public Str beforeFirst(String s) {
-            return valueOf(S.beforeFirst(this.s, s));
+        /**
+         * Alias of {@link #contentEquals(StringBuffer)}
+         *
+         * @param stringBuffer
+         * @return
+         */
+        public boolean eq(StringBuffer stringBuffer) {
+            return s.contentEquals(stringBuffer);
         }
 
-        public Str beforeLast(String s) {
-            return valueOf(S.beforeLast(this.s, s));
+        /**
+         * Wrapper of {@link String#contentEquals(CharSequence)}
+         *
+         * @param x
+         * @return true if content equals content of the specified char sequence
+         */
+        public boolean contentEquals(CharSequence x) {
+            return s.contentEquals(x);
         }
 
-        public Str trim() {
-            return valueOf(s.trim());
+        /**
+         * Alias of {@link #contentEquals(CharSequence)}
+         *
+         * @param x
+         * @return
+         */
+        public boolean eq(CharSequence x) {
+            return s.contentEquals(x);
         }
 
-        public Str upperCase() {
-            return valueOf(s.toUpperCase());
+        /**
+         * @param x
+         * @return <code>true</code> if the content of this str equals to the specified str
+         */
+        public boolean contentEquals(Str x) {
+            if (null == x) {
+                return false;
+            }
+            return x.s.equals(s);
         }
 
-        public Str lowerCase() {
-            return valueOf(s.toLowerCase());
+        /**
+         * Alias of {@link #contentEquals(org.osgl.util.S.Str)}
+         *
+         * @param x
+         * @return
+         */
+        public boolean eq(Str x) {
+            return contentEquals(x);
         }
 
-        public Str replace(CharSequence target, CharSequence replacement) {
-            return valueOf(s.replace(target, replacement));
+        /**
+         * Wrapper of {@link String#equalsIgnoreCase(String)}
+         *
+         * @param x
+         * @return {@code true} if the argument is not {@code null} and it
+         *         represents an equivalent {@code String} ignoring case; {@code
+         *         false} otherwise
+         */
+        public boolean equalsIgnoreCase(String x) {
+            return s.equalsIgnoreCase(x);
         }
 
-        public Str replaceAll(String regex, String replacement) {
-            return valueOf(s.replaceAll(regex, replacement));
+        /**
+         * Compare content of the str and the specified char sequence, case insensitive
+         *
+         * @param x
+         * @return {@code true} if the argument is not {@code null} and it
+         *         represents an equivalent {@code String} ignoring case; {@code
+         *         false} otherwise
+         */
+        public boolean equalsIgnoreCase(CharSequence x) {
+            return null == x ? false : s.equalsIgnoreCase(x.toString());
         }
 
-        public Str capFirst() {
-            return valueOf(S.capFirst(s));
+        /**
+         * Wrapper of {@link String#compareTo(String)}
+         *
+         * @param x
+         * @return
+         */
+        public int compareTo(Str x) {
+            return s.compareTo(x.s);
         }
 
-        public Str strip(String prefix, String suffix) {
-            return valueOf(S.strip(s, prefix, suffix));
+        public int compareTo(String x) {
+            return s.compareTo(x);
         }
 
-        public Str urlEncode() {
-            return valueOf(S.urlEncode(s));
+        public int compareToIgnoreCase(Str x) {
+            return s.compareToIgnoreCase(x.s);
         }
 
-        public Str decodeBASE64() {
-            return valueOf(S.decodeBASE64(s));
+        public int compmareToIgnoreCase(String x) {
+            return s.compareToIgnoreCase(x);
         }
 
-        public Str encodeBASE64() {
-            return valueOf(S.encodeBASE64(s));
+        public boolean regionMatches(int toffset, Str other, int ooffset, int len) {
+            return s.regionMatches(toffset, other.s, ooffset, len);
         }
 
-        public Str cutOff(int n) {
-            return valueOf(S.cutOff(s, n));
+        public boolean regionMatches(int toffset, String other, int ooffset, int len) {
+            return s.regionMatches(toffset, other, ooffset, len);
         }
 
-        public Str first(int n) {
-            return valueOf(S.first(s, n));
+        public boolean regionMatches(boolean ignoreCase, int toffset,
+                                     Str other, int ooffset, int len) {
+            return s.regionMatches(ignoreCase, toffset, other.s, ooffset, len);
         }
 
-        public Str last(int n) {
-            return valueOf(S.last(s, n));
+        public boolean regionMatches(boolean ignoreCase, int toffset,
+                                     String other, int ooffset, int len) {
+            return s.regionMatches(ignoreCase, toffset, other, ooffset, len);
+        }
+        
+        public boolean startsWith(Str prefix, int toffset) {
+            return s.startsWith(prefix.s, toffset);
+        }
+
+        public boolean startsWith(String prefix, int toffset) {
+            return s.startsWith(prefix, toffset);
         }
 
         public boolean startsWith(String prefix) {
             return s.startsWith(prefix);
         }
 
+        public boolean startsWith(Str prefix) {
+            return s.startsWith(prefix.s);
+        }
+
+        public boolean endsWith(Str suffix) {
+            return s.endsWith(suffix.s);
+        }
+
         public boolean endsWith(String suffix) {
             return s.endsWith(suffix);
         }
+        
+        public int indexOf(int ch) {
+            return s.indexOf(ch);
+        }
+
+        /**
+         * Alias of {@link #indexOf(int)}
+         * @param ch
+         * @return
+         */
+        public int pos(int ch) {
+            return s.indexOf(ch);
+        }
+
+        /**
+         * Wrapper of {@link String#indexOf(String, int)}
+         * @param ch
+         * @param fromIndex
+         * @return
+         */
+        public int indexOf(int ch, int fromIndex) {
+            return s.indexOf(ch, fromIndex);
+        }
+
+        /**
+         * Alias of {@link #indexOf(int, int)}
+         * @param ch
+         * @param fromIndex
+         * @return
+         */
+        public int pos(int ch, int fromIndex) {
+            return s.indexOf(ch, fromIndex);
+        }
+
+        /**
+         * Wrapper of {@link String#lastIndexOf(int)}
+         * @param ch
+         * @return
+         */
+        public int lastIndexOf(int ch) {
+            return s.lastIndexOf(ch);
+        }
+
+        /**
+         *  Alias of {@link #lastIndexOf(int)}
+         * @param ch
+         * @return
+         */
+        public int rpos(int ch) {
+            return s.lastIndexOf(ch);
+        }
+
+        /**
+         * Wrapper of {@link String#lastIndexOf(int, int)}
+         * @param ch
+         * @param fromIndex
+         * @return
+         */
+        public int lastIndexOf(int ch, int fromIndex) {
+            return s.lastIndexOf(ch, fromIndex);
+        }
+
+        /**
+         * Alias of {@link #lastIndexOf(int, int)}
+         * @param ch
+         * @param fromIndex
+         * @return
+         */
+        public int rpos(int ch, int fromIndex) {
+            return s.lastIndexOf(ch, fromIndex);
+        }
+        
+        public int indexOf(String str) {
+            return s.indexOf(str);
+        }
+        
+        /**
+         * Alias of {@link #indexOf(String)}
+         * @param x
+         * @return
+         */
+        public int pos(String x) {
+            return s.indexOf(x);
+        }
+
+        public int indexOf(Str x) {
+            return s.indexOf(x.s);
+        }
+
+        public int pos(Str x) {
+            return s.indexOf(x.s);
+        }
+
+        public int indexOf(String str, int fromIndex) {
+            return s.indexOf(str, fromIndex);
+        }
+
+        /**
+         * Alias of {@link #indexOf(String, int)}
+         * @param x
+         * @param fromIndex
+         * @return
+         */
+        public int pos(String x, int fromIndex) {
+            return s.indexOf(x, fromIndex);
+        }
+        
+        public int indexOf(Str str, int fromIndex) {
+            return s.indexOf(str.s, fromIndex);
+        }
+
+        /**
+         * Alias of {@link #indexOf(Str, int)}
+         * @param x
+         * @param fromIndex
+         * @return
+         */
+        public int pos(Str x, int fromIndex) {
+            return s.indexOf(x.s, fromIndex);
+        }
+
+        public int lastIndexOf(String str) {
+            return s.lastIndexOf(str);
+        }
+
+        /**
+         * Alias of {@link #lastIndexOf(String)}
+         * @param x
+         * @return
+         */
+        public int rpos(String x) {
+            return s.lastIndexOf(x);
+        }
+        
+        public int lastIndexOf(Str str) {
+            return s.lastIndexOf(str.s);
+        }
+
+        /**
+         * Alias of {@link #lastIndexOf(Str)}
+         * @param x
+         * @return
+         */
+        public int rpos(Str x) {
+            return s.lastIndexOf(x.s);
+        }
+        
+        public int lastIndexOf(String str, int fromIndex) {
+            return s.lastIndexOf(str, fromIndex);
+        }
+
+        public int rpos(String str, int fromIndex) {
+            return s.lastIndexOf(str, fromIndex);
+        }
+
+        public int lastIndexOf(Str str, int fromIndex) {
+            return s.lastIndexOf(str.s, fromIndex);
+        }
+
+        public int rpos(Str str, int fromIndex) {
+            return s.lastIndexOf(str.s, fromIndex);
+        }
+
+        /**
+         * Wrapper of {@link String#substring(int)}
+         * @param beginIndex
+         * @return
+         */
+        public String substring(int beginIndex) {
+            return s.substring(beginIndex);
+        }
+
+        /**
+         * Synonym of {@link #substring(int)} but return Str instead of String
+         * @param beginIndex
+         * @return A str of 
+         */
+        public Str substr(int beginIndex) {
+            return str(s.substring(beginIndex));
+        }
+
+        /**
+         * Wrapper of {@link #substring(int, int)}
+         * @param beginIndex
+         * @param endIndex
+         * @return
+         */
+        public String substring(int beginIndex, int endIndex) {
+            return s.substring(beginIndex, endIndex);
+        }
+
+        /**
+         * Synonym of {@link #substring(int, int)} but return Str instead of String
+         * 
+         * @param beginIndex
+         * @param endIndex
+         * @return
+         */
+        public Str substr(int beginIndex, int endIndex) {
+            return str(s.substring(beginIndex, endIndex));
+        }
+
+        /**
+         * Wrapper of {@link String#subSequence(int, int)}
+         * @param beginIndex
+         * @param endIndex
+         * @return
+         */
+        public CharSequence subSequence(int beginIndex, int endIndex) {
+            return substr(beginIndex, endIndex);
+        }
+
+        /**
+         * Wrapper of {@link String#concat(String)} but return Str instance
+         * @param str
+         * @return
+         */
+        public Str concat(String str) {
+            return str(s.concat(str));
+        }
+
+        /**
+         * Wrapper of {@link String#replace(char, char)} but return Str instance
+         * @param oldChar
+         * @param newChar
+         * @return
+         */
+        public Str replace(char oldChar, char newChar) {
+            return str(s.replace(oldChar, newChar));
+        }
+
+        /**
+         * Wrapper of {@link String#matches(String)}
+         * @param regex
+         * @return
+         */
+        public boolean matches(String regex) {
+            return s.matches(regex);
+        }
+
+        /**
+         * Wrapper of {@link String#contains(CharSequence)}
+         * @param s
+         * @return
+         */
+        public boolean contains(CharSequence s) {
+            return this.s.contains(s);
+        }
+
+        /**
+         * Wrapper of {@link String#replaceFirst(String, String)} but return Str inance
+         * @param regex
+         * @param replacement
+         * @return
+         */
+        public Str replaceFirst(String regex, String replacement) {
+            return str(s.replaceFirst(regex, replacement));
+        }
+
+        /**
+         * Wrapper of {@link String#replaceAll(String, String)} but return Str type instance
+         * @param regex
+         * @param replacement
+         * @return
+         */
+        public Str replaceAll(String regex, String replacement) {
+            return str(s.replaceAll(regex, replacement));
+        }
+
+        /**
+         * Wrapper of {@link String#replace(CharSequence, CharSequence)} but return Str type instance
+         * @param target
+         * @param replacement
+         * @return
+         */
+        public Str replace(CharSequence target, CharSequence replacement) {
+            return str(s.replace(target, replacement));
+        }
+
+        /**
+         * Wrapper of {@link String#split(String, int)} but return an immutable List of Str instances
+         * @param regex
+         * @param limit
+         * @return
+         */
+        public C.List<Str> split(String regex, int limit) {
+            String[] sa = s.split(regex, limit);
+            int len = sa.length;
+            Str[] ssa = new Str[len];
+            for (int i = 0; i < len; ++i) {
+                ssa[i] = str(sa[i]);
+            }
+            return C.list(ssa);
+        }
+
+        /**
+         * Wrapper of {@link String#split(String)} but return an immutable List of Str instances
+         * @param regex
+         * @return
+         */
+        public C.List<Str> split(String regex) {
+            return split(regex, 0);
+        }
+
+        /**
+         * Wrapper of {@link String#toLowerCase()} but return Str type instance
+         * 
+         * @return
+         */
+        public Str toLowerCase() {
+            return str(s.toLowerCase());
+        }
+
+        /**
+         * Alias of {@link #toLowerCase()}
+         * @return
+         */
+        public Str lower() {
+            return toLowerCase();
+        }
+
+        /**
+         * Wrapper of {@link String#toLowerCase(java.util.Locale)} but return Str type instance
+         * @param locale
+         * @return
+         */
+        public Str toLowerCase(Locale locale) {
+            return str(s.toLowerCase(locale));
+        }
+
+        /**
+         * Alias of {@link #toLowerCase(java.util.Locale)}
+         * @param locale
+         * @return
+         */
+        public Str lower(Locale locale) {
+            return toLowerCase(locale);
+        }
+
+        /**
+         * Wrapper of {@link String#toUpperCase()} but return Str type instance
+         * @return
+         */
+        public Str toUpperCase() {
+            return str(s.toUpperCase());
+        }
+
+        /**
+         * Alias of {@link #toUpperCase()}
+         * @return
+         */
+        public Str upper() {
+            return toUpperCase();
+        }
+
+        /**
+         * Wrapper of {@link String#toUpperCase(java.util.Locale)} but return Str type instance
+         * @param locale
+         * @return
+         */
+        public Str toUpperCase(Locale locale) {
+            return str(s.toUpperCase(locale));
+        }
+
+        /**
+         * Alias of {@link #toUpperCase(java.util.Locale)}
+         * @param locale
+         * @return
+         */
+        public Str upper(Locale locale) {
+            return toUpperCase(locale);
+        }
+
+        /**
+         * Wrapper of {@link String#trim()} and return Str type instance
+         * @return
+         */
+        public Str trim() {
+            return str(s.trim());
+        }
+
+        /**
+         * Wrapper of {@link String#toCharArray()}
+         * @return
+         */
+        public char[] toCharArray() {
+            return s.toCharArray();
+        }
+
+        /**
+         * Alias of {@link #toCharArray()}
+         * @return
+         */
+        public char[] chars() {
+            return s.toCharArray();
+        }
+
+        /**
+         * Wrapper of {@link String#intern()}
+         * @return
+         */
+        public String intern() {
+            return s.intern();
+        }
+        
+        // -- extensions
+        public Str after(String s) {
+            return str(S.after(this.s, s));
+        }
+
+        public Str afterFirst(String s) {
+            return str(S.afterFirst(this.s, s));
+        }
+
+        public Str afterLast(String s) {
+            return str(S.afterLast(this.s, s));
+        }
+
+        public Str before(String s) {
+            return str(S.before(this.s, s));
+        }
+
+        public Str beforeFirst(String s) {
+            return str(S.beforeFirst(this.s, s));
+        }
+
+        public Str beforeLast(String s) {
+            return str(S.beforeLast(this.s, s));
+        }
+
+        public Str strip(String prefix, String suffix) {
+            return str(S.strip(s, prefix, suffix));
+        }
+
+        public Str urlEncode() {
+            return str(S.urlEncode(s));
+        }
+
+        public Str decodeBASE64() {
+            return str(S.decodeBASE64(s));
+        }
+
+        public Str encodeBASE64() {
+            return str(S.encodeBASE64(s));
+        }
+
+        public Str cutOff(int n) {
+            return str(S.cutOff(s, n));
+        }
+
+        public Str capFirst() {
+            return str(S.capFirst(s));
+        }
+
+        public int count(String search) {
+            return S.count(s, search);
+        }
+
+        public int count(Str search) {
+            return S.count(s, search.get());
+        }
+
+        public int countWithOverlay(String search) {
+            return S.count(s, search, true);
+        }
+
+        public int countWithOverlay(Str search) {
+            return S.count(s, search.get(), true);
+        }
+
+        /**
+         * Return an new Str of the first N characters
+         *
+         * @param n
+         * @return
+         */
+        public Str head(int n) {
+            return str(S.first(s, n));
+        }
+
+        /**
+         * Return an new Str of the last N characters
+         *
+         * @param n
+         * @return
+         */
+        public Str tail(int n) {
+            return str(S.last(s, n));
+        }
+
     }
 
     // --- functors 

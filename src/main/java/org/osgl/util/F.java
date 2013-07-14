@@ -511,7 +511,7 @@ public class F {
         }
     }
 
-    public static abstract class IndexedVisitor<T>  extends F.F2<Void, Integer, T> {
+    public static abstract class IndexedVisitor<K,T>  extends F.F2<Void, K, T> {
 
         protected Map<String, ?> _attr = C.newMap();
         protected T _t;
@@ -608,18 +608,18 @@ public class F {
         }
 
         @Override
-        public final Void run(Integer id, T t) {
+        public final Void run(K id, T t) {
             visit(id, t);
             return null;
         }
         
-        public abstract void visit(Integer id, T t);
+        public abstract void visit(K id, T t);
     }
     
-    public static <T> IndexedVisitor<T> indexGuardedVisitor(final F.IFunc1<Boolean, Integer> guard, final Visitor<T> visitor) {
-        return new IndexedVisitor<T>() {
+    public static <K, T> IndexedVisitor<K, T> indexGuardedVisitor(final F.IFunc1<Boolean, K> guard, final Visitor<T> visitor) {
+        return new IndexedVisitor<K, T>() {
             @Override
-            public void visit(Integer id, T t) throws Break {
+            public void visit(K id, T t) throws Break {
                 if (guard.run(id)) {
                     visitor.run(t);
                 }
