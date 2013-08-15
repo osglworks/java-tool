@@ -35,19 +35,19 @@ public class ListComprehension<T> implements Iterable<T> {
         };
     }
 
-    public C.List<T> asList() {
-        return C.list(itr);
+    public C0.List<T> asList() {
+        return C0.list(itr);
     }
 
-    public C.List<T> asList(boolean readonly) {
-        return readonly ? C.list(itr) : C.newList(itr);
+    public C0.List<T> asList(boolean readonly) {
+        return readonly ? C0.list(itr) : C0.newList(itr);
     }
 
-    public <TYPE> ListComprehension<TYPE> map(Class<TYPE> clz, F.IFunc1... mappers) {
+    public <TYPE> ListComprehension<TYPE> map(Class<TYPE> clz, _.IFunc1... mappers) {
         return map(mappers);
     }
 
-    public <TYPE> ListComprehension<TYPE> map(final F.IFunc1... mappers) {
+    public <TYPE> ListComprehension<TYPE> map(final _.IFunc1... mappers) {
         final Iterator<? extends T> it = itr.iterator();
         return new ListComprehension<TYPE>(new Itr<TYPE>() {
             @Override
@@ -61,8 +61,8 @@ public class ListComprehension<T> implements Iterable<T> {
                     @Override
                     public TYPE next() {
                         Object o = it.next();
-                        for (F.IFunc1 mapper : mappers) {
-                            o = mapper.run(o);
+                        for (_.IFunc1 mapper : mappers) {
+                            o = mapper.apply(o);
                         }
                         return (TYPE) o;
                     }
@@ -76,11 +76,11 @@ public class ListComprehension<T> implements Iterable<T> {
         });
     }
 
-    public <TYPE> ListComprehension<TYPE> map2(Class<TYPE> cls, final F.IFunc2... mappers) {
+    public <TYPE> ListComprehension<TYPE> map2(Class<TYPE> cls, final _.IFunc2... mappers) {
         return map2(mappers);
     }
 
-    public <TYPE> ListComprehension<TYPE> map2(final F.IFunc2... mappers) {
+    public <TYPE> ListComprehension<TYPE> map2(final _.IFunc2... mappers) {
         final Iterator<? extends T> it = itr.iterator();
         return new ListComprehension<TYPE>(new Itr<TYPE>() {
             @Override
@@ -96,8 +96,8 @@ public class ListComprehension<T> implements Iterable<T> {
                     @Override
                     public TYPE next() {
                         Object o = it.next();
-                        for (F.IFunc2 mapper : mappers) {
-                            o = mapper.run(cursor, o);
+                        for (_.IFunc2 mapper : mappers) {
+                            o = mapper.apply(cursor, o);
                         }
                         cursor++;
                         return (TYPE) o;
@@ -112,87 +112,87 @@ public class ListComprehension<T> implements Iterable<T> {
         });
     }
 
-    public <TYPE> ListComprehension<TYPE> apply(Class<TYPE> clz, F.IFunc1... mappers) {
+    public <TYPE> ListComprehension<TYPE> apply(Class<TYPE> clz, _.IFunc1... mappers) {
         return apply(mappers);
     }
 
-    public <TYPE> ListComprehension<TYPE> apply(final F.IFunc1... mappers) {
+    public <TYPE> ListComprehension<TYPE> apply(final _.IFunc1... mappers) {
         ListComprehension<TYPE> lc = map(mappers);
         return lc.walkthrough();
     }
 
-    public <TYPE> ListComprehension<TYPE> apply2(Class<TYPE> cls, final F.IFunc2... mappers) {
+    public <TYPE> ListComprehension<TYPE> apply2(Class<TYPE> cls, final _.IFunc2... mappers) {
         return apply2(mappers);
     }
 
-    public <TYPE> ListComprehension<TYPE> apply2(final F.IFunc2... mappers) {
+    public <TYPE> ListComprehension<TYPE> apply2(final _.IFunc2... mappers) {
         ListComprehension<TYPE> lc = map2(mappers);
         return lc.walkthrough();
     }
 
-    public boolean all(final F.IFunc1<Boolean, T> test) {
+    public boolean all(final _.IFunc1<Boolean, T> test) {
         return and(test);
     }
 
-    public boolean any(final F.IFunc1<Boolean, T> test) {
+    public boolean any(final _.IFunc1<Boolean, T> test) {
         return or(test);
     }
 
-    public ListComprehension<T> filter(final F.IFunc1<Boolean, T>... filters) {
-        return filter(C.list(filters));
+    public ListComprehension<T> filter(final _.IFunc1<Boolean, T>... filters) {
+        return filter(C0.list(filters));
     }
 
-    public ListComprehension<T> filter(final List<F.IFunc1<Boolean, T>> filters) {
+    public ListComprehension<T> filter(final List<_.IFunc1<Boolean, T>> filters) {
         switch (filters.size()) {
             case 0:
                 return this;
             case 1:
                 return filter_(filters.get(0));
             default:
-                return filter(C.head(filters, -1));
+                return filter(C0.head(filters, -1));
         }
     }
 
-    private ListComprehension<T> filter_(F.IFunc1<Boolean, T> filter) {
-        List<T> l = C.newList();
-        accept(F.guardedVisitor(filter, C.f.addTo(l)));
+    private ListComprehension<T> filter_(_.IFunc1<Boolean, T> filter) {
+        List<T> l = C0.newList();
+        accept(_.guardedVisitor(filter, C0.f.addTo(l)));
         return valueOf(l);
     }
 
-    public ListComprehension<T> filterOnIndex(F.IFunc1<Boolean, Integer> filter) {
-        List<T> l = C.newList();
-        accept(F.indexGuardedVisitor(filter, C.f.addTo(l)));
+    public ListComprehension<T> filterOnIndex(_.IFunc1<Boolean, Integer> filter) {
+        List<T> l = C0.newList();
+        accept(_.indexGuardedVisitor(filter, C0.f.addTo(l)));
         return valueOf(l);
     }
 
-    private F.T2<T, ListComprehension<T>> pop() {
+    private _.T2<T, ListComprehension<T>> pop() {
         final Iterator<T> itr = this.iterator();
         final T t = itr.next();
-        return F.T2(t, valueOf(itr));
+        return _.T2(t, valueOf(itr));
     }
 
-    public <E> E reduce(final E initVal, final F.IFunc2<E, T, E> func2) {
+    public <E> E reduce(final E initVal, final _.IFunc2<E, T, E> func2) {
         return ListComprehension.reduce(initVal, this, func2);
     }
 
-    public static <E, T> E reduce(final E initVal, final ListComprehension<T> lc, final F.IFunc2<E, T, E> func) {
+    public static <E, T> E reduce(final E initVal, final ListComprehension<T> lc, final _.IFunc2<E, T, E> func) {
         E v = initVal;
         Iterator<T> itr = lc.iterator();
         try {
             while (itr.hasNext()) {
-                v = func.run(itr.next(), v);
+                v = func.apply(itr.next(), v);
             }
-        } catch (F.Break b) {
+        } catch (_.Break b) {
             return b.get();
         }
         return v;
     }
 
-    public T reduce(final F.IFunc2<T, T, T> func2) {
+    public T reduce(final _.IFunc2<T, T, T> func2) {
         return ListComprehension.reduce(this, func2);
     }
 
-    public static <T> T reduce(final ListComprehension<T> lc, final F.IFunc2<T, T, T> func) {
+    public static <T> T reduce(final ListComprehension<T> lc, final _.IFunc2<T, T, T> func) {
         Iterator<T> itr = lc.iterator();
         if (!itr.hasNext()) {
             return null;
@@ -200,88 +200,88 @@ public class ListComprehension<T> implements Iterable<T> {
         T v = itr.next();
         try {
             while (itr.hasNext()) {
-                v = func.run(itr.next(), v);
+                v = func.apply(itr.next(), v);
             }
-        } catch (F.Break b) {
+        } catch (_.Break b) {
             return b.get();
         }
         return v;
     }
     
     public final ListComprehension<T> reverse() {
-        return C.lc(asList().reverse());
+        return C0.lc(asList().reverse());
     }
 
-    public final boolean or(final F.IFunc1<Boolean, T> test) {
-        return !and(_.f.not(test));
+    public final boolean or(final _.IFunc1<Boolean, T> test) {
+        return !and(X.f.not(test));
     }
 
-    public final boolean and(final F.IFunc1<Boolean, T> test) {
+    public final boolean and(final _.IFunc1<Boolean, T> test) {
         for (T t : itr) {
-            if (!test.run(t)) {
+            if (!test.apply(t)) {
                 return false;
             }
         }
         return true;
     }
 
-    public T first(final F.IFunc1<Boolean, T> cond) {
+    public T first(final _.IFunc1<Boolean, T> cond) {
         for (T t : itr) {
-            if (cond.run(t)) {
+            if (cond.apply(t)) {
                 return t;
             }
         }
         return null;
     }
 
-    public T last(final F.IFunc1<Boolean, T> cond) {
+    public T last(final _.IFunc1<Boolean, T> cond) {
         return reverse().first(cond);
     }
 
-    public <E> E first(final F.IFunc1<Boolean, T> cond, final F.Transformer<T, E> transformer) {
+    public <E> E first(final _.IFunc1<Boolean, T> cond, final _.Transformer<T, E> transformer) {
         for (T t : itr) {
-            if (cond.run(t)) {
-                return transformer.run(t);
+            if (cond.apply(t)) {
+                return transformer.apply(t);
             }
         }
         return null;
     }
 
     /**
-     * Alias of {@link #accept(org.osgl.util.F.IFunc1)}
+     * Alias of {@link #accept(_.IFunc1)}
      *
      * @param visitor
      */
-    public void each(F.IFunc1<?, T> visitor) {
+    public void each(_.IFunc1<?, T> visitor) {
         accept(visitor);
     }
 
     /**
-     * Alias of {@link #accept(org.osgl.util.F.IFunc2)}
+     * Alias of {@link #accept(_.IFunc2)}
      *
      * @param visitor
      */
-    public void each(F.IFunc2<?, Integer, T> visitor) {
+    public void each(_.IFunc2<?, Integer, T> visitor) {
         accept(visitor);
     }
 
-    public void accept(F.IFunc1<?, T> visitor) {
+    public void accept(_.IFunc1<?, T> visitor) {
         //this.map(visitor).walkthrough();
         for (T t : this) {
-            visitor.run(t);
+            visitor.apply(t);
         }
     }
 
-    public void accept(F.IFunc2<?, Integer, T> visitor) {
+    public void accept(_.IFunc2<?, Integer, T> visitor) {
         //this.map2(visitor).walkthrough();
         int i = 0;
         for (T t : this) {
-            visitor.run(i++, t);
+            visitor.apply(i++, t);
         }
     }
 
     public ListComprehension<T> walkthrough() {
-        C.walkThrough(itr);
+        C0.walkThrough(itr);
         return this;
     }
 

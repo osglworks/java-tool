@@ -343,7 +343,7 @@ public class N {
     }
 
     private static Map<Class<? extends Number>, Type> _m; static {
-        _m = C.map(
+        _m = C0.map(
                 Byte.class, Type.BYTE,
                 Short.class, Type.SHORT,
                 Integer.class, Type.INT,
@@ -369,7 +369,7 @@ public class N {
         }
     }
     
-    public static enum Op implements F.IFunc2<Number, Number, Number> {
+    public static enum Op implements _.IFunc2<Number, Number, Number> {
         ADD {
             @Override
             public Number apply(Number a, Number b) {
@@ -394,7 +394,8 @@ public class N {
                 return t(t(a, b), Type.FLOAT).div(a, b);
             }
         };
-        public abstract Number apply(Number a, Number b);
+
+        //public abstract Number apply(Number a, Number b);
         
         
         private static Type t(Number a, Number b) {
@@ -408,16 +409,16 @@ public class N {
         }
         
         @Override
-        public Number run(Number o, Number o2) {
+        public Number apply(Number o, Number o2) {
             return apply(o, o2);
         }
 
-        public F.F0<Number> curry(final Number a, final Number b) {
-            return F.curry(this, a, b);
+        public _.F0<Number> curry(final Number a, final Number b) {
+            return _.curry(this, a, b);
         }
 
-        public F.F1<Number, Number> curry(final Number b) {
-            return F.curry(this, b);
+        public _.F1<Number, Number> curry(final Number b) {
+            return _.curry(this, b);
         }
     }
     
@@ -548,84 +549,84 @@ public class N {
 
     public static final class f {
 
-        public static final F.F1 DBL = mul(2);
+        public static final _.F1 DBL = mul(2);
 
-        public static <T extends Number> F.F1<Number, T> dbl() {
+        public static <T extends Number> _.F1<Number, T> dbl() {
             return DBL;
         }
 
-        public static <T extends Number> F.F1<Number, T> dbl(Class<T> clz) {
+        public static <T extends Number> _.F1<Number, T> dbl(Class<T> clz) {
             return mul(2, clz);
         }
 
-        public static final F.F1 HALF = div(2);
+        public static final _.F1 HALF = div(2);
 
-        public static <T extends Number> F.F1<Number, T> half() {
+        public static <T extends Number> _.F1<Number, T> half() {
             return HALF;
         }
 
-        public static <T extends Number> F.F1<Number, T> half(Class<T> clz) {
+        public static <T extends Number> _.F1<Number, T> half(Class<T> clz) {
             return div(2, clz);
         }
 
-        public static <T extends Number> F.F1<Number, T> add(final Number n) {
-            return new F.F1<Number, T>() {
+        public static <T extends Number> _.F1<Number, T> add(final Number n) {
+            return new _.F1<Number, T>() {
                 @Override
-                public Number run(T t) {
+                public Number apply(T t) {
                     return N.num(t).add(n).get();
                 }
             };
         }
 
-        public static <T extends Number> F.F1<Number, T> add(final Number n, final Class<T> clz) {
-            return new F.F1<Number, T>() {
+        public static <T extends Number> _.F1<Number, T> add(final Number n, final Class<T> clz) {
+            return new _.F1<Number, T>() {
                 @Override
-                public Number run(T t) {
+                public Number apply(T t) {
                     return N.num(t).add(n).as(clz);
                 }
             };
         }
 
-        public static <T extends Number> F.F1<Number, T> mul(final Number n) {
-            return new F.F1<Number, T>() {
+        public static <T extends Number> _.F1<Number, T> mul(final Number n) {
+            return new _.F1<Number, T>() {
                 @Override
-                public Number run(T t) {
+                public Number apply(T t) {
                     return N.num(t).mul(n).get();
                 }
             };
         }
 
-        public static <T extends Number> F.F1<Number, T> mul(final Number n, final Class<T> clz) {
-            return new F.F1<Number, T>() {
+        public static <T extends Number> _.F1<Number, T> mul(final Number n, final Class<T> clz) {
+            return new _.F1<Number, T>() {
                 @Override
-                public Number run(T t) {
+                public Number apply(T t) {
                     return N.num(t).mul(n).as(clz);
                 }
             };
         }
 
-        public static <T extends Number> F.F1<Number, T> div(final Number n) {
-            return new F.F1<Number, T>() {
+        public static <T extends Number> _.F1<Number, T> div(final Number n) {
+            return new _.F1<Number, T>() {
                 @Override
-                public Number run(T t) {
+                public Number apply(T t) {
                     return N.num(t).div(n).get();
                 }
             };
         }
         
-        public static <T extends Number> F.F1<Number, T> div(final Number n, final Class<T> clz) {
-            return new F.F1<Number, T>() {
+        public static <T extends Number> _.F1<Number, T> div(final Number n, final Class<T> clz) {
+            return new _.F1<Number, T>() {
                 @Override
-                public Number run(T t) {
+                public Number apply(T t) {
                     return N.num(t).div(n).as(clz);
                 }
             };
         }
         
-        public static <T extends Number> F.F2<T, T, T> aggregate(final Class<T> clz) {
-            return new F.F2<T, T, T>() {
+        public static <T extends Number> _.F2<T, T, T> aggregate(final Class<T> clz) {
+            return new _.F2<T, T, T>() {
                 @Override
-                public T run(T e, T v) {
+                public T apply(T e, T v) {
                     return (T)N.num(e).add(v).as(clz);
                 }
             };
