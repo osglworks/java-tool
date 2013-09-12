@@ -66,6 +66,12 @@ public class E {
         NPE("", objects);
     }
 
+    public static void NPE(boolean tester) {
+        if (tester) {
+            throw new NullPointerException();
+        }
+    }
+
     /**
      * Throw out NullPointerException if any one of the passed objects is null
      *
@@ -182,6 +188,26 @@ public class E {
     public static void invalidArgIf(boolean test, String msg, Object... args) {
         if (test) {
             throw new InvalidArgException(msg, args);
+        }
+    }
+
+    public static InvalidRangeException invalidRange() {
+        throw new InvalidRangeException();
+    }
+
+    public static void invalidRangeIf(boolean test) {
+        if (test) {
+            throw new InvalidRangeException();
+        }
+    }
+
+    public static InvalidRangeException invalidRange(String msg, Object... args) {
+        throw new InvalidRangeException(msg, args);
+    }
+
+    public static void invalidRangeIf(boolean test, String msg, Object... args) {
+        if (test) {
+            throw new InvalidRangeException(msg, args);
         }
     }
 

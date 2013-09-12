@@ -19,37 +19,40 @@
 */
 package org.osgl.exception;
 
-import org.osgl.util.S;
-
 /**
- * Could be used when programmer think it is not logic to reach somewhere. 
- * For example, the default branch of a switch case on an enum value
+ * Indicate a computation exceeds the implied range
+ *
+ * @see IndexOutOfBoundsException
  */
-public class UnexpectedException extends RuntimeException {
+public class InvalidRangeException extends UnexpectedException {
 
-    public UnexpectedException(){
-        super();
+    public InvalidRangeException() {
     }
 
-    public UnexpectedException(String message){
+    public InvalidRangeException(String message){
         super(message);
     }
 
-    public UnexpectedException(String message, Object... args){
-        super(S.fmt(message, args));
+    public InvalidRangeException(String message, Object... args){
+        super(message, args);
     }
 
-    public UnexpectedException(Throwable cause){
+    public InvalidRangeException(Throwable cause){
         super(cause);
     }
 
     /**
-     * Construct a FastRuntimeException with cause, message and message arguments
-     * @param cause
-     * @param message
-     * @param args
+     * Convert to corresponding JDK exception. Warning, since there are synchronized method execution
+     * please beware of the performance issue when calling this method
      */
-    public UnexpectedException(Throwable cause, String message, Object... args) {
-        super(S.fmt(message, args), cause);
+    public IndexOutOfBoundsException asJDKException() {
+        IndexOutOfBoundsException e = new IndexOutOfBoundsException(getMessage()) {
+            @Override
+            public synchronized Throwable fillInStackTrace() {
+                return this;
+            }
+        };
+        e.setStackTrace(getStackTrace());
+        return e;
     }
 }

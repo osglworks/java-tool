@@ -19,23 +19,30 @@
 */
 package org.osgl.util;
 
+import org.osgl._;
 import org.osgl.exception.InvalidStateException;
 import org.osgl.exception.UnexpectedException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
- * The most common utilities including some utilities coming from {@link E}, {@link S}
+ * Aggregate core utilities of OSGL, including those support functional programming
  */
-public class _ {
+public class X {
+
+    // you know it 
+    private X() {}
+
     /**
      * Defines an instance to be used in views
      */
-    public final _ INSTANCE = new _();
-    public final _ instance = INSTANCE;
+    public final X INSTANCE = new X();
+    public final X instance = INSTANCE;
 
     public final static String fmt(String tmpl, Object... args) {
         return S.fmt(tmpl, args);
@@ -71,7 +78,7 @@ public class _ {
     }
 
     public final static S.Str str(Object o) {
-        return S.Str.valueOf(o);
+        return S.str(o);
     }
 
     public final static <T> Meta meta(T o) {
@@ -108,31 +115,9 @@ public class _ {
         return !isEqual(a, b);
     }
 
-    /**
-     * Calculate hashcode from specified objects
-     * @param args
-     * @return the calculated hash code
-     */
-    public final static int hc(Object... args) {
-        int i = 17;
-        for (Object o: args) {
-            i = 31 * i + ((null == o) ? 0 : o.hashCode());
-        }
-        return i;
-    }
-
-    /**
-     * Alias of {@link #hc(Object...)}
-     * 
-     * @param args
-     * @return the calculated hash code
-     */
-    public final static int hashCode(Object... args) {
-        return hc(args);
-    }
 
     public final static <T> List<T> list(T... el) {
-        return C.list(el);
+        return C0.list(el);
     }
 
     public final static <T> Class<T> classForName(String className) {
@@ -361,16 +346,16 @@ public class _ {
         Array.setDouble(array, index, o);
     }
 
-    public final static <T> T times(F.IFunc0<T> func, int n) {
+    public final static <T> T times(_.IFunc0<T> func, int n) {
         if (n < 0) {
             throw E.invalidArg("the number of times must not be negative");
         }
         if (n == 0) {
             return null;
         }
-        T result = func.run();
+        T result = func.apply();
         for (int i = 1; i < n; ++i) {
-            func.run();
+            func.apply();
         }
         return result;
     }
@@ -420,7 +405,7 @@ public class _ {
         throw new NullPointerException();
     }
     
-    public final static <T> T times(F.IFunc1<T, T> func, T initVal, int n) {
+    public final static <T> T times(_.IFunc1<T, T> func, T initVal, int n) {
         if (n < 0) {
             throw E.invalidArg("the number of times must not be negative");
         }
@@ -429,7 +414,7 @@ public class _ {
         }
         T retVal = initVal;
         for (int i = 1; i < n; ++i) {
-            retVal = func.run(retVal);
+            retVal = func.apply(retVal);
         }
         return retVal;
     }
@@ -439,7 +424,7 @@ public class _ {
         private T o;
 
         public Meta(T obj) {
-            _.NPE(obj);
+            X.NPE(obj);
             o = obj;
         }
         
@@ -460,33 +445,33 @@ public class _ {
     // -- functors
     public static class f {
 
-        public static <T> F.If<T> and(final F.IFunc1<Boolean, T>... conds) {
-            return and(C.list(conds));
+        public static <T> _.If<T> and(final _.IFunc1<Boolean, T>... conds) {
+            return and(C0.list(conds));
         }
     
-        public static <T> F.If<T> or(final java.util.List<F.IFunc1<Boolean, T>> conds) {
+        public static <T> _.If<T> or(final java.util.List<_.IFunc1<Boolean, T>> conds) {
             return not(and(conds));
         }
         
-        public static <T> F.If<T> or(final F.IFunc1<Boolean, T>... conds) {
+        public static <T> _.If<T> or(final _.IFunc1<Boolean, T>... conds) {
             return not(and(conds));
         }
     
-        public static <T> F.If<T> not(final F.IFunc1<Boolean, T> cond) {
-            return new F.If<T>() {
+        public static <T> _.If<T> not(final _.IFunc1<Boolean, T> cond) {
+            return new _.If<T>() {
                 @Override
-                public boolean eval(T t) {
-                    return !cond.run(t);
+                public boolean test(T t) {
+                    return !cond.apply(t);
                 }
             };
         }
         
-        public static <T> F.If<T> and(final java.util.List<F.IFunc1<Boolean, T>> conds) {
-            return new F.If<T>() {
+        public static <T> _.If<T> and(final java.util.List<_.IFunc1<Boolean, T>> conds) {
+            return new _.If<T>() {
                 @Override
-                public boolean eval(T t) {
-                    for (F.IFunc1<Boolean, T> cond : conds) {
-                        if (!cond.run(t)) {
+                public boolean test(T t) {
+                    for (_.IFunc1<Boolean, T> cond : conds) {
+                        if (!cond.apply(t)) {
                             return false;
                         }
                     }
@@ -495,54 +480,54 @@ public class _ {
             };
         }
         
-        public static <T> F.IFunc0<T> next(final Iterator<T> itr) {
+        public static <T> _.IFunc0<T> next(final Iterator<T> itr) {
             final T t = itr.next();
-            return new F.IFunc0<T>() {
+            return new _.IFunc0<T>() {
                 @Override
-                public T run() {
+                public T apply() {
                     return t;
                 }
             };
         }
     
-        public static F.IFunc0<Integer> next(final int i) {
-            return new F.IFunc0<Integer>() {
+        public static _.IFunc0<Integer> next(final int i) {
+            return new _.IFunc0<Integer>() {
                 @Override
-                public Integer run() {
+                public Integer apply() {
                     return i + 1;
                 }
             };
         }
     
-        public static F.IFunc0<Integer> prev(final int i) {
-            return new F.IFunc0<Integer>() {
+        public static _.IFunc0<Integer> prev(final int i) {
+            return new _.IFunc0<Integer>() {
                 @Override
-                public Integer run() {
+                public Integer apply() {
                     return i - 1;
                 }
             };
         }
     
-        public static F.IFunc0<Character> next(final char c) {
-            return new F.IFunc0<Character>() {
+        public static _.IFunc0<Character> next(final char c) {
+            return new _.IFunc0<Character>() {
                 @Override
-                public Character run() {
+                public Character apply() {
                     return (char)(c + 1);
                 }
             };
         }
     
-        public static F.IFunc0<Character> prev(final char c) {
-            return new F.IFunc0<Character>() {
+        public static _.IFunc0<Character> prev(final char c) {
+            return new _.IFunc0<Character>() {
                 @Override
-                public Character run() {
+                public Character apply() {
                     return (char)(c - 1);
                 }
             };
         }
     
-        public static <T> F.Transformer<T, String> toStr() {
-            return new F.Transformer<T, String>() {
+        public static <T> _.Transformer<T, String> toStr() {
+            return new _.Transformer<T, String>() {
                 @Override
                 public String transform(T t) {
                     return null == t ? "" : t.toString();
@@ -550,46 +535,368 @@ public class _ {
             };
         }
         
-        public static <T extends Comparable<T>> F.If<T> lt(final T o) {
+        public static <T extends Comparable<T>> _.If<T> lt(final T o) {
             return lessThan(o);
         }
         
-        public static <T extends Comparable<T>> F.If<T> lessThan(final T o) {
-            return new F.If<T>() {
+        public static <T extends Comparable<T>> _.If<T> lessThan(final T o) {
+            return new _.If<T>() {
                 @Override
-                public boolean eval(T t) {
+                public boolean test(T t) {
                     return t.compareTo(o) < 0;
                 }
             };
         }
         
-        public static <T extends Comparable<T>> F.If<T> gt(final T o) {
+        public static <T extends Comparable<T>> _.If<T> gt(final T o) {
             return greatThan(o);
         }
     
-        public static <T extends Comparable<T>> F.If<T> greatThan(final T o) {
-            return new F.If<T>() {
+        public static <T extends Comparable<T>> _.If<T> greatThan(final T o) {
+            return new _.If<T>() {
                 @Override
-                public boolean eval(T t) {
+                public boolean test(T t) {
                     return t.compareTo(o) > 0;
                 }
             };
         }
         
-        public static <T> F.If<T> eq(final T o) {
+        public static <T> _.If<T> eq(final T o) {
             return equal(o);
         }
         
-        public static <T> F.If<T> equal(final T o) {
-            return new F.If<T>() {
+        public static <T> _.If<T> equal(final T o) {
+            return new _.If<T>() {
                 @Override
-                public boolean eval(T t) {
-                    return _.eq(t, o);
+                public boolean test(T t) {
+                    return X.eq(t, o);
                 }
             };
         }
         
     }
-    
-    
+
+    private static class Trav<E> extends java.util.ArrayList<E> implements ITraversable<E> {
+        @Override
+        public E first() throws NoSuchElementException {
+            if (isEmpty()) {
+                throw new NoSuchElementException();
+            }
+            return get(0);
+        }
+
+        @Override
+        public E head() throws NoSuchElementException {
+            if (isEmpty()) {
+                throw new NoSuchElementException();
+            }
+            return get(0);
+        }
+
+        @Override
+        public E last() throws NoSuchElementException {
+            if (isEmpty()) {
+                throw new NoSuchElementException();
+            }
+            return get(size() - 1);
+        }
+
+        @Override
+        public boolean isLimited() {
+            return true;
+        }
+
+        @Override
+        public Trav<E> tail() throws UnsupportedOperationException {
+            if (isEmpty()) {
+                throw new UnsupportedOperationException();
+            }
+            Trav<E> t = new Trav<E>();
+            t.addAll(this);
+            t.remove(0);
+            return t;
+        }
+
+        @Override
+        public Trav<E> head(int n) {
+            if (n < 0) {
+                return tail(-n);
+            }
+
+            Trav<E> t = new Trav<E>();
+            int i = 0;
+            if (0 == n) {
+                return t;
+            } else {
+                for (E e: this) {
+                    if (i++ >= n) {
+                        break;
+                    }
+                    t.add(e);
+                }
+            }
+            return t;
+        }
+
+        @Override
+        public Trav<E> reverse() throws UnsupportedOperationException {
+            Trav<E> trav = new Trav<E>();
+            for (int i = size() - 1; i >= 0; --i) {
+                trav.add(get(i));
+            }
+            return trav;
+        }
+
+        @Override
+        public Trav<E> tail(int n) {
+            if (n < 0) {
+                return head(-n);
+            }
+            Trav<E> t = new Trav<E>();
+            int i = 0;
+            if (0 == n) {
+                return t;
+            } else {
+                int size = size();
+                for (i = size - n; i < size; ++i) {
+                    t.add(get(i));
+                }
+            }
+            return t;
+        }
+
+        @Override
+        public Trav<E> take(int n) {
+            return head(n);
+        }
+
+        @Override
+        public <E2> ITraversable<E2> map(_.IFunc1<E2, E> mapper) {
+            if (isEmpty()) {
+                return new Trav<E2>();
+            }
+            return new Cons<E>(head(), tail()).map(mapper);
+        }
+
+        public <E2> ITraversable<E2> lazymap(_.IFunc1<E2, E> mapper) {
+            if (isEmpty()) {
+                return new Trav<E2>();
+            }
+            final ITraversable<E> me = this;
+            return new Lazy<E>(head(), new _.F0<ITraversable<E>>(){
+                @Override
+                public ITraversable<E> apply() {
+                    return me.tail();
+                }
+            }).map(mapper);
+        }
+    }
+
+    public static class Cons<E> implements ITraversable<E> {
+        private E head;
+        private ITraversable<E> tail;
+        Cons(E head, ITraversable<E> tail) {
+            this.head = head;
+            this.tail = tail;
+            System.out.println("constructing cons...");
+        }
+        @Override
+        public E first() throws NoSuchElementException {
+            return head;
+        }
+
+        @Override
+        public E head() throws NoSuchElementException {
+            return head;
+        }
+
+        @Override
+        public Cons<E> head(int n) {
+            return new Cons(head, tail.head(n - 1));
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public E last() throws NoSuchElementException, UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isLimited() {
+            return false;
+        }
+
+        @Override
+        public Cons<E> reverse() throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Cons<E> tail() throws UnsupportedOperationException {
+            if (tail instanceof Cons) {
+                return (Cons<E>)tail;
+            }
+            return new Cons<E>(tail.head(), tail.tail());
+        }
+
+        @Override
+        public Cons<E> tail(int n) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Cons<E> take(int n) {
+            return head(n);
+        }
+
+        @Override
+        public <E2> Cons<E2> map(_.IFunc1<E2, E> mapper) {
+            if (tail.isEmpty()) {
+                return new Cons<E2>(mapper.apply(head()), new Trav<E2>());
+            }
+            return new Cons<E2>(mapper.apply(head()), tail().map(mapper));
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("[");
+            Cons<E> cons = this;
+            sb.append(cons.head);
+            while(!cons.tail.isEmpty()) {
+                cons = cons.tail();
+                sb.append(",").append(cons.head);
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+    }
+
+    public static class Lazy<E> implements ITraversable<E> {
+        private E head;
+        private _.F0<ITraversable<E>> tail;
+
+        public Lazy(E head, _.IFunc0<ITraversable<E>> tail) {
+            this.head = head;
+            this.tail = _.toF0(tail);
+            System.out.println("constructing lazy...");
+        }
+
+        @Override
+        public E first() throws NoSuchElementException {
+            return head;
+        }
+
+        @Override
+        public E head() throws NoSuchElementException {
+            return head;
+        }
+
+        @Override
+        public ITraversable<? super E> head(int n) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return null == head;
+        }
+
+        @Override
+        public E last() throws NoSuchElementException, UnsupportedOperationException {
+            return null;
+        }
+
+        @Override
+        public boolean isLimited() {
+            return true;
+        }
+
+        @Override
+        public ITraversable<E> reverse() throws UnsupportedOperationException {
+            return null;
+        }
+
+        private ITraversable<E> tail0;
+        @Override
+        public Lazy<E> tail() throws UnsupportedOperationException {
+            if (null == tail0) {
+                tail0 = tail.apply();
+            }
+            if (tail0.isEmpty()) {
+                return new Lazy<E>(null, _.F0);
+            }
+            return new Lazy<E>(tail0.head(), new _.F0<ITraversable<E>>(){
+                @Override
+                public ITraversable<E> apply() {
+                    if (tail0.isEmpty()) {
+                        return new Trav<E>();
+                    }
+                    return tail0.tail();
+                }
+            });
+        }
+
+        @Override
+        public ITraversable<E> tail(int n) throws UnsupportedOperationException {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public ITraversable<E> take(int n) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public <E2> Lazy<E2> map(final _.IFunc1<E2, E> mapper) {
+            final Lazy<E> me = this;
+            return new Lazy<E2>(mapper.apply(head), new _.F0<ITraversable<E2>>(){
+                @Override
+                public Lazy<E2> apply() {
+                    if (me.isEmpty()) {
+                        return new Lazy<E2>(null, _.F0);
+                    }
+                    return me.tail().map(mapper);
+                }
+            });
+        }
+
+        @Override
+        public String toString() {
+            Lazy<E> cons = this;
+            if (cons.isEmpty()) {
+                return "[]";
+            }
+            StringBuilder sb = new StringBuilder("[");
+            sb.append(cons.head);
+            cons = cons.tail();
+            while(!cons.isEmpty()) {
+                sb.append(",").append(cons.head);
+                cons = cons.tail();
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+    }
+
+    public static void main(String[] args) {
+        Trav<String> ts = new Trav<String>();
+        ts.addAll(Arrays.asList("ab".split(",")));
+        ts.add(null);
+        ITraversable<Boolean> ts2 = ts.map(_.F.isNull(String.class));
+        ITraversable<Boolean> ts3 = ts.lazymap(_.F.isNull(String.class));
+        System.out.println(ts2);
+        System.out.println(ts3);
+
+        C1.List<Integer> il = C1.Mutable.list(1, 2, 3);
+        il.subList(0, 2).add(5);
+        System.out.println(il);
+
+        System.out.println(_.NONE.f.IS_DEFINED.apply());
+        System.out.println(_.some(123).f.NOT_DEFINED.apply());
+    }
+
 }

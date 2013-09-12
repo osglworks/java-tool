@@ -20,6 +20,7 @@
 package org.osgl.exception;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Wrap java's {@link java.io.UnsupportedEncodingException} into RuntimeException
@@ -28,6 +29,21 @@ public class UnexpectedEncodingException extends UnexpectedException {
 
     public UnexpectedEncodingException(IOException cause){
         super(cause);
+    }
+
+    /**
+     * Convert to corresponding JDK exception. Warning, since there are synchronized method execution
+     * please beware of the performance issue when calling this method
+     */
+    public UnsupportedEncodingException toJDKException() {
+        UnsupportedEncodingException e = new UnsupportedEncodingException() {
+            @Override
+            public synchronized Throwable fillInStackTrace() {
+                return this;
+            }
+        };
+        e.setStackTrace(getStackTrace());
+        return e;
     }
 
 }

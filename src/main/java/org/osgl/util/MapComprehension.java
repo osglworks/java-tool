@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Simulate python's list comprehension
  */
-public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
+public class MapComprehension<K, V> implements Iterable<C0.Map.Entry<K, V>> {
 
     private final Map<? extends K, ? extends V> _m;
 
@@ -15,18 +15,18 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
     }
 
     @Override
-    public Iterator<C.Map.Entry<K, V>> iterator() {
-        return new Iterator<C.Map.Entry<K, V>>() {
+    public Iterator<C0.Map.Entry<K, V>> iterator() {
+        return new Iterator<C0.Map.Entry<K, V>>() {
             private final Iterator keys = _m.keySet().iterator();
             public boolean hasNext() {
                 return keys.hasNext();
             }
 
             @Override
-            public C.Map.Entry<K, V> next() {
+            public C0.Map.Entry<K, V> next() {
                 K k = (K)keys.next();
                 V v = _m.get(k);
-                return C.Map.Entry.valueOf(k, v);
+                return C0.Map.Entry.valueOf(k, v);
             }
 
             @Override
@@ -36,16 +36,16 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
         };
     }
 
-    public C.Map<K, V> asMap() {
-        if (_m instanceof C.Map) {
-            return (C.Map<K, V>)_m;
+    public C0.Map<K, V> asMap() {
+        if (_m instanceof C0.Map) {
+            return (C0.Map<K, V>)_m;
         } else {
-            return C.map(_m);
+            return C0.map(_m);
         }
     }
 
-    public C.Map<K, V> asMap(boolean readonly) {
-        return readonly ? C.map(_m) : C.newMap(_m);
+    public C0.Map<K, V> asMap(boolean readonly) {
+        return readonly ? C0.map(_m) : C0.newMap(_m);
     }
 //
 //    public <K, V> MapComprehension<K, V> map(Class<TYPE> clz, F.IFunc1... mappers) {
@@ -67,7 +67,7 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //                    public TYPE next() {
 //                        Object o = it.next();
 //                        for (F.IFunc1 mapper : mappers) {
-//                            o = mapper.run(o);
+//                            o = mapper.apply(o);
 //                        }
 //                        return (TYPE) o;
 //                    }
@@ -102,7 +102,7 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //                    public TYPE next() {
 //                        Object o = it.next();
 //                        for (F.IFunc2 mapper : mappers) {
-//                            o = mapper.run(cursor, o);
+//                            o = mapper.apply(cursor, o);
 //                        }
 //                        cursor++;
 //                        return (TYPE) o;
@@ -144,7 +144,7 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //    }
 //
 //    public MapComprehension<V> filter(final F.IFunc1<Boolean, V>... filters) {
-//        return filter(C.list(filters));
+//        return filter(C1.list(filters));
 //    }
 //
 //    public MapComprehension<V> filter(final List<F.IFunc1<Boolean, V>> filters) {
@@ -154,19 +154,19 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //            case 1:
 //                return filter_(filters.get(0));
 //            default:
-//                return filter(C.head(filters, -1));
+//                return filter(C1.head(filters, -1));
 //        }
 //    }
 //
 //    private MapComprehension<V> filter_(F.IFunc1<Boolean, V> filter) {
-//        List<V> l = C.newList();
-//        accept(F.guardedVisitor(filter, C.f.addTo(l)));
+//        List<V> l = C1.newList();
+//        accept(F.guardedVisitor(filter, C1.f.addTo(l)));
 //        return valueOf(l);
 //    }
 //
 //    public MapComprehension<V> filterOnIndex(F.IFunc1<Boolean, Integer> filter) {
-//        List<V> l = C.newList();
-//        accept(F.indexGuardedVisitor(filter, C.f.addTo(l)));
+//        List<V> l = C1.newList();
+//        accept(F.indexGuardedVisitor(filter, C1.f.addTo(l)));
 //        return valueOf(l);
 //    }
 //
@@ -185,7 +185,7 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //        Iterator<V> itr = lc.iterator();
 //        try {
 //            while (itr.hasNext()) {
-//                v = func.run(itr.next(), v);
+//                v = func.apply(itr.next(), v);
 //            }
 //        } catch (F.Break b) {
 //            return b.get();
@@ -205,7 +205,7 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //        V v = itr.next();
 //        try {
 //            while (itr.hasNext()) {
-//                v = func.run(itr.next(), v);
+//                v = func.apply(itr.next(), v);
 //            }
 //        } catch (F.Break b) {
 //            return b.get();
@@ -220,8 +220,8 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //    public final boolean and(final F.IFunc1<Boolean, V> test) {
 //        return reduce(true, new F.F2<Boolean, V, Boolean>(){
 //            @Override
-//            public Boolean run(V t, Boolean aBoolean) {
-//                if (!test.run(t)) {
+//            public Boolean apply(V t, Boolean aBoolean) {
+//                if (!test.apply(t)) {
 //                    throw new F.Break(false);
 //                } else {
 //                    return true;
@@ -231,10 +231,10 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //    }
 //
 //    public V first(final F.IFunc1<Boolean, V> cond) {
-//        return C.fold(map(new F.Visitor<V>() {
+//        return C1.fold(map(new F.Visitor<V>() {
 //            @Override
 //            public void visit(V t) throws F.Break {
-//                if (cond.run(t)) {
+//                if (cond.apply(t)) {
 //                    throw new F.Break(t);
 //                }
 //            }
@@ -242,10 +242,10 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //    }
 //
 //    public <E> E first(final F.IFunc1<Boolean, V> cond, final F.Transformer<V, E> transformer) {
-//        return C.fold(map(F.guardedVisitor(cond, new F.Visitor<V>() {
+//        return C1.fold(map(F.guardedVisitor(cond, new F.Visitor<V>() {
 //            @Override
 //            public void visit(V t) throws F.Break {
-//                throw new F.Break(transformer.run(t));
+//                throw new F.Break(transformer.apply(t));
 //            }
 //        })));
 //    }
@@ -271,7 +271,7 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //    public void accept(F.IFunc1<?, V> visitor) {
 //        //this.map(visitor).walkthrough();
 //        for (V t : this) {
-//            visitor.run(t);
+//            visitor.apply(t);
 //        }
 //    }
 //
@@ -279,12 +279,12 @@ public class MapComprehension<K, V> implements Iterable<C.Map.Entry<K, V>> {
 //        //this.map2(visitor).walkthrough();
 //        int i = 0;
 //        for (V t : this) {
-//            visitor.run(i++, t);
+//            visitor.apply(i++, t);
 //        }
 //    }
 //
 //    public MapComprehension<V> walkthrough() {
-//        C.walkThrough(itr);
+//        C1.walkThrough(itr);
 //        return this;
 //    }
 //

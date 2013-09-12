@@ -39,4 +39,19 @@ public class InvalidStateException extends UnexpectedException {
         super(cause);
     }
 
+    /**
+     * Convert to corresponding JDK exception. Warning, since there are synchronized method execution
+     * please beware of the performance issue when calling this method
+     */
+    public IllegalStateException asJDKException() {
+        IllegalStateException e = new IllegalStateException(getMessage()) {
+            @Override
+            public synchronized Throwable fillInStackTrace() {
+                return this;
+            }
+        };
+        e.setStackTrace(getStackTrace());
+        return e;
+    }
+
 }

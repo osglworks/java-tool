@@ -2,6 +2,7 @@ package org.osgl.util;
 
 import com.osgl.TestBase;
 import org.junit.Test;
+import org.osgl._;
 
 import java.util.List;
 
@@ -15,8 +16,8 @@ public class LCTest extends TestBase {
     public void testMap() {
         int[] a1 = {1, 5, 8};
         int[] a2 = {1 * 2, 5 * 2, 8 * 2};
-        List<Integer> l2 = C.listp(a2);
-        List<Integer> l = C.lc(a1).map(Integer.class, N.f.dbl()).asList();
+        List<Integer> l2 = C0.list(a2);
+        List<Integer> l = C0.lc(a1).map(Integer.class, N.f.dbl()).asList();
         eq(l, l2); 
     }
     
@@ -24,23 +25,23 @@ public class LCTest extends TestBase {
     public void testChainedMaps() {
         int[] a1 = {0, 1, 20};
         String s1 = "1,2,3";
-        String s = S.join(",", C.lc(a1).map(N.f.mul(10), _.f.toStr(), S.f.size()).asList());
+        String s = S.join(",", C0.lc(a1).map(N.f.mul(10), X.f.toStr(), S.f.size()).asList());
         eq(s1, s);
     }
     
     @Test
     public void testAll() {
         int[] a1 = {0, 1, 2};
-        yes(C.lc(a1).all(_.f.gt(-1)));
-        no(C.lc(a1).all(_.f.gt(0)));
+        yes(C0.lc(a1).all(X.f.gt(-1)));
+        no(C0.lc(a1).all(X.f.gt(0)));
     }
     
     @Test
     public void testAny() {
         int[] a1 = {0, 1, 2};
-        yes(C.lc(a1).any(_.f.gt(0)));
-        yes(C.lc(a1).any(_.f.gt(0)));
-        no(C.lc(a1).any(_.f.lt(0)));
+        yes(C0.lc(a1).any(X.f.gt(0)));
+        yes(C0.lc(a1).any(X.f.gt(0)));
+        no(C0.lc(a1).any(X.f.lt(0)));
     }
     
     @Test
@@ -48,19 +49,19 @@ public class LCTest extends TestBase {
         int[] a1 = {0, 1, 2};
         
         int[] a2 = {1, 2};
-        C.List<Integer> l2 = C.listp(a2);
+        C0.List<Integer> l2 = C0.list(a2);
 
-        eq(l2, C.lc(a1).filter(_.f.gt(0)).asList());
+        eq(l2, C0.lc(a1).filter(X.f.gt(0)).asList());
         
-        C.List<String> l = C.list("Aristotle", "Plato", "Socrates", "Pythagoras");
-        C.List<String> l0 = C.list("Plato", "Pythagoras");
+        C0.List<String> l = C0.list("Aristotle", "Plato", "Socrates", "Pythagoras");
+        C0.List<String> l0 = C0.list("Plato", "Pythagoras");
         eq(l0, l.filter(S.f.startsWith("P")));
     }
     
     @Test
     public void testReduce() {
         int[] a1 = {0, 1, 2};
-        eq(3, C.lc(a1).reduce(0, N.f.aggregate(Integer.class)));
+        eq(3, C0.lc(a1).reduce(0, N.f.aggregate(Integer.class)));
     }
     
     private static int _aggregate(List<Integer> list) {
@@ -74,11 +75,11 @@ public class LCTest extends TestBase {
     @Test
     public void testSpeed() {
         final Range<Integer> r = Range.valueOf(0, 100);
-        final List l = C.list(r);
-        final ListComprehension<Integer> lc = C.lc(r);
+        final List l = C0.list(r);
+        final ListComprehension<Integer> lc = C0.lc(r);
         int sum = lc.reduce(0, N.f.aggregate(Integer.class));
         int sum0 = _aggregate(l);
-        //C.list(sum, sum0).println();
+        //C1.list(sum, sum0).println();
         eq(sum, sum0);
 
         long ts = System.currentTimeMillis();
@@ -88,16 +89,16 @@ public class LCTest extends TestBase {
         }
 //        _.times(new F.F0<Integer>() {
 //            @Override
-//            public Integer run() {
+//            public Integer apply() {
 //                return _aggregate(l);  //To change body of implemented methods use File | Settings | File Templates.
 //            }
 //        }, times);
         
         long t0 = System.currentTimeMillis() - ts;
         ts = System.currentTimeMillis();
-        _.times(new F.F0<Integer>(){
+        X.times(new _.F0<Integer>() {
             @Override
-            public Integer run() {
+            public Integer apply() {
                 return lc.reduce(N.f.aggregate(Integer.class));
             }
         }, times);
@@ -106,7 +107,7 @@ public class LCTest extends TestBase {
 //        ts = System.currentTimeMillis();
 //        _.times(new F.F0<Integer>(){
 //            @Override
-//            public Integer run() {
+//            public Integer apply() {
 //                return lc.reduce(N.f.INT_AGGREGATE);
 //            }
 //        }, times);
@@ -118,59 +119,59 @@ public class LCTest extends TestBase {
     @Test
     public void testFirst() {
         int[] a1 = {0, 1, 2};
-        eq(1, C.lc(a1).first(_.f.gt(0)));
+        eq(1, C0.lc(a1).first(X.f.gt(0)));
     }
 
     @Test
     public void testAndOr() {
-        C.List<Integer> c1 = C.list(1, 2, 3);
-        eq(true, c1.lc().and(_.f.gt(0)));
-        eq(true, c1.lc().or(_.f.gt(0)));
+        C0.List<Integer> c1 = C0.list(1, 2, 3);
+        eq(true, c1.lc().and(X.f.gt(0)));
+        eq(true, c1.lc().or(X.f.gt(0)));
         
-        eq(false, c1.lc().and(_.f.gt(1)));
-        eq(true, c1.lc().or(_.f.gt(1)));
+        eq(false, c1.lc().and(X.f.gt(1)));
+        eq(true, c1.lc().or(X.f.gt(1)));
 
-        eq(false, c1.lc().and(_.f.gt(4)));
-        eq(false, c1.lc().or(_.f.gt(4)));
+        eq(false, c1.lc().and(X.f.gt(4)));
+        eq(false, c1.lc().or(X.f.gt(4)));
     }
     
 
     @Test
     public void testAllAny() {
-        C.List<Integer> c1 = C.list(1, 2, 3);
-        eq(true, c1.lc().all(_.f.gt(0)));
-        eq(true, c1.lc().any(_.f.gt(0)));
+        C0.List<Integer> c1 = C0.list(1, 2, 3);
+        eq(true, c1.lc().all(X.f.gt(0)));
+        eq(true, c1.lc().any(X.f.gt(0)));
 
-        eq(false, c1.lc().all(_.f.gt(2)));
-        eq(true, c1.lc().any(_.f.gt(2)));
+        eq(false, c1.lc().all(X.f.gt(2)));
+        eq(true, c1.lc().any(X.f.gt(2)));
 
-        eq(false, c1.lc().all(_.f.gt(4)));
-        eq(false, c1.lc().any(_.f.gt(4)));
+        eq(false, c1.lc().all(X.f.gt(4)));
+        eq(false, c1.lc().any(X.f.gt(4)));
     }
     
     @Test
     public void testFoo() {
-        final ListComprehension<Integer> lc = C.lc(Range.valueOf(1, 10001));
-        eq(true, lc.or(_.f.gt(9999)));
-        eq(true, lc.any(_.f.gt(9999)));
+        final ListComprehension<Integer> lc = C0.lc(Range.valueOf(1, 10001));
+        eq(true, lc.or(X.f.gt(9999)));
+        eq(true, lc.any(X.f.gt(9999)));
         
-        long ts = _.ts();
-        _.times(new F.F0(){
+        long ts = X.ts();
+        X.times(new _.F0() {
             @Override
-            public Object run() {
-                return lc.or(_.f.gt(1));
+            public Object apply() {
+                return lc.or(X.f.gt(1));
             }
         }, 10000);
-        long t1 = _.ts() - ts;
-        ts = _.ts();
+        long t1 = X.ts() - ts;
+        ts = X.ts();
         
-        _.times(new F.F0(){
+        X.times(new _.F0() {
             @Override
-            public Object run() {
-                return lc.any(_.f.gt(1));
+            public Object apply() {
+                return lc.any(X.f.gt(1));
             }
         }, 10000);
-        long t2 = _.ts() - ts;
+        long t2 = X.ts() - ts;
         
         println("t1: %s, t2: %s", t1, t2);
     }

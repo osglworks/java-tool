@@ -61,7 +61,7 @@ public class Itr<T> implements Iterable<T>  {
     
     public Iterable<T> reverse() {
         if (-1 == size) {
-            return C.EMPTY_LIST;
+            return C0.EMPTY_LIST;
         }
         return new Iterable<T>() {
             private int cursor = size - 1;

@@ -1,0 +1,1169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b0cdce9e-07ac-4625-970b-4f5f6fc837af" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/C1.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidRangeException.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_10.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/NotAppliedException.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/_.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/luog.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/osgl-tool.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\util\F.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Base64.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Base64.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/CTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/CTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Codec.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Codec.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/ConfigurationException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/ConfigurationException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Crypto.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Crypto.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/E.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/E.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/FastRuntimeException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/FastRuntimeException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/IO.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IO.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidArgException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidArgException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidStateException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidStateException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Itr.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Itr.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/LCTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/LCTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListComprehension.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListComprehension.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/ListTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/ListTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/MapComprehension.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/MapComprehension.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/com/osgl/sample/MappingSample.java" afterPath="$PROJECT_DIR$/src/main/test/com/osgl/sample/MappingSample.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/N.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/N.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/NTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/NTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Range.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Range.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/S.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/S.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/STest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/STest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/SetTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/SetTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/com/osgl/StrTest.java" afterPath="$PROJECT_DIR$/src/main/test/com/osgl/StrTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/com/osgl/TestBase.java" afterPath="$PROJECT_DIR$/src/main/test/com/osgl/TestBase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedEncodingException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedEncodingException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedIOException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedIOException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnsupportedException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnsupportedException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/com/osgl/_Test.java" afterPath="$PROJECT_DIR$/src/main/test/com/osgl/_Test.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assembly-dist.xml" afterPath="$PROJECT_DIR$/assembly-dist.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/etc/header.txt" afterPath="$PROJECT_DIR$/src/etc/header.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/etc/javadoc.css" afterPath="$PROJECT_DIR$/src/etc/javadoc.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tool.iml" afterPath="$PROJECT_DIR$/tool.iml" />
+      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\C.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java" />
+      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\_.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/X.java" />
+    </list>
+    <ignored path="osgl-tool.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <file path="/Dummy.txt" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948102783" ignored="false" />
+    <file path="/C.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378980976137" ignored="false" />
+    <file path="/Range.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1376737888344" ignored="false" />
+    <file path="/fragment.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378955372588" ignored="false" />
+    <file path="/InvalidRangeException.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377731740654" ignored="false" />
+    <file path="/E.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378981775640" ignored="false" />
+    <file path="/_.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378984709518" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/gallery.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378951561591" ignored="false" />
+    <file path="/a.dummy" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378859268406" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/label.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475771" ignored="false" />
+    <file path="/label.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378863290281" ignored="false" />
+    <file path="P:/LE3/app/rythm/ui/CampaignDesigner/_designPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1376959465808" ignored="false" />
+    <file path="/gallery.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378951544431" ignored="false" />
+    <file path="P:/LE3/app/rythm/ui/CampaignDesigner/home.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378766629487" ignored="false" />
+    <file path="/home.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378697072265" ignored="false" />
+    <file path="P:/LE3/app/models/Campaign.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/Campaign.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378942633271" ignored="false" />
+    <file path="P:/LE3/app/sys/Deployer.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948164222" ignored="false" />
+    <file path="/Deployer.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378871814501" ignored="false" />
+    <file path="P:/LE3/app/sys/Feature.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/Feature.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1376974462687" ignored="false" />
+    <file path="P:/LE3/conf/application.conf" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378940144088" ignored="false" />
+    <file path="/application.conf" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377871848351" ignored="false" />
+    <file path="P:/LE3/.version" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378699719951" ignored="false" />
+    <file path="P:/LE3/app/rythm/RuntimeServer/gallery.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970608" ignored="false" />
+    <file path="P:/LE3/app/controllers/RuntimeServer.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970608" ignored="false" />
+    <file path="/RuntimeServer.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378861756683" ignored="false" />
+    <file path="P:/LE3/app/models/DataEntry.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/DataEntry.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378942671870" ignored="false" />
+    <file path="P:/LE3/app/rythm/campaign/Manager/report.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377561271437" ignored="false" />
+    <file path="/report.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377561271437" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/carousel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475771" ignored="false" />
+    <file path="/carousel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378433058319" ignored="false" />
+    <file path="P:/LE3/public/lib/bootstrap/js/bootstrap.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377557570160" ignored="false" />
+    <file path="P:/LE3/app/controllers/data/PageData.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377558393980" ignored="false" />
+    <file path="/PageData.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377558004298" ignored="false" />
+    <file path="P:/LE3/app/models/components/Carousel.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378940144087" ignored="false" />
+    <file path="/Carousel.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377558387470" ignored="false" />
+    <file path="P:/LE3/app/controllers/data/UploadServer.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377558402513" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/runtime/carousel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377566804742" ignored="false" />
+    <file path="P:/LE3/public/javascripts/carousel-rt.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377558951900" ignored="false" />
+    <file path="/carousel-rt.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377558875756" ignored="false" />
+    <file path="P:/LE3/public/stylesheets/carousel-rt.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377559295679" ignored="false" />
+    <file path="/carousel-rt.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377559103866" ignored="false" />
+    <file path="P:/LE3/app/rythm/rt/page.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378032500629" ignored="false" />
+    <file path="/page.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378032497602" ignored="false" />
+    <file path="P:/LE3/app/rythm/ui/CampaignDesigner/keyhandler.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377561808583" ignored="false" />
+    <file path="/keyhandler.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377561807864" ignored="false" />
+    <file path="P:/LE3/public/lib/jquery.touchwipe.min.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377566112213" ignored="false" />
+    <file path="/HeadTail.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377733207859" ignored="false" />
+    <file path="/ISeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377731885024" ignored="false" />
+    <file path="/UnsupportedException.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377731303026" ignored="false" />
+    <file path="/InvalidStateException.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377731457440" ignored="false" />
+    <file path="/UnexpectedEncodingException.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377731792495" ignored="false" />
+    <file path="/InvalidArgException.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377731669845" ignored="false" />
+    <file path="/ITraversable.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378929882156" ignored="false" />
+    <file path="P:/LE3/app/controllers/Application.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/test.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377738326707" ignored="false" />
+    <file path="P:/LE3/app/rythm/Application/test.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377744328254" ignored="false" />
+    <file path="P:/LE3/conf/routes" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/routes" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378690305312" ignored="false" />
+    <file path="P:/LE3/app/rythm/rt/dialog.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377738595865" ignored="false" />
+    <file path="/dialog.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377738426729" ignored="false" />
+    <file path="/upload.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377744580885" ignored="false" />
+    <file path="P:/LE3/public/upload.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377744787428" ignored="false" />
+    <file path="P:/LE3/public/javascripts/app.lib.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378766629487" ignored="false" />
+    <file path="/app.lib.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378699706579" ignored="false" />
+    <file path="P:/LE3/app/models/components/FileUpload.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/FileUpload.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377746650351" ignored="false" />
+    <file path="/X.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377961732923" ignored="false" />
+    <file path="/N.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377771164101" ignored="false" />
+    <file path="/C0.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377771515543" ignored="false" />
+    <file path="P:/play-morphia/samples-and-tests/album/conf/application.conf" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377872172972" ignored="false" />
+    <file path="P:/kudoz/conf/application.conf" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377872271030" ignored="false" />
+    <file path="/dependencies.yml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377962787579" ignored="false" />
+    <file path="P:/kudoz/conf/dependencies.yml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1377962787579" ignored="false" />
+    <file path="P:/LE3/app/rythm/RuntimeServer/uuploader.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378074236584" ignored="false" />
+    <file path="/uuploader.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378074236584" ignored="false" />
+    <file path="P:/LE3/public/javascripts/rt/uuploader.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378071916081" ignored="false" />
+    <file path="/uuploader.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378071169575" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/runtime/fileupload.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/runtime/universal_file_uploader.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378073069839" ignored="false" />
+    <file path="/universal_file_uploader.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378073069839" ignored="false" />
+    <file path="P:/LE3/app/rythm/globalDialog.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/globalDialog.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378038295026" ignored="false" />
+    <file path="P:/LE3/tmp/rythm/RuntimeServer_uuploader_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378074260572" ignored="false" />
+    <file path="P:/LE3/public/lib/jquery.hover_intent.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378073046233" ignored="false" />
+    <file path="P:/LE3/app/rythm/RuntimeServer/uuploader/local.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378073818724" ignored="false" />
+    <file path="P:/LE3/app/rythm/RuntimeServer/uuploader/facebook.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378073914605" ignored="false" />
+    <file path="/facebook.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378073914605" ignored="false" />
+    <file path="P:/LE3/app/rythm/RuntimeServer/uuploader/instagram.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378073923018" ignored="false" />
+    <file path="/instagram.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378073923018" ignored="false" />
+    <file path="P:/LE3/app/rythm/RuntimeServer/uuploader/local.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378074146816" ignored="false" />
+    <file path="/local.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378074136750" ignored="false" />
+    <file path="P:/LE3/app/rythm/RuntimeServer/uuploader/facebook_js.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378075441222" ignored="false" />
+    <file path="/facebook_js.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378075312826" ignored="false" />
+    <file path="/NotAppliedException.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378420172781" ignored="false" />
+    <file path="P:/LE3/bin/mongo.sh" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378428742724" ignored="false" />
+    <file path="/mongo.sh" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378424488197" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/_base.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378429000671" ignored="false" />
+    <file path="P:/LE3/app/controllers/data/CampaignData.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948164221" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/fields/_checkbox.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378429000671" ignored="false" />
+    <file path="P:/LE3/conf/dependencies.yml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378429108630" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/fields/_slider.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378429000671" ignored="false" />
+    <file path="P:/LE3/app/rythm/ui/CampaignDesigner/_leftPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378429000672" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/link.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475771" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/_utils.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378429000672" ignored="false" />
+    <file path="P:/LE3/tmp/rythm/component_designtime_property_label_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378433035752" ignored="false" />
+    <file path="P:/LE3/tmp/rythm/component_designtime_property_carousel_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378433108624" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/checkbox.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475771" ignored="false" />
+    <file path="/checkbox.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378433149254" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/downloader.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475771" ignored="false" />
+    <file path="/downloader.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378433297584" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/fileupload.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/fileupload.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378433341003" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/image.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475771" ignored="false" />
+    <file path="/image.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378434335246" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/languageselector.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475770" ignored="false" />
+    <file path="/languageselector.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378434413172" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/select.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475771" ignored="false" />
+    <file path="/select.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378434499542" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/share.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378438475771" ignored="false" />
+    <file path="/share.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378436979346" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/submit.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970608" ignored="false" />
+    <file path="/submit.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378860459360" ignored="false" />
+    <file path="/a.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378697721622" ignored="false" />
+    <file path="/sample.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378528482023" ignored="false" />
+    <file path="P:/LE3/app/models/components/Gallery.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/Gallery.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378942752207" ignored="false" />
+    <file path="P:/LE3/public/deploy/51dcb5d957208647b5e4892a/51dcd68757208647b5e49220-s.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378687086117" ignored="false" />
+    <file path="P:/LE3/public/deploy/5226af8813deda839698e254/5226af8813deda839698e259.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378687086117" ignored="false" />
+    <file path="P:/LE3/public/deploy/51dcb5d957208647b5e4892a/51dcb5d957208647b5e4892f-s.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378687086117" ignored="false" />
+    <file path="P:/LE3/public/deploy/51dcb5d957208647b5e4892a/51dcb5d957208647b5e4892f.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378687086117" ignored="false" />
+    <file path="P:/LE3/public/deploy/51dcb5d957208647b5e4892a/51dcd68757208647b5e49220.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378687086117" ignored="false" />
+    <file path="P:/LE3/public/deploy/5226af8813deda839698e254/5226af8813deda839698e259-s.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378687086117" ignored="false" />
+    <file path="P:/LE3/conf/greenscript.conf" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378687871148" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/gallery.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378951096554" ignored="false" />
+    <file path="P:/LE3/tmp/rythm/component_designtime_gallery_html__R_T_C__.rythm" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378785681645" ignored="false" />
+    <file path="P:/LE3/tmp/rythm/component_designtime_gallery_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378857510346" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/runtime/gallery.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/runtime/submit.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/runtime/label.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378939856618" ignored="false" />
+    <file path="P:/LE3/app/sys/AppConfig.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948970607" ignored="false" />
+    <file path="/AppConfig.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378939548722" ignored="false" />
+    <file path="P:/LE3/app/controllers/ui/CampaignDesigner.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378940144087" ignored="false" />
+    <file path="P:/LE3/app/notifiers/Mail.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948164222" ignored="false" />
+    <file path="P:/LE3/app/models/Resource.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378948164223" ignored="false" />
+    <file path="P:/LE3/app/models/Client.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956096583" ignored="false" />
+    <file path="/Client.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956092267" ignored="false" />
+    <file path="P:/LE3/app/controllers/SuperUser.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378959374441" ignored="false" />
+    <file path="/SuperUser.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378957302039" ignored="false" />
+    <file path="P:/LE3/app/rythm/SuperUser/index.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378957196852" ignored="false" />
+    <file path="/index.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378957196103" ignored="false" />
+    <file path="P:/LE3/app/controllers/campaign/Manager.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956035274" ignored="false" />
+    <file path="/Manager.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956234813" ignored="false" />
+    <file path="P:/LE3/app/controllers/client/Manager.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956240481" ignored="false" />
+    <file path="P:/LE3/app/rythm/manager.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956594917" ignored="false" />
+    <file path="/manager.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956573250" ignored="false" />
+    <file path="P:/LE3/app/models/IClientProperty.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956765872" ignored="false" />
+    <file path="/IClientProperty.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956765567" ignored="false" />
+    <file path="P:/LE3/app/rythm/campaign/Manager/setting.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378956947329" ignored="false" />
+    <file path="P:/LE3/app/rythm/__add_on.src" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378957014633" ignored="false" />
+    <file path="/__add_on.src" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378957014634" ignored="false" />
+    <file path="P:/LE3/app/rythm/SuperUser/client.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378957077848" ignored="false" />
+    <file path="P:/LE3/app/rythm/SuperUser/clientList.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378957207397" ignored="false" />
+    <file path="/clientList.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1378957088437" ignored="false" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="DebuggerManager">
+    <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </breakpoint_any>
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <breakpoint_rules />
+    <ui_properties />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="osgl-tool" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="_.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/_.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2434" column="0" selection-start="85759" selection-end="85759" vertical-scroll-proportion="0.55813956">
+              <folding>
+                <element signature="e#11746#11776#0" expanded="true" />
+                <element signature="e#11957#11987#0" expanded="true" />
+                <element signature="e#25404#25434#0" expanded="true" />
+                <element signature="e#34005#34035#0" expanded="true" />
+                <element signature="e#43700#43730#0" expanded="true" />
+                <element signature="e#53892#53922#0" expanded="true" />
+                <element signature="e#64889#64919#0" expanded="true" />
+                <element signature="e#83367#83397#0" expanded="true" />
+                <element signature="e#84517#84547#0" expanded="true" />
+                <element signature="e#85768#85798#0" expanded="true" />
+                <element signature="e#88394#88424#0" expanded="true" />
+                <element signature="e#88506#88536#0" expanded="true" />
+                <element signature="e#120693#120723#0" expanded="true" />
+                <element signature="e#121178#121208#0" expanded="true" />
+                <element signature="e#121782#121812#0" expanded="true" />
+                <element signature="e#122013#122043#0" expanded="true" />
+                <element signature="e#122475#122505#0" expanded="true" />
+                <element signature="e#123118#123148#0" expanded="true" />
+                <element signature="e#123665#123695#0" expanded="true" />
+                <element signature="e#124167#124197#0" expanded="true" />
+                <element signature="e#124699#124729#0" expanded="true" />
+                <element signature="e#125336#125366#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="E.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/E.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="70" column="45" selection-start="2183" selection-end="2183" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="C0.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="973" column="27" selection-start="26264" selection-end="26264" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="C.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="85" column="49" selection-start="2343" selection-end="2343" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EnumSet.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://R:/jdk/src.zip!/java/util/EnumSet.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="77" column="4" selection-start="3083" selection-end="3083" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JavaLangAccess.class" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://R:/jdk/jre/lib/rt.jar!/sun/misc/JavaLangAccess.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="39" selection-start="451" selection-end="451" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JumboEnumSet.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://R:/jdk/src.zip!/java/util/JumboEnumSet.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="49" column="9" selection-start="1460" selection-end="1460" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AbstractCollection.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://R:/jdk/src.zip!/java/util/AbstractCollection.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="219" column="19" selection-start="7519" selection-end="7519" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RegularEnumSet.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://R:/jdk/src.zip!/java/util/RegularEnumSet.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="254" column="32" selection-start="7825" selection-end="7825" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ListComprehension.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListComprehension.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="205" column="13" selection-start="6027" selection-end="6027" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="false" />
+    </FindUsagesManager>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitLogSettings">
+    <option name="myDateState">
+      <MyDateState />
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="changedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidArgException.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnsupportedException.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidRangeException.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidEncodingException.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedEncodingException.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ISeq.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/N.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/Base64.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/C1.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/X.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/exception/NotAppliedException.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ITraversable.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/E.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/_.java" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="56" />
+    <option name="y" value="-6" />
+    <option name="width" value="1316" />
+    <option name="height" value="780" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Abstraction issues</id>
+          </State>
+          <State>
+            <id>Bitwise operation issues</id>
+          </State>
+          <State>
+            <id>CSS</id>
+          </State>
+          <State>
+            <id>Class metrics</id>
+          </State>
+          <State>
+            <id>Cloning issues</id>
+          </State>
+          <State>
+            <id>Code style issues</id>
+          </State>
+          <State>
+            <id>Code style issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Control FlowGroovy</id>
+          </State>
+          <State>
+            <id>Control flow issues</id>
+          </State>
+          <State>
+            <id>Data flow issuesGroovy</id>
+          </State>
+          <State>
+            <id>Declaration redundancy</id>
+          </State>
+          <State>
+            <id>Error handling</id>
+          </State>
+          <State>
+            <id>Error handlingGroovy</id>
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>GeneralJavaScript</id>
+          </State>
+          <State>
+            <id>Groovy</id>
+          </State>
+          <State>
+            <id>Inheritance issues</id>
+          </State>
+          <State>
+            <id>Internationalization issues</id>
+          </State>
+          <State>
+            <id>J2ME issues</id>
+          </State>
+          <State>
+            <id>JUnit issues</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+          <State>
+            <id>Method metrics</id>
+          </State>
+          <State>
+            <id>Naming conventions</id>
+          </State>
+          <State>
+            <id>Numeric issues</id>
+          </State>
+          <State>
+            <id>Portability issues</id>
+          </State>
+          <State>
+            <id>Probable bugs</id>
+          </State>
+          <State>
+            <id>Probable bugsGroovy</id>
+          </State>
+          <State>
+            <id>Properties Files</id>
+          </State>
+          <State>
+            <id>Security issues</id>
+          </State>
+          <State>
+            <id>Serialization issues</id>
+          </State>
+          <State>
+            <id>Threading issues</id>
+          </State>
+          <State>
+            <id>Threading issuesGroovy</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Abstraction issues</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="192" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="217" />
+    <property name="OverrideImplement.combined" value="true" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="214" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="recentsLimit" value="5" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="222" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="889" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="896" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="214" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="210" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
+    <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
+    <property name="options.lastSelected" value="reference.projectsettings.compiler.javacompiler" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="options.searchVisible" value="true" />
+    <property name="dynamic.classpath" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.osgl.exception" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.X">
+    <configuration default="false" name="_" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="org.osgl._" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="osgl-tool" />
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="X" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="org.osgl.util.X" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="osgl-tool" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="Application._" />
+      <item index="1" class="java.lang.String" itemvalue="Application.X" />
+    </list>
+    <recent_temporary>
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="Application.X" />
+        <item index="1" class="java.lang.String" itemvalue="Application._" />
+      </list>
+    </recent_temporary>
+    <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" default="true" selected="false">
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
+      <Host>localhost</Host>
+      <Port>5050</Port>
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false" SSL_PROTOCOLS="sslv3">
+    <option name="USER" value="" />
+    <option name="PASSWORD" value="" />
+    <option name="mySSHConnectionTimeout" value="30000" />
+    <option name="mySSHReadTimeout" value="30000" />
+    <option name="LAST_MERGED_REVISION" />
+    <option name="MERGE_DRY_RUN" value="false" />
+    <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
+    <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
+    <option name="IGNORE_SPACES_IN_MERGE" value="false" />
+    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
+    <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
+    <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
+    <option name="FORCE_UPDATE" value="false" />
+    <option name="IGNORE_EXTERNALS" value="false" />
+    <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="56" y="-6" width="1316" height="780" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32930514" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39958158" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3291536" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19665605" sideWeight="0.7714885" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2245223" sideWeight="0.7714885" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23117155" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32704404" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22851153" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CHECK_NEW_TODO" value="true" />
+    <option name="myTodoPanelSettings">
+      <value>
+        <are-packages-shown value="false" />
+        <are-modules-shown value="false" />
+        <flatten-packages value="false" />
+        <is-autoscroll-to-source value="false" />
+      </value>
+    </option>
+    <option name="PERFORM_UPDATE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_COMMIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_CHECKOUT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ROLLBACK_IN_BACKGROUND" value="false" />
+    <option name="CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND" value="false" />
+    <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
+    <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
+    <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
+    <option name="DEFAULT_PATCH_EXTENSION" value="patch" />
+    <option name="SHORT_DIFF_HORIZONTALLY" value="true" />
+    <option name="SHORT_DIFF_EXTRA_LINES" value="2" />
+    <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
+    <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
+    <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
+    <option name="SHOW_FILE_HISTORY_DETAILS" value="true" />
+    <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
+    <option name="SHOW_DIRTY_RECURSIVELY" value="false" />
+    <option name="LIMIT_HISTORY" value="true" />
+    <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
+    <option name="UPDATE_FILTER_SCOPE_NAME" />
+    <option name="USE_COMMIT_MESSAGE_MARGIN" value="false" />
+    <option name="COMMIT_MESSAGE_MARGIN_SIZE" value="72" />
+    <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
+    <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
+    <option name="LAST_COMMIT_MESSAGE" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
+    <option name="FILE_HISTORY_DIALOG_COMMENTS_SPLITTER_PROPORTION" value="0.8" />
+    <option name="FILE_HISTORY_DIALOG_SPLITTER_PROPORTION" value="0.5" />
+    <option name="ACTIVE_VCS_NAME" />
+    <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
+    <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
+    <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
+    <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
+    <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="jar://R:/jdk/src.zip!/java/math/BigDecimal.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="207" column="13" selection-start="10155" selection-end="10155" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/src.zip!/java/lang/String.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2692" column="18" selection-start="103670" selection-end="103670" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/src.zip!/java/lang/Void.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="0" selection-start="536" selection-end="536" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/src.zip!/java/lang/Object.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="217" column="18" selection-start="10329" selection-end="10329" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/S.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1698" column="103" selection-start="45384" selection-end="45384" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#45520#45521#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/src.zip!/java/lang/Iterable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="17" selection-start="346" selection-end="346" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="973" column="27" selection-start="26264" selection-end="26264" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListComprehension.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="205" column="13" selection-start="6027" selection-end="6027" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/src.zip!/java/util/JumboEnumSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="49" column="9" selection-start="1460" selection-end="1460" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/jre/lib/rt.jar!/sun/misc/JavaLangAccess.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="39" selection-start="451" selection-end="451" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/src.zip!/java/util/EnumSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="77" column="4" selection-start="3083" selection-end="3083" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/src.zip!/java/util/RegularEnumSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="254" column="32" selection-start="7825" selection-end="7825" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://R:/jdk/src.zip!/java/util/AbstractCollection.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="219" column="19" selection-start="7519" selection-end="7519" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="85" column="49" selection-start="2343" selection-end="2343" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/E.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="70" column="45" selection-start="2183" selection-end="2183" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/_.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2434" column="0" selection-start="85759" selection-end="85759" vertical-scroll-proportion="0.55813956">
+          <folding>
+            <element signature="e#11746#11776#0" expanded="true" />
+            <element signature="e#11957#11987#0" expanded="true" />
+            <element signature="e#25404#25434#0" expanded="true" />
+            <element signature="e#34005#34035#0" expanded="true" />
+            <element signature="e#43700#43730#0" expanded="true" />
+            <element signature="e#53892#53922#0" expanded="true" />
+            <element signature="e#64889#64919#0" expanded="true" />
+            <element signature="e#83367#83397#0" expanded="true" />
+            <element signature="e#84517#84547#0" expanded="true" />
+            <element signature="e#85768#85798#0" expanded="true" />
+            <element signature="e#88394#88424#0" expanded="true" />
+            <element signature="e#88506#88536#0" expanded="true" />
+            <element signature="e#120693#120723#0" expanded="true" />
+            <element signature="e#121178#121208#0" expanded="true" />
+            <element signature="e#121782#121812#0" expanded="true" />
+            <element signature="e#122013#122043#0" expanded="true" />
+            <element signature="e#122475#122505#0" expanded="true" />
+            <element signature="e#123118#123148#0" expanded="true" />
+            <element signature="e#123665#123695#0" expanded="true" />
+            <element signature="e#124167#124197#0" expanded="true" />
+            <element signature="e#124699#124729#0" expanded="true" />
+            <element signature="e#125336#125366#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>guice</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>osgl-tool</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Maven: junit:junit:4.10</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
+

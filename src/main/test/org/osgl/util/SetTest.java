@@ -13,22 +13,22 @@ import org.junit.Test;
  */
 public class SetTest extends TestBase {
 
-    protected C.Set<Integer> ro;
-    protected C.Set<Integer> rw;
+    protected C0.Set<Integer> ro;
+    protected C0.Set<Integer> rw;
     
     @Before
     public void setUp() {
-        ro = C.set(5, 4, 3, 2, 1, 1);
+        ro = C0.set(5, 4, 3, 2, 1, 1);
         yes(ro.ro());
         eq(ro.size(), 5);
-        rw = C.newSet(5, 4, 3, 2, 1, 2);
+        rw = C0.newSet(5, 4, 3, 2, 1, 2);
         no(rw.ro());
         eq(rw.size(), 5);
     }
     
     @Test
     public void testKeepReadOnly() {
-        C.Set<Integer> s = ro.map(N.f.dbl());
+        C0.Set<Integer> s = ro.map(N.f.dbl());
         yes(s.readOnly());
 
         s = rw.map(N.f.dbl());
@@ -37,21 +37,21 @@ public class SetTest extends TestBase {
     
     @Test
     public void testWithout() {
-        C.Set<Integer> l = ro.without(7, 6, 3);
+        C0.Set<Integer> l = ro.without(7, 6, 3);
         eq(l.size(), 4);
         no(l.contains(3));
     }
     
     @Test
     public void testIntersect() {
-        C.Set<Integer> l = ro.intersect(7, 6, 3);
+        C0.Set<Integer> l = ro.intersect(7, 6, 3);
         eq(l.size(), 1);
         yes(l.contains(3));
     }
     
     @Test
     public void testMap() {
-        C.Set<String> sl = C.set("chengdu,sydney".split(","));
+        C0.Set<String> sl = C0.set("chengdu,sydney".split(","));
         sl = sl.map(S.f.TO_UPPERCASE);
         yes(sl.contains("CHENGDU") && sl.contains("SYDNEY"));
     }

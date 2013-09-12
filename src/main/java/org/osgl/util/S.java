@@ -19,6 +19,8 @@
 */
 package org.osgl.util;
 
+import org.osgl._;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -79,7 +81,7 @@ public class S {
     }
 
     public final static Str str(Object o) {
-        _.NPE(o);
+        X.NPE(o);
         return new Str(o.toString());
     }
 
@@ -828,7 +830,7 @@ public class S {
          * @param s
          */
         public Str(String s) {
-            _.NPE(s);
+            X.NPE(s);
             this.s = s;
         }
 
@@ -882,6 +884,14 @@ public class S {
          * @return
          */
         public int size() {
+            return s.length();
+        }
+
+        /**
+         * Alias of {@link #length()}
+         * @return
+         */
+        public int len() {
             return s.length();
         }
 
@@ -1411,14 +1421,14 @@ public class S {
          * @param limit
          * @return
          */
-        public C.List<Str> split(String regex, int limit) {
+        public C0.List<Str> split(String regex, int limit) {
             String[] sa = s.split(regex, limit);
             int len = sa.length;
             Str[] ssa = new Str[len];
             for (int i = 0; i < len; ++i) {
                 ssa[i] = str(sa[i]);
             }
-            return C.list(ssa);
+            return C0.list(ssa);
         }
 
         /**
@@ -1426,7 +1436,7 @@ public class S {
          * @param regex
          * @return
          */
-        public C.List<Str> split(String regex) {
+        public C0.List<Str> split(String regex) {
             return split(regex, 0);
         }
 
@@ -1621,95 +1631,95 @@ public class S {
     // --- functors 
     public static class f {
 
-        public static final F.F1 TO_UPPERCASE = new F.F1<String, String>() {
+        public static final _.F1 TO_UPPERCASE = new _.F1<String, String>() {
             @Override
-            public String run(String s) {
+            public String apply(String s) {
                 return S.toUpperCase(s);
             }
         };
 
-        public static final F.F1<String, String> toUpperCase() {
+        public static final _.F1<String, String> toUpperCase() {
             return TO_UPPERCASE;
         }
 
-        public static final F.F1 TO_LOWERCASE = new F.F1<String, String>() {
+        public static final _.F1 TO_LOWERCASE = new _.F1<String, String>() {
             @Override
-            public String run(String s) {
+            public String apply(String s) {
                 return S.toLowerCase(s);
             }
         };
 
-        public static final F.F1<String, String> toLowerCase() {
+        public static final _.F1<String, String> toLowerCase() {
             return TO_LOWERCASE;
         }
 
-        public static final F.F1 CAP_FIRST = new F.F1<String, String>() {
+        public static final _.F1 CAP_FIRST = new _.F1<String, String>() {
             @Override
-            public String run(String s) {
+            public String apply(String s) {
                 return S.capFirst(s);
             }
         };
 
-        public static final F.F1<String, String> capFirst() {
+        public static final _.F1<String, String> capFirst() {
             return CAP_FIRST;
         }
 
-        public static final F.If<String> startsWith(final String prefix) {
-            return new F.If<String>() {
+        public static final _.If<String> startsWith(final String prefix) {
+            return new _.If<String>() {
                 @Override
-                public boolean eval(String s) {
+                public boolean test(String s) {
                     return s.startsWith(prefix);
                 }
             };
         }
 
-        public static final F.If<String> endsWith(final String suffix) {
-            return new F.If<String>() {
+        public static final _.If<String> endsWith(final String suffix) {
+            return new _.If<String>() {
                 @Override
-                public boolean eval(String s) {
+                public boolean test(String s) {
                     return s.endsWith(suffix);
                 }
             };
         }
 
-        public static final F.If<String> matches(final String reg) {
+        public static final _.If<String> matches(final String reg) {
             final Pattern pattern = Pattern.compile(reg);
-            return new F.If<String>() {
+            return new _.If<String>() {
                 @Override
-                public boolean eval(String s) {
+                public boolean test(String s) {
                     return pattern.matcher(s).matches();
                 }
             };
         }
 
-        public static final F.Transformer<String, Integer> size() {
+        public static final _.Transformer<String, Integer> size() {
             return size;
         }
 
-        public static final F.Transformer<String, Integer> size = new F.Transformer<String, Integer>() {
+        public static final _.Transformer<String, Integer> size = new _.Transformer<String, Integer>() {
             @Override
             public Integer transform(String s) {
                 return null == s ? 0 : s.length();
             }
         };
 
-        public static final <T> F.F1<StringBuilder, T> builder(final StringBuilder sb) {
+        public static final <T> _.F1<StringBuilder, T> builder(final StringBuilder sb) {
             return CONCAT.curry(sb);
         }
 
-        public static final <T> F.F2<StringBuilder, T, StringBuilder> concat() {
+        public static final <T> _.F2<StringBuilder, T, StringBuilder> concat() {
             return CONCAT;
         }
 
-        public static F.F2 CONCAT = new F.F2<StringBuilder, Object, StringBuilder>() {
+        public static _.F2 CONCAT = new _.F2<StringBuilder, Object, StringBuilder>() {
             @Override
-            public StringBuilder run(Object s2, StringBuilder sb) {
+            public StringBuilder apply(Object s2, StringBuilder sb) {
                 return sb.append(s2);
             }
         };
 
-        public static <T> F.Transformer<T, String> format(final String tmpl) {
-            return new F.Transformer<T, String>() {
+        public static <T> _.Transformer<T, String> format(final String tmpl) {
+            return new _.Transformer<T, String>() {
                 @Override
                 public String transform(T t) {
                     return String.format(tmpl, t);
