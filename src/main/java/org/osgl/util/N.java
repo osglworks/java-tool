@@ -416,11 +416,19 @@ public class N {
         }
 
         public _.F0<Number> curry(final Number a, final Number b) {
+<<<<<<< HEAD
             return curry(a, b);
         }
 
         public _.F1<Number, Number> curry(final Number b) {
             return curry(b);
+=======
+            return _.curry(this, a, b);
+        }
+
+        public _.F1<Number, Number> curry(final Number b) {
+            return _.curry(this, b);
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
         }
     }
     

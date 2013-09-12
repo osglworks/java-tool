@@ -48,7 +48,11 @@ public class CTest extends TestBase {
     
     @Test
     public void testCompact() {
+<<<<<<< HEAD
         C0.List<String> l = C0.list("A", null, "C1", "D");
+=======
+        C0.List<String> l = C0.list("A", null, "C", "D");
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
         eq(l.size(), 4);
         eq(l.compact().size(), 3);
     }

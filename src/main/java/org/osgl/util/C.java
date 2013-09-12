@@ -83,7 +83,7 @@ public final class C {
         _.Option<T> first();
 
         /**
-         * Returns an {@link _.Option} describing the first element in the
+         * Returns an {@link _.Option} of the first element in the
          * traversable or {@link _#NONE} if the traversable is empty
          *
          * @return the first element from the traversable

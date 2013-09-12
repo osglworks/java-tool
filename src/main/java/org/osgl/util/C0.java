@@ -19,8 +19,11 @@
 */
 package org.osgl.util;
 
+<<<<<<< HEAD
 import org.osgl._;
 
+=======
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -678,7 +681,11 @@ public class C0 {
 
         /**
          * Sub class overwrites this method to return an copy of this
+<<<<<<< HEAD
          * of <code>Col</code> and make it isMutable
+=======
+         * of <code>Col</code> and make it mutable
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          *
          * @return an new instance of {@link Col collection}
          */
@@ -798,7 +805,11 @@ public class C0 {
         /**
          * Is this collection writable
          *
+<<<<<<< HEAD
          * @return true if this list is a isMutable collection
+=======
+         * @return true if this list is a mutable collection
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          */
         public final boolean rw() {
             return !_ro;
@@ -807,7 +818,11 @@ public class C0 {
         /**
          * alias of {@link #rw()}
          *
+<<<<<<< HEAD
          * @return true if this list is a isMutable collection
+=======
+         * @return true if this list is a mutable collection
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          */
         public final boolean readWrite() {
             return !_ro;
@@ -887,7 +902,11 @@ public class C0 {
          * Return a List contains all elements contained in this list but not in the specified collection
          *
          * @param c
+<<<<<<< HEAD
          * @return an new list with isMutable state the same as the underline list
+=======
+         * @return an new list with mutable state the same as the underline list
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          */
         public final <L extends Col<T>> L without(Collection<T> c) {
             L l0 = copyNew();
@@ -899,7 +918,11 @@ public class C0 {
          * Return a List contains all elements contained in this list but not in the specified array
          *
          * @param elements
+<<<<<<< HEAD
          * @return an new list with isMutable state the same as the underline list
+=======
+         * @return an new list with mutable state the same as the underline list
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          */
         public final <L extends Col<T>> L without(T... elements) {
             return without(C0.list(elements));
@@ -909,7 +932,11 @@ public class C0 {
          * Return a List contains elements that contained in both this list and the specified collection
          *
          * @param c the collection
+<<<<<<< HEAD
          * @return an new list with isMutable state the same as the underline list
+=======
+         * @return an new list with mutable state the same as the underline list
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          */
         public final <L extends Col<T>> L intersect(Collection<T> c) {
             L l0 = copyNew();
@@ -921,7 +948,11 @@ public class C0 {
          * Return a List contains elements that contained in both this list and the specified elements
          *
          * @param elements
+<<<<<<< HEAD
          * @return an new list with isMutable state the same as the underline list
+=======
+         * @return an new list with mutable state the same as the underline list
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          */
         public final <L extends Col<T>> L intersect(T... elements) {
             return intersect(C0.list(elements));
@@ -931,7 +962,11 @@ public class C0 {
          * Return a list contains elements in this list matches the filters specified
          *
          * @param filters an array of filters (a functor accept one param and return boolean type
+<<<<<<< HEAD
          * @return an new list with isMutable state the same as this list
+=======
+         * @return an new list with mutable state the same as this list
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          */
         public final <L extends Col<T>> L filter(final _.IFunc1<Boolean, T>... filters) {
             return copy(lc().filter(filters), readOnly());
@@ -943,7 +978,11 @@ public class C0 {
          *
          * @param mappers
          * @param <E>
+<<<<<<< HEAD
          * @return an new list contains transform result with the same isMutable state as this list
+=======
+         * @return an new list contains transform result with the same mutable state as this list
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          */
         public final <E, L extends Col<E>> L map(Class<L> clz, _.IFunc1... mappers) {
             ListComprehension<E> lc = lc().map(mappers);
@@ -1111,7 +1150,11 @@ public class C0 {
         /**
          * Return a list contains all elements of this list with the specified elements prepended.
          * <p/>
+<<<<<<< HEAD
          * <p>The isMutable state of the new list is the same as the underline list</p>
+=======
+         * <p>The mutable state of the new list is the same as the underline list</p>
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          * <p/>
          * <p>If no elements specified then a copy of this list is returned</p>
          *
@@ -1125,7 +1168,11 @@ public class C0 {
         /**
          * Return a list contains all elements of this list with the specified elements appended.
          * <p/>
+<<<<<<< HEAD
          * <p>The isMutable state of the new list is the same as the underline list</p>
+=======
+         * <p>The mutable state of the new list is the same as the underline list</p>
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          * <p/>
          * <p>If no elements specified then a copy of this list is returned</p>
          *
@@ -1139,7 +1186,11 @@ public class C0 {
         /**
          * Return a list contains all elements in this list in reversed order
          * <p/>
+<<<<<<< HEAD
          * <p>The new list's isMutable state is the same as the underline list</p>
+=======
+         * <p>The new list's mutable state is the same as the underline list</p>
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          *
          * @return an new list
          */
@@ -1150,12 +1201,20 @@ public class C0 {
         /**
          * Return a list of all elements of this list without null
          * <p/>
+<<<<<<< HEAD
          * <p>The new list's isMutable state is the same as the underline list</p>
+=======
+         * <p>The new list's mutable state is the same as the underline list</p>
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
          *
          * @return an new list
          */
         public List<T> compact() {
+<<<<<<< HEAD
             return lc().filter(_.F.NOT_NULL).asList(readOnly());
+=======
+            return lc().filter(_.If.NOT_NULL).asList(readOnly());
+>>>>>>> 34987d8de8a48f906bf7a9033b2e3546226e12e0
         }
 
         /**

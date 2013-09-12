@@ -2,61 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b0cdce9e-07ac-4625-970b-4f5f6fc837af" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/C1.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidRangeException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_10.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/NotAppliedException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/_.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/luog.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/osgl-tool.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\util\F.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Base64.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Base64.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/CTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/CTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Codec.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Codec.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/ConfigurationException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/ConfigurationException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Crypto.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Crypto.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/E.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/E.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/FastRuntimeException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/FastRuntimeException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/IO.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IO.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidArgException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidArgException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidStateException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidStateException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Itr.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Itr.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/LCTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/LCTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListComprehension.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListComprehension.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/ListTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/ListTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/MapComprehension.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/MapComprehension.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/com/osgl/sample/MappingSample.java" afterPath="$PROJECT_DIR$/src/main/test/com/osgl/sample/MappingSample.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/N.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/N.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/NTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/NTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Range.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Range.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/S.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/S.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/STest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/STest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/org/osgl/util/SetTest.java" afterPath="$PROJECT_DIR$/src/main/test/org/osgl/util/SetTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/com/osgl/StrTest.java" afterPath="$PROJECT_DIR$/src/main/test/com/osgl/StrTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/com/osgl/TestBase.java" afterPath="$PROJECT_DIR$/src/main/test/com/osgl/TestBase.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedEncodingException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedEncodingException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedIOException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnexpectedIOException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnsupportedException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/UnsupportedException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/test/com/osgl/_Test.java" afterPath="$PROJECT_DIR$/src/main/test/com/osgl/_Test.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assembly-dist.xml" afterPath="$PROJECT_DIR$/assembly-dist.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/etc/header.txt" afterPath="$PROJECT_DIR$/src/etc/header.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/etc/javadoc.css" afterPath="$PROJECT_DIR$/src/etc/javadoc.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tool.iml" afterPath="$PROJECT_DIR$/tool.iml" />
-      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\C.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java" />
-      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\_.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/X.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/X.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/X.java" />
     </list>
     <ignored path="osgl-tool.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -286,10 +236,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="_.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="_.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/_.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2434" column="0" selection-start="85759" selection-end="85759" vertical-scroll-proportion="0.55813956">
+            <state line="2429" column="21" selection-start="85621" selection-end="85621" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="e#11746#11776#0" expanded="true" />
                 <element signature="e#11957#11987#0" expanded="true" />
@@ -330,17 +280,18 @@
       <file leaf-file-name="C0.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="973" column="27" selection-start="26264" selection-end="26264" vertical-scroll-proportion="0.0">
+            <state line="450" column="15" selection-start="11066" selection-end="11066" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="C.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="C.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="85" column="49" selection-start="2343" selection-end="2343" vertical-scroll-proportion="0.0">
+            <state line="390" column="5" selection-start="14721" selection-end="14721" vertical-scroll-proportion="0.5286822">
               <folding>
+                <element signature="e#0#14986#0" expanded="true" />
                 <element signature="imports" expanded="true" />
               </folding>
             </state>
@@ -432,9 +383,9 @@
         <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/X.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/osgl/exception/NotAppliedException.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ITraversable.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/E.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/osgl/_.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" />
       </list>
     </option>
   </component>
@@ -1005,13 +956,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="973" column="27" selection-start="26264" selection-end="26264" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListComprehension.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="205" column="13" selection-start="6027" selection-end="6027" vertical-scroll-proportion="0.0">
@@ -1054,15 +998,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="85" column="49" selection-start="2343" selection-end="2343" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/E.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="70" column="45" selection-start="2183" selection-end="2183" vertical-scroll-proportion="0.0">
@@ -1072,7 +1007,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/_.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2434" column="0" selection-start="85759" selection-end="85759" vertical-scroll-proportion="0.55813956">
+        <state line="2429" column="21" selection-start="85621" selection-end="85621" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#11746#11776#0" expanded="true" />
             <element signature="e#11957#11987#0" expanded="true" />
@@ -1096,6 +1031,23 @@
             <element signature="e#124167#124197#0" expanded="true" />
             <element signature="e#124699#124729#0" expanded="true" />
             <element signature="e#125336#125366#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C0.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="450" column="15" selection-start="11066" selection-end="11066" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="390" column="5" selection-start="14721" selection-end="14721" vertical-scroll-proportion="0.5286822">
+          <folding>
+            <element signature="e#0#14986#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
