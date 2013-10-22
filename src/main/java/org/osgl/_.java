@@ -21,10 +21,12 @@ package org.osgl;
 
 import org.osgl.exception.FastRuntimeException;
 import org.osgl.exception.NotAppliedException;
-import org.osgl.util.*;
+import org.osgl.util.E;
+import org.osgl.util.S;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -43,10 +45,10 @@ import java.util.*;
  * <p/>
  * <p>More about function interface</p>
  * <p/>
- * <p>Under <code>_</code>, there are six function interfaces defined, from <code>_.IFunc0</code>
- * to <code>_.IFunc5</code>, where the last digit means the number of parameters the function
- * is applied to. For example, the <code>apply</code> method of <code>IFunc0</code> takes
- * no parameter while that of <code>IFunc2</code> takes two parameters. All these function
+ * <p>Under <code>_</code>, there are six function interfaces defined, from <code>_.Func0</code>
+ * to <code>_.Func5</code>, where the last digit means the number of parameters the function
+ * is applied to. For example, the <code>apply</code> method of <code>Func0</code> takes
+ * no parameter while that of <code>Func2</code> takes two parameters. All these function
  * interfaces are defined with generic type parameters, corresponding to the type of all
  * parameters and that of the return value. For procedure (a function that does not return anything),
  * the user application could use <code>Void</code> as the return value type, and return
@@ -69,8 +71,8 @@ import java.util.*;
  * example of how to do it:</p>
  * <p/>
  * <pre>
- *     void foo(_.IFunc2<Integer, String> f) {
- *         F2<Integer, String> newF = _.toF2(f);
+ *     void foo(_.Func2<Integer, String> f) {
+ *         F2<Integer, String> newF = _.f2(f);
  *         newF.chain(...);
  *         ...
  *     }
@@ -88,13 +90,8 @@ import java.util.*;
  * @author Gelin Luo
  * @version 0.2
  */
-public final class _ {
-
-    private _() {
-    }
-
-    public static final _ INSTANCE = new _();
-    public static final _ instance = INSTANCE;
+public enum _ {
+    INSTANCE;
 
     // --- Functions and their default implementations
 
@@ -102,33 +99,33 @@ public final class _ {
      * Define a function that apply to no parameter (strictly this is not a function)
      *
      * @param <R> the generic type of the return value, could be <code>Void</code>
-     * @see IFunc1
-     * @see IFunc2
-     * @see IFunc3
-     * @see IFunc4
-     * @see IFunc5
+     * @see org.osgl._.Function
+     * @see org.osgl._.Func2
+     * @see org.osgl._.Func3
+     * @see org.osgl._.Func4
+     * @see org.osgl._.Func5
      * @see F0
      * @since 0.2
      */
-    public static interface IFunc0<R> {
+    public static interface Func0<R> {
 
         /**
          * user application to implement main logic of applying the function
          *
          * @throws NotAppliedException if the function doesn't apply to the current context
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link C.ITraversable container}
+         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply() throws NotAppliedException, Break;
 
     }
 
     /**
-     * Default implementation for {@link IFunc0}. Implementation of {@link IFunc0} should
+     * Default implementation for {@link org.osgl._.Func0}. Implementation of {@link org.osgl._.Func0} should
      * (nearly) always extend to this class instead of implement the interface directly
      *
      * @since 0.2
      */
-    public static abstract class F0<R> implements IFunc0<R> {
+    public static abstract class F0<R> implements Func0<R> {
 
         /**
          * Return a {@link Break} with payload. Here is an example of how to use this method:
@@ -176,7 +173,7 @@ public final class _ {
          * @return the composed function
          * @throws NullPointerException if {@code before} is null
          */
-        public <T> F0<T> andThen(final IFunc1<? super R, ? extends T> after) {
+        public <T> F0<T> andThen(final Function<? super R, ? extends T> after) {
             E.NPE(after);
             final F0<R> me = this;
             return new F0<T>() {
@@ -199,7 +196,7 @@ public final class _ {
          * @param fs a sequence of function to be applied after this function
          * @return a composed function
          */
-        public F0<R> andThen(final IFunc0<? extends R>... fs) {
+        public F0<R> andThen(final Func0<? extends R>... fs) {
             if (fs.length == 0) {
                 return this;
             }
@@ -208,7 +205,7 @@ public final class _ {
                 @Override
                 public R apply() {
                     R r = me.apply();
-                    for (IFunc0<? extends R> f : fs) {
+                    for (Func0<? extends R> f : fs) {
                         r = f.apply();
                     }
                     return r;
@@ -224,7 +221,7 @@ public final class _ {
          * @param fallback the function to applied if this function doesn't apply in the current situation
          * @return the final result
          */
-        public F0<R> orElse(final IFunc0<? extends R> fallback) {
+        public F0<R> orElse(final Func0<? extends R> fallback) {
             final F0<R> me = this;
             return new F0<R>() {
                 @Override
@@ -264,7 +261,7 @@ public final class _ {
          *
          * @param action the function that apply to the result of this function
          * @return a function which maps arguments x to {@code true} if this function is applied and run
-         *         the action function for the side effect, or {@code false} if this function is not applied.
+         * the action function for the side effect, or {@code false} if this function is not applied.
          */
         public F0<Boolean> runWith(final F1<? super R, ?> action) {
             final F0<R> me = this;
@@ -284,11 +281,32 @@ public final class _ {
     }
 
     /**
-     * A dumb function for {@link IFunc0} that does nothing and return <code>null</code>
+     * The class adapt traditional Factory to Function
+     * @param <T> the type of the instance been created by the factory
+     */
+    public static abstract class Factory<T> extends F0<T> {
+
+        @Override
+        public T apply() throws NotAppliedException, Break {
+            return create();
+        }
+
+        /**
+         * The abstract create method that will be called by
+         * the {@link #apply()} method
+         *
+         * @return an instance the factory create
+         */
+        public abstract T create();
+    }
+
+    /**
+     * A dumb function for {@link org.osgl._.Func0} that does nothing and return <code>null</code>
      *
      * @see #f0()
      * @since 0.2
      */
+    @SuppressWarnings("unchecked")
     public static final F0 F0 = new F0() {
         @Override
         public Object apply() {
@@ -297,7 +315,7 @@ public final class _ {
     };
 
     /**
-     * Return a dumb function for {@link IFunc0}. This is the type-safe version of {@link #F0}
+     * Return a dumb function for {@link org.osgl._.Func0}. This is the type-safe version of {@link #F0}
      *
      * @since 0.2
      */
@@ -307,12 +325,12 @@ public final class _ {
     }
 
     /**
-     * Convert a general {@link IFunc0} typed function to {@link F0} type
+     * Convert a general {@link org.osgl._.Func0} typed function to {@link F0} type
      *
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
-    public static <R> F0<R> toF0(final IFunc0<? extends R> f0) {
+    public static <R> F0<R> f0(final Func0<? extends R> f0) {
         E.NPE(f0);
         if (f0 instanceof F0) {
             return (F0<R>) f0;
@@ -326,42 +344,99 @@ public final class _ {
     }
 
     /**
-     * Define a function structure that accept one parameter
+     * Define a function structure that accept one parameter. This interface is created to make it
+     * easily migrate to Java 8 in the future
      *
-     * @param <P1> the type of first (and the only one) parameter this function applied to
-     * @param <R> the type of the return value when this function applied to the parameter(s)
-     * @see IFunc0
-     * @see IFunc2
-     * @see IFunc3
-     * @see IFunc4
-     * @see IFunc5
+     * @param <T> the type of input parameter
+     * @param <U> the type of the return value when this function applied to the parameter(s)
+     * @see org.osgl._.Func0
+     * @see org.osgl._.Function
+     * @see org.osgl._.Func2
+     * @see org.osgl._.Func3
+     * @see org.osgl._.Func4
+     * @see org.osgl._.Func5
      * @see F1
      * @since 0.2
      */
-    public static interface IFunc1<P1, R> {
+    public static interface Function<T, U> {
 
         /**
-         * Apply this function to &lt;P1&gt; type parameter.
+         * Apply this function to &lt;T&gt; type parameter.
          * <p/>
          * <p>In case implementing a partial function, it can throw out an
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
+         * @return {@code U} type result
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link C.ITraversable container}
+         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
-        R apply(P1 p1) throws NotAppliedException, Break;
+        U apply(T t) throws NotAppliedException, Break;
 
     }
 
     /**
-     * Base implementation of {@link IFunc1} function. User application should
+     * Alias of {@link Function}
+     *
+     * @param <P1>
+     * @param <R>
+     * @since 0.2
+     */
+    public static interface Func1<P1, R> extends Function<P1, R> {
+    }
+
+    /**
+     * A {@link Function} function that support {@link #times(int)} operation
+     *
+     * @param <P1> the type of parameter the function applied to
+     * @param <R>  the type of return value of the function
+     */
+    public static interface MultiplicableFunction<P1, R> extends Function<P1, R> {
+        /**
+         * Returns a function with {@code n} times factor specified. When the function
+         * returned applied to a param, the effect is the same as apply this function
+         * {@code n} times to the same param
+         *
+         * @param n specify the times factor
+         * @return the new function
+         */
+        MultiplicableFunction<P1, R> times(int n);
+    }
+
+    /**
+     * See <a href="http://en.wikipedia.org/wiki/Bijection">http://en.wikipedia.org/wiki/Bijection</a>. A
+     * {@code Bijection} (mapping from {@code X} to {@code Y} is a special {@link Function} that has an
+     * inverse function by itself also a {@code Bijection} mapping from {@code Y} to {@code X}
+     *
+     * @param <X> the type of parameter
+     * @param <Y>
+     */
+    public static interface Bijection<X, Y> extends Function<X, Y> {
+        /**
+         * Returns the inverse function mapping from {@code Y} back to {@code X}
+         */
+        Bijection<Y, X> inverse();
+    }
+
+    /**
+     * Base implementation of {@link org.osgl._.Function} function. User application should
      * (nearly) always make their implementation extend to this base class
-     * instead of implement {@link IFunc1} directly
+     * instead of implement {@link org.osgl._.Function} directly
      *
      * @since 0.2
      */
-    public static abstract class F1<P1, R> implements IFunc1<P1, R> {
+    public static abstract class F1<P1, R>
+            implements Func1<P1, R>, Bijection<P1, R>, MultiplicableFunction<P1, R> {
+
+        @Override
+        public Bijection<R, P1> inverse() {
+            throw new NotAppliedException();
+        }
+
+        @Override
+        public MultiplicableFunction<P1, R> times(int n) {
+            throw new NotAppliedException();
+        }
 
         /**
          * @see F0#breakOut(Object)
@@ -387,7 +462,7 @@ public final class _ {
         }
 
         public final F0<R> curry(final P1 p1) {
-            final IFunc1<P1, R> me = this;
+            final Function<P1, R> me = this;
             return new F0<R>() {
                 @Override
                 public R apply() {
@@ -402,15 +477,15 @@ public final class _ {
          * function throws an exception, it is relayed to the caller of the composed
          * function.
          *
-         * @param <T> the type of the new function's application result
+         * @param <T>   the type of the new function's application result
          * @param after the function applies after this function is applied
          * @param <T>   the type of the output of the {@code before} function
          * @return the composed function
          * @throws NullPointerException if @{code after} is null
          */
-        public <T> F1<P1, T> andThen(final IFunc1<? super R, ? extends T> after) {
+        public <T> F1<P1, T> andThen(final Function<? super R, ? extends T> after) {
             E.NPE(after);
-            final IFunc1<P1, R> me = this;
+            final Function<P1, R> me = this;
             return new F1<P1, T>() {
                 @Override
                 public T apply(P1 p1) {
@@ -431,7 +506,7 @@ public final class _ {
          * @param afters a sequence of function to be applied after this function
          * @return a composed function
          */
-        public F1<P1, R> andThen(final IFunc1<? super P1, ? extends R>... afters) {
+        public F1<P1, R> andThen(final Function<? super P1, ? extends R>... afters) {
             if (0 == afters.length) {
                 return this;
             }
@@ -440,7 +515,7 @@ public final class _ {
                 @Override
                 public R apply(P1 p1) {
                     R r = me.apply(p1);
-                    for (IFunc1<? super P1, ? extends R> f : afters) {
+                    for (Function<? super P1, ? extends R> f : afters) {
                         r = f.apply(p1);
                     }
                     return r;
@@ -456,7 +531,7 @@ public final class _ {
          * @param fallback the function to applied if this function doesn't apply to the parameter(s)
          * @return the composed function
          */
-        public F1<P1, R> orElse(final IFunc1<? super P1, ? extends R> fallback) {
+        public F1<P1, R> orElse(final Function<? super P1, ? extends R> fallback) {
             final F1<P1, R> me = this;
             return new F1<P1, R>() {
                 @Override
@@ -471,13 +546,13 @@ public final class _ {
         }
 
         /**
-         * Returns an {@code F0&lt;R&gt;>} function by composing the specified {@code IFunc0&ltP1&gt;} function
+         * Returns an {@code F0&lt;R&gt;>} function by composing the specified {@code Func0&ltP1&gt;} function
          * with this function applied last
          *
          * @param before the function to be applied first when applying the return function
          * @return an new function such that f() == apply(f0())
          */
-        public F0<R> compose(final IFunc0<? extends P1> before) {
+        public F0<R> compose(final Func0<? extends P1> before) {
             final F1<P1, R> me = this;
             return new F0<R>() {
                 @Override
@@ -488,107 +563,106 @@ public final class _ {
         }
 
         /**
-         * Returns an {@code F1&lt;R, A&gt;>} function by composing the specified
-         * {@code IFunc1&ltP1, A&gt;} function with this function applied last
+         * Returns an {@code F1&lt;X1, R&gt;>} function by composing the specified
+         * {@code Function&ltX1, P1&gt;} function with this function applied last
          *
          * @param before the function to be applied first when applying the return function
          * @return an new function such that f(a) == apply(f1(a))
          */
-        public <A> F1<A, R> compose(final IFunc1<? super A, ? extends P1> before) {
+        public <X1> F1<X1, R>
+        compose(final Function<? super X1, ? extends P1> before) {
             final F1<P1, R> me = this;
-            return new F1<A, R>() {
+            return new F1<X1, R>() {
                 @Override
-                public R apply(A a) {
-                    return me.apply(before.apply(a));
+                public R apply(X1 x1) {
+                    return me.apply(before.apply(x1));
                 }
             };
         }
 
         /**
-         * Returns an {@code F2&lt;R, A, B&gt;>} function by composing the specified
-         * {@code IFunc2&ltP1, A, B&gt;} function with this function applied last
+         * Returns an {@code F2&lt;X1, X2, R&gt;>} function by composing the specified
+         * {@code Func2&ltX1, X2, P1&gt;} function with this function applied last
          *
-         * @param <A> the type of first param the new function applied to
-         * @param <B> the type of second param the new function applied to
+         * @param <X1>   the type of first param the new function applied to
+         * @param <X2>   the type of second param the new function applied to
          * @param before the function to be applied first when applying the return function
-         * @return an new function such that f(a, b) == apply(f1(a, b))
+         * @return an new function such that f(x1, x2) == apply(f1(x1, x2))
          */
-        public <A, B> F2<A, B, R> compose(final IFunc2<? super A, ? super B, ? extends P1> before) {
+        public <X1, X2> F2<X1, X2, R>
+        compose(final Func2<? super X1, ? super X2, ? extends P1> before) {
             final F1<P1, R> me = this;
 
-            return new F2<A, B, R>() {
+            return new F2<X1, X2, R>() {
                 @Override
-                public R apply(A a, B b) {
-                    return me.apply(before.apply(a, b));
+                public R apply(X1 x1, X2 x2) {
+                    return me.apply(before.apply(x1, x2));
                 }
             };
         }
 
         /**
-         * Returns an {@code F3&lt;R, A, B, C&gt;>} function by composing the specified
-         * {@code IFunc3&ltP1, A, B, C&gt;} function with this function applied last
+         * Returns an {@code F3&lt;X1, X2, X3, R&gt;>} function by composing the specified
+         * {@code Func3&ltX1, X2, X3, P1&gt;} function with this function applied last
          *
-         * @param <A> the type of first param the new function applied to
-         * @param <B> the type of second param the new function applied to
-         * @param <C> the type of third param the new function applied to
+         * @param <X1>   the type of first param the new function applied to
+         * @param <X2>   the type of second param the new function applied to
+         * @param <X3>   the type of third param the new function applied to
          * @param before the function to be applied first when applying the return function
-         * @return an new function such that f(a, b, c) == apply(f1(a, b, c))
+         * @return an new function such that f(x1, x2, x3) == apply(f1(x1, x2, x3))
          */
-        public <A, B, C> F3<A, B, C, R> compose(
-                final IFunc3<? super A, ? super B, ? super C, ? extends P1> before
-        ) {
+        public <X1, X2, X3> F3<X1, X2, X3, R>
+        compose(final Func3<? super X1, ? super X2, ? super X3, ? extends P1> before) {
             final F1<P1, R> me = this;
-            return new F3<A, B, C, R>() {
+            return new F3<X1, X2, X3, R>() {
                 @Override
-                public R apply(A a, B b, C c) {
-                    return me.apply(before.apply(a, b, c));
+                public R apply(X1 x1, X2 x2, X3 x3) {
+                    return me.apply(before.apply(x1, x2, x3));
                 }
             };
         }
 
         /**
-         * Returns an {@code F4&lt;R, A, B, C, D&gt;>} function by composing the specified
-         * {@code IFunc4&ltP1, A, B, C, D&gt;} function with this function applied last
+         * Returns an {@code F3&lt;X1, X2, X3, X4, R&gt;>} function by composing the specified
+         * {@code Func3&ltX1, X2, X3, X4, P1&gt;} function with this function applied last
          *
-         * @param <A> the type of first param the new function applied to
-         * @param <B> the type of second param the new function applied to
-         * @param <C> the type of third param the new function applied to
-         * @param <D> the type of the fourth param the new function applied to
+         * @param <X1>   the type of first param the new function applied to
+         * @param <X2>   the type of second param the new function applied to
+         * @param <X3>   the type of third param the new function applied to
+         * @param <X4>   the type of fourth param the new function applied to
          * @param before the function to be applied first when applying the return function
-         * @return an new function such that f(a, b, c, c) == apply(f1(a, b, c, d))
+         * @return an new function such that f(x1, x2, x3, x4) == apply(f1(x1, x2, x3, x4))
          */
-        public <A, B, C, D> F4<A, B, C, D, R> compose(
-                final IFunc4<? super A, ? super B, ? super C, ? super D, ? extends P1> before
-        ) {
+        public <X1, X2, X3, X4> F4<X1, X2, X3, X4, R>
+        compose(final Func4<? super X1, ? super X2, ? super X3, ? super X4, ? extends P1> before) {
             final F1<P1, R> me = this;
-            return new F4<A, B, C, D, R>() {
+            return new F4<X1, X2, X3, X4, R>() {
                 @Override
-                public R apply(A a, B b, C c, D d) {
-                    return me.apply(before.apply(a, b, c, d));
+                public R apply(X1 x1, X2 x2, X3 x3, X4 x4) {
+                    return me.apply(before.apply(x1, x2, x3, x4));
                 }
             };
         }
 
         /**
-         * Returns an {@code F5&lt;R, A, B, C, D, E&gt;>} function by composing the specified
-         * {@code IFunc4&ltP1, A, B, C, D, E&gt;} function with this function applied last
+         * Returns an {@code F3&lt;X1, X2, X3, X4, X5, R&gt;>} function by composing the specified
+         * {@code Func3&ltX1, X2, X3, X4, X5, P1&gt;} function with this function applied last
          *
-         * @param <A> the type of first param the new function applied to
-         * @param <B> the type of second param the new function applied to
-         * @param <C> the type of third param the new function applied to
-         * @param <D> the type of the fourth param the new function applied to
-         * @param <E> the type of the fifth param the new function applied to
+         * @param <X1>   the type of first param the new function applied to
+         * @param <X2>   the type of second param the new function applied to
+         * @param <X3>   the type of third param the new function applied to
+         * @param <X4>   the type of fourth param the new function applied to
+         * @param <X5>   the type of fifth param the new function applied to
          * @param before the function to be applied first when applying the return function
-         * @return an new function such that f(a, b, c, d, e) == apply(f1(a, b, c, d, e))
+         * @return an new function such that f(x1, x2, x3, x4, x5) == apply(f1(x1, x2, x3, x4, x5))
          */
-        public <A, B, C, D, E> F5<A, B, C, D, E, R> compose(
-                final IFunc5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends P1> before
-        ) {
+        public <X1, X2, X3, X4, X5> F5<X1, X2, X3, X4, X5, R>
+        compose(final Func5<? super X1, ? super X2, ? super X3, ? super X4, ? super X5, ? extends P1> before) {
             final F1<P1, R> me = this;
-            return new F5<A, B, C, D, E, R>() {
+            return new F5<X1, X2, X3, X4, X5, R>() {
                 @Override
-                public R apply(A a, B b, C c, D d, E e) {
-                    return me.apply(before.apply(a, b, c, d, e));
+                public R apply(X1 x1, X2 x2, X3 x3, X4 x4, X5 x5) {
+                    return me.apply(before.apply(x1, x2, x3, x4, x5));
                 }
             };
         }
@@ -619,7 +693,7 @@ public final class _ {
          *
          * @param action the function that apply to the result of this function
          * @return a function which maps arguments x to {@code true} if this function is applied and run
-         *         the action function for the side effect, or {@code false} if this function is not applied.
+         * the action function for the side effect, or {@code false} if this function is not applied.
          */
         public F1<P1, Boolean> runWith(final F1<? super R, ?> action) {
             final F1<P1, R> me = this;
@@ -638,7 +712,7 @@ public final class _ {
     }
 
     /**
-     * A dumb {@link IFunc1} implementation that does nothing and return null
+     * A dumb {@link org.osgl._.Function} implementation that does nothing and return null
      *
      * @see #f1()
      * @since 0.2
@@ -662,12 +736,13 @@ public final class _ {
 
 
     /**
-     * Convert a general {@link IFunc1} function into a {@link F1} typed
+     * Convert a general {@link org.osgl._.Function} function into a {@link F1} typed
      * function
      *
      * @since 0.2
      */
-    public static <P1, R> F1 toF1(final IFunc1<? super P1, ? extends R> f1) {
+    @SuppressWarnings("unchecked")
+    public static <P1, R> F1<P1, R> f1(final Function<? super P1, ? extends R> f1) {
         E.NPE(f1);
         if (f1 instanceof F1) {
             return (F1<P1, R>) f1;
@@ -677,6 +752,40 @@ public final class _ {
             public R apply(P1 p1) {
                 return f1.apply(p1);
             }
+
+            @Override
+            public MultiplicableFunction<P1, R> times(int n) {
+                if (f1 instanceof MultiplicableFunction) {
+                    return ((MultiplicableFunction<P1, R>) f1).times(n);
+                }
+                return super.times(n);
+            }
+        };
+    }
+
+    public static <X, Y> F1<X, Y> f1(final Bijection<X, Y> f1) {
+        E.NPE(f1);
+        if (f1 instanceof F1) {
+            return (F1<X, Y>) f1;
+        }
+        return new F1<X, Y>() {
+            @Override
+            public Y apply(X p1) {
+                return f1.apply(p1);
+            }
+
+            @Override
+            public F1<Y, X> inverse() {
+                return _.f1(f1.inverse());
+            }
+
+            @Override
+            public MultiplicableFunction<X, Y> times(int n) {
+                if (f1 instanceof MultiplicableFunction) {
+                    return ((MultiplicableFunction<X, Y>) f1).times(n);
+                }
+                return super.times(n);
+            }
         };
     }
 
@@ -685,16 +794,16 @@ public final class _ {
      *
      * @param <P1> the type of first parameter this function applied to
      * @param <P2> the type of second parameter this function applied to
-     * @param <R> the type of the return value when this function applied to the parameter(s)
-     * @see IFunc0
-     * @see IFunc1
-     * @see IFunc3
-     * @see IFunc4
-     * @see IFunc5
+     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @see org.osgl._.Func0
+     * @see org.osgl._.Function
+     * @see org.osgl._.Func3
+     * @see org.osgl._.Func4
+     * @see org.osgl._.Func5
      * @see F2
      * @since 0.2
      */
-    public static interface IFunc2<P1, P2, R> {
+    public static interface Func2<P1, P2, R> {
 
         /**
          * Apply the two params to the function
@@ -704,20 +813,20 @@ public final class _ {
          * the given parameter(s)</p>
          *
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link C.ITraversable container}
+         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2) throws NotAppliedException, Break;
 
     }
 
     /**
-     * Base implementation of {@link IFunc2} function. User application should
+     * Base implementation of {@link org.osgl._.Func2} function. User application should
      * (nearly) always make their implementation extend to this base class
-     * instead of implement {@link IFunc2} directly
+     * instead of implement {@link org.osgl._.Func2} directly
      *
      * @since 0.2
      */
-    public static abstract class F2<P1, P2, R> implements IFunc2<P1, P2, R> {
+    public static abstract class F2<P1, P2, R> implements Func2<P1, P2, R> {
 
         protected Break breakOut(Object payload) {
             return new Break(payload);
@@ -771,9 +880,9 @@ public final class _ {
          * @return the composed function
          * @throws NullPointerException if <code>f</code> is null
          */
-        public <T> F2<P1, P2, T> andThen(final IFunc1<? super R, ? extends T> f) {
+        public <T> F2<P1, P2, T> andThen(final Function<? super R, ? extends T> f) {
             E.NPE(f);
-            final IFunc2<P1, P2, R> me = this;
+            final Func2<P1, P2, R> me = this;
             return new F2<P1, P2, T>() {
                 @Override
                 public T apply(P1 p1, P2 p2) {
@@ -795,16 +904,16 @@ public final class _ {
          * @param fs a sequence of function to be applied after this function
          * @return a composed function
          */
-        public F2<P1, P2, R> andThen(final IFunc2<? super P1, ? super P2, ? extends R>... fs) {
+        public F2<P1, P2, R> andThen(final Func2<? super P1, ? super P2, ? extends R>... fs) {
             if (0 == fs.length) {
                 return this;
             }
-            final IFunc2<P1, P2, R> me = this;
+            final Func2<P1, P2, R> me = this;
             return new F2<P1, P2, R>() {
                 @Override
                 public R apply(P1 p1, P2 p2) {
                     R r = me.apply(p1, p2);
-                    for (IFunc2<? super P1, ? super P2, ? extends R> f : fs) {
+                    for (Func2<? super P1, ? super P2, ? extends R> f : fs) {
                         r = f.apply(p1, p2);
                     }
                     return r;
@@ -820,7 +929,7 @@ public final class _ {
          * @param fallback the function to applied if this function doesn't apply to the parameter(s)
          * @return the composed function
          */
-        public F2<P1, P2, R> orElse(final IFunc2<? super P1, ? super P2, ? extends R> fallback) {
+        public F2<P1, P2, R> orElse(final Func2<? super P1, ? super P2, ? extends R> fallback) {
             final F2<P1, P2, R> me = this;
             return new F2<P1, P2, R>() {
                 @Override
@@ -839,9 +948,9 @@ public final class _ {
          *
          * @returna function that takes an argument x to Some(this.apply(x)) if this can be applied, and to None otherwise.
          */
-        public F2<P1, P2, Option<R>>  lift() {
+        public F2<P1, P2, Option<R>> lift() {
             final F2<P1, P2, R> me = this;
-            return new F2<P1, P2, Option<R>> () {
+            return new F2<P1, P2, Option<R>>() {
                 @Override
                 public Option<R> apply(P1 p1, P2 p2) {
                     try {
@@ -860,7 +969,7 @@ public final class _ {
          *
          * @param action the function that apply to the result of this function
          * @return a function which maps arguments x to {@code true} if this function is applied and run
-         *         the action function for the side effect, or {@code false} if this function is not applied.
+         * the action function for the side effect, or {@code false} if this function is not applied.
          */
         public F2<P1, P2, Boolean> runWith(final F1<? super R, ?> action) {
             final F2<P1, P2, R> me = this;
@@ -879,7 +988,7 @@ public final class _ {
     }
 
     /**
-     * A dumb {@link IFunc2} implementation that does nothing and return null
+     * A dumb {@link org.osgl._.Func2} implementation that does nothing and return null
      *
      * @see #f2()
      * @since 0.2
@@ -903,16 +1012,17 @@ public final class _ {
 
 
     /**
-     * Convert a general {@link IFunc2} function into a {@link F2} typed
+     * Convert a general {@link org.osgl._.Func2} function into a {@link F2} typed
      * function
      *
      * @param <P1> the type of the first param the new function applied to
      * @param <P2> the type of the second param the new function applied to
-     * @param <R> the type of new function application result
-     * @return a {@code F2} instance corresponding to the specified {@code IFunc2} instance
+     * @param <R>  the type of new function application result
+     * @return a {@code F2} instance corresponding to the specified {@code Func2} instance
      * @since 0.2
      */
-    public static <P1, P2, R> F2 toF2(final IFunc2<? super P1, ? super P2, ? extends R> f2) {
+    @SuppressWarnings("unchecked")
+    public static <P1, P2, R> F2<P1, P2, R> f2(final Func2<? super P1, ? super P2, ? extends R> f2) {
         E.NPE(f2);
         if (f2 instanceof F2) {
             return (F2<P1, P2, R>) f2;
@@ -922,6 +1032,7 @@ public final class _ {
             public R apply(P1 p1, P2 p2) {
                 return f2.apply(p1, p2);
             }
+
         };
     }
 
@@ -931,15 +1042,15 @@ public final class _ {
      * @param <P1> the type of first parameter this function applied to
      * @param <P2> the type of second parameter this function applied to
      * @param <P3> the type of thrid parameter this function applied to
-     * @param <R> the type of the return value when this function applied to the parameter(s)
-     * @see IFunc0
-     * @see IFunc1
-     * @see IFunc2
-     * @see IFunc4
-     * @see IFunc5
+     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @see org.osgl._.Func0
+     * @see org.osgl._.Function
+     * @see org.osgl._.Func2
+     * @see org.osgl._.Func4
+     * @see org.osgl._.Func5
      * @since 0.2
      */
-    public static interface IFunc3<P1, P2, P3, R> {
+    public static interface Func3<P1, P2, P3, R> {
         /**
          * Run the function with parameters specified.
          * <p/>
@@ -948,20 +1059,20 @@ public final class _ {
          * the given parameter(s)</p>
          *
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link C.ITraversable container}
+         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2, P3 p3) throws NotAppliedException, Break;
 
     }
 
     /**
-     * Base implementation of {@link IFunc3} function. User application should
+     * Base implementation of {@link org.osgl._.Func3} function. User application should
      * (nearly) always make their implementation extend to this base class
-     * instead of implement {@link IFunc3} directly
+     * instead of implement {@link org.osgl._.Func3} directly
      *
      * @since 0.2
      */
-    public static abstract class F3<P1, P2, P3, R> implements IFunc3<P1, P2, P3, R> {
+    public static abstract class F3<P1, P2, P3, R> implements Func3<P1, P2, P3, R> {
         /**
          * @see F1#breakOut(Object)
          */
@@ -1028,9 +1139,9 @@ public final class _ {
          * @return the composed function
          * @throws NullPointerException if <code>f</code> is null
          */
-        public <T> IFunc3<P1, P2, P3, T> andThen(final IFunc1<? super R, ? extends T> f) {
+        public <T> Func3<P1, P2, P3, T> andThen(final Function<? super R, ? extends T> f) {
             E.NPE(f);
-            final IFunc3<P1, P2, P3, R> me = this;
+            final Func3<P1, P2, P3, R> me = this;
             return new F3<P1, P2, P3, T>() {
                 @Override
                 public T apply(P1 p1, P2 p2, P3 p3) {
@@ -1052,19 +1163,19 @@ public final class _ {
          * @param fs a sequence of function to be applied after this function
          * @return a composed function
          */
-        public IFunc3<P1, P2, P3, R> andThen(
-                final IFunc3<? super P1, ? super P2, ? super P3, ? extends R>... fs
+        public Func3<P1, P2, P3, R> andThen(
+                final Func3<? super P1, ? super P2, ? super P3, ? extends R>... fs
         ) {
             if (0 == fs.length) {
                 return this;
             }
 
-            final IFunc3<P1, P2, P3, R> me = this;
+            final Func3<P1, P2, P3, R> me = this;
             return new F3<P1, P2, P3, R>() {
                 @Override
                 public R apply(P1 p1, P2 p2, P3 p3) {
                     R r = me.apply(p1, p2, p3);
-                    for (IFunc3<? super P1, ? super P2, ? super P3, ? extends R> f : fs) {
+                    for (Func3<? super P1, ? super P2, ? super P3, ? extends R> f : fs) {
                         r = f.apply(p1, p2, p3);
                     }
                     return r;
@@ -1080,7 +1191,7 @@ public final class _ {
          * @param fallback the function to applied if this function doesn't apply to the parameter(s)
          * @return the composed function
          */
-        public F3<P1, P2, P3, R> orElse(final IFunc3<? super P1, ? super P2, ? super P3, ? extends R> fallback) {
+        public F3<P1, P2, P3, R> orElse(final Func3<? super P1, ? super P2, ? super P3, ? extends R> fallback) {
             final F3<P1, P2, P3, R> me = this;
             return new F3<P1, P2, P3, R>() {
                 @Override
@@ -1120,7 +1231,7 @@ public final class _ {
          *
          * @param action the function that apply to the result of this function
          * @return a function which maps arguments x to {@code true} if this function is applied and run
-         *         the action function for the side effect, or {@code false} if this function is not applied.
+         * the action function for the side effect, or {@code false} if this function is not applied.
          */
         public F3<P1, P2, P3, Boolean> runWith(final F1<? super R, ?> action) {
             final F3<P1, P2, P3, R> me = this;
@@ -1139,7 +1250,7 @@ public final class _ {
     }
 
     /**
-     * A dumb {@link IFunc3} implementation that does nothing and return null
+     * A dumb {@link org.osgl._.Func3} implementation that does nothing and return null
      *
      * @see #f3()
      * @since 0.2
@@ -1163,12 +1274,14 @@ public final class _ {
 
 
     /**
-     * Convert a general {@link IFunc3} function into a {@link F3} typed
+     * Convert a general {@link org.osgl._.Func3} function into a {@link F3} typed
      * function
      *
      * @since 0.2
      */
-    public static <P1, P2, P3, R> F3 toF3(final IFunc3<? super P1, ? super P2, ? super P3, ? extends R> f3) {
+    @SuppressWarnings("unchecked")
+    public static <P1, P2, P3, R> F3<P1, P2, P3, R> f3(final Func3<? super P1, ? super P2, ? super P3, ? extends R> f3
+    ) {
         E.NPE(f3);
         if (f3 instanceof F3) {
             return (F3<P1, P2, P3, R>) f3;
@@ -1188,15 +1301,15 @@ public final class _ {
      * @param <P2> the type of second parameter this function applied to
      * @param <P3> the type of thrid parameter this function applied to
      * @param <P4> the type of fourth parameter this function applied to
-     * @param <R> the type of the return value when this function applied to the parameter(s)
-     * @see IFunc0
-     * @see IFunc1
-     * @see IFunc2
-     * @see IFunc4
-     * @see IFunc5
+     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @see org.osgl._.Func0
+     * @see org.osgl._.Function
+     * @see org.osgl._.Func2
+     * @see org.osgl._.Func4
+     * @see org.osgl._.Func5
      * @since 0.2
      */
-    public static interface IFunc4<P1, P2, P3, P4, R> {
+    public static interface Func4<P1, P2, P3, P4, R> {
         /**
          * Run the function with parameters specified.
          * <p/>
@@ -1205,20 +1318,20 @@ public final class _ {
          * the given parameter(s)</p>
          *
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link C.ITraversable container}
+         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2, P3 p3, P4 p4) throws NotAppliedException, Break;
 
     }
 
     /**
-     * Base implementation of {@link IFunc4} function. User application should
+     * Base implementation of {@link org.osgl._.Func4} function. User application should
      * (nearly) always make their implementation extend to this base class
-     * instead of implement {@link IFunc4} directly
+     * instead of implement {@link org.osgl._.Func4} directly
      *
      * @since 0.2
      */
-    public static abstract class F4<P1, P2, P3, P4, R> implements IFunc4<P1, P2, P3, P4, R> {
+    public static abstract class F4<P1, P2, P3, P4, R> implements Func4<P1, P2, P3, P4, R> {
         /**
          * @see F1#breakOut(Object)
          */
@@ -1298,9 +1411,9 @@ public final class _ {
          * @return the composed function
          * @throws NullPointerException if <code>f</code> is null
          */
-        public <T> F4<P1, P2, P3, P4, T> andThen(final IFunc1<? super R, ? extends T> f) {
+        public <T> F4<P1, P2, P3, P4, T> andThen(final Function<? super R, ? extends T> f) {
             E.NPE(f);
-            final IFunc4<P1, P2, P3, P4, R> me = this;
+            final Func4<P1, P2, P3, P4, R> me = this;
             return new F4<P1, P2, P3, P4, T>() {
                 @Override
                 public T apply(P1 p1, P2 p2, P3 p3, P4 p4) {
@@ -1323,18 +1436,18 @@ public final class _ {
          * @return a composed function
          */
         public F4<P1, P2, P3, P4, R> andThen(
-                final IFunc4<? super P1, ? super P2, ? super P3, ? super P4, ? extends R>... fs
+                final Func4<? super P1, ? super P2, ? super P3, ? super P4, ? extends R>... fs
         ) {
             if (0 == fs.length) {
                 return this;
             }
 
-            final IFunc4<P1, P2, P3, P4, R> me = this;
+            final Func4<P1, P2, P3, P4, R> me = this;
             return new F4<P1, P2, P3, P4, R>() {
                 @Override
                 public R apply(P1 p1, P2 p2, P3 p3, P4 p4) {
                     R r = me.apply(p1, p2, p3, p4);
-                    for (IFunc4<? super P1, ? super P2, ? super P3, ? super P4, ? extends R> f : fs) {
+                    for (Func4<? super P1, ? super P2, ? super P3, ? super P4, ? extends R> f : fs) {
                         r = f.apply(p1, p2, p3, p4);
                     }
                     return r;
@@ -1351,7 +1464,7 @@ public final class _ {
          * @return the composed function
          */
         public F4<P1, P2, P3, P4, R> orElse(
-                final IFunc4<? super P1, ? super P2, ? super P3, ? super P4, ? extends R> fallback
+                final Func4<? super P1, ? super P2, ? super P3, ? super P4, ? extends R> fallback
         ) {
             final F4<P1, P2, P3, P4, R> me = this;
             return new F4<P1, P2, P3, P4, R>() {
@@ -1392,7 +1505,7 @@ public final class _ {
          *
          * @param action the function that apply to the result of this function
          * @return a function which maps arguments x to {@code true} if this function is applied and run
-         *         the action function for the side effect, or {@code false} if this function is not applied.
+         * the action function for the side effect, or {@code false} if this function is not applied.
          */
         public F4<P1, P2, P3, P4, Boolean> runWith(final F1<? super R, ?> action) {
             final F4<P1, P2, P3, P4, R> me = this;
@@ -1411,7 +1524,7 @@ public final class _ {
     }
 
     /**
-     * A dumb {@link IFunc4} implementation that does nothing and return null
+     * A dumb {@link org.osgl._.Func4} implementation that does nothing and return null
      *
      * @see #f4()
      * @since 0.2
@@ -1435,13 +1548,14 @@ public final class _ {
 
 
     /**
-     * Convert a general {@link IFunc4} function into a {@link F4} typed
+     * Convert a general {@link org.osgl._.Func4} function into a {@link F4} typed
      * function
      *
      * @since 0.2
      */
-    public static <P1, P2, P3, P4, R> F4 toF4(
-            final IFunc4<? super P1, ? super P2, ? super P3, ? super P4, ? extends R> f4
+    @SuppressWarnings("unchecked")
+    public static <P1, P2, P3, P4, R> F4<P1, P2, P3, P4, R> f4(
+            final Func4<? super P1, ? super P2, ? super P3, ? super P4, ? extends R> f4
     ) {
         E.NPE(f4);
         if (f4 instanceof F4) {
@@ -1463,15 +1577,15 @@ public final class _ {
      * @param <P3> the type of thrid parameter this function applied to
      * @param <P4> the type of fourth parameter this function applied to
      * @param <P5> the type of fifth parameter this function applied to
-     * @param <R> the type of the return value when this function applied to the parameter(s)
-     * @see IFunc0
-     * @see IFunc1
-     * @see IFunc2
-     * @see IFunc3
-     * @see IFunc5
+     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @see org.osgl._.Func0
+     * @see org.osgl._.Function
+     * @see org.osgl._.Func2
+     * @see org.osgl._.Func3
+     * @see org.osgl._.Func5
      * @since 0.2
      */
-    public static interface IFunc5<P1, P2, P3, P4, P5, R> {
+    public static interface Func5<P1, P2, P3, P4, P5, R> {
         /**
          * Run the function with parameters specified.
          * <p/>
@@ -1480,20 +1594,19 @@ public final class _ {
          * the given parameter(s)</p>
          *
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link C.ITraversable container}
+         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) throws NotAppliedException, Break;
     }
 
     /**
-     * Base implementation of {@link IFunc5} function. User application should
+     * Base implementation of {@link org.osgl._.Func5} function. User application should
      * (nearly) always make their implementation extend to this base class
-     * instead of implement {@link IFunc5} directly
+     * instead of implement {@link org.osgl._.Func5} directly
      *
      * @since 0.2
      */
-    public static abstract
-    class F5<P1, P2, P3, P4, P5, R> implements IFunc5<P1, P2, P3, P4, P5, R> {
+    public static abstract class F5<P1, P2, P3, P4, P5, R> implements Func5<P1, P2, P3, P4, P5, R> {
         /**
          * @see F1#breakOut(Object)
          */
@@ -1584,7 +1697,7 @@ public final class _ {
          * @return the composed function
          * @throws NullPointerException if <code>f</code> is null
          */
-        public <T> F5<P1, P2, P3, P4, P5, T> andThen(final IFunc1<? super R, ? extends T> f) {
+        public <T> F5<P1, P2, P3, P4, P5, T> andThen(final Function<? super R, ? extends T> f) {
             E.NPE(f);
             final F5<P1, P2, P3, P4, P5, R> me = this;
             return new F5<P1, P2, P3, P4, P5, T>() {
@@ -1609,7 +1722,7 @@ public final class _ {
          * @return a composed function
          */
         public F5<P1, P2, P3, P4, P5, R> andThen(
-                final IFunc5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, ? extends R>... fs
+                final Func5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, ? extends R>... fs
         ) {
             if (0 == fs.length) {
                 return this;
@@ -1620,7 +1733,7 @@ public final class _ {
                 @Override
                 public R apply(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
                     R r = me.apply(p1, p2, p3, p4, p5);
-                    for (IFunc5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, ? extends R> f : fs) {
+                    for (Func5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, ? extends R> f : fs) {
                         r = f.apply(p1, p2, p3, p4, p5);
                     }
                     return r;
@@ -1637,7 +1750,7 @@ public final class _ {
          * @return the composed function
          */
         public F5<P1, P2, P3, P4, P5, R> orElse(
-                final IFunc5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, ? extends R> fallback
+                final Func5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, ? extends R> fallback
         ) {
             final F5<P1, P2, P3, P4, P5, R> me = this;
             return new F5<P1, P2, P3, P4, P5, R>() {
@@ -1678,7 +1791,7 @@ public final class _ {
          *
          * @param action the function that apply to the result of this function
          * @return a function which maps arguments x to {@code true} if this function is applied and run
-         *         the action function for the side effect, or {@code false} if this function is not applied.
+         * the action function for the side effect, or {@code false} if this function is not applied.
          */
         public F5<P1, P2, P3, P4, P5, Boolean> runWith(final F1<? super R, ?> action) {
             final F5<P1, P2, P3, P4, P5, R> me = this;
@@ -1697,7 +1810,7 @@ public final class _ {
     }
 
     /**
-     * A dumb {@link IFunc5} implementation that does nothing and return null
+     * A dumb {@link org.osgl._.Func5} implementation that does nothing and return null
      *
      * @see #f5()
      * @since 0.2
@@ -1721,13 +1834,14 @@ public final class _ {
 
 
     /**
-     * Convert a general {@link IFunc5} function into a {@link F5} typed
+     * Convert a general {@link org.osgl._.Func5} function into a {@link F5} typed
      * function
      *
      * @since 0.2
      */
-    public static <P1, P2, P3, P4, P5, R> F5 toF5(
-            final IFunc5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, ? extends R> f5
+    @SuppressWarnings("unchecked")
+    public static <P1, P2, P3, P4, P5, R> F5<P1, P2, P3, P4, P5, R> f5(
+            final Func5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, ? extends R> f5
     ) {
         E.NPE(f5);
         if (f5 instanceof F5) {
@@ -1741,31 +1855,154 @@ public final class _ {
         };
     }
 
-    // Define common used Function classes including If and Visitor
+    // Define common used Function classes including Predicate and Visitor
 
     /**
-     * <code>If</code> is a predefined <code>IFunc1&lt;Boolean, T&gt;</code> typed
+     * Adapt JDK Comparator (since 1.2) to Functional programming. The class provides several java8 Comparator methods
+     *
+     * @param <T> the type of the element to be compared
+     * @since 0.2
+     */
+    public static abstract class Comparator<T>
+            extends F2<T, T, Integer>
+            implements java.util.Comparator<T>, Serializable {
+
+        private static class NaturalOrderComparator extends Comparator<Comparable<Object>> implements Serializable {
+            static final NaturalOrderComparator INSTANCE = new NaturalOrderComparator();
+
+            @Override
+            public int compare(Comparable<Object> c1, Comparable<Object> c2) {
+                return c1.compareTo(c2);
+            }
+
+            private Object readResolve() {
+                return INSTANCE;
+            }
+
+            @Override
+            public Comparator<Comparable<Object>> reversed() {
+                return _.F.reverseOrder();
+            }
+        }
+
+        @Override
+        public Integer apply(T p1, T p2) throws NotAppliedException, Break {
+            return compare(p1, p2);
+        }
+
+        /**
+         * See <a href="http://download.java.net/jdk8/docs/api/java/util/Comparator.html#reversed()">Java 8 doc</a>
+         *
+         * @since 0.2
+         */
+        public Comparator<T> reversed() {
+            return comparator(Collections.reverseOrder(this));
+        }
+
+        /**
+         * See <a href="http://download.java.net/jdk8/docs/api/java/util/Comparator.html#thenComparing(java.util.Comparator)">Java 8 doc</a>
+         *
+         * @since 0.2
+         */
+        public Comparator<T> thenComparing(final java.util.Comparator<? super T> other) {
+            final Comparator<T> me = this;
+            return new Comparator<T>() {
+                @Override
+                public int compare(T o1, T o2) {
+                    int ret = (me.compare(o1, o2));
+                    return (0 == ret) ? other.compare(o1, o2) : ret;
+                }
+            };
+        }
+
+        /**
+         * See <a href="http://download.java.net/jdk8/docs/api/java/util/Comparator.html#thenComparing(java.util.function.Function, java.util.Comparator)">Java 8 doc</a>
+         *
+         * @since 0.2
+         */
+        public <U extends Comparable<? super U>> Comparator<T> thenComparing(
+                Function<? super T, ? extends U> keyExtractor,
+                java.util.Comparator<? super U> keyComparator
+        ) {
+            return thenComparing(_.F.comparing(keyExtractor, keyComparator));
+        }
+
+        /**
+         * See <a href="http://download.java.net/jdk8/docs/api/java/util/Comparator.html#thenComparing(java.util.function.Function)">Java 8 doc</a>
+         *
+         * @since 0.2
+         */
+        public <U extends Comparable<? super U>> Comparator<T> thenComparing(
+                Function<? super T, ? extends U> keyExtractor
+        ) {
+            return thenComparing(_.F.comparing(keyExtractor));
+        }
+
+    }
+
+    /**
+     * Adapt a general {@link Func2} function with (T, T, Integer) type into {@link Comparator}
+     *
+     * @param f   The function takes two params (the same type) and returns integer
+     * @param <T> the type of the parameter
+     * @return a {@link Comparator} instance backed by function {@code f}
+     */
+    public static <T> Comparator<T> comparator(final Func2<? super T, ? super T, Integer> f) {
+        E.NPE(f);
+        if (f instanceof Comparator) {
+            return (Comparator<T>) f;
+        }
+        return new Comparator<T>() {
+            @Override
+            public int compare(T o1, T o2) {
+                return f.apply(o1, o2);
+            }
+        };
+    }
+
+    /**
+     * Adapt a jdk {@link java.util.Comparator} into {@link Comparator osgl Comparator}
+     *
+     * @param <T> the element type the comparator compares
+     * @param c   the jdk compator
+     * @return a {@link Comparator} instance backed by comparator {@code c}
+     */
+    public static <T> Comparator<T> comparator(final java.util.Comparator<? super T> c) {
+        E.NPE(c);
+        if (c instanceof Comparator) {
+            return (Comparator<T>) c;
+        }
+        return new Comparator<T>() {
+            @Override
+            public int compare(T o1, T o2) {
+                return c.compare(o1, o2);
+            }
+        };
+    }
+
+    /**
+     * <code>Predicate</code> is a predefined <code>Function&lt;Boolean, T&gt;</code> typed
      * function with a set of utilities dealing with boolean operations. This is often known
      * as <a href="http://en.wikipedia.org/wiki/Predicate_(mathematical_logic)">Predicate</a>
      * <p/>
-     * <p>Note in user application, it should NOT assume an argument is of <code>If</code>
-     * typed function, instead the argument should always be declared as <code>IFunc1&lt;Boolean T&gt;</code>:</p>
+     * <p>Note in user application, it should NOT assume an argument is of <code>Predicate</code>
+     * typed function, instead the argument should always be declared as <code>Function&lt;Boolean T&gt;</code>:</p>
      * <p/>
      * <pre>
      *     // bad way
-     *     void foo(If&lt;MyData&gt; predicate) {
+     *     void foo(Predicate&lt;MyData&gt; predicate) {
      *         ...
      *     }
      *     // good way
-     *     void foo(IFunc1&lt;Boolean, MyData&gt; predicate) {
-     *         If&lt;MyData&gt; p = _.toIf(predicate);
+     *     void foo(Function&lt;Boolean, MyData&gt; predicate) {
+     *         Predicate&lt;MyData&gt; p = _.predicate(predicate);
      *         ...
      *     }
      * </pre>
      *
      * @since 0.2
      */
-    public static abstract class If<T> extends _.F1<T, Boolean> {
+    public static abstract class Predicate<T> extends _.F1<T, Boolean> {
         @Override
         public final Boolean apply(T t) {
             return test(t);
@@ -1781,26 +2018,26 @@ public final class _ {
          *
          * @return the negate function
          */
-        public If<T> negate() {
+        public Predicate<T> negate() {
             return _.F.negate(this);
         }
 
         /**
-         * Return an <code>If</code> predicate from a list of <code>IFunc1&lt;Boolean, T&gt;</code>
+         * Return an <code>Predicate</code> predicate from a list of <code>Function&lt;Boolean, T&gt;</code>
          * with AND operation. For any <code>T t</code> to be tested, if any specified predicates
          * must returns <code>false</code> on it, the resulting predicate will return <code>false</code>.
          *
          * @since 0.2
          */
-        public If<T> and(final _.IFunc1<? super T, Boolean>... predicates) {
-            final If<T> me = this;
-            return new If<T>() {
+        public Predicate<T> and(final Function<? super T, Boolean>... predicates) {
+            final Predicate<T> me = this;
+            return new Predicate<T>() {
                 @Override
                 public boolean test(T t) {
                     if (!me.test(t)) {
                         return false;
                     }
-                    for (_.IFunc1<? super T, Boolean> f : predicates) {
+                    for (Function<? super T, Boolean> f : predicates) {
                         if (!f.apply(t)) {
                             return false;
                         }
@@ -1811,21 +2048,21 @@ public final class _ {
         }
 
         /**
-         * Return an <code>If</code> predicate from a list of <code>IFunc1&lt;Boolean, T&gt;</code>
+         * Return an <code>Predicate</code> predicate from a list of <code>Function&lt;Boolean, T&gt;</code>
          * with OR operation. For any <code>T t</code> to be tested, if any specified predicates
          * must returns <code>true</code> on it, the resulting predicate will return <code>true</code>.
          *
          * @since 0.2
          */
-        public If<T> or(final _.IFunc1<? super T, Boolean>... predicates) {
-            final If<T> me = this;
-            return new If<T>() {
+        public Predicate<T> or(final Function<? super T, Boolean>... predicates) {
+            final Predicate<T> me = this;
+            return new Predicate<T>() {
                 @Override
                 public boolean test(T t) {
                     if (me.test(t)) {
                         return true;
                     }
-                    for (_.IFunc1<? super T, Boolean> f : predicates) {
+                    for (Function<? super T, Boolean> f : predicates) {
                         if (f.apply(t)) {
                             return true;
                         }
@@ -1834,21 +2071,66 @@ public final class _ {
                 }
             };
         }
+
+        public <R> F1<T, Option<R>> ifThen(final Function<? super T, R> func) {
+            return new F1<T, Option<R>>() {
+                @Override
+                public Option<R> apply(T t) throws NotAppliedException, Break {
+                    if (test(t)) {
+                        return some(func.apply(t));
+                    }
+                    return none();
+                }
+            };
+        }
+
+        public <R> F1<T, Option<R>> elseThen(final Function<? super T, R> func) {
+            return negate().ifThen(func);
+        }
     }
 
     /**
-     * Convert a general <code>IFunc1&lt;Boolean, T&gt; typed function to {@link If If&lt;T&gt;} function</code>
+     * Convert a <code>Function&lt;T, Boolean&gt;</code> typed function to
+     * {@link org.osgl._.Predicate Predicate&lt;T&gt;} function.
+     * <p/>
+     * <p>If the function specified is already a {@link Predicate}, then
+     * the function itself is returned</p>
      *
      * @since 0.2
      */
-    public static <T> If<T> toIf(final IFunc1<? super T, Boolean> f1) {
-        if (f1 instanceof If) {
-            return (If<T>) f1;
+    @SuppressWarnings("unchecked")
+    public static <T> Predicate<T> predicate(final Function<? super T, Boolean> f1) {
+        if (f1 instanceof Predicate) {
+            return (Predicate<T>) f1;
         }
-        return new If<T>() {
+        return new Predicate<T>() {
             @Override
             public boolean test(T t) {
                 return f1.apply(t);
+            }
+        };
+    }
+
+    /**
+     * Convert a general <code>Function&lt;T, ?&gt;</code> typed function to
+     * {@link org.osgl._.Predicate Predicate&lt;T&gt;} function. When the predicate function
+     * returned apply to a param, it will first apply the specified {@code f1} to the
+     * param, and they call {@link #bool(java.lang.Object)} to evaluate the boolean
+     * value of the return object of the application.
+     * <p/>
+     * <p>If the function specified is already a {@link Predicate}, then
+     * the function itself is returned</p>
+     *
+     * @since 0.2
+     */
+    public static <T> Predicate<T> generalPredicate(final Function<? super T, ?> f1) {
+        if (f1 instanceof Predicate) {
+            return (Predicate<T>) f1;
+        }
+        return new Predicate<T>() {
+            @Override
+            public boolean test(T t) {
+                return bool(f1.apply(t));
             }
         };
     }
@@ -1881,21 +2163,102 @@ public final class _ {
         public abstract void visit(T t) throws Break;
     }
 
+    public abstract static class V1<P1> extends Visitor<P1> {
+    }
+
+    public abstract static class V2<P1, P2> extends _.F2<P1, P2, Void> {
+        @Override
+        public final Void apply(P1 p1, P2 p2) throws NotAppliedException, Break {
+            visit(p1, p2);
+            return null;
+        }
+
+        public abstract void visit(P1 p1, P2 p2);
+    }
+
+    public abstract static class V3<P1, P2, P3> extends _.F3<P1, P2, P3, Void> {
+        @Override
+        public final Void apply(P1 p1, P2 p2, P3 p3) throws NotAppliedException, Break {
+            visit(p1, p2, p3);
+            return null;
+        }
+
+        public abstract void visit(P1 p1, P2 p2, P3 p3);
+    }
+
+    public abstract static class V4<P1, P2, P3, P4> extends _.F4<P1, P2, P3, P4, Void> {
+        @Override
+        public final Void apply(P1 p1, P2 p2, P3 p3, P4 p4) throws NotAppliedException, Break {
+            visit(p1, p2, p3, p4);
+            return null;
+        }
+
+        public abstract void visit(P1 p1, P2 p2, P3 p3, P4 p4);
+    }
+
+    public abstract static class V5<P1, P2, P3, P4, P5> extends _.F5<P1, P2, P3, P4, P5, Void> {
+        @Override
+        public final Void apply(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) throws NotAppliedException, Break {
+            visit(p1, p2, p3, p4, p5);
+            return null;
+        }
+
+        public abstract void visit(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5);
+    }
+
+    /**
+     * Convert a {@code Function&lt;? super T, Void&gt;} function into a {@link Visitor}
+     *
+     * @since 0.2
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Visitor<T> visitor(final Function<? super T, ?> f) {
+        if (f instanceof Visitor) {
+            return (Visitor<T>) f;
+        }
+        return new Visitor<T>() {
+            @Override
+            public void visit(T t) throws Break {
+                f.apply(t);
+            }
+        };
+    }
+
+    /**
+     * Convert a general {@link Function} to {@link Visitor}, the return value of the function when applied
+     * to the param is ignored
+     *
+     * @param f   A {@link Function} function which return value is ignored
+     * @param <T> the type of the param the visitor function visit
+     * @return A {@link Visitor} type function
+     * @since 0.2
+     */
+    public static <T> Visitor<T> generalVisitor(final Function<? super T, ?> f) {
+        if (f instanceof Visitor) {
+            return (Visitor<T>) f;
+        }
+        return new Visitor<T>() {
+            @Override
+            public void visit(T t) throws Break {
+                f.apply(t);
+            }
+        };
+    }
+
     /**
      * Return a composed visitor function that only applies when the guard predicate test returns <code>true</code>
      *
-     * @param guard   the predicate to test the element been visited
+     * @param predicate   the predicate to test the element been visited
      * @param visitor the function that visit(accept) the element if the guard tested the element successfully
      * @param <T>     the type of the element be tested and visited
      * @return the composed function
      */
-    public static <T> Visitor<T> guardedVisitor(final _.IFunc1<? super T, Boolean> guard,
-                                                final Visitor<? super T> visitor
-    ) {
+    public static <T> Visitor<T>
+    guardedVisitor(final Function<? super T, Boolean> predicate, final Function<? super T, ?> visitor) {
         return new Visitor<T>() {
             @Override
             public void visit(T t) throws Break {
-                if (guard.apply(t)) {
+                if (predicate.apply(t)) {
                     visitor.apply(t);
                 }
             }
@@ -1954,7 +2317,7 @@ public final class _ {
 
     public static abstract class IndexedVisitor<K, T> extends _.F2<K, T, Void> {
 
-        protected Map<String, ?> _attr = C0.newMap();
+        protected Map<String, ?> _attr = new HashMap<String, Object>();
         protected T _t;
         protected String _s;
         protected boolean _b;
@@ -1969,7 +2332,7 @@ public final class _ {
         }
 
         public IndexedVisitor(Map<String, ?> map) {
-            _attr = C0.newMap(map);
+            _attr = new HashMap<String, Object>(map);
         }
 
         public IndexedVisitor(T t) {
@@ -2058,7 +2421,7 @@ public final class _ {
     }
 
     public static <K, T> IndexedVisitor<K, T>
-    indexGuardedVisitor(final _.IFunc1<? super K, Boolean> guard,
+    indexGuardedVisitor(final Function<? super K, Boolean> guard,
                         final Visitor<? super T> visitor
     ) {
         return new IndexedVisitor<K, T>() {
@@ -2089,44 +2452,12 @@ public final class _ {
         public abstract TO transform(FROM from);
     }
 
-    public static abstract class Op1<T> extends _.F1<T, T> {
+    public static abstract class Operator<T> extends _.F1<T, T> {
         @Override
-        public T apply(T t) {
-            operate(t);
-            return t;
-        }
+        public abstract Operator<T> inverse();
 
-        public abstract void operate(T t);
-    }
-
-    public static abstract class Op2<P1, T> extends _.F2<T, P1, T> {
         @Override
-        public T apply(T t, P1 p1) {
-            operate(t, p1);
-            return t;
-        }
-
-        public abstract void operate(T t, P1 p1);
-    }
-
-    public static abstract class Op3<P1, P2, T> extends _.F3<T, P1, P2, T> {
-        @Override
-        public T apply(T t, P1 p1, P2 p2) {
-            operate(t, p1, p2);
-            return t;
-        }
-
-        public abstract void operate(T t, P1 p1, P2 p2);
-    }
-
-    public static abstract class Op4<P1, P2, P3, T> extends _.F4<T, P1, P2, P3, T> {
-        @Override
-        public T apply(T t, P1 p1, P2 p2, P3 p3) {
-            operate(t, p1, p2, p3);
-            return t;
-        }
-
-        public abstract void operate(T t, P1 p1, P2 p2, P3 p3);
+        public abstract Operator<T> times(int n);
     }
 
     // --- Tuple
@@ -2145,14 +2476,14 @@ public final class _ {
             if (this == o) return true;
             if (o instanceof Tuple) {
                 Tuple that = (Tuple) o;
-                return _.eq(that._1, _1) && _.eq(that._2, _2);
+                return eq(that._1, _1) && eq(that._2, _2);
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            return _.hc(_1, _2);
+            return hc(_1, _2);
         }
 
         @Override
@@ -2211,7 +2542,7 @@ public final class _ {
             if (this == o) return true;
             if (o instanceof T3) {
                 T3 that = (T3) o;
-                return X.eq(that._1, _1) && X.eq(that._2, _2) && X.eq(that._3, _3);
+                return _.eq(that._1, _1) && _.eq(that._2, _2) && _.eq(that._3, _3);
             }
             return false;
         }
@@ -2250,7 +2581,7 @@ public final class _ {
             if (this == o) return true;
             if (o instanceof T4) {
                 T4 that = (T4) o;
-                return X.eq(that._1, _1) && X.eq(that._2, _2) && X.eq(that._3, _3) && X.eq(that._4, _4);
+                return _.eq(that._1, _1) && _.eq(that._2, _2) && _.eq(that._3, _3) && _.eq(that._4, _4);
             }
             return false;
         }
@@ -2291,7 +2622,7 @@ public final class _ {
             if (this == o) return true;
             if (o instanceof T5) {
                 T5 that = (T5) o;
-                return X.eq(that._1, _1) && X.eq(that._2, _2) && X.eq(that._3, _3) && X.eq(that._4, _4) && X.eq(that._5, _5);
+                return _.eq(that._1, _1) && _.eq(that._2, _2) && _.eq(that._3, _3) && _.eq(that._4, _4) && _.eq(that._5, _5);
             }
             return false;
         }
@@ -2313,7 +2644,8 @@ public final class _ {
 
     public static abstract class Option<T> implements Iterable<T> {
 
-        private Option(){}
+        private Option() {
+        }
 
         /**
          * Returns  {@code true} if this {@code Option} is not {@link #NONE}
@@ -2350,10 +2682,10 @@ public final class _ {
          *
          * @param predicate the function to test the value held by this {@code Option}
          * @return an {@code Option} describing the value of this {@code Option} if
-         *              a value is present and the value matches the given predicate,
-         *              otherwise {@link #NONE}
+         * a value is present and the value matches the given predicate,
+         * otherwise {@link #NONE}
          */
-        public final Option<T> filter(IFunc1<T, Boolean> predicate) {
+        public final Option<T> filter(Function<? super T, Boolean> predicate) {
             E.NPE(predicate);
             if (notDefined()) {
                 return none();
@@ -2372,37 +2704,37 @@ public final class _ {
          * the result. Otherwise return {@link #NONE}.
          *
          * @param mapper a mapping function to apply to the value, if present
-         * @param <B> The type of the result of the mapping function
+         * @param <B>    The type of the result of the mapping function
          * @return an Optional describing the result of applying a mapping
-         *          function to the value of this {@code Option}, if a value is
-         *          present, otherwise {@link #NONE}
+         * function to the value of this {@code Option}, if a value is
+         * present, otherwise {@link #NONE}
          * @throws NullPointerException if the mapper function is {@code null}
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public final <B> Option<B> map(final IFunc1<T, B> mapper) {
+        public final <B> Option<B> map(final Function<? super T, ? extends B> mapper) {
             return isDefined() ? of(mapper.apply(get())) : NONE;
         }
 
         /**
          * If a value is present, apply the provided {@code Option}-bearing
          * mapping function to it, return that result, otherwise return
-         * {@link #NONE}. This method is similar to {@link #map(org.osgl._.IFunc1)},
+         * {@link #NONE}. This method is similar to {@link #map(org.osgl._.Function)},
          * but the provided mapper is one whose result is already an
          * {@code Option}, and if invoked, {@code flatMap} does not wrap it
          * with an additional {@code Option}.
          *
-         * @param <B> The type parameter to the {@code Option} returned by
+         * @param <B>    The type parameter to the {@code Option} returned by
          * @param mapper a mapping function to apply to the value,
          * @return the result of applying an {@code Option}-bearing mapping
-         *         function to the value of this {@code Option}, if a value
-         *         is present, otherwise {@link #NONE}
+         * function to the value of this {@code Option}, if a value
+         * is present, otherwise {@link #NONE}
          * @throws NullPointerException if the mapping function is {@code null}
-         *              or returns a {@code null} result
+         *                              or returns a {@code null} result
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public final <B> Option<B> flatMap(final IFunc1<? super T, Option<B>> mapper) {
+        public final <B> Option<B> flatMap(final Function<? super T, Option<B>> mapper) {
             E.NPE(mapper);
             Option<B> result = isDefined() ? mapper.apply(get()) : NONE;
             E.NPE(null == result);
@@ -2429,9 +2761,35 @@ public final class _ {
          * @throws NullPointerException if value is not present and other is null
          * @since 0.2
          */
-        public final T orElse(IFunc0<? extends T> other) {
+        public final T orElse(Func0<? extends T> other) {
             return isDefined() ? get() : other.apply();
         }
+
+        public final void runWith(Function<? super T, ?> consumer) {
+            if (isDefined()) {
+                consumer.apply(get());
+            }
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj instanceof Option) {
+                Option that = (Option) obj;
+                return eq(get(), that.get());
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return isDefined() ? get().hashCode() : 0;
+        }
+
+        @Override
+        public abstract String toString();
 
         @SuppressWarnings("unchecked")
         public static <T> None<T> none() {
@@ -2442,7 +2800,7 @@ public final class _ {
          * Returns an {@code Option} with the specified present non-null value.
          *
          * @param value the value that cannot be {@code null}
-         * @param <T> the type of the value
+         * @param <T>   the type of the value
          * @return an Option instance describing the value
          * @throws NullPointerException if the value specified is {@code null}
          * @since 0.2
@@ -2457,9 +2815,9 @@ public final class _ {
          * {@code null} or {@link #NONE} otherwise.
          *
          * @param value the value
-         * @param <T> the type of the value
+         * @param <T>   the type of the value
          * @return an {@code Option} describing the value if it is not {@code null}
-         *          or {@link #NONE} if the value is {@code null}
+         * or {@link #NONE} if the value is {@code null}
          * @since 0.2
          */
         public static <T> Option<T> of(T value) {
@@ -2473,13 +2831,109 @@ public final class _ {
             private f() {
             }
 
+            /**
+             * A function that when applied, returns if the {@code Option} is defined
+             */
             public final F0<Boolean> IS_DEFINED = new F0<Boolean>() {
                 @Override
                 public Boolean apply() {
                     return Option.this != NONE;
                 }
             };
+
+            /**
+             * Negate of {@link #IS_DEFINED}
+             */
             public final F0<Boolean> NOT_DEFINED = _.F.negate(IS_DEFINED);
+
+            /**
+             * A function that when applied, returns the value described by this {@code Option}
+             */
+            public final F0<T> GET = new F0<T>() {
+                @Override
+                public T apply() throws NotAppliedException, Break {
+                    return Option.this.get();
+                }
+            };
+
+            /**
+             * Returns a function that when applied, run {@link _.Option#filter(org.osgl._.Function)} on this
+             * {@code Option}
+             */
+            public final F0<Option<T>> filter(final Function<? super T, Boolean> predicate) {
+                return new F0<Option<T>>() {
+                    @Override
+                    public Option<T> apply() throws NotAppliedException, Break {
+                        return Option.this.filter(predicate);
+                    }
+                };
+            }
+
+            /**
+             * Returns a function that when applied, run {@link _.Option#map(org.osgl._.Function)} on this
+             * {@code Option}
+             */
+            public final <B> F0<Option<B>> map(final Function<? super T, ? extends B> mapper) {
+                return new F0<Option<B>>() {
+                    @Override
+                    public Option<B> apply() throws NotAppliedException, Break {
+                        return Option.this.map(mapper);
+                    }
+                };
+            }
+
+            /**
+             * Returns a function that when applied, run {@link _.Option#flatMap(org.osgl._.Function)} on this
+             * {@code Option}
+             */
+            public final <B> F0<Option<B>> flatMap(final Function<? super T, Option<B>> mapper) {
+                return new F0<Option<B>>() {
+                    @Override
+                    public Option<B> apply() throws NotAppliedException, Break {
+                        return Option.this.flatMap(mapper);
+                    }
+                };
+            }
+
+            /**
+             * Returns a function that when applied, run {@link _.Option#orElse(Object)} on this
+             * {@code Option}
+             */
+            public final <B> F0<T> orElse(final T other) {
+                return new F0<T>() {
+                    @Override
+                    public T apply() throws NotAppliedException, Break {
+                        return Option.this.orElse(other);
+                    }
+                };
+            }
+
+            /**
+             * Returns a function that when applied, run {@link _.Option#orElse(org.osgl._.Func0)}
+             * on this {@code Option}
+             */
+            public final <B> F0<T> orElse(final Func0<? extends T> other) {
+                return new F0<T>() {
+                    @Override
+                    public T apply() throws NotAppliedException, Break {
+                        return Option.this.orElse(other);
+                    }
+                };
+            }
+
+            /**
+             * Returns a function that when applied, run {@link _.Option#runWith(org.osgl._.Function)}
+             * on this {@code Option}
+             */
+            public final F0<Void> runWith(final Function<? super T, ?> consumer) {
+                return new F0<Void>() {
+                    @Override
+                    public Void apply() throws NotAppliedException, Break {
+                        Option.this.runWith(consumer);
+                        return null;
+                    }
+                };
+            }
         }
 
         public final f f = new f();
@@ -2488,6 +2942,11 @@ public final class _ {
     public static class None<T> extends Option<T> {
 
         private None() {
+        }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            throw new CloneNotSupportedException();
         }
 
         public static final None INSTANCE = new None();
@@ -2505,6 +2964,10 @@ public final class _ {
         @Override
         public String toString() {
             return "NONE";
+        }
+
+        private Object readResolve() throws ObjectStreamException {
+            return NONE;
         }
     }
 
@@ -2534,8 +2997,8 @@ public final class _ {
     public static final None NONE = None.INSTANCE;
 
     @SuppressWarnings("unchecked")
-    public static <T> Some<T> some(T a) {
-        return new Some(a);
+    public static <T> Option<T> some(T a) {
+        return null == a ? NONE : new Some(a);
     }
 
     @SuppressWarnings("unchecked")
@@ -2598,10 +3061,11 @@ public final class _ {
      * <tr><td>BigInteger</td><td>{@code !BigInteger.ZERO.equals(v)}</td></tr>
      * <tr><td>BigDecimal</td><td>{@code !BigDecimal.ZERO.equals(v)}</td></tr>
      * <tr><td>File</td><td>{@link java.io.File#exists() v.exists()}</td></tr>
-     * <tr><td>{@link IFunc0}</td><td>{@code bool(v.apply())}</td></tr>
+     * <tr><td>{@link org.osgl._.Func0}</td><td>{@code bool(v.apply())}</td></tr>
      * <tr><td>Other types</td><td>{@code true}</td></tr>
      * </tbody>
      * </table>
+     *
      * @param v the value to be evaluated
      * @return {@code true} if v evaluate to true, {@code false} otherwise
      */
@@ -2609,21 +3073,24 @@ public final class _ {
         if (null == v || NONE == v) {
             return false;
         }
+        if (v instanceof Boolean) {
+            return (Boolean) v;
+        }
         if (v instanceof String) {
             return S.notEmpty((String) v);
         }
         if (v instanceof Collection) {
-            return !((Collection)v).isEmpty();
+            return !((Collection) v).isEmpty();
         }
         if (v.getClass().isArray()) {
             return 0 < Array.getLength(v);
         }
         if (v instanceof Number) {
             if (v instanceof Float) {
-                return bool((float)(Float)v);
+                return bool((float) (Float) v);
             }
             if (v instanceof Double) {
-                return bool((double)(Double) v);
+                return bool((double) (Double) v);
             }
             if (v instanceof BigInteger) {
                 return bool((BigInteger) v);
@@ -2636,10 +3103,10 @@ public final class _ {
         if (v instanceof File) {
             return bool((File) v);
         }
-        if (v instanceof IFunc0) {
-            return not(((IFunc0)v).apply());
+        if (v instanceof Func0) {
+            return not(((Func0) v).apply());
         }
-        for (IFunc1<Object, Boolean> tester: conf.boolTesters) {
+        for (Function<Object, Boolean> tester : conf.boolTesters) {
             try {
                 return !(tester.apply(v));
             } catch (NotAppliedException e) {
@@ -2756,24 +3223,24 @@ public final class _ {
     }
 
     /**
-     * Do bool evaluation on a File instance
+     * Do bool evaluation on a File instance.
      *
      * @param v the file to be evaluated
-     * @return {@code true} if {@code !v.exists}
+     * @return {@code true} if {@code v.exists()}
      */
     public static boolean bool(File v) {
         return null != v && v.exists();
     }
 
     /**
-     * Do bool evaluation on an {@link IFunc0} instance. This will call
-     * the {@link org.osgl._.IFunc0#apply()} method and continue to
+     * Do bool evaluation on an {@link org.osgl._.Func0} instance. This will call
+     * the {@link org.osgl._.Func0#apply()} method and continue to
      * do bool evaluation on the return value
      *
      * @param v the function to be evaluated
      * @return {@code bool(v.apply())}
      */
-    public static boolean bool(IFunc0<?> v) {
+    public static boolean bool(Func0<?> v) {
         return bool(v.apply());
     }
 
@@ -2910,12 +3377,12 @@ public final class _ {
     }
 
     /**
-     * Returns negative of {@link #bool(IFunc0)}
+     * Returns negative of {@link #bool(org.osgl._.Func0)}
      *
      * @param f the function to be evaluated
      * @return {@code !(bool(f))}
      */
-    public static boolean not(IFunc0<?> f) {
+    public static boolean not(Func0<?> f) {
         return !bool(f);
     }
 
@@ -2930,7 +3397,7 @@ public final class _ {
     }
 
     /**
-     * Returns String representation of an object instance. If the object specified
+     * Returns String representation of an object instance. Predicate the object specified
      * is {@code null} or {@code _.NONE}, then an empty string is returned
      *
      * @param o
@@ -2952,33 +3419,196 @@ public final class _ {
         return S.fmt(tmpl, args);
     }
 
+    private static final int HC_INIT = 17;
+    private static final int HC_FACT = 37;
+
+    public final static int iterableHashCode(Iterable<?> it) {
+        int ret = HC_INIT;
+        for (Object o : it) {
+            ret = ret * HC_FACT + hc(o);
+        }
+        return ret;
+    }
+
+    public final static int hc(boolean o) {
+        return HC_INIT * HC_FACT + (o ? 1 : 0);
+    }
+
+    public final static int hc(boolean[] oa) {
+        int ret = HC_INIT;
+        for (boolean b : oa) {
+            ret = ret * HC_FACT + hc(oa);
+        }
+        return ret;
+    }
+
+    public final static int hc(short o) {
+        return HC_INIT * HC_FACT + o;
+    }
+
+    public final static int hc(short[] oa) {
+        int ret = HC_INIT;
+        for (short b : oa) {
+            ret = ret * HC_FACT + hc(oa);
+        }
+        return ret;
+    }
+
+    public final static int hc(byte o) {
+        return HC_INIT * HC_FACT + o;
+    }
+
+    public final static int hc(byte[] oa) {
+        int ret = HC_INIT;
+        for (byte b : oa) {
+            ret = ret * HC_FACT + hc(oa);
+        }
+        return ret;
+    }
+
+    public final static int hc(char o) {
+        return HC_INIT * HC_FACT + o;
+    }
+
+    public final static int hc(char[] oa) {
+        int ret = HC_INIT;
+        for (char b : oa) {
+            ret = ret * HC_FACT + hc(oa);
+        }
+        return ret;
+    }
+
+    public final static int hc(int o) {
+        return HC_INIT * HC_FACT + o;
+    }
+
+    public final static int hc(int[] oa) {
+        int ret = HC_INIT;
+        for (int b : oa) {
+            ret = ret * HC_FACT + hc(oa);
+        }
+        return ret;
+    }
+
+    public final static int hc(float o) {
+        return HC_INIT * HC_FACT + Float.floatToIntBits(o);
+    }
+
+    public final static int hc(float[] oa) {
+        int ret = HC_INIT;
+        for (float b : oa) {
+            ret = ret * HC_FACT + hc(oa);
+        }
+        return ret;
+    }
+
+    public final static int hc(long o) {
+        return HC_INIT * HC_FACT + (int) (o ^ (o >> 32));
+    }
+
+    public final static int hc(long[] oa) {
+        int ret = HC_INIT;
+        for (long b : oa) {
+            ret = ret * HC_FACT + hc(oa);
+        }
+        return ret;
+    }
+
+    public final static int hc(double o) {
+        return HC_INIT * HC_FACT + hc(Double.doubleToLongBits(o));
+    }
+
+    public final static int hc(double[] oa) {
+        int ret = HC_INIT;
+        for (double b : oa) {
+            ret = ret * HC_FACT + hc(oa);
+        }
+        return ret;
+    }
+
+    public final static int hc(Object o) {
+        return hc_(o);
+    }
+
+    public static final int hc(Object o1, Object o2) {
+        int i = 17;
+        i = 31 * i + hc_(o1);
+        i = 31 * i + hc_(o2);
+        return i;
+    }
+
+    public static final int hc(Object o1, Object o2, Object o3) {
+        int i = 17;
+        i = 31 * i + hc_(o1);
+        i = 31 * i + hc_(o2);
+        i = 31 * i + hc_(o3);
+        return i;
+    }
+
+    public static final int hc(Object o1, Object o2, Object o3, Object o4) {
+        int i = 17;
+        i = 31 * i + hc_(o1);
+        i = 31 * i + hc_(o2);
+        i = 31 * i + hc_(o3);
+        i = 31 * i + hc_(o4);
+        return i;
+    }
+
+    public static final int hc(Object o1, Object o2, Object o3, Object o4, Object o5) {
+        int i = 17;
+        i = 31 * i + hc_(o1);
+        i = 31 * i + hc_(o2);
+        i = 31 * i + hc_(o3);
+        i = 31 * i + hc_(o4);
+        i = 31 * i + hc_(o5);
+        return i;
+    }
+
     /**
      * Calculate hashcode of objects specified
      *
      * @param args
      * @return the calculated hash code
      */
-    public final static int hc(Object... args) {
-        int i = 17;
+    public final static int hc(Object o1, Object o2, Object o3, Object o4, Object o5, Object... args) {
+        int i = hc(o1, o2, o3, o4, o5);
         for (Object o : args) {
             i = 31 * i + hc(o);
         }
         return i;
     }
 
-    private static int hc(Object o) {
+    private static int hc_(Object o) {
         if (null == o) {
-            return 0;
+            return HC_INIT * HC_FACT;
         }
         if (o.getClass().isArray()) {
+            if (o instanceof int[]) {
+                return hc((int[])o);
+            } else if (o instanceof long[]) {
+                return hc((long[])o);
+            } else if (o instanceof char[]) {
+                return hc((char[]) o);
+            } else if (o instanceof byte[]) {
+                return hc((byte[]) o);
+            } else if (o instanceof double[]) {
+                return hc((double[]) o);
+            } else if (o instanceof float[]) {
+                return hc((float[]) o);
+            } else if (o instanceof short[]) {
+                return hc((short[]) o);
+            } else if (o instanceof boolean[]) {
+                return hc((boolean[]) o);
+            }
             int len = Array.getLength(o);
             int hc = 17;
             for (int i = 0; i < len; ++i) {
-                hc = 31 * hc + hc(Array.get(o, i));
+                hc = 31 * hc + hc_(Array.get(o, i));
             }
             return hc;
+        } else {
+            return o.hashCode();
         }
-        return o.hashCode();
     }
 
     /**
@@ -3007,21 +3637,123 @@ public final class _ {
     public static final long ts() {
         return System.nanoTime();
     }
+
+    /**
+     * Cast an object to a type. Returns an {@link Option} describing the casted value if
+     * it can be casted to the type specified, otherwise returns {@link #NONE}.
+     *
+     * @param o   the object to be casted
+     * @param c   specify the type to be casted to
+     * @param <T> the type of the result option value
+     * @return an {@code Option} describing the typed value or {@link #NONE}
+     * if it cannot be casted
+     */
+    public static <T> Option<T> cast(Object o, Class<T> c) {
+        if (null == o) {
+            return Option.none();
+        }
+        if (c.isAssignableFrom(o.getClass())) {
+            return Option.some((T) o);
+        }
+        return Option.none();
+    }
+
+    public static <T> T cast(Object o) {
+        return (T) o;
+    }
+
+    /**
+     * Set an object field value using reflection.
+     *
+     * @param fieldName
+     * @param obj
+     * @param val
+     * @param <T>
+     * @param <F>
+     * @return the object been set
+     */
+    public static <T, F> T setField(String fieldName, T obj, F val) {
+        Class<?> cls = obj.getClass();
+        try {
+            Field f;
+            try {
+                f = cls.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                f = cls.getField(fieldName);
+            }
+            f.setAccessible(true);
+            f.set(obj, val);
+        } catch (Exception e) {
+            E.unexpected(e);
+        }
+        return obj;
+    }
+
+    public static <T> byte[] serialize(T obj) {
+        E.NPE(obj);
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(obj);
+            oos.close();
+            return baos.toByteArray();
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    public static <T> T materialize(byte[] ba) {
+        E.NPE(ba);
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            T t = (T) ois.readObject();
+            ois.close();
+            return t;
+        } catch (IOException e) {
+            throw E.ioException(e);
+        } catch (ClassNotFoundException e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public static <T> T[] concat(T[] a1, T[] a2) {
+        T[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static <T> T[] concat(T[] a1, T[] a2, T[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (T[] a: rest) {
+            len += a.length;
+        }
+        T[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (T[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
     // --- eof common utilities
 
     /**
      * Namespace to configure or extend OSGL _ utilities
      */
     public static final class Conf {
-        private final List<IFunc1<Object, Boolean>> boolTesters = new ArrayList<IFunc1<Object, Boolean>>();
+        private final List<Function<Object, Boolean>> boolTesters = new ArrayList<Function<Object, Boolean>>();
 
         /**
-         * Register a boolean tester. A boolean tester is a {@link IFunc1 IFunc1&ltBoolean, Object&gt} type function
+         * Register a boolean tester. A boolean tester is a {@link org.osgl._.Function Function&ltBoolean, Object&gt} type function
          * that applied to {@code Object} type parameter and returns a boolean value of the Object been tested. It
          * should throw out {@link NotAppliedException} if the type of the object been tested is not recognized.
          * there is no need to test if the parameter is {@code null} in the tester as the utility will garantee the
          * object passed in is not null
-         *
+         * <p/>
          * <pre>
          *  _.Conf.registerBoolTester(new _.F1&lt;Boolean, Object&gt;() {
          *      @Override
@@ -3041,7 +3773,7 @@ public final class _ {
          *
          * @param tester
          */
-        public Conf registerBoolTester(IFunc1<Object, Boolean> tester) {
+        public Conf registerBoolTester(Function<Object, Boolean> tester) {
             E.NPE(tester);
             boolTesters.add(tester);
             return this;
@@ -3053,9 +3785,8 @@ public final class _ {
     /**
      * The namespace to aggregate predefined core functions
      */
-    public static final class F {
-        private F() {
-        }
+    public enum F {
+        ;
 
 
         /**
@@ -3064,7 +3795,7 @@ public final class _ {
          *
          * @since 0.2
          */
-        public static <P, T> F1<T, Void> breakIf(final IFunc1<? super T, Boolean> predicate, final P payload) {
+        public static <P, T> F1<T, Void> breakIf(final Function<? super T, Boolean> predicate, final P payload) {
             return new F1<T, Void>() {
                 @Override
                 public Void apply(T t) {
@@ -3083,12 +3814,12 @@ public final class _ {
          *
          * @since 0.2
          */
-        public static <T> F1<T, Void> breakIf(final IFunc1<? super T, Boolean> predicate) {
+        public static <T> F1<T, Void> breakIf(final Function<? super T, Boolean> predicate) {
             return new F1<T, Void>() {
                 @Override
                 public Void apply(T t) {
                     if (predicate.apply(t)) {
-                        throw breakOut(true);
+                        throw breakOut(t);
                     }
                     return null;
                 }
@@ -3101,7 +3832,7 @@ public final class _ {
          *
          * @since 0.2
          */
-        public static <P, T1, T2> F2<T1, T2, Void> breakIf(final IFunc2<? super T1, ? super T2, Boolean> predicate,
+        public static <P, T1, T2> F2<T1, T2, Void> breakIf(final Func2<? super T1, ? super T2, Boolean> predicate,
                                                            final P payload
         ) {
             return new F2<T1, T2, Void>() {
@@ -3122,7 +3853,7 @@ public final class _ {
          *
          * @since 0.2
          */
-        public static <T1, T2> F2<T1, T2, Void> breakIf(final IFunc2<? super T1, ? super T2, Boolean> predicate) {
+        public static <T1, T2> F2<T1, T2, Void> breakIf(final Func2<? super T1, ? super T2, Boolean> predicate) {
             return new F2<T1, T2, Void>() {
                 @Override
                 public Void apply(T1 t1, T2 t2) {
@@ -3141,7 +3872,7 @@ public final class _ {
          * @since 0.2
          */
         public static <P, T1, T2, T3> F3<T1, T2, T3, Void> breakIf(
-                final IFunc3<? super T1, ? super T2, ? super T3, Boolean> predicate,
+                final Func3<? super T1, ? super T2, ? super T3, Boolean> predicate,
                 final P payload
         ) {
             return new F3<T1, T2, T3, Void>() {
@@ -3163,7 +3894,7 @@ public final class _ {
          * @since 0.2
          */
         public static <T1, T2, T3> F3<T1, T2, T3, Void> breakIf(
-                final IFunc3<? super T1, ? super T2, ? super T3, Boolean> predicate
+                final Func3<? super T1, ? super T2, ? super T3, Boolean> predicate
         ) {
             return new F3<T1, T2, T3, Void>() {
                 @Override
@@ -3183,7 +3914,7 @@ public final class _ {
          * @since 0.2
          */
         public static <P, T1, T2, T3, T4> F4<T1, T2, T3, T4, Void> breakIf(
-                final IFunc4<? super T1, ? super T2, ? super T3, ? super T4, Boolean> predicate, final P payload
+                final Func4<? super T1, ? super T2, ? super T3, ? super T4, Boolean> predicate, final P payload
         ) {
             return new F4<T1, T2, T3, T4, Void>() {
                 @Override
@@ -3204,7 +3935,7 @@ public final class _ {
          * @since 0.2
          */
         public static <T1, T2, T3, T4> F4<T1, T2, T3, T4, Void> breakIf(
-                final IFunc4<? super T1, ? super T2, ? super T3, ? super T4, Boolean> predicate
+                final Func4<? super T1, ? super T2, ? super T3, ? super T4, Boolean> predicate
         ) {
             return new F4<T1, T2, T3, T4, Void>() {
                 @Override
@@ -3224,7 +3955,7 @@ public final class _ {
          * @since 0.2
          */
         public static <P, T1, T2, T3, T4, T5> F5<T1, T2, T3, T4, T5, Void> breakIf(
-                final IFunc5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Boolean> predicate,
+                final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Boolean> predicate,
                 final P payload
         ) {
             return new F5<T1, T2, T3, T4, T5, Void>() {
@@ -3246,7 +3977,7 @@ public final class _ {
          * @since 0.2
          */
         public static <T1, T2, T3, T4, T5> F5<T1, T2, T3, T4, T5, Void> breakIf(
-                final IFunc5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Boolean> predicate
+                final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Boolean> predicate
         ) {
             return new F5<T1, T2, T3, T4, T5, Void>() {
                 @Override
@@ -3260,7 +3991,7 @@ public final class _ {
         }
 
         /**
-         * Returns a composed {@link If} function that for any given parameter, the test result is <code>true</code>
+         * Returns a composed {@link org.osgl._.Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when all of the specified predicates returns <code>true</code> when applied to the parameter
          *
          * @param predicates an iterable of predicates that can be applied to a parameter and returns boolean value
@@ -3268,11 +3999,11 @@ public final class _ {
          * @return a composed function
          * @since 0.2
          */
-        public static <T> _.If<T> and(final Iterable<_.IFunc1<? super T, Boolean>> predicates) {
-            return new _.If<T>() {
+        public static <T> Predicate<T> and(final Iterable<Function<? super T, Boolean>> predicates) {
+            return new Predicate<T>() {
                 @Override
                 public boolean test(T t) {
-                    for (_.IFunc1<? super T, Boolean> cond : predicates) {
+                    for (Function<? super T, Boolean> cond : predicates) {
                         if (!cond.apply(t)) {
                             return false;
                         }
@@ -3283,7 +4014,7 @@ public final class _ {
         }
 
         /**
-         * Returns a composed {@link If} function that for any given parameter, the test result is <code>true</code>
+         * Returns a composed {@link org.osgl._.Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when all of the specified predicates returns <code>true</code> when applied to the parameter
          *
          * @param predicates an array of predicates that can be applied to a parameter and returns boolean value
@@ -3291,12 +4022,13 @@ public final class _ {
          * @return a composed function
          * @since 0.2
          */
-        public static <T> _.If<T> and(final _.IFunc1<? super T, Boolean>... predicates) {
-            return and(C1.list(predicates));
+        public static <T> Predicate<T> and(final Function<? super T, Boolean>... predicates) {
+            //TODO return and(C1.list(predicates));
+            return null;
         }
 
         /**
-         * Returns a composed {@link If} function that for any given parameter, the test result is <code>true</code>
+         * Returns a composed {@link org.osgl._.Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when any one of the specified predicates returns <code>true</code> when applied to the parameter
          *
          * @param predicates an iterable of predicates that can be applied to a parameter and returns boolean value
@@ -3304,11 +4036,11 @@ public final class _ {
          * @return a composed function
          * @since 0.2
          */
-        public static <T> _.If<T> or(final Iterable<_.IFunc1<? super T, Boolean>> predicates) {
-            return new _.If<T>() {
+        public static <T> Predicate<T> or(final Iterable<Function<? super T, Boolean>> predicates) {
+            return new Predicate<T>() {
                 @Override
                 public boolean test(T t) {
-                    for (_.IFunc1<? super T, Boolean> cond : predicates) {
+                    for (Function<? super T, Boolean> cond : predicates) {
                         if (cond.apply(t)) {
                             return true;
                         }
@@ -3319,7 +4051,7 @@ public final class _ {
         }
 
         /**
-         * Returns a composed {@link If} function that for any given parameter, the test result is <code>true</code>
+         * Returns a composed {@link org.osgl._.Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when any one of the specified predicates returns <code>true</code> when applied to the parameter
          *
          * @param predicates an array of predicates that can be applied to a parameter and returns boolean value
@@ -3327,8 +4059,9 @@ public final class _ {
          * @return a composed function
          * @since 0.2
          */
-        public static <T> _.If<T> or(final _.IFunc1<? super T, Boolean>... predicates) {
-            return or(C1.list(predicates));
+        public static <T> Predicate<T> or(final Function<? super T, Boolean>... predicates) {
+            // TODO return or(C1.list(predicates));
+            return null;
         }
 
         /**
@@ -3336,16 +4069,16 @@ public final class _ {
          *
          * @since 0.2
          */
-        public static <T> _.If<T> any(final Iterable<_.IFunc1<? super T, Boolean>> predicates) {
+        public static <T> Predicate<T> any(final Iterable<Function<? super T, Boolean>> predicates) {
             return or(predicates);
         }
 
         /**
-         * Alias of {@link #or(_.IFunc1[])}
+         * Alias of {@link #or(org.osgl._.Function[])}
          *
          * @since 0.2
          */
-        public static <T> _.If<T> any(final _.IFunc1<? super T, Boolean>... predicates) {
+        public static <T> Predicate<T> any(final Function<? super T, Boolean>... predicates) {
             return or(predicates);
         }
 
@@ -3354,16 +4087,16 @@ public final class _ {
          *
          * @since 0.2
          */
-        public static <T> _.If<T> none(final Iterable<_.IFunc1<? super T, Boolean>> predicates) {
+        public static <T> Predicate<T> none(final Iterable<Function<? super T, Boolean>> predicates) {
             return negate(or(predicates));
         }
 
         /**
-         * Negation of {@link #or(_.IFunc1[])}
+         * Negation of {@link #or(org.osgl._.Function[])}
          *
          * @since 0.2
          */
-        public static <T> _.If<T> none(final _.IFunc1<? super T, Boolean>... predicates) {
+        public static <T> Predicate<T> none(final Function<? super T, Boolean>... predicates) {
             return negate(or(predicates));
         }
 
@@ -3382,13 +4115,17 @@ public final class _ {
             };
         }
 
+        public static <X, Y> Bijection<Y, X> inverse(final Bijection<X, Y> f) {
+            return _.f1(f.inverse());
+        }
+
         /**
          * Returns a negate function of the specified predicate function
          *
          * @param predicate the specified function that returns boolean value
          * @return the function that negate the specified predicate
          */
-        public static F0<Boolean> negate(final IFunc0<Boolean> predicate) {
+        public static F0<Boolean> negate(final Func0<Boolean> predicate) {
             return new F0<Boolean>() {
                 @Override
                 public Boolean apply() {
@@ -3405,8 +4142,8 @@ public final class _ {
          * @param <T>       the type of the parameter to be applied
          * @return the function that negate the specified predicate
          */
-        public static <T> If<T> negate(final IFunc1<? super T, Boolean> predicate) {
-            return new _.If<T>() {
+        public static <T> Predicate<T> negate(final Function<? super T, Boolean> predicate) {
+            return new Predicate<T>() {
                 @Override
                 public boolean test(T t) {
                     return !predicate.apply(t);
@@ -3422,7 +4159,7 @@ public final class _ {
          * @param <P2>      type of param two
          * @return the function that negate predicate specified
          */
-        public static <P1, P2> F2<P1, P2, Boolean> negate(final IFunc2<? super P1, ? super P2, Boolean> predicate) {
+        public static <P1, P2> F2<P1, P2, Boolean> negate(final Func2<? super P1, ? super P2, Boolean> predicate) {
             return new F2<P1, P2, Boolean>() {
                 @Override
                 public Boolean apply(P1 p1, P2 p2) {
@@ -3441,7 +4178,7 @@ public final class _ {
          * @return the function that negate predicate specified
          */
         public static <P1, P2, P3> F3<P1, P2, P3, Boolean> negate(
-                final IFunc3<? super P1, ? super P2, ? super P3, Boolean> predicate
+                final Func3<? super P1, ? super P2, ? super P3, Boolean> predicate
         ) {
             return new F3<P1, P2, P3, Boolean>() {
                 @Override
@@ -3462,7 +4199,7 @@ public final class _ {
          * @return the function that negate predicate specified
          */
         public static <P1, P2, P3, P4> F4<P1, P2, P3, P4, Boolean> negate(
-                final IFunc4<? super P1, ? super P2, ? super P3, ? super P4, Boolean> predicate
+                final Func4<? super P1, ? super P2, ? super P3, ? super P4, Boolean> predicate
         ) {
             return new F4<P1, P2, P3, P4, Boolean>() {
                 @Override
@@ -3484,7 +4221,7 @@ public final class _ {
          * @return the function that negate predicate specified
          */
         public static <P1, P2, P3, P4, P5> F5<P1, P2, P3, P4, P5, Boolean> negate(
-                final IFunc5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, Boolean> predicate
+                final Func5<? super P1, ? super P2, ? super P3, ? super P4, ? super P5, Boolean> predicate
         ) {
             return new F5<P1, P2, P3, P4, P5, Boolean>() {
                 @Override
@@ -3501,7 +4238,7 @@ public final class _ {
          * @see #yes()
          * @since 0.2
          */
-        public static final If TRUE = new If() {
+        public static final Predicate TRUE = new Predicate() {
             @Override
             public boolean test(Object o) {
                 return true;
@@ -3514,7 +4251,7 @@ public final class _ {
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public static <T> If<T> yes() {
+        public static <T> Predicate<T> yes() {
             return TRUE;
         }
 
@@ -3525,7 +4262,7 @@ public final class _ {
          * @see #no()
          * @since 0.2
          */
-        public static final If FALSE = negate(TRUE);
+        public static final Predicate FALSE = negate(TRUE);
 
         /**
          * A type-safe version of {@link #FALSE}
@@ -3533,17 +4270,17 @@ public final class _ {
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public static <T> If<T> no() {
+        public static <T> Predicate<T> no() {
             return FALSE;
         }
 
         /**
-         * A predefined <code>If</code> predicate test if the
+         * A predefined <code>Predicate</code> predicate test if the
          * element specified is <code>null</code> or {@link _#NONE}.
          *
          * @since 0.2
          */
-        public static final If IS_NULL = new If() {
+        public static final Predicate IS_NULL = new Predicate() {
             @Override
             public boolean test(Object o) {
                 return null == o || NONE == o;
@@ -3556,7 +4293,7 @@ public final class _ {
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public static <T> If<T> isNull() {
+        public static <T> Predicate<T> isNull() {
             return IS_NULL;
         }
 
@@ -3566,17 +4303,17 @@ public final class _ {
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public static <T> If<T> isNull(Class<T> c) {
+        public static <T> Predicate<T> isNull(Class<T> c) {
             return IS_NULL;
         }
 
         /**
-         * A predefined <code>If</code> predicate test if the element
+         * A predefined <code>Predicate</code> predicate test if the element
          * specified is NOT null
          *
          * @since 0.2
          */
-        public static final If NOT_NULL = negate(IS_NULL);
+        public static final Predicate NOT_NULL = negate(IS_NULL);
 
         /**
          * The type-safe version of {@link #NOT_NULL}
@@ -3584,7 +4321,7 @@ public final class _ {
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public static <T> If<T> notNull() {
+        public static <T> Predicate<T> notNull() {
             return NOT_NULL;
         }
 
@@ -3613,6 +4350,442 @@ public final class _ {
             return IDENTITY;
         }
 
+        private static <T extends Comparable<T>> F2<T, T, Boolean> _cmp(final boolean lt) {
+            return new F2<T, T, Boolean>() {
+                @Override
+                public Boolean apply(T t1, T t2
+                ) throws NotAppliedException, Break {
+                    if (lt) {
+                        return (t1.compareTo(t2) < 0);
+                    } else {
+                        return (t1.compareTo(t2) > 0);
+                    }
+                }
+            };
+        }
+
+        private static <T extends Comparable<T>> F1<T, Boolean> _cmp(final T v, final boolean lt) {
+            return new F1<T, Boolean>() {
+                @Override
+                public Boolean apply(T t) throws NotAppliedException, Break {
+                    if (lt) {
+                        return t.compareTo(v) < 0;
+                    } else {
+                        return t.compareTo(v) > 0;
+                    }
+                }
+            };
+        }
+
+        /**
+         * Returns a function that apply to one parameter and compare it with the value {@code v} specified,
+         * returns {@code true} if the parameter applied is less than {@code v}
+         *
+         * @param v   the value to be compare with the function parameter
+         * @param <T> the type of the value and parameter
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F1<T, Boolean> lt(final T v) {
+            return _cmp(v, true);
+        }
+
+        /**
+         * Alias of {@link #lt(Comparable)}
+         *
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F1<T, Boolean> lessThan(final T v) {
+            return lt(v);
+        }
+
+        /**
+         * Returns a function that apply to one parameter and compare it with the value {@code v} specified,
+         * returns {@code true} if the parameter applied is greater than {@code v}
+         *
+         * @param v   the value to be compare with the function parameter
+         * @param <T> the type of the value and parameter
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F1<T, Boolean> gt(final T v) {
+            return _cmp(v, false);
+        }
+
+        /**
+         * Alias of {@link #gt(Comparable)}
+         *
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F1<T, Boolean> greaterThan(final T v) {
+            return gt(v);
+        }
+
+        /**
+         * Returns a function that apply to one parameter and compare it with the value {@code v} specified,
+         * returns {@code true} if the parameter applied is greater than or equals to {@code v}
+         *
+         * @param v   the value to be compare with the function parameter
+         * @param <T> the type of the value and parameter
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F1<T, Boolean> gte(final T v) {
+            return negate(lt(v));
+        }
+
+        /**
+         * Alias of {@link #gte(Comparable)}
+         *
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F1<T, Boolean> greaterThanOrEqualsTo(final T v) {
+            return gte(v);
+        }
+
+        /**
+         * Returns a function that apply to one parameter and compare it with the value {@code v} specified,
+         * returns {@code true} if the parameter applied is less than or equals to {@code v}
+         *
+         * @param v   the value to be compare with the function parameter
+         * @param <T> the type of the value and parameter
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F1<T, Boolean> lte(final T v) {
+            return negate(gt(v));
+        }
+
+        /**
+         * Alias of {@link #lte(Comparable)}
+         *
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F1<T, Boolean> lessThanOrEqualsTo(final T v) {
+            return lte(v);
+        }
+
+        /**
+         * A function that apply to two parameters then return {@code true} if the first parameter
+         * is less than the second one. The type of the two parameter should be the same and should
+         * implements {@link Comparable}
+         *
+         * @since 0.2
+         */
+        public static final F2 LESS_THAN = _cmp(true);
+
+        /**
+         * A function that apply to two parameters then return {@code true} if the first parameter
+         * is greater than the second one. The type of the two parameter should be the same and should
+         * implements {@link Comparable}
+         *
+         * @since 0.2
+         */
+        public static final F2 GREATER_THAN = _cmp(false);
+
+        /**
+         * A function that apply to two parameters then return {@code true} if the first parameter
+         * is less than or equal to the second one. The type of the two parameter should be the same
+         * and should implements {@link Comparable}
+         *
+         * @since 0.2
+         */
+        public static final F2 LESS_THAN_OR_EQUAL_TO = negate(GREATER_THAN);
+
+        /**
+         * A function that apply to two parameters then return {@code true} if the first parameter
+         * is greater than or equal to the second one. The type of the two parameter should be the same
+         * and should implements {@link Comparable}
+         *
+         * @since 0.2
+         */
+        public static final F2 GREATER_THAN_OR_EQUAL_TO = negate(LESS_THAN);
+
+        /**
+         * Returns a function that check if a value is less than another one. This is the
+         * type safe version of {@link #LESS_THAN}
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        @SuppressWarnings("unchecked")
+        public static <T extends Comparable<T>> F2<T, T, Boolean> lt() {
+            return LESS_THAN;
+        }
+
+        /**
+         * Alias of {@link #lt()}
+         *
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F2<T, T, Boolean> lessThan() {
+            return lt();
+        }
+
+        /**
+         * Returns a function that check if a value is less than or equals to another one.
+         * This is the type safe version of {@link #LESS_THAN_OR_EQUAL_TO}
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        @SuppressWarnings("unchecked")
+        public static <T extends Comparable<T>> F2<T, T, Boolean> lte() {
+            return LESS_THAN_OR_EQUAL_TO;
+        }
+
+        /**
+         * Alias of {@link #lte()}
+         *
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F2<T, T, Boolean> lessThanOrEqualsTo() {
+            return lte();
+        }
+
+        /**
+         * Returns a function that check if a value is less than another one.
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        @SuppressWarnings("unchecked")
+        public static <T extends Comparable<T>> F2<T, T, Boolean> gt() {
+            return GREATER_THAN;
+        }
+
+        /**
+         * Alias of {@link #gt()}
+         *
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F2<T, T, Boolean> greaterThan() {
+            return gt();
+        }
+
+        /**
+         * Returns a function that check if a value is greater than or equals to another one.
+         * This is the type safe version of {@link #GREATER_THAN_OR_EQUAL_TO}
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F2<T, T, Boolean> gte() {
+            return negate(LESS_THAN);
+        }
+
+        /**
+         * Alias of {@link #gte()}
+         *
+         * @since 0.2
+         */
+        public static <T extends Comparable<T>> F2<T, T, Boolean> greaterThanOrEqualsTo() {
+            return gte();
+        }
+
+
+        private static <T> F2<T, T, Boolean> _cmp(final java.util.Comparator<? super T> c, final boolean lt) {
+            return new F2<T, T, Boolean>() {
+                @Override
+                public Boolean apply(T t1, T t2) throws NotAppliedException, Break {
+                    if (lt) {
+                        return c.compare(t1, t2) < 0;
+                    } else {
+                        return c.compare(t1, t2) > 0;
+                    }
+                }
+            };
+        }
+
+        /**
+         * Returns a function that check if a value is less than another one using the {@link Comparator} specified
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> lt(final java.util.Comparator<? super T> c) {
+            return _cmp(c, true);
+        }
+
+        /**
+         * Alias of {@link #lt(java.util.Comparator)}
+         *
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> lessThan(final java.util.Comparator<? super T> c) {
+            return lt(c);
+        }
+
+        /**
+         * Returns a function that check if a value is less than another one using the {@link Comparator} specified
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> gt(final java.util.Comparator<? super T> c) {
+            return _cmp(c, false);
+        }
+
+        /**
+         * Alias of {@link #gt(java.util.Comparator)}
+         *
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> greaterThan(final java.util.Comparator<? super T> c) {
+            return gt(c);
+        }
+
+        /**
+         * Returns a function that check if a value is less than or equals to another one
+         * using the {@link Comparator} specified
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> lte(final java.util.Comparator<? super T> c) {
+            return negate(gt(c));
+        }
+
+        /**
+         * Alias of {@link #lte(java.util.Comparator)}
+         *
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> lessThanOrEqualsTo(final java.util.Comparator<? super T> c) {
+            return lte(c);
+        }
+
+        /**
+         * Returns a function that check if a value is greater than or equals to another one
+         * using the {@link Comparator} specified
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> gte(final java.util.Comparator<? super T> c) {
+            return negate(lt(c));
+        }
+
+        /**
+         * Alias of {@link #gte(java.util.Comparator)}
+         *
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> greaterThanOrEqualsTo(final java.util.Comparator<? super T> c) {
+            return gte(c);
+        }
+
+        private static <T> F2<T, T, Boolean> _cmp(final Func2<? super T, ? super T, Integer> c, final boolean lt) {
+            return new F2<T, T, Boolean>() {
+                @Override
+                public Boolean apply(T t1, T t2) throws NotAppliedException, Break {
+                    if (lt) {
+                        return c.apply(t1, t2) < 0;
+                    } else {
+                        return c.apply(t1, t2) > 0;
+                    }
+                }
+            };
+        }
+
+        /**
+         * Returns a function that check if a value is less than another one using the {@link Comparator} specified
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> lt(final Func2<? super T, ? super T, Integer> c) {
+            return _cmp(c, true);
+        }
+
+        /**
+         * Alias of {@link #lt(java.util.Comparator)}
+         *
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> lessThan(final Func2<? super T, ? super T, Integer> c) {
+            return lt(c);
+        }
+
+        /**
+         * Returns a function that check if a value is less than another one using the {@link Comparator} specified
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> gt(final Func2<? super T, ? super T, Integer> c) {
+            return _cmp(c, false);
+        }
+
+        /**
+         * Alias of {@link #gt(java.util.Comparator)}
+         *
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> greaterThan(final Func2<? super T, ? super T, Integer> c) {
+            return gt(c);
+        }
+
+        /**
+         * Returns a function that check if a value is less than or equals to another one
+         * using the {@link Comparator} specified
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> lte(final Func2<? super T, ? super T, Integer> c) {
+            return negate(gt(c));
+        }
+
+        /**
+         * Alias of {@link #lte(java.util.Comparator)}
+         *
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> lessThanOrEqualsTo(final Func2<? super T, ? super T, Integer> c) {
+            return lte(c);
+        }
+
+        /**
+         * Returns a function that check if a value is greater than or equals to another one
+         * using the {@link Comparator} specified
+         *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> gte(final Func2<? super T, ? super T, Integer> c) {
+            return negate(lt(c));
+        }
+
+        /**
+         * Alias of {@link #gte(java.util.Comparator)}
+         *
+         * @since 0.2
+         */
+        public static <T> F2<T, T, Boolean> greaterThanOrEqualsTo(final Func2<? super T, ? super T, Integer> c) {
+            return gte(c);
+        }
+
         /**
          * A predefined function that applies to two parameters and check if they are equals to each other
          */
@@ -3624,12 +4797,29 @@ public final class _ {
         };
 
         /**
+         * Alias of {@link #EQ}
+         *
+         * @since 0.2
+         */
+        public static final F2 EQUAL = EQ;
+
+        /**
          * The type-safe version of {@link #EQ}
          *
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public static <A, B> F2<Boolean, A, B> eq() {
+        public static <P1, P2> F2<P1, P2, Boolean> eq() {
+            return EQ;
+        }
+
+        /**
+         * Alias of {@link #eq()}
+         *
+         * @since 0.2
+         */
+        @SuppressWarnings("unchecked")
+        public static <P1, P2> F2<P1, P2, Boolean> equal() {
             return EQ;
         }
 
@@ -3642,13 +4832,67 @@ public final class _ {
         public static final F2 NE = negate(EQ);
 
         /**
+         * Alias of {@link #NE}
+         *
+         * @since 0.2
+         */
+        public static final F2 NOT_EQUAL = NE;
+
+        /**
          * The type-safe version of {@link #NE}
          *
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
-        public static <A, B> F2<Boolean, A, B> ne() {
+        public static <P1, P2> F2<P1, P2, Boolean> ne() {
             return NE;
+        }
+
+        /**
+         * Alias of {@link #ne()}
+         *
+         * @since 0.2
+         */
+        @SuppressWarnings("unchecked")
+        public static <P1, P2> F2<P1, P2, Boolean> notEqual() {
+            return NE;
+        }
+
+        public static final Comparator NATURAL_ORDER = Comparator.NaturalOrderComparator.INSTANCE;
+
+        @SuppressWarnings("unchecked")
+        public static <T extends Comparable<T>> Comparator<T> naturalOrder() {
+            return (Comparator<T>) NATURAL_ORDER;
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T extends Comparable<? super T>> Comparator<T> reverseOrder() {
+            return (Comparator<T>) _.comparator(Collections.reverseOrder());
+        }
+
+        public static <T, U extends Comparable<? super U>> Comparator<T> comparing(
+                final Function<? super T, ? extends U> keyExtractor
+        ) {
+            E.NPE(keyExtractor);
+            return new Comparator<T>() {
+                @Override
+                public int compare(T o1, T o2) {
+                    return (keyExtractor.apply(o1).compareTo(keyExtractor.apply(o2)));
+                }
+            };
+        }
+
+        public static <T, U> Comparator<T> comparing(
+                final Function<? super T, ? extends U> keyExtractor,
+                final java.util.Comparator<? super U> keyComparator
+        ) {
+            E.NPE(keyExtractor, keyComparator);
+            return new Comparator<T>() {
+                @Override
+                public int compare(T o1, T o2) {
+                    return keyComparator.compare(keyExtractor.apply(o1), keyExtractor.apply(o2));
+                }
+            };
         }
 
         /**
@@ -3656,7 +4900,7 @@ public final class _ {
          *
          * @since 0.2
          */
-        public static final F1 HC = new F1() {
+        public static final F1 HASH_CODE = new F1() {
             @Override
             public Integer apply(Object o) {
                 return _.hc(o);
@@ -3664,13 +4908,13 @@ public final class _ {
         };
 
         /**
-         * The type-safe version of {@link #HC}
+         * The type-safe version of {@link #HASH_CODE}
          *
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
         public static <T> F1<T, Integer> hc() {
-            return HC;
+            return HASH_CODE;
         }
 
         /**

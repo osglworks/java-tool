@@ -216,5 +216,23 @@ public class E {
             throw new NullPointerException();
         }
     }
+
+    public static void unsupportedIf(boolean test) {
+        if (test) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public static void illegalArgumentIf(boolean test) {
+        if (test) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public static void illegalStateIf(boolean test) {
+        if (test) {
+            throw new IllegalStateException();
+        }
+    }
     
 }

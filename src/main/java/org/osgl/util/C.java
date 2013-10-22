@@ -20,43 +20,104 @@
 package org.osgl.util;
 
 import org.osgl._;
+import org.osgl.exception.NotAppliedException;
 
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * The namespace for OSGL collection utilities
  */
-public final class C {
+public enum C {
+
+    INSTANCE;
+
     /**
-     * The character enum for a {@link ITraversable}
+     * The character enum for a data structure
      */
-    public static enum Characteristic {
+    public static enum Feature {
         /**
-         * Indicate whether a traversable is immutable
+         * Indicate whether a structure is immutable
          */
         IMMUTABLE,
 
         /**
-         * Indicate whether a list support random access
+         * Indicate the client cannot modify the structure.
+         * However a readonly structure might not be immutable.
+         * For example a view of a backing structure is readonly
+         * while the backing structure is immutable
+         */
+        READONLY,
+
+        /**
+         * Indicate whether a list structure support random access
          */
         RANDOM_ACCESS,
 
         /**
-         * Indicate whether the traversable is limited
+         * Indicate whether the structure is limited
          */
         LIMITED,
 
         /**
-         * Indicate whether the traversable support lazy evaluation
+         * Indicate whether the structure supports lazy evaluation
          */
         LAZY,
 
         /**
-         * Indicate whether this the traversable support parallel operation
+         * Indicate whether the structure support parallel operation
          */
-        PARALLEL
+        PARALLEL,
+
+        /**
+         * Indicate whether this structure is ordered. E.g. a
+         * {@link List} and {@link java.util.LinkedHashSet} is ordered
+         * structure, while {@link java.util.HashSet} might not be
+         * ordered
+         */
+        ORDERED,
+
+        /**
+         * Indicate whether this structure is sorted
+         */
+        SORTED
+    }
+
+    /**
+     * Define a type that holds a set of {@link org.osgl.util.C.Feature}
+     */
+    public interface Featured {
+        /**
+         * Get all characteristics in {@link EnumSet}
+         *
+         * @return an {@code EnumSet} of all characteristics hold by this object
+         * @since 0.2
+         */
+        EnumSet<Feature> features();
+
+        /**
+         * Check if this object has a certain {@link org.osgl.util.C.Feature}
+         *
+         * @param c the characteristic to be tested
+         * @return {@code true} if this object has the characteristic, or {@code false} otherwise
+         * @since 0.2
+         */
+        boolean is(Feature c);
+
+        public static class Factory {
+            public static final Featured identity(final EnumSet<Feature> predefined) {
+                return new Featured() {
+                    @Override
+                    public EnumSet<Feature> features() {
+                        return predefined;
+                    }
+
+                    @Override
+                    public boolean is(Feature c) {
+                        return predefined.contains(c);
+                    }
+                };
+            }
+        }
     }
 
     /**
@@ -65,162 +126,47 @@ public final class C {
      *
      * @param <T> The element type
      */
-    public static interface ITraversable<T> extends Iterable<T> {
-
-        /**
-         * Check if the traversable has a certain characteristic
-         *
-         * @param c
-         * @return
-         */
-        boolean is(Characteristic c);
-
-        /**
-         * Alias of {@link #head()}
-         *
-         * @since 0.2
-         */
-        _.Option<T> first();
-
-        /**
-         * Returns an {@link _.Option} of the first element in the
-         * traversable or {@link _#NONE} if the traversable is empty
-         *
-         * @return the first element from the traversable
-         * @see #tail()
-         * @see #first()
-         * @since 0.2
-         */
-        _.Option<T> head();
-
-        /**
-         * Alias of {@link #take(int)}
-         *
-         * @since 0.2
-         */
-        ITraversable<T> head(int n);
-
+    public static interface
+    Traversable<T>
+    extends Iterable<T>, Featured {
         /**
          * Is this traversal empty?
          *
          * @return {@code true} if the traversal is empty or {@code false} otherwise
+         * @since 0.2
          */
         boolean isEmpty();
 
-
         /**
-         * Returns the last element from this traversable
+         * Return the size of this traversal
          *
-         * @return the last element
-         * @throws UnsupportedOperationException if this traversable is not limited
-         * @see #isEmpty()
-         * @see Characteristic#LIMITED
-         * @see #is(org.osgl.util.C.Characteristic)
+         * @return the size of the structure
+         * @throws UnsupportedOperationException if this structure does not support this method
          * @since 0.2
          */
-        _.Option<T> last() throws NoSuchElementException, UnsupportedOperationException;
+        int size() throws UnsupportedOperationException;
 
-        /**
-         * Returns an new traversable that reverse this traversable.
-         *
-         * @return a reversed traversable
-         * @throws UnsupportedOperationException if this traversable is unlimited
-         * @see Characteristic#LIMITED
-         * @see #is(org.osgl.util.C.Characteristic)
-         * @since 0.2
-         */
-        ITraversable<T> reverse() throws UnsupportedOperationException;
-
-        /**
-         * Returns the rest part of the traversable except the first element
-         *
-         * @return a traversable without the first element
-         * @throws UnsupportedOperationException if the traversable is empty
-         * @see #head()
-         * @see #tail(int)
-         * @since 0.2
-         */
-        ITraversable<T> tail() throws UnsupportedOperationException;
-
-        /**
-         * Returns a traversable consisting the last {@code n} elements from this traversable if
-         * number {@code n} is positive and the traversable contains more than {@code n} elements
-         * <p/>
-         * <p>If this traversable contains less than {@code n} elements, then a traversable consisting
-         * the whole elements of this traversable is returned. Note it might return this traversable
-         * itself if the traversable is immutable.</p>
-         * <p/>
-         * <p>If the number {@code n} is zero, then an empty traversable is returned in reverse
-         * order</p>
-         * <p/>
-         * <p>If the number {@code n} is negative, then the first {@code -n} elements from this
-         * traversable is returned in an new traversable</p>
-         * <p/>
-         * <pre>
-         *     ITraversable traversable = C1.list(1, 2, 3, 4);
-         *     assertEquals(C1.list(3, 4), traversable.tail(2));
-         *     assertEquals(C1.list(1, 2, 3, 4), traversable.tail(100));
-         *     assertEquals(C1.list(), traversable.tail(0));
-         *     assertEquals(C1.list(1, 2), traversable.tail(-2));
-         *     assertEquals(C1.list(1, 2, 3, 4), traversable.take(-200));
-         * </pre>
-         *
-         * @param n specify the number of elements to be taken from the tail of this traversable
-         * @return a traversable consisting of the last {@code n} elements from this traversable
-         * @throws UnsupportedOperationException if the traversal is unlimited or empty
-         * @see Characteristic#LIMITED
-         * @see #is(org.osgl.util.C.Characteristic)
-         * @since 0.2
-         */
-        ITraversable<T> tail(int n) throws UnsupportedOperationException;
-
-        /**
-         * Returns a traversable consisting the first {@code n} elements from this traversable if
-         * number {@code n} is positive and the traversable contains more than {@code n} elements
-         * <p/>
-         * <p>If this traversable contains less than {@code n} elements, then a traversable consisting
-         * the whole elements of this traversable is returned. Note it might return this traversable
-         * itself if the traversable is immutable.</p>
-         * <p/>
-         * <p>If the number {@code n} is zero, then an empty traversable is returned in reverse
-         * order</p>
-         * <p/>
-         * <p>If the number {@code n} is negative, then the last {@code -n} elements from this
-         * traversable is returned in an new traversable</p>
-         * <p/>
-         * <pre>
-         *     ITraversable traversable = C1.list(1, 2, 3, 4);
-         *     assertEquals(C1.list(1, 2), traversable.take(2));
-         *     assertEquals(C1.list(1, 2, 3, 4), traversable.take(100));
-         *     assertEquals(C1.list(), traversable.take(0));
-         *     assertEquals(C1.list(3, 4), traversable.take(-2));
-         *     assertEquals(C1.list(1, 2, 3, 4), traversable.take(-200));
-         * </pre>
-         *
-         * @param n specify the number of elements to be taken from the head of this traversable
-         * @return a traversable consisting of the first {@code n} elements of this traversable
-         * @since 0.2
-         */
-        ITraversable<T> take(int n);
 
         /**
          * Returns an new traversable with a mapper function specified. The element in the new traversal is the result of the
          * mapper function applied to this traversal element.
          * <p/>
          * <pre>
-         *     ITraversable traversable = C.list(23, _.NONE, null);
+         *     Traversable traversable = C.list(23, _.NONE, null);
          *     assertEquals(C.list(true, false, false), traversal.map(_.F.NOT_NULL));
          *     assertEquals(C.list("23", "", ""), traversal.map(_.F.AS_STRING));
          * </pre>
          * <p/>
-         * <p>It is up to implementation to decide whether use lazy evaluation or not</p>
+         * <p>For Lazy Traversable, it must use lazy evaluation for this method.
+         * Otherwise it is up to implementation to decide whether use lazy
+         * evaluation or not</p>
          *
          * @param mapper the function that applied to element in this traversal and returns element in the result traversal
          * @param <R>    the element type of the new traversal
          * @return the new traversal contains results of the mapper function applied to this traversal
          * @since 0.2
          */
-        <R> ITraversable<R> map(_.IFunc1<? super T, ? extends R> mapper);
+        <R> Traversable<R> map(_.Function<? super T, ? extends R> mapper);
 
         /**
          * Returns a traversable consisting of the results of replacing each element of this
@@ -231,16 +177,17 @@ public final class C {
          * @param mapper the function produce an iterable when applied to an element
          * @param <R>    the element type of the the new traversable
          * @return the new traversable
+         * @since 0.2
          */
-        <R> ITraversable<R> flatMap(_.IFunc1<? super T, ? extends Iterable<? extends R>> mapper);
+        <R> Traversable<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper);
 
         /**
          * Returns an new traversable that contains all elements in the current traversable
          * except that does not pass the test of the filter function specified.
          * <p/>
          * <pre>
-         *     ITraversable traversable = C.list(-1, 0, 1, -3, 7);
-         *     ITraversable filtered = traversable.filter(_.F.gt(0));
+         *     Traversable traversable = C.list(-1, 0, 1, -3, 7);
+         *     Traversable filtered = traversable.filter(_.F.gt(0));
          *     assertTrue(filtered.contains(1));
          *     assertFalse(filtered.contains(-3));
          * </pre>
@@ -249,13 +196,14 @@ public final class C {
          *                  kept in the resulting traversable. When applying the filter function
          *                  to the element, if the result is {@code true} then the element will
          *                  be kept in the resulting traversable.
-         * @return the new traversable contains elements passed the filter function test
+         * @return the new traversable consists of elements passed the filter function test
+         * @since 0.2
          */
-        ITraversable<T> filter(_.IFunc1<? super T, Boolean> predicate);
+        Traversable<T> filter(_.Function<? super T, Boolean> predicate);
 
         /**
          * Performs a reduction on the elements in this traversable, using the provided
-         * identity and accumulating function. This is equivalent to:
+         * identity and accumulating function. This might be equivalent to:
          * <pre>
          *      R result = identity;
          *      for (T element: this traversable) {
@@ -263,16 +211,22 @@ public final class C {
          *      }
          *      return result;
          * </pre>
+         * <p/>
+         * <p>The above shows a typical left side reduce. However depending on the
+         * implementation, it might choose another way to do the reduction, including
+         * reduction in a parallel way</p>
          *
          * @param identity    the identity value for the accumulating function
          * @param accumulator the function the combine two values
+         * @param <R>         the type of identity and the return value
          * @return the result of reduction
+         * @since 0.2
          */
-        <R> R reduce(R identity, _.IFunc2<R, T, R> accumulator);
+        <R> R reduce(R identity, _.Func2<R, T, R> accumulator);
 
         /**
          * Performs a reduction on the elements in this traversable, using provided accumulating
-         * function. This is equivalent to:
+         * function. This might be equivalent to:
          * <pre>
          *      boolean found = false;
          *      T result = null;
@@ -286,27 +240,37 @@ public final class C {
          *      }
          *      return found ? _.some(result) : _.none();
          * </pre>
+         * <p/>
+         * <p>The above shows a typical left side reduction. However depending on the
+         * implementation, it might choose another way to do the reduction, including
+         * reduction in a parallel way</p>
          *
-         * @param accumulator
-         * @return
+         * @param accumulator the function takes previous accumulating
+         *                    result and the current element being
+         *                    iterated
+         * @return an option describing the accumulating result or {@link org.osgl._#none()} if
+         *         the structure is empty
+         * @since 0.2
          */
-        _.Option<T> reduce(_.IFunc2<T, T, T> accumulator);
+        _.Option<T> reduce(_.Func2<T, T, T> accumulator);
 
         /**
          * Check if all elements match the predicate specified
          *
          * @param predicate the function to test the element
          * @return {@code true} if all elements match the predicate
+         * @since 0.2
          */
-        boolean allMatch(_.IFunc1<? super T, Boolean> predicate);
+        boolean allMatch(_.Function<? super T, Boolean> predicate);
 
         /**
          * Check if any elements matches the predicate specified
          *
          * @param predicate the function to test the element
          * @return {@code true} if any element matches the predicate
+         * @since 0.2
          */
-        boolean anyMatch(_.IFunc1<? super T, Boolean> predicate);
+        boolean anyMatch(_.Function<? super T, Boolean> predicate);
 
         /**
          * Check if no elements matches the predicate specified. This should be
@@ -318,8 +282,9 @@ public final class C {
          *
          * @param predicate the function to test the element
          * @return {@code true} if none element matches the predicate
+         * @since 0.2
          */
-        boolean noneMatch(_.IFunc1<? super T, Boolean> predicate);
+        boolean noneMatch(_.Function<? super T, Boolean> predicate);
 
         /**
          * Returns an element that matches the predicate specified. The interface
@@ -328,73 +293,1340 @@ public final class C {
          * found first is returned. It's all up to the implementation to refine the
          * semantic of this method
          *
+         * @param predicate the function map element to Boolean
          * @return an element in this traversal that matches the predicate or
          *         {@link _#NONE} if no element matches
+         * @since 0.2
          */
-        _.Option<T> findOne(_.IFunc1<? super T, Boolean> predicate);
+        _.Option<T> findOne(_.Function<? super T, Boolean> predicate);
+
+        /**
+         * Iterate this {@code Traversable} with a visitor function. This method
+         * does not specify the approach to iterate through this structure. The
+         * implementation might choose iterate from left to right, or vice versa.
+         * It might even choose to split the structure into multiple parts, and
+         * iterate through them in parallel
+         *
+         * @param visitor a function that apply to element in this
+         *                {@code Traversable}. The return value
+         *                of the function is ignored
+         * @return this {@code Traversable} instance for chained call
+         * @since 0.2
+         */
+        Traversable<T> accept(_.Function<? super T, ?> visitor);
+    }
+
+    public static interface Sequence<T>
+    extends Traversable<T> {
+
+        /**
+         * Alias of {@link #head()}
+         *
+         * @since 0.2
+         */
+        T first();
+
+        /**
+         * Returns an {@link _.Option} of the first element in the
+         * {@code Sequence} or {@link _#NONE} if the {@code Sequence} is empty
+         *
+         * @return the first element from the {@code Sequence}
+         * @throws NoSuchElementException if the {@code Sequence} is empty
+         * @see #tail()
+         * @see #first()
+         * @since 0.2
+         */
+        T head() throws NoSuchElementException;
+
+        /**
+         * Alias of {@link #take(int)}
+         *
+         * @since 0.2
+         */
+        Sequence<T> head(int n);
+
+        /**
+         * Returns the rest part of the {@code Sequence} except the first element
+         *
+         * @return a {@code Sequence} without the first element
+         * @throws UnsupportedOperationException if the {@code Sequence} is empty
+         * @see #head()
+         * @see ReversibleSequence#tail(int)
+         * @since 0.2
+         */
+        Sequence<T> tail() throws UnsupportedOperationException;
+
+        /**
+         * Returns a {@code Sequence} consisting the first {@code n} elements from this {@code Sequence} if
+         * number {@code n} is positive and the {@code Sequence} contains more than {@code n} elements
+         * <p/>
+         * <p>If this {@code Sequence} contains less than {@code n} elements, then a {@code Sequence} consisting
+         * the whole elements of this {@code Sequence} is returned. Note it might return this {@code Sequence}
+         * itself if the {@code Sequence} is immutable.</p>
+         * <p/>
+         * <p>If the number {@code n} is zero, then an empty {@code Sequence} is returned in reverse
+         * order</p>
+         * <p/>
+         * <p>If the number {@code n} is negative, then the last {@code -n} elements from this
+         * {@code Sequence} is returned in an new {@code Sequence}, or throw {@link UnsupportedOperationException}
+         * if this operation is not supported</p>
+         * <p/>
+         * <pre>
+         *     Sequence seq = C.list(1, 2, 3, 4);
+         *     assertEquals(C.list(1, 2), seq.take(2));
+         *     assertEquals(C.list(1, 2, 3, 4), seq.take(100));
+         *     assertEquals(C.list(), seq.take(0));
+         *     assertEquals(C.list(3, 4), seq.take(-2));
+         *     assertEquals(C.list(1, 2, 3, 4), seq.take(-200));
+         * </pre>
+         *
+         * @param n specify the number of elements to be taken from the head of this {@code Sequence}
+         * @return a {@code Sequence} consisting of the first {@code n} elements of this {@code Sequence}
+         * @see #head(int)
+         * @since 0.2
+         */
+        Sequence<T> take(int n);
+
+        /**
+         * Returns an new {@code Sequence} that takes the head of this {@code Sequence} until the predicate
+         * evaluate to {@code false}:
+         * <p/>
+         * <pre>
+         *     C.Sequence seq = C.list(1, 2, 3, 4, 5, 4, 3, 2, 1);
+         *     assertEquals(C.list(C.list(1, 2, 3), seq.takeWhile(_.F.lt(4)));
+         *     assertEquals(C.list(C.list(1, 2, 3, 3, 2, 1), seq.filter(_.F.lt(4)));
+         * </pre>
+         *
+         * @param predicate specify which the elements in this {@code Sequence} will put into the new
+         *                  {@code Sequence}
+         * @return the new {@code Sequence}
+         * @since 0.2
+         */
+        Sequence<T> takeWhile(_.Function<? super T, Boolean> predicate);
+
+
+        /**
+         * Returns a {@code Sequence} consisting of the elements from this {@code Sequence} except the first {@code n}
+         * if number {@code n} is positive and the {@code Sequence} contains more than {@code n} elements
+         * <p/>
+         * <p>If this {@code Sequence} contains less than {@code n} elements, then an empty {@code Sequence}
+         * is returned</p>
+         * <p/>
+         * <p>If the number {@code n} is zero, then a copy of this {@code Sequence} or this {@code Sequence}
+         * itself is returned depending on the implementation</p>
+         * <p/>
+         * <p>If the number {@code n} is negative, then {@link IllegalArgumentException} should
+         * be thrown out</p>
+         * <p/>
+         * <pre>
+         *     C.Sequence seq = C.list(1, 2, 3, 4, 5);
+         *     assertEquals(C.list(3, 4, 5), seq.drop(2));
+         *     assertEquals(C.list(1, 2, 3, 4, 5), seq.drop(0));
+         *     assertEquals(C.list(), seq.drop(100));
+         * </pre>
+         * <p>Note this method does NOT modify the current sequence, instead it returns an new sequence structure
+         * containing the elements as required</p>
+         *
+         * @param n specify the number of elements to be taken from the head of this {@code Sequence}
+         *          must not less than 0
+         * @return a {@code Sequence} consisting of the elements of this {@code Sequence} except the first {@code n} ones
+         * @since 0.2
+         */
+        Sequence<T> drop(int n);
+
+        /**
+         * Returns a {@code Sequence} consisting of the elements from this traversal until the predicate returns
+         * {@code false}:
+         * <p/>
+         * <pre>
+         *      Sequence seq = C.list(1, 2, 3, 4, 3, 2, 1);
+         *      assertTrue(C.list(), seq.dropWhile(_.F.gt(100)));
+         *      assertTrue(C.list(1, 2, 3), seq.dropWhile(_.F.lt(3)));
+         * </pre>
+         * <p>Note this method does NOT modify the current sequence, instead it returns an new sequence structure
+         * containing the elements as required</p>
+         *
+         * @param predicate
+         * @return
+         * @since 0.2
+         */
+        Sequence<T> dropWhile(_.Function<? super T, Boolean> predicate);
+
+        /**
+         * Returns a sequence consists of all elements of this sequence
+         * followed by all elements of the specified sequence.
+         * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might append specified seq to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param seq the sequence to be appended
+         * @return a sequence consists of elements of both sequences
+         * @since 0.2
+         */
+        Sequence<T> append(Sequence <T> seq);
+
+        /**
+         * Returns a sequence consists of all elements of this sequence
+         * followed by the element specified.
+         * <p>an {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might append the element to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param t the element to be appended to this sequence
+         * @return a sequence consists of elements of this sequence
+         *         and the element {@code t}
+         * @since 0.2
+         */
+        Sequence<T> append(T t);
+
+        /**
+         * Returns a sequence consists of all elements of the sequence specified
+         * followed by all elements of this sequence
+         *
+         * @param seq the sequence to be prepended
+         * @return a sequence consists of elements of both sequences
+         * @since 0.2
+         */
+        Sequence<T> prepend(Sequence<T> seq);
+
+        /**
+         * Returns a sequence consists of the element specified followed by
+         * all elements of this sequence.
+         * <p>an {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might append the element to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param t the element to be appended to this sequence
+         * @return the sequence consists of {@code t} followed
+         *         by all elements in this sequence
+         * @since 0.2
+         */
+        Sequence<T> prepend(T t);
+
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param mapper {@inheritDoc}
+         * @param <R>    {@inheritDoc}
+         * @return a Sequence of {@code R} that are mapped from this sequence
+         * @since 0.2
+         */
+        @Override
+        <R> Sequence<R> map(_.Function<? super T, ? extends R> mapper);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param mapper {@inheritDoc}
+         * @param <R>    {@inheritDoc}
+         * @return a Sequence of {@code R} type element that are mapped from this sequences
+         * @since 0.2
+         */
+        @Override
+        <R> Sequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param predicate {@inheritDoc}
+         * @return An new {@code Sequence} consists of elements that passed the predicate
+         * @since 0.2
+         */
+        @Override
+        Sequence<T> filter(final _.Function<? super T, Boolean> predicate);
+
+        /**
+         * {@inheritDoc}
+         * <p/>
+         * This method does not specify how to run the accumulator. It might be
+         * {@link #reduceLeft(Object, org.osgl._.Func2)} or
+         * {@link ReversibleSequence#reduceRight(Object, org.osgl._.Func2)}, or
+         * even run reduction in parallel, it all depending on the implementation.
+         * <p>For a guaranteed reduce from left to right, use
+         * {@link #reduceLeft(Object, org.osgl._.Func2)} instead</p>
+         *
+         * @param identity    {@inheritDoc}
+         * @param accumulator {@inheritDoc}
+         * @param <R>         {@inheritDoc}
+         * @return {@inheritDoc}
+         * @since 0.2
+         */
+        @Override
+        <R> R reduce(R identity, _.Func2<R, T, R> accumulator);
+
+        /**
+         * Run reduction from header side. This is equivalent to:
+         * <pre>
+         *      R result = identity;
+         *      for (T element: this sequence) {
+         *          result = accumulator.apply(result, element);
+         *      }
+         *      return result;
+         * </pre>
+         *
+         * @param identity the identity value for the accumulating function
+         * @param accumulator the function to accumulate two values
+         * @return the reduced result
+         * @see #reduce(Object, org.osgl._.Func2)
+         * @since 0.2
+         */
+        <R> R reduceLeft(R identity, _.Func2<R, T, R> accumulator);
+
+        /**
+         * {@inheritDoc}
+         * <p/>
+         * This method does not specify the approach to run reduction.
+         * For a guaranteed reduction from head to tail, use
+         * {@link #reduceLeft(org.osgl._.Func2)} instead
+         *
+         * @param accumulator {@inheritDoc}
+         * @return {@inheritDoc}
+         * @since 0.2
+         */
+        @Override
+        _.Option<T> reduce(_.Func2<T, T, T> accumulator);
+
+        /**
+         * Run reduction from head to tail. This is equivalent to
+         * <p/>
+         * <pre>
+         *      if (isEmpty()) {
+         *          return _.none();
+         *      }
+         *      T result = head();
+         *      for (T element: this traversable.tail()) {
+         *          result = accumulator.apply(result, element);
+         *      }
+         *      return _.some(result);
+         * </pre>
+         *
+         * @param accumulator
+         * @return an {@link _.Option} describing the accumulating result
+         * @since 0.2
+         */
+        _.Option<T> reduceLeft(_.Func2<T, T, T> accumulator);
+
+        /**
+         * Apply the predicate specified to the element of this sequence
+         * from head to tail. Stop at the element that returns {@code true},
+         * and returns an {@link _.Option} describing the element. If none
+         * of the element applications in the sequence returns {@code true}
+         * then {@link org.osgl._#none()} is returned
+         *
+         * @param predicate the function map the element to Boolean
+         * @return an option describe the first element matches the
+         *         predicate or {@link org.osgl._#none()}
+         * @since 0.2
+         */
+        _.Option<T> findFirst(_.Function<? super T, Boolean> predicate);
+
+        Sequence<T> accept(_.Function<? super T, ?> visitor);
+
+        /**
+         * Iterate through this sequence from head to tail with
+         * the visitor function specified
+         *
+         * @param visitor the function to visit elements in this sequence
+         * @return this sequence
+         * @see Traversable#accept(org.osgl._.Function)
+         * @see ReversibleSequence#acceptRight(org.osgl._.Function)
+         * @since 0.2
+         */
+        Sequence<T> acceptLeft(_.Function<? super T, ?> visitor);
     }
 
     /**
-     * Implement an immutable {@link ITraversable} by wrapping around
-     * an {@link Iterable}.
+     * A bidirectional sequence which can be iterated from tail to head
      *
      * @param <T> the element type
      */
-    public static class Traversable<T> implements ITraversable<T> {
-        final protected Iterable<? extends T> it;
-        final protected EnumSet<Characteristic> feature =
-                EnumSet.of(Characteristic.IMMUTABLE);
+    public static interface ReversibleSequence<T>
+    extends Sequence<T> {
 
-        private Traversable(Iterable<? extends T> iterable) {
-            it = iterable;
-        }
+        /**
+         * {@inheritDoc}
+         *
+         * @param n {@inheritDoc}
+         * @return an new reversible sequence contains the first
+         *         {@code n} elements in this sequence
+         */
+        @Override
+        ReversibleSequence<T> head(int n);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @return an new reversible sequence contains all elements
+         *         in this sequence except the first element
+         */
+        @Override
+        ReversibleSequence<T> tail();
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param n {@inheritDoc}
+         * @return an new reversible sequence contains the first
+         *         {@code n} elements in this sequence
+         */
+        @Override
+        ReversibleSequence<T> take(int n);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param predicate {@inheritDoc}
+         * @return an new reversible sequence cotnains the elements
+         *         in this sequence until predicate evaluate to false
+         */
+        @Override
+        ReversibleSequence<T> takeWhile(_.Function<? super T, Boolean> predicate);
 
         @Override
-        public Iterator<T> iterator() {
-            final Iterator<? extends T> itr = it.iterator();
-            return new Iterator<T>() {
-                @Override
-                public boolean hasNext() {
-                    return itr.hasNext();
-                }
+        ReversibleSequence<T> drop(int n);
 
-                @Override
-                public T next() {
-                    return itr.next();
-                }
+        @Override
+        ReversibleSequence<T> dropWhile(_.Function<? super T, Boolean> predicate);
 
+        @Override
+        ReversibleSequence<T> filter(_.Function<? super T, Boolean> predicate);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param t {@inheritDoc}
+         * @return a reversible sequence contains this seq's element
+         *         followed by {@code t}
+         */
+        @Override
+        ReversibleSequence<T> append(T t);
+
+        /**
+         * Returns an new reversible sequence contains all elements
+         * in this sequence followed by all elements in the specified
+         * reverse sequence
+         *
+         * @param seq another reversible sequence
+         * @return an new reversible sequence contains both seq's elements
+         */
+        ReversibleSequence<T> append(ReversibleSequence<T> seq);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param t {@inheritDoc}
+         * @return a reversible sequence contains by {@code t}
+         *         followed this seq's element
+         */
+        @Override
+        ReversibleSequence<T> prepend(T t);
+
+        /**
+         * Returns an new reversible sequence contains all elements
+         * in specified reversible sequence followed by all elements
+         * in this sequence
+         *
+         * @param seq another reversible sequence
+         * @return an new reversible sequence contains both seq's elements
+         */
+        ReversibleSequence<T> prepend(ReversibleSequence<T> seq);
+
+        /**
+         * Returns the last element from this {@code Sequence}
+         *
+         * @return the last element
+         * @throws UnsupportedOperationException if this {@code Sequence} is not limited
+         * @throws NoSuchElementException        if the {@code Sequence} is empty
+         * @see #isEmpty()
+         * @see org.osgl.util.C.Feature#LIMITED
+         * @see #is(org.osgl.util.C.Feature)
+         * @since 0.2
+         */
+        T last() throws UnsupportedOperationException, NoSuchElementException;
+
+
+        /**
+         * Returns a {@code Sequence} consisting the last {@code n} elements from this {@code Sequence}
+         * if number {@code n} is positive and the {@code Sequence} contains more than {@code n} elements
+         * <p/>
+         * <p>If this {@code Sequence} contains less than {@code n} elements, then a {@code Sequence} consisting
+         * the whole elements of this {@code Sequence} is returned. Note it might return this {@code Sequence}
+         * itself if the {@code Sequence} is immutable.</p>
+         * <p/>
+         * <p>If the number {@code n} is zero, then an empty {@code Sequence} is returned in reverse
+         * order</p>
+         * <p/>
+         * <p>If the number {@code n} is negative, then the first {@code -n} elements from this
+         * {@code Sequence} is returned in an new {@code Sequence}</p>
+         * <p/>
+         * <pre>
+         *     Sequence seq = C1.list(1, 2, 3, 4);
+         *     assertEquals(C1.list(3, 4), seq.tail(2));
+         *     assertEquals(C1.list(1, 2, 3, 4), seq.tail(100));
+         *     assertEquals(C1.list(), seq.tail(0));
+         *     assertEquals(C1.list(1, 2), seq.tail(-2));
+         *     assertEquals(C1.list(1, 2, 3, 4), seq.take(-200));
+         * </pre>
+         *
+         * @param n specify the number of elements to be taken from the tail of this {@code Sequence}
+         * @return a {@code Sequence} consisting of the last {@code n} elements from this {@code Sequence}
+         * @throws UnsupportedOperationException if the traversal is unlimited or empty
+         * @throws IndexOutOfBoundsException     if {@code n} is greater than the size of this {@code Sequence}
+         * @see org.osgl.util.C.Feature#LIMITED
+         * @see #is(org.osgl.util.C.Feature)
+         * @since 0.2
+         */
+        ReversibleSequence<T> tail(int n) throws UnsupportedOperationException, IndexOutOfBoundsException;
+
+        /**
+         * Returns an new {@code Sequence} that reverse this {@code Sequence}.
+         *
+         * @return a reversed {@code Sequence}
+         * @throws UnsupportedOperationException if this {@code Sequence} is unlimited
+         * @see org.osgl.util.C.Feature#LIMITED
+         * @see #is(org.osgl.util.C.Feature)
+         * @since 0.2
+         */
+        ReversibleSequence<T> reverse() throws UnsupportedOperationException;
+
+        /**
+         * Returns an {@link Iterator} iterate the sequence from tail to head
+         *
+         * @return the iterator
+         * @since 0.2
+         */
+        Iterator<T> reverseIterator();
+
+        /**
+         * Run reduction from tail side. This is equivalent to:
+         * <pre>
+         *      R result = identity;
+         *      for (T element: this sequence.reverse()) {
+         *          result = accumulator.apply(result, element);
+         *      }
+         *      return result;
+         * </pre>
+         *
+         * @see #reduce(Object, org.osgl._.Func2)
+         * @since 0.2
+         */
+        <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator);
+
+        /**
+         * Run reduction from tail to head. This is equivalent to
+         * <p/>
+         * <pre>
+         *      if (isEmpty()) {
+         *          return _.none();
+         *      }
+         *      T result = last();
+         *      for (T element: this sequence.reverse.tail()) {
+         *          result = accumulator.apply(result, element);
+         *      }
+         *      return _.some(result);
+         * </pre>
+         *
+         * @param accumulator
+         * @return an {@link _.Option} describing the accumulating result
+         * @since 0.2
+         */
+        _.Option<T> reduceRight(_.Func2<T, T, T> accumulator);
+
+
+        /**
+         * Apply the predicate specified to the element of this sequence
+         * from tail to head. Stop at the element that returns {@code true},
+         * and returns an {@link _.Option} describing the element. If none
+         * of the element applications in the sequence returns {@code true}
+         * then {@link org.osgl._#none()} is returned
+         *
+         * @param predicate the function map the element to Boolean
+         * @return an option describe the first element matches the
+         *         predicate or {@link org.osgl._#none()}
+         * @since 0.2
+         */
+        _.Option<T> findLast(_.Function<? super T, Boolean> predicate);
+
+        @Override
+        <R> ReversibleSequence<R> map(_.Function<? super T, ? extends R> mapper);
+
+        ReversibleSequence<T> accept(_.Function<? super T, ?> visitor);
+
+        ReversibleSequence<T> acceptLeft(_.Function<? super T, ?> visitor);
+
+        /**
+         * Iterate through this sequence from tail to head with the visitor function
+         * specified
+         *
+         * @param visitor the function to visit elements in this sequence
+         * @return this sequence
+         * @see Traversable#accept(org.osgl._.Function)
+         * @see Sequence#acceptLeft(org.osgl._.Function)
+         * @since 0.2
+         */
+        ReversibleSequence<T> acceptRight(_.Function<? super T, ?> visitor);
+    }
+
+    /**
+     * Define a Range data structure which contains a discrete sequence of elements start from {@link #from()}
+     * until {@link #to()}. The {@code from} element should be contained in the range, while the {@code to}
+     * element should be exclusive from the range. While the {@code from} and {@code to} defines the boundary of
+     * an range, the {@link #step()} defines how to step from one element to another in the range.
+     *
+     * @param <ELEMENT> the element type
+     */
+    public static interface Range<ELEMENT> extends Sequence<ELEMENT> {
+        /**
+         * Returns the {@code from} value (inclusive) in the range
+         *
+         * @return {@code from}
+         * @since 0.2
+         */
+        ELEMENT from();
+
+        /**
+         * Returns the {@code to} value (exclusive) of the range
+         *
+         * @return {@code to}
+         * @since 0.2
+         */
+        ELEMENT to();
+
+        /**
+         * Check if an element is contained in this range
+         *
+         * @param element the element to be checked
+         * @return {@code true} if the element specified is contained in the range
+         * @since 0.2
+         */
+        boolean contains(ELEMENT element);
+
+        /**
+         * Check if this range contains all elements of another range of the same type (identified by
+         * {@link #order()} and {@link #step()}).
+         *
+         * @param r2 the range to be tested
+         * @return {@code true} if this range contains all elements of {@code r2}
+         * @since 0.2
+         */
+        boolean containsAll(Range<ELEMENT> r2);
+
+        /**
+         * Returns a {@link _.Func2} function that takes two elements in the range domain and returns an integer to
+         * determine the order of the two elements. See {@link java.util.Comparator#compare(Object, Object)} for
+         * semantic of the function.
+         * <p/>
+         * <p>If any one of the element applied is {@code null} the function should throw out
+         * {@link NullPointerException}</p>
+         *
+         * @return a function implement the ordering logic
+         * @since 0.2
+         */
+        Comparator<ELEMENT> order();
+
+        /**
+         * Returns a {@link _.Func2} function that applied to an element in this {@code Range} and
+         * an integer {@code n} indicate the number of steps. The result of the function is an element in
+         * the range or the range domain after moving {@code n} steps based on the element.
+         * <p/>
+         * <p>If the element apply is {@code null}, the function should throw out
+         * {@link NullPointerException}; if the resulting element is not defined in the range
+         * domain, the function should throw out {@link NoSuchElementException}</p>
+         *
+         * @return a function implement the stepping logic
+         * @since 0.2
+         */
+        _.Func2<ELEMENT, Integer, ELEMENT> step();
+
+        /**
+         * Returns an new range this range and another range {@code r2} merged together. The two ranges must have
+         * the equal {@link #step()} and {@link #order()} operator to be merged, otherwise,
+         * {@link org.osgl.exception.InvalidArgException} will be thrown out
+         * <p/>
+         * <p/>
+         * <p>The two ranges must be either overlapped or immediately connected to each other as per
+         * {@link #step()} definition. Otherwise an {@link org.osgl.exception.InvalidArgException}
+         * will be throw out:
+         * <ul>
+         * <li>if one range contains another range entirely, then the larger range is returned</li>
+         * <li>if the two ranges overlapped or immediately connected to each other, then an range
+         * contains all elements of the two ranges will be returned</li>
+         * <li>an {@link org.osgl.exception.InvalidArgException} will be thrown out if the two ranges does not connected
+         * to each other</li>
+         * </ul>
+         * </p>
+         *
+         * @param r2 the range to be merged with this range
+         * @return an new range contains all elements in this range and r2
+         * @throws org.osgl.exception.InvalidArgException
+         *          if the two ranges does not have
+         *          the same {@link #step()} operator or does not connect to each other
+         * @since 0.2
+         */
+        Range<ELEMENT> merge(Range<ELEMENT> r2);
+
+        ELEMENT last();
+
+        Range<ELEMENT> tail(int n);
+
+        Range<ELEMENT> reverse();
+
+        Iterator<ELEMENT> reverseIterator();
+
+        <R> R reduceRight(R identity, _.Func2<R, ELEMENT, R> accumulator);
+
+        _.Option<ELEMENT> reduceRight(_.Func2<ELEMENT, ELEMENT, ELEMENT> accumulator);
+
+        _.Option<ELEMENT> findLast(_.Function<? super ELEMENT, Boolean> predicate);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param visitor {@inheritDoc}
+         * @return this Range instance
+         * @since 0.2
+         */
+        @Override
+        Range<ELEMENT> accept(_.Function<? super ELEMENT, ?> visitor);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param visitor {@inheritDoc}
+         * @return this Range instance
+         * @since 0.2
+         */
+        @Override
+        Range<ELEMENT> acceptLeft(_.Function<? super ELEMENT, ?> visitor);
+
+        /**
+         * iterate through the range from tail to head
+         *
+         * @param visitor a function to visit elements in the range
+         * @return this Range instance
+         * @since 0.2
+         */
+        Range<ELEMENT> acceptRight(_.Function<? super ELEMENT, ?> visitor);
+    }
+
+    /**
+     * The osgl List interface is a mixture of {@link java.util.List} and osgl {@link Sequence}
+     *
+     * @param <T> the element type of the {@code List}
+     * @since 0.2
+     */
+    public static interface List<T> extends java.util.List<T>, ReversibleSequence<T> {
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param n {@inheritDoc}
+         * @return A List contains first {@code n} items in this List
+         */
+        @Override
+        List<T> head(int n);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param n {@inheritDoc}
+         * @return A list contains first {@code n} items in this list
+         */
+        @Override
+        List<T> take(int n);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @return A list contains all elements in this list except
+         *         the first one
+         */
+        @Override
+        List<T> tail();
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param n {@inheritDoc}
+         * @return A list contains last {@code n} items in this list
+         */
+        @Override
+        List<T> tail(int n);
+
+        @Override
+        C.List<T> dropWhile(_.Function<? super T, Boolean> predicate);
+
+        @Override
+        <R> C.List<R> map(_.Function<? super T, ? extends R> mapper);
+
+        @Override
+        C.List<T> filter(_.Function<? super T, Boolean> predicate);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param t {@inheritDoc}
+         * @return a list contains elements in this list followed
+         *         by {@code t}
+         */
+        @Override
+        List<T> append(T t);
+
+        /**
+         * Returns a List contains all elements in this List followed by
+         * all elements in the specified List.
+         *
+         * <p>A mutable List implementation might choose to add elements
+         * from the specified list directly to this list and return this
+         * list directly</p>
+         *
+         * <p>For a read only or immutable list, it must create an new list
+         * to avoid update this list</p>
+         *
+         * @param list the list in which elements will be appended
+         *             to this list
+         * @return a list contains elements of both list
+         */
+        List<T> append(List<T> list);
+
+        @Override
+        List<T> prepend(T t);
+
+        List<T> prepend(List<T> list);
+
+        @Override
+        List<T> reverse();
+
+        /**
+         * Returns a List contains all elements in this List and not in
+         * the {@code col} collection specified
+         * @param col the collection in which elements should
+         *            be excluded from the result List
+         * @return a List contains elements only in this list
+         */
+        List<T> without(Collection<? extends T> col);
+    }
+
+    /**
+     * The osgl Set interface is a mixture of {@link java.util.Set} and osgl {@link Traversable}
+     *
+     * @param <T> the element type of the {@code Set}
+     * @since 0.2
+     */
+    public static interface Set<T> extends java.util.Set<T>, Traversable<T> {
+    }
+
+    /**
+     * The osgl sorted Set interface is a mixture of {@link java.util.Set} and osgl {@link Sequence}
+     *
+     * @param <T> the element type of the {@code SortedSet}
+     * @since 0.2
+     */
+    public static interface SortedSet<T> extends java.util.SortedSet<T>, ReversibleSequence<T> {
+    }
+
+    /**
+     * Defines a factory to create {@link java.util.List java List} instance
+     * used by {@link DelegatingList} to create it's backing data structure
+     *
+     * @since 0.2
+     */
+    public static interface ListFactory {
+        /**
+         * Create an empty <code>java.util.List</code> contains the generic type E
+         *
+         * @param <ET> the generic type of the list element
+         * @return A java List instance contains elements of generic type E
+         */
+        <ET> java.util.List<ET> create();
+
+        /**
+         * Create a <code>java.util.List</code> pre populated with elements
+         * of specified collection
+         *
+         * @param collection the collection whose elements are to be placed into this list
+         * @param <ET>       the generic type of the list element
+         * @return The List been created
+         * @throws <code>NullPointerException</code>
+         *          if the specified collection is null
+         */
+        <ET> java.util.List<ET> create(Collection<ET> collection);
+
+        /**
+         * Create a <code>java.util.List</code> with initial capacity
+         *
+         * @param initialCapacity
+         * @param <ET>            the generic type of the list element
+         * @return the list been created
+         */
+        <ET> java.util.List<ET> create(int initialCapacity);
+    }
+
+    /**
+     * "osgl.list.factory", the property key to configure user defined
+     * {@link ListFactory list factory}.
+     * <p/>
+     * Upon loaded, osgl tried to get a class name string from system
+     * properties use this configuration key. If osgl find the String
+     * returned is not empty then it will initialize the list factory
+     * use the class name configured. If any exception raised during the
+     * initialization, then it might cause the JVM failed to boot up
+     *
+     * @since 0.2
+     */
+    public static final String CONF_LINKED_LIST_FACTORY = "osgl.linked_list.factory";
+
+    /**
+     * "osgl.random_access_list.factory", the property key to configure user defined {@link ListFactory
+     * random access list factory}. See {@link #CONF_LINKED_LIST_FACTORY} for how osgl use this configuration
+     *
+     * @since 0.2
+     */
+    public static final String CONF_RANDOM_ACCESS_LIST_FACTORY = "osgl.random_access_list.factory";
+
+    static ListFactory linkedListFact;
+    static ListFactory randomAccessListFact;
+
+    // --- factory methods ---
+
+    /**
+     * Returns a {@link Range} of integer specified by {@code from} and {@code to}. {@code from}
+     * can be less or larger than {@code to}.
+     *
+     * @param from specify the left side of the range (inclusive)
+     * @param to   specify the right hand side of the range (exclusive)
+     * @return a range of integer @{code [from .. to)}
+     */
+    public static Range<Integer> range(int from, int to) {
+        return new LazyRange<Integer>(from, to, N.F.INT_RANGE_STEP);
+    }
+
+    /**
+     * Returns a {@link Range} of byte specified by {@code from} and {@code to}. {@code from}
+     * can be less or larger than {@code to}.
+     *
+     * @param from specify the left side of the range (inclusive)
+     * @param to   specify the right hand side of the range (exclusive)
+     * @return a range of byte @{code [from .. to)}
+     */
+    public static Range<Byte> range(byte from, byte to) {
+        return new LazyRange<Byte>(from, to, N.F.BYTE_RANGE_STEP);
+    }
+
+    /**
+     * Returns a {@link Range} of short specified by {@code from} and {@code to}. {@code from}
+     * can be less or larger than {@code to}.
+     *
+     * @param from specify the left side of the range (inclusive)
+     * @param to   specify the right hand side of the range (exclusive)
+     * @return a range of short @{code [from .. to)}
+     */
+    public static Range<Short> range(short from, short to) {
+        return new LazyRange<Short>(from, to, N.F.SHORT_RANGE_STEP);
+    }
+
+    /**
+     * Returns a {@link Range} of long specified by {@code from} and {@code to}. {@code from}
+     * can be less or larger than {@code to}.
+     *
+     * @param from specify the left side of the range (inclusive)
+     * @param to   specify the right hand side of the range (exclusive)
+     * @return a range of long @{code [from .. to)}
+     */
+    public static Range<Long> range(long from, long to) {
+        return new LazyRange<Long>(from, to, N.F.LONG_RANGE_STEP);
+    }
+
+    /**
+     * Returns a {@link Range} of non-negative integers start from {@code 0} to {@code Integer.MAX_VALUE}. Note
+     * unlike traditional definition of natural number, zero is included in the range returned
+     *
+     * @return a range of non negative integers
+     */
+    public static Range<Integer> naturalNumbers() {
+        return new LazyRange<Integer>(1, Integer.MAX_VALUE, N.F.INT_RANGE_STEP);
+    }
+
+    /**
+     * Returns a {@link Range} of non-negative even numbers starts from {@code 0} to
+     * {@code Integer.MAX_VALUE}.
+     *
+     * @return a range of non-negative even numbers
+     */
+    public static Range<Integer> evenNumbers() {
+        return new LazyRange<Integer>(0, Integer.MAX_VALUE, N.F.intRangeStep(2));
+    }
+
+    /**
+     * Returns a {@link Range} of positive odd numbers starts from {@code 1} to
+     * {@code Integer.MAX_VALUE}.
+     *
+     * @return a range of positive odd numbers
+     */
+    public static Range<Integer> oddNumbers() {
+        return new LazyRange<Integer>(1, Integer.MAX_VALUE, N.F.intRangeStep(2));
+    }
+
+    /**
+     * Returns an empty immutable list
+     *
+     * @param <T> the type of the list element
+     * @return the empty list
+     */
+    public static <T> List<T> list() {
+        return Nil.list();
+    }
+
+    public static <T> List<T> list(T t) {
+        return new SingletonList<T>(t);
+    }
+
+    public static <T> List<T> list(T t1, T t2) {
+        return null;
+    }
+
+    public static <T> List<T> list(T t1, T t2, T t3) {
+        return null;
+    }
+
+    public static <T> List<T> list(T t1, T t2, T t3, T t4) {
+        return null;
+    }
+
+    public static <T> List<T> list(T t1, T t2, T t3, T t4, T t5) {
+        return null;
+    }
+
+    /**
+     * Create an immutable list of an array of elements. If an empty
+     * array specified, then an empty immutable list is returned
+     *
+     * @param elements the array of elements
+     * @param <T>      the element type
+     * @return an immutable list contains specified elements
+     */
+    public static <T> List<T> list(T t1, T t2, T t3, T t4, T t5, T... elements) {
+        return null;
+    }
+
+    /**
+     * Create an immutable Byte list of a byte array. If an empty array specified,
+     * the nan empty immutable list is returned
+     *
+     * @param elements an array of bytes
+     * @return an immutable list contains specified elements
+     */
+    public static List<Byte> list(byte[] elements) {
+        if (0 == elements.length) {
+            return list();
+        }
+        return null;
+    }
+
+    /**
+     * Create an immutable Short list of a short array. If an empty array specified,
+     * the nan empty immutable list is returned
+     *
+     * @param elements an array of shorts
+     * @return an immutable list contains specified elements
+     */
+    public static List<Short> list(short[] elements) {
+        if (0 == elements.length) {
+            return list();
+        }
+        return null;
+    }
+
+    /**
+     * Create an immutable integer list of a int array. If an empty array specified,
+     * the nan empty immutable list is returned
+     *
+     * @param elements an array of int
+     * @return an immutable list contains specified elements
+     */
+    public static List<Integer> list(int[] elements) {
+        if (0 == elements.length) {
+            return list();
+        }
+        return null;
+    }
+
+    /**
+     * Create an immutable Long list of a long array. If an empty array specified,
+     * the nan empty immutable list is returned
+     *
+     * @param elements an array of long
+     * @return an immutable list contains specified elements
+     */
+    public static List<Long> list(long[] elements) {
+        if (0 == elements.length) {
+            return list();
+        }
+        return null;
+    }
+
+    /**
+     * Create an immutable byte list of a float array. If an empty array specified,
+     * the nan empty immutable list is returned
+     *
+     * @param elements an array of floats
+     * @return an immutable list contains specified elements
+     */
+    public static List<Float> list(float[] elements) {
+        if (0 == elements.length) {
+            return list();
+        }
+        return null;
+    }
+
+    /**
+     * Create an immutable Byte list of a double array. If an empty array specified,
+     * the nan empty immutable list is returned
+     *
+     * @param elements an array of double
+     * @return an immutable list contains specified elements
+     */
+    public static List<Double> list(double[] elements) {
+        if (0 == elements.length) {
+            return list();
+        }
+        return null;
+    }
+
+    public static <T> List<T> listFrom(Iterable<T> iterable) {
+        return null; //TODO
+    }
+
+    public static <T> List<T> listFrom(java.util.List<T> javaList) {
+        if (javaList instanceof List) {
+            return _.cast(javaList);
+        }
+        return new DelegatingList<T>(javaList);
+    }
+
+    public static <T, R> Sequence<R> map(Sequence<T> seq, _.Function<? super T, ? extends R> mapper) {
+        if (seq instanceof ReversibleSequence) {
+            return map((ReversibleSequence<T>) seq, mapper);
+        }
+        return new MappedSeq<T, R>(seq, mapper);
+    }
+
+    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, _.Function<? super T, ? extends R> mapper) {
+        return new ReversibleMappedSeq<T, R>(seq, mapper);
+    }
+
+    public static <T> Sequence<T> filter(Sequence<T> seq, _.Function<? super T, Boolean> predicate) {
+        return new FilteredSeq<T>(seq, predicate);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Sequence<T> prepend(T t, Sequence<T> sequence) {
+        if (sequence instanceof ReversibleSequence) {
+            return prepend(t, (ReversibleSequence) sequence);
+        } else {
+            return concat(C.list(t), sequence);
+        }
+    }
+
+    public static <T> ReversibleSequence<T> prepend(T t, ReversibleSequence<T> seq) {
+        E.NPE(seq);
+        return concat(C.list(t), seq);
+    }
+
+    public static <T> Sequence<T> append(Sequence<T> seq, T t) {
+        E.NPE(seq);
+        return concat(seq, C.list(t));
+    }
+
+    public static <T> Sequence<T> concat(Sequence<T> s1, Sequence<T> s2) {
+        if (s1 instanceof ReversibleSequence && s2 instanceof ReversibleSequence) {
+            ReversibleSequence<T> rs1 = (ReversibleSequence<T>)s1;
+            ReversibleSequence<T> rs2 = (ReversibleSequence<T>)s2;
+            return concat(rs1, rs2);
+        }
+        if (s1.isEmpty()) {
+            return s2;
+        } else if (s2.isEmpty()) {
+            return s1;
+        } else {
+            return new CompositeSeq<T>(s1, s2);
+        }
+    }
+
+    public static <T> ReversibleSequence<T> append(ReversibleSequence<T> seq, T t) {
+        E.NPE(seq);
+        return concat(seq, C.list(t));
+    }
+
+    public static <T> ReversibleSequence<T> concat(ReversibleSequence<T> s1, ReversibleSequence<T> s2) {
+        if (s1.isEmpty()) {
+            return s2;
+        } else if (s2.isEmpty()) {
+            return s1;
+        } else {
+            return new CompositeReversibleSeq<T>(s1, s2);
+        }
+    }
+
+    public static <T> List<T> concat(List<T> l1, List<T> l2) {
+        if (l1.isEmpty()) {
+            return l2;
+        } else if (l2.isEmpty()) {
+            return l1;
+        } else {
+            return new CompositeList<T>(l1, l2);
+        }
+    }
+    // --- eof factory methods ---
+
+    // --- utility methods ---
+
+    /**
+     * Check if a {@link Traversable} structure is read only. A
+     * Traversable is considered to be read only structure when
+     * {@code is(Feature.READONLY) || is(Feature.IMMUTABLE}
+     * evaluate to {@code true}
+     *
+     * @param t the structure to be checked
+     * @return {@code true} if the structure is read only
+     *         or immutable
+     */
+    public static boolean isReadOnly(Traversable<?> t) {
+        return t.is(Feature.READONLY) || t.is(Feature.IMMUTABLE);
+    }
+
+    /**
+     * Check if a {@link Traversable} structure is immutable.
+     *
+     * @param t the traversable strucure to be checked
+     * @return {@code true} if the traversable is immutable
+     */
+    public static boolean isImmutable(Traversable<?> t) {
+        return t.is(Feature.IMMUTABLE);
+    }
+    // --- eof utility methods ---
+
+    public static enum F {
+        ;
+
+        public static <T> _.F1<T, Boolean> addTo(final Collection<? super T> c) {
+            return new _.F1<T, Boolean>() {
                 @Override
-                public void remove() {
-                    itr.remove();
+                public Boolean apply(T t) throws NotAppliedException, _.Break {
+                    return c.add(t);
                 }
             };
         }
 
-        @Override
-        public final boolean is(Characteristic c) {
-            return feature.contains(c);
+        public static <C extends List<? super T>, T> _.F1<T, C> addTo(final C c, final int index) {
+            return new _.F1<T, C>() {
+                @Override
+                public C apply(T t) throws NotAppliedException, _.Break {
+                    c.add(index, t);
+                    return c;
+                }
+            };
         }
 
-        @Override
-        public T first() throws NoSuchElementException {
-            T t = it.iterator().next();
-            if (null == t) {
-                throw new NoSuchElementException();
+        public static <T> _.F1<T, Deque<? super T>> prependToDeque(final Deque<? super T> c) {
+            return new _.F1<T, Deque<? super T>>() {
+                @Override
+                public Deque<? super T> apply(T t) throws NotAppliedException, _.Break {
+                    c.addFirst(t);
+                    return c;
+                }
+            };
+        }
+
+        public static <T> _.F1<T, Deque<? super T>> appendToDeque(final Deque<? super T> c) {
+            return new _.F1<T, Deque<? super T>>() {
+                @Override
+                public Deque<? super T> apply(T t) throws NotAppliedException, _.Break {
+                    c.addLast(t);
+                    return c;
+                }
+            };
+        }
+
+        public static <T> _.F1<T, Sequence<? super T>> prependTo(final Sequence<? super T> c) {
+            return new _.F1<T, Sequence<? super T>>() {
+                @Override
+                public Sequence<? super T> apply(T t) throws NotAppliedException, _.Break {
+                    c.prepend(t);
+                    return c;
+                }
+            };
+        }
+
+        public static <T> _.F1<T, Sequence<? super T>> appendTo(final Sequence<? super T> c) {
+            return new _.F1<T, Sequence<? super T>>() {
+                @Override
+                public Sequence<? super T> apply(T t) throws NotAppliedException, _.Break {
+                    c.append(t);
+                    return c;
+                }
+            };
+        }
+
+        public static _.F1<?, Boolean> removeFrom(final Collection<?> c) {
+            return new _.F1<Object, Boolean>() {
+                @Override
+                public Boolean apply(Object t) throws NotAppliedException, _.Break {
+                    return c.remove(t);
+                }
+            };
+        }
+
+        public static <T> _.F1<Collection<? extends T>, Boolean> addAllTo(final Collection<? super T> c) {
+            return new _.F1<Collection<? extends T>, Boolean>() {
+                @Override
+                public Boolean apply(Collection<? extends T> c1) throws NotAppliedException, _.Break {
+                    return c.addAll(c1);
+                }
+            };
+        }
+
+        public static <T> _.F1<Collection<? extends T>, Boolean> addAllTo(final List<? super T> l, final int index) {
+            if (0 > index || l.size() < index) {
+                throw new IndexOutOfBoundsException();
             }
-            return t;
+            return new _.F1<Collection<? extends T>, Boolean>() {
+                @Override
+                public Boolean apply(Collection<? extends T> ts) throws NotAppliedException, _.Break {
+                    return l.addAll(index, ts);
+                }
+            };
         }
 
-        @Override
-        public T head() throws NoSuchElementException {
-            return first();
+        public static <T> _.F1<Collection<? extends T>, Boolean> removeAllFrom(final Collection<? super T> c) {
+            return new _.F1<Collection<? extends T>, Boolean>() {
+                @Override
+                public Boolean apply(Collection<? extends T> c1) throws NotAppliedException, _.Break {
+                    return c.removeAll(c1);
+                }
+            };
+        }
+
+        public static <T> _.F1<? extends Collection<? extends T>, Boolean> retainAllIn(final Collection<? super T> c) {
+            return new _.F1<Collection<? extends T>, Boolean>() {
+                @Override
+                public Boolean apply(Collection<? extends T> c1) throws NotAppliedException, _.Break {
+                    return c.retainAll(c1);
+                }
+            };
+        }
+
+    }
+
+    public static void main(String[] args) {
+        Range<Integer> r = range(0, Integer.MAX_VALUE);
+        for (Number i : r.take(5).map(N.F.mul(10))) {
+            System.out.println(i);
         }
     }
 
-    // --- factories
-    public static <T> ITraversable<T> traversable(Iterable<? extends T> iterable) {
-        if (iterable instanceof ITraversable) {
-            return (ITraversable<T>) iterable;
-        }
-        return new Traversable<T>(iterable);
-    }
 }

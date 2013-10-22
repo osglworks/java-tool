@@ -409,28 +409,29 @@ public class IO {
     }
     
     public static final class f {
-        public static <T> _.IFunc1<?, T> println() {
+        public static <T> _.Function<?, T> println() {
             return PRINTLN;
         }
         
-        public static _.IFunc1 PRINTLN = print("", "\n", System.out);
+        public static _.Function PRINTLN = print("", "\n", System.out);
 
-        public static <T> _.IFunc1<?, T> print() {
+        public static <T> _.Function<?, T> print() {
             return PRINT;
         }
         
-        public static _.IFunc1 PRINT = print("", "", System.out);
+        public static _.Function PRINT = print("", "", System.out);
         
-        public static <T> _.IFunc1<?, T> print(String prefix, String suffix) {
+        public static <T> _.Function<T, ?> print(String prefix, String suffix) {
             return print(prefix, suffix, System.out);
         }
         
-        public static <T> _.IFunc1<?, T> print(String prefix, String suffix, PrintStream ps) {
-            return new _.Op4<T, String, String, PrintStream>() {
+        public static <T> _.Function<T, ?> print(String prefix, String suffix, PrintStream ps) {
+            return new _.F4<T, String, String, PrintStream, Void>() {
                 @Override
-                public void operate(T t, String prefix, String suffix, PrintStream ps) {
+                public Void apply(T t, String prefix, String suffix, PrintStream ps) {
                     StringBuilder sb = new StringBuilder(prefix).append(t).append(suffix);
                     ps.print(sb);
+                    return null;
                 }
             }.curry(prefix, suffix, ps);
         }
