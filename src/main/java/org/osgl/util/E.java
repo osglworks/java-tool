@@ -57,32 +57,41 @@ public class E {
         }
     }
 
-    /**
-     * Throw out NullPointerException if any one of the passed objects is null
-     * 
-     * @param objects the object instances to be tested
-     */
-    public static void NPE(Object... objects) {
-        NPE("", objects);
+    public static void NPE(Object o1) {
+        if (null == o1) {
+            throw new NullPointerException();
+        }
     }
 
-    public static void NPE(boolean tester) {
-        if (tester) {
+    public static void NPE(Object o1, Object o2) {
+        if (null == o1 || null == o2) {
+            throw new NullPointerException();
+        }
+    }
+
+    public static void NPE(Object o1, Object o2, Object o3) {
+        if (null == o1 || null == o2 || null == o3) {
             throw new NullPointerException();
         }
     }
 
     /**
      * Throw out NullPointerException if any one of the passed objects is null
-     *
-     * @param msg the error message
+     * 
      * @param objects the object instances to be tested
      */
-    public static void NPE(String msg, Object... objects) {
+    public static void NPE(Object o1, Object o2, Object o3, Object... objects) {
+        NPE(o1, o2, o3);
         for (Object o : objects) {
             if (null == o) {
-                throw new NullPointerException(msg);
+                throw new NullPointerException();
             }
+        }
+    }
+
+    public static void NPE(boolean tester) {
+        if (tester) {
+            throw new NullPointerException();
         }
     }
 

@@ -12,11 +12,11 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 class IndexFilteredIterator<T> extends StatefulIterator<T> {
-    private final Iterator<T> itr_;
+    private final Iterator<? extends T> itr_;
     private final _.Predicate<Integer> filter_;
     private int cursor;
 
-    public IndexFilteredIterator(Iterator<T> iterator, _.Function<Integer, Boolean> filter) {
+    public IndexFilteredIterator(Iterator<? extends T> iterator, _.Function<Integer, Boolean> filter) {
         E.NPE(iterator, filter);
         itr_ = iterator;
         filter_ = _.predicate(filter);

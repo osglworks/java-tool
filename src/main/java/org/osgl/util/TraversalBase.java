@@ -18,9 +18,7 @@ public abstract class TraversalBase<T> extends FeaturedBase implements C.Travers
      * @param visitor
      */
     protected void forEach(_.Function<? super T, ?> visitor) {
-        for (T t: this) {
-            visitor.apply(t);
-        }
+        C.forEach(this, visitor);
     }
 
     /**
@@ -145,4 +143,5 @@ public abstract class TraversalBase<T> extends FeaturedBase implements C.Travers
         forEach(visitor);
         return this;
     }
+
 }

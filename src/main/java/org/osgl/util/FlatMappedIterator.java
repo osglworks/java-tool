@@ -16,7 +16,7 @@ class FlatMappedIterator<T, R> extends StatefulIterator<R> {
     private final _.Function<? super T, ? extends Iterable<? extends R>> mapper;
     private Iterator<? extends R> curMapped = null;
 
-    FlatMappedIterator(Iterator<T> itr, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    FlatMappedIterator(Iterator<? extends T> itr, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         E.NPE(itr, mapper);
         this.data = itr;
         this.mapper = mapper;

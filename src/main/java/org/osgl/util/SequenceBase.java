@@ -26,7 +26,7 @@ extends TraversalBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public T head() throws NoSuchElementException {
+    public final T head() throws NoSuchElementException {
         return first();
     }
 

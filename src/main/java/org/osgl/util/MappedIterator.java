@@ -58,7 +58,7 @@ class MappedIterator<T, R> implements Iterator<R> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("MappedIterator\nmapper[");
-        sb.append(mapper).append("]\ndata[\n").append(data).append("\n]");
+        sb.append(mapper).append("]\nbuf[\n").append(data).append("\n]");
         return sb.toString();
     }
 }

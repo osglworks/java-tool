@@ -2673,7 +2673,7 @@ public enum _ {
          * @return the non-null value held by this {@code Option}
          * @throws NoSuchElementException if this {@code Option} is {@link #NONE}
          */
-        public abstract T get();
+        public abstract T get() throws NoSuchElementException;
 
         /**
          * If a value is present, and the value matches the given predicate,
@@ -3658,6 +3658,7 @@ public enum _ {
         return Option.none();
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T cast(Object o) {
         return (T) o;
     }

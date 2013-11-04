@@ -221,8 +221,8 @@ public class CompositeList<T> extends CompositeReversibleSeq<T> implements C.Lis
         if (toIndex < lsize) {
             return left().subList(fromIndex, toIndex);
         }
-        C.List<T> lsub = new DelegatingList<T>(left().subList(fromIndex, lsize), true);
-        C.List<T> rsub = new DelegatingList<T>(right().subList(0, toIndex), true);
+        C.List<T> lsub = new DelegatingList1<T>(left().subList(fromIndex, lsize), true);
+        C.List<T> rsub = new DelegatingList1<T>(right().subList(0, toIndex), true);
         return of(lsub, rsub);
     }
 
@@ -319,4 +319,44 @@ public class CompositeList<T> extends CompositeReversibleSeq<T> implements C.Lis
         return this;
     }
 
+    @Override
+    public Cursor<T> locateFirst(_.Function<T, Boolean> predicate) {
+        ListIterator<T> l1 = left().listIterator();
+        ListIterator<T> l2 = right().listIterator();
+        CompositeListIterator<T> l = new CompositeListIterator<T>(l1, l2);
+        Cursor<T> c = new ListIteratorCursor<T>(l);
+        while (c.hasNext()) {
+            T t = c.forward().get();
+            if (predicate.apply(t)) {
+                return c;
+            }
+        }
+        return c.obsolete();
+    }
+
+    @Override
+    public Cursor<T> locate(_.Function<T, Boolean> predicate) {
+        return locateFirst(predicate);
+    }
+
+    @Override
+    public Cursor<T> locateLast(_.Function<T, Boolean> predicate) {
+        C.List<T> left = left(), right = right();
+
+        ListIterator<T> l1 = left.listIterator(left.size());
+        ListIterator<T> l2 = right.listIterator(right.size());
+        Cursor<T> c = new ListIteratorCursor<T>(new CompositeListIterator<T>(l1, l2));
+        while (c.hasPrevious()) {
+            T t = c.backward().get();
+            if (predicate.apply(t)) {
+                return c;
+            }
+        }
+        return c.obsolete();
+    }
+
+    @Override
+    public C.List<T> insert(T t, int index) throws IndexOutOfBoundsException {
+        throw new UnsupportedOperationException();
+    }
 }

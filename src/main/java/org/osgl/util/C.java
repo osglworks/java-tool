@@ -127,8 +127,8 @@ public enum C {
      * @param <T> The element type
      */
     public static interface
-    Traversable<T>
-    extends Iterable<T>, Featured {
+            Traversable<T>
+            extends Iterable<T>, Featured {
         /**
          * Is this traversal empty?
          *
@@ -317,14 +317,14 @@ public enum C {
     }
 
     public static interface Sequence<T>
-    extends Traversable<T> {
+            extends Traversable<T> {
 
         /**
          * Alias of {@link #head()}
          *
          * @since 0.2
          */
-        T first();
+        T first() throws NoSuchElementException;
 
         /**
          * Returns an {@link _.Option} of the first element in the
@@ -404,7 +404,6 @@ public enum C {
          */
         Sequence<T> takeWhile(_.Function<? super T, Boolean> predicate);
 
-
         /**
          * Returns a {@code Sequence} consisting of the elements from this {@code Sequence} except the first {@code n}
          * if number {@code n} is positive and the {@code Sequence} contains more than {@code n} elements
@@ -464,7 +463,7 @@ public enum C {
          * @return a sequence consists of elements of both sequences
          * @since 0.2
          */
-        Sequence<T> append(Sequence <T> seq);
+        Sequence<T> append(Sequence<T> seq);
 
         /**
          * Returns a sequence consists of all elements of this sequence
@@ -568,7 +567,7 @@ public enum C {
          *      return result;
          * </pre>
          *
-         * @param identity the identity value for the accumulating function
+         * @param identity    the identity value for the accumulating function
          * @param accumulator the function to accumulate two values
          * @return the reduced result
          * @see #reduce(Object, org.osgl._.Func2)
@@ -645,7 +644,7 @@ public enum C {
      * @param <T> the element type
      */
     public static interface ReversibleSequence<T>
-    extends Sequence<T> {
+            extends Sequence<T> {
 
         /**
          * {@inheritDoc}
@@ -680,7 +679,7 @@ public enum C {
          * {@inheritDoc}
          *
          * @param predicate {@inheritDoc}
-         * @return an new reversible sequence cotnains the elements
+         * @return an new reversible sequence contains the elements
          *         in this sequence until predicate evaluate to false
          */
         @Override
@@ -768,9 +767,11 @@ public enum C {
          *     assertEquals(C1.list(3, 4), seq.tail(2));
          *     assertEquals(C1.list(1, 2, 3, 4), seq.tail(100));
          *     assertEquals(C1.list(), seq.tail(0));
-         *     assertEquals(C1.list(1, 2), seq.tail(-2));
-         *     assertEquals(C1.list(1, 2, 3, 4), seq.take(-200));
+         *     assertEquals(C1.list(1, 2, 3), seq.tail(-3));
+         *     assertEquals(C1.list(1, 2, 3, 4), seq.tail(-200));
          * </pre>
+         *
+         * <p>This method does not mutate the underline container</p>
          *
          * @param n specify the number of elements to be taken from the tail of this {@code Sequence}
          * @return a {@code Sequence} consisting of the last {@code n} elements from this {@code Sequence}
@@ -853,6 +854,17 @@ public enum C {
 
         @Override
         <R> ReversibleSequence<R> map(_.Function<? super T, ? extends R> mapper);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param mapper {@inheritDoc}
+         * @param <R>    {@inheritDoc}
+         * @return a ReversibleSequence of {@code R} type element that are mapped from this sequences
+         * @since 0.2
+         */
+        @Override
+        <R> ReversibleSequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper);
 
         ReversibleSequence<T> accept(_.Function<? super T, ?> visitor);
 
@@ -1022,6 +1034,154 @@ public enum C {
     public static interface List<T> extends java.util.List<T>, ReversibleSequence<T> {
 
         /**
+         * A cursor points to an element of a {@link List}. It performs like
+         * {@link java.util.ListIterator} but differs in the following way:
+         *
+         * <ul>
+         * <li>Add insert, append method</li>
+         * <li>Support method chain calling style for most methods</li>
+         * <li>A clear get() method to get the element the cursor point to</li>
+         * <li>Unlike next/previous method, the new forward/backward method
+         * returns a Cursor reference</li>
+         * </ul>
+         *
+         * @param <T>
+         */
+        public interface Cursor<T> {
+
+            /**
+             * Returns true if the cursor is not obsolete and points to an element
+             * in the list
+             *
+             * @return true if this cursor is not obsolete and point to an element
+             */
+            boolean isDefined();
+
+            /**
+             * Returns true if the cursor is obsoleted
+             *
+             * @return true if the cursor is obsoleted
+             */
+            boolean isObsolete();
+
+            /**
+             * Returns the index of the element to which the cursor pointed
+             * @return the cursor index
+             */
+            int index();
+
+            /**
+             * Returns if the cursor can be moved forward to get the
+             * next element
+             *
+             * @return {@code true} if there are element after the cursor in the
+             *         underline list
+             */
+            boolean hasNext();
+
+            /**
+             * Returns if the cursor can be moved backward to get the previous
+             * element
+             *
+             * @return {@code true} if there are element before the cursor in the
+             *         underline list
+             */
+            boolean hasPrevious();
+
+            /**
+             * Move the cursor forward to make it point to the next element to
+             * the current element
+             *
+             * @return the cursor points to the next element
+             */
+            Cursor<T> forward();
+
+            /**
+             * Move the cursor backward to make it point to the previous element to
+             * the current element
+             *
+             * @return the cursor points to the previous element
+             */
+            Cursor<T> backward();
+
+            /**
+             * Returns the element this cursor points to. If the cursor isn't point
+             * to any element, calling to this method will trigger
+             * {@code NoSuchElementException} been thrown out. The only case
+             * the cursor doesn't point to any element is when it is initialized
+             * in which case the cursor index is -1
+             *
+             * @return the current element
+             * @throws NoSuchElementException if the cursor isn't point to any element
+             */
+            T get() throws NoSuchElementException;
+
+            /**
+             * Replace the element this cursor points to with the new element specified.
+             *
+             * @param t the new element to be set to this cursor
+             * @return the cursor itself
+             * @throws IndexOutOfBoundsException if the cursor isn't point to any element
+             * @throws NullPointerException if when passing null value to this method and
+             *                              the underline list does not allow null value
+             */
+            Cursor<T> set(T t) throws IndexOutOfBoundsException, NullPointerException;
+
+            /**
+             * Remove the current element this cursor points to. After the element
+             * is removed, the cursor points to the next element if there is next,
+             * or if there isn't next element, the cursor points to the previous
+             * element, or if there is previous element neither, then the cursor
+             * points to {@code -1} position and the current element is not defined
+             *
+             * @return the cursor itself
+             * @throws IndexOutOfBoundsException if the
+             */
+            Cursor<T> drop() throws NoSuchElementException;
+
+            /**
+             * Add an element in front of the element this cursor points to.
+             * After added, the cursor should still point to the current element
+             *
+             * @param t the element to be inserted
+             * @return this cursor which is still pointing to the current element
+             * @throws IndexOutOfBoundsException if the current element is undefined
+             */
+            Cursor<T> prepend(T t) throws IndexOutOfBoundsException;
+
+            /**
+             * Add an element after the element this cursor points to.
+             * After added, the cursor should still point to the current element
+             *
+             * @param t the element to be added
+             * @return this cursor which is still pointing to the current element
+             */
+            Cursor<T> append(T t);
+
+            /**
+             * Put the cursor into obsolete state so that {@code cursor.isDefined()}
+             * returns {@code false}. Once a cursor is obsoleted, then calling to the
+             * following methods will trigger the {@link IllegalStateException}
+             * <ul>
+             * <li>{@link #index()}</li>
+             * <li>{@link #hasNext()}</li>
+             * <li>{@link #hasPrevious()}</li>
+             * <li>{@link #forward()}</li>
+             * <li>{@link #backward()}</li>
+             * <li>{@link #set(Object)}</li>
+             * <li>{@link #drop()}</li>
+             * <li>{@link #append(Object)}</li>
+             * <li>{@link #prepend(Object)}</li>
+             * </ul>
+             *
+             * @return the reference to this cursor
+             */
+            Cursor<T> obsolete();
+        }
+
+        boolean addAll(Iterable<? extends T> iterable);
+
+        /**
          * {@inheritDoc}
          *
          * @param n {@inheritDoc}
@@ -1032,6 +1192,8 @@ public enum C {
 
         /**
          * {@inheritDoc}
+         *
+         * <p>This method does not alter the underline list</p>
          *
          * @param n {@inheritDoc}
          * @return A list contains first {@code n} items in this list
@@ -1051,20 +1213,130 @@ public enum C {
         /**
          * {@inheritDoc}
          *
+         * <p>This method does not alter the underline list</p>
+         *
          * @param n {@inheritDoc}
          * @return A list contains last {@code n} items in this list
          */
         @Override
         List<T> tail(int n);
 
+        /**
+         * {@inheritDoc}
+         *
+         * <p>This method does not alter the underline list</p>
+         *
+         * @param n {@inheritDoc}
+         * @return a reference to the list itself or an new list
+         *         if the current list is readonly or immutable
+         */
+        List<T> drop(int n) throws IndexOutOfBoundsException;
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p>This method does not alter the underline list</p>
+         *
+         * @param predicate
+         * @return {@inheritDoc}
+         */
         @Override
-        C.List<T> dropWhile(_.Function<? super T, Boolean> predicate);
+        List<T> dropWhile(_.Function<? super T, Boolean> predicate);
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p>This method does not alter the underline list</p>
+         *
+         * @param predicate {@inheritDoc}
+         * @return {@inheritDoc}
+         */
+        @Override
+        List<T> takeWhile(_.Function<? super T, Boolean> predicate);
+
+        /**
+         * For mutable list, remove all element that matches the predicate
+         * specified from this List and return this list once done.
+         *
+         * <p>For immutable or readonly list, an new List contains all element from
+         * this list that does not match the predicate specified is returned</p>
+         *
+         * @param predicate test whether an element should be removed frmo
+         *                  return list
+         * @return a list contains all element that does not match the
+         *         predicate specified
+         */
+        List<T> remove(_.Function<? super T, Boolean> predicate);
 
         @Override
         <R> C.List<R> map(_.Function<? super T, ? extends R> mapper);
 
+        /**
+         * {@inheritDoc}
+         *
+         * @param mapper {@inheritDoc}
+         * @param <R>    {@inheritDoc}
+         * @return a List of {@code R} type element that are mapped from this sequences
+         * @since 0.2
+         */
         @Override
-        C.List<T> filter(_.Function<? super T, Boolean> predicate);
+        <R> List<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper);
+
+        @Override
+        List<T> filter(_.Function<? super T, Boolean> predicate);
+
+        /**
+         * Find the first element in this list that matches the predicate.
+         * Return a cursor point to the location of the element. If no
+         * such element is found then a cursor that point to {@code -1}
+         * is returned.
+         *
+         * @param predicate test the element
+         * @return the reference to the list itself or an new List without the
+         *         first element matches the predicate if this is a readonly
+         *         list
+         */
+        Cursor<T> locateFirst(_.Function<T, Boolean> predicate);
+
+        /**
+         * Locate any one element in the list that matches the predicate.
+         * Returns the cursor point to the element found, or a cursor
+         * that is not defined if no such element found in the list. In
+         * a parallel locating the element been found might not be the
+         * first element matches the predicate
+         *
+         * @param predicate
+         * @return the reference to the list itself or an new List without
+         *         and element matches the predicate if this is a readonly
+         *         list
+         */
+        Cursor<T> locate(_.Function<T, Boolean> predicate);
+
+        /**
+         * Locate the first element in this list that matches the predicate.
+         * Return a cursor point to the location of the element. If no
+         * such element is found then a cursor that point to {@code -1}
+         * is returned.
+         *
+         * @param predicate test the element
+         * @return the reference to the list itself or an new List without the
+         *         first element matches the predicate if this is a readonly
+         *         list
+         */
+        Cursor<T> locateLast(_.Function<T, Boolean> predicate);
+
+        /**
+         * Insert an element at the position specified by {@code index}.
+         * <p>If this list is readonly or immutable, then an new
+         * list should be created with all elements in this list
+         * and the new element inserted at the specified position.
+         * The new list should be mutable and read write</p>
+         *
+         * @param index specify the position where the element should be inserted
+         * @param t     the element to be inserted
+         * @return a reference to the List itself
+         */
+        List<T> insert(int index, T t) throws IndexOutOfBoundsException;
 
         /**
          * {@inheritDoc}
@@ -1079,11 +1351,11 @@ public enum C {
         /**
          * Returns a List contains all elements in this List followed by
          * all elements in the specified List.
-         *
+         * <p/>
          * <p>A mutable List implementation might choose to add elements
          * from the specified list directly to this list and return this
          * list directly</p>
-         *
+         * <p/>
          * <p>For a read only or immutable list, it must create an new list
          * to avoid update this list</p>
          *
@@ -1104,11 +1376,21 @@ public enum C {
         /**
          * Returns a List contains all elements in this List and not in
          * the {@code col} collection specified
+         *
          * @param col the collection in which elements should
          *            be excluded from the result List
          * @return a List contains elements only in this list
          */
-        List<T> without(Collection<? extends T> col);
+        List<T> without(Collection<? super T> col);
+
+        @Override
+        List<T> accept(_.Function<? super T, ?> visitor);
+
+        @Override
+        List<T> acceptLeft(_.Function<? super T, ?> visitor);
+
+        @Override
+        List<T> acceptRight(_.Function<? super T, ?> visitor);
     }
 
     /**
@@ -1131,7 +1413,7 @@ public enum C {
 
     /**
      * Defines a factory to create {@link java.util.List java List} instance
-     * used by {@link DelegatingList} to create it's backing data structure
+     * used by {@link DelegatingList1} to create it's backing data structure
      *
      * @since 0.2
      */
@@ -1405,7 +1687,15 @@ public enum C {
         if (javaList instanceof List) {
             return _.cast(javaList);
         }
-        return new DelegatingList<T>(javaList);
+        return new DelegatingList1<T>(javaList);
+    }
+
+    public static <T> List<T> newList() {
+        return newList(10);
+    }
+
+    public static <T> List<T> newList(int size) {
+        //
     }
 
     public static <T, R> Sequence<R> map(Sequence<T> seq, _.Function<? super T, ? extends R> mapper) {
@@ -1415,7 +1705,8 @@ public enum C {
         return new MappedSeq<T, R>(seq, mapper);
     }
 
-    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, _.Function<? super T, ? extends R> mapper) {
+    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, _.Function<? super T, ? extends R> mapper
+    ) {
         return new ReversibleMappedSeq<T, R>(seq, mapper);
     }
 
@@ -1444,8 +1735,8 @@ public enum C {
 
     public static <T> Sequence<T> concat(Sequence<T> s1, Sequence<T> s2) {
         if (s1 instanceof ReversibleSequence && s2 instanceof ReversibleSequence) {
-            ReversibleSequence<T> rs1 = (ReversibleSequence<T>)s1;
-            ReversibleSequence<T> rs2 = (ReversibleSequence<T>)s2;
+            ReversibleSequence<T> rs1 = (ReversibleSequence<T>) s1;
+            ReversibleSequence<T> rs2 = (ReversibleSequence<T>) s2;
             return concat(rs1, rs2);
         }
         if (s1.isEmpty()) {
@@ -1508,15 +1799,59 @@ public enum C {
     public static boolean isImmutable(Traversable<?> t) {
         return t.is(Feature.IMMUTABLE);
     }
+
+    /**
+     * Iterate through an iterable, apply the visitor function
+     * to each element.
+     *
+     * <p>It is possible to stop the iteration by throwing out
+     * the {@link org.osgl._.Break} from within the visitor
+     * function</p>
+     *
+     * <p>This method support partial function by allowing the
+     * visitor throw out the {@link NotAppliedException} which
+     * will be simply ignored</p>
+     *
+     * @param iterable
+     * @param visitor
+     * @param <T>
+     * @throws _.Break
+     */
+    //TODO: implement forEach iteration in parallel
+    public static <T> void forEach(Iterable<? extends T> iterable, _.Function<? super T, ?> visitor) throws _.Break {
+        for (T t: iterable) {
+            try {
+                visitor.apply(t);
+            } catch (NotAppliedException e) {
+                // ignore
+            }
+        }
+    }
+
+    public static <T> void forEach(Iterator<? extends T> iterator, _.Function<? super T, ?> visitor) {
+        while (iterator.hasNext()) {
+            T t = iterator.next();
+            visitor.apply(t);
+        }
+    }
     // --- eof utility methods ---
 
     public static enum F {
         ;
 
-        public static <T> _.F1<T, Boolean> addTo(final Collection<? super T> c) {
-            return new _.F1<T, Boolean>() {
+        public static <T> _.Predicate<T> containsIn(final Collection<? super T> c) {
+            return new _.Predicate<T>() {
                 @Override
-                public Boolean apply(T t) throws NotAppliedException, _.Break {
+                public boolean test(T t) throws NotAppliedException, _.Break {
+                    return c.contains(t);
+                }
+            };
+        }
+
+        public static <T> _.Predicate<T> addTo(final Collection<? super T> c) {
+            return new _.Predicate<T>() {
+                @Override
+                public boolean test(T t) throws NotAppliedException, _.Break {
                     return c.add(t);
                 }
             };
@@ -1581,45 +1916,84 @@ public enum C {
             };
         }
 
-        public static <T> _.F1<Collection<? extends T>, Boolean> addAllTo(final Collection<? super T> c) {
-            return new _.F1<Collection<? extends T>, Boolean>() {
+        public static <T> _.F1<Iterable<? extends T>, Boolean> addAllTo(final Collection<? super T> c) {
+            return new _.F1<Iterable<? extends T>, Boolean>() {
                 @Override
-                public Boolean apply(Collection<? extends T> c1) throws NotAppliedException, _.Break {
-                    return c.addAll(c1);
+                public Boolean apply(Iterable<? extends T> c1) throws NotAppliedException, _.Break {
+                    if (c1 instanceof Collection) {
+                        return c.addAll((Collection<? extends T>) c1);
+                    }
+                    boolean modified = false;
+                    for (T t : c1) {
+                        c.add(t);
+                        modified = true;
+                    }
+                    return modified;
                 }
             };
         }
 
-        public static <T> _.F1<Collection<? extends T>, Boolean> addAllTo(final List<? super T> l, final int index) {
+        public static <T> _.Predicate<Iterable<? extends T>> addAllTo(final List<? super T> l, final int index) {
             if (0 > index || l.size() < index) {
                 throw new IndexOutOfBoundsException();
             }
-            return new _.F1<Collection<? extends T>, Boolean>() {
+            return new _.Predicate<Iterable<? extends T>>() {
                 @Override
-                public Boolean apply(Collection<? extends T> ts) throws NotAppliedException, _.Break {
-                    return l.addAll(index, ts);
+                public boolean test(Iterable<? extends T> itr) throws NotAppliedException, _.Break {
+                    if (itr instanceof Collection) {
+                        return l.addAll(index, ((Collection<? extends T>)itr));
+                    }
+                    boolean modified = false;
+                    for (T t : itr) {
+                        l.add(index, t);
+                        modified = true;
+                    }
+                    return modified;
                 }
             };
         }
 
-        public static <T> _.F1<Collection<? extends T>, Boolean> removeAllFrom(final Collection<? super T> c) {
-            return new _.F1<Collection<? extends T>, Boolean>() {
+        public static <T> _.Predicate<Collection<? super T>> removeAllFrom(final Iterable<? extends T> c) {
+            return new _.Predicate<Collection<? super T>>() {
                 @Override
-                public Boolean apply(Collection<? extends T> c1) throws NotAppliedException, _.Break {
-                    return c.removeAll(c1);
+                public boolean test(Collection<? super T> c1) throws NotAppliedException, _.Break {
+                    if (c instanceof Collection) {
+                        return c1.removeAll((Collection<?>) c);
+                    }
+                    HashSet<T> s = new HashSet<T>();
+                    for (T t : c) {
+                        s.add(t);
+                    }
+                    return c1.removeAll(s);
                 }
             };
         }
 
-        public static <T> _.F1<? extends Collection<? extends T>, Boolean> retainAllIn(final Collection<? super T> c) {
-            return new _.F1<Collection<? extends T>, Boolean>() {
+        public static <T> _.Predicate<? extends Collection<? super T>> retainAllIn(final Iterable<? extends T> c) {
+            return new _.Predicate<Collection<? super T>>() {
                 @Override
-                public Boolean apply(Collection<? extends T> c1) throws NotAppliedException, _.Break {
-                    return c.retainAll(c1);
+                public boolean test(Collection<? super T> c1) throws NotAppliedException, _.Break {
+                    if (c instanceof Collection) {
+                        return c1.retainAll((Collection) c)
+                    }
+                    HashSet<T> s = new HashSet<T>();
+                    for (T t : c) {
+                        s.add(t);
+                    }
+                    return c1.retainAll(s);
                 }
             };
         }
 
+        public static <T> _.F1<Iterable<? extends T>, Void> forEach(final _.Function<? super T, ?> visitor) {
+            return new _.F1<Iterable<? extends T>, Void>() {
+                @Override
+                public Void apply(Iterable<? extends T> iterable) throws NotAppliedException, _.Break {
+                    C.forEach(iterable, visitor);
+                    return null;
+                }
+            };
+        }
     }
 
     public static void main(String[] args) {

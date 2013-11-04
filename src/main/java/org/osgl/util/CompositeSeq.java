@@ -232,7 +232,7 @@ class CompositeSeq<T> implements C.Sequence<T> {
     }
 
     @Override
-    public <R> C.Sequence<R> flatMap(_.Function<? super T, Iterable<R>> mapper) {
+    public <R> C.Sequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         return of(left.flatMap(mapper), right.flatMap(mapper));
     }
 

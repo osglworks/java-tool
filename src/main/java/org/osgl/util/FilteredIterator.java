@@ -12,23 +12,63 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 class FilteredIterator<T> extends StatefulIterator<T> {
-    private final Iterator<T> itr_;
-    private final _.Predicate<T> filter_;
 
-    FilteredIterator(Iterator<T> iterator, _.Function<? super T, Boolean> filter) {
+    static enum Type {
+        ALL,
+        WHILE,
+        UNTIL
+    }
+
+    private final Iterator<? extends T> itr_;
+    private final _.Predicate<T> filter_;
+    private final Type type_;
+    private boolean start_;
+
+    FilteredIterator(Iterator<? extends T> iterator, _.Function<? super T, Boolean> filter) {
+        this(iterator, filter, Type.ALL);
+    }
+
+    FilteredIterator(Iterator<? extends T> iterator, _.Function<? super T, Boolean> filter, Type type) {
         E.NPE(iterator, filter);
         itr_ = iterator;
         filter_ = _.predicate(filter);
+        type_ = type;
     }
 
     @Override
     protected _.Option<T> getCurrent() {
+        T t = itr_.next();
+        boolean ok;
         while (itr_.hasNext()) {
-            T t = itr_.next();
-            if (filter_.test(t)) {
-                return _.some(t);
+            switch (type_) {
+            case ALL:
+                ok = filter_.test(t);
+                if (ok) {
+                    return _.some(t);
+                } else {
+                    continue;
+                }
+            case WHILE:
+                ok = filter_.test(t);
+                if (ok) {
+                    return _.some(t);
+                } else {
+                    return _.none();
+                }
+            case UNTIL:
+                if (start_) {
+                    return _.some(t);
+                }
+                ok = filter_.test(t);
+                if (ok) {
+                    start_ = true;
+                    return _.some(t);
+                } else {
+                    continue;
+                }
             }
         }
         return _.none();
     }
+
 }

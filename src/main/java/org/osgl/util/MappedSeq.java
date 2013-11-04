@@ -13,7 +13,7 @@ import java.util.Iterator;
  * Time: 9:39 AM
  * To change this template use File | Settings | File Templates.
  */
-class MappedSeq<T, R> extends AbstractSeq<R, MappedSeq<T, R>> implements C.Sequence<R> {
+class MappedSeq<T, R> extends SequenceBase<R> implements C.Sequence<R> {
     private final C.Sequence<? extends T> data;
     protected final _.F1<? super T, ? extends R> mapper;
     private volatile C.Sequence<R> mappedData;
@@ -25,7 +25,6 @@ class MappedSeq<T, R> extends AbstractSeq<R, MappedSeq<T, R>> implements C.Seque
     }
 
     MappedSeq(C.Sequence<? extends T> seq, _.Function<? super T, ? extends R> mapper) {
-        super(featuresOf(seq));
         E.NPE(seq, mapper);
         this.data = seq;
         this.mapper = _.f1(mapper);
@@ -104,7 +103,7 @@ class MappedSeq<T, R> extends AbstractSeq<R, MappedSeq<T, R>> implements C.Seque
     }
 
     @Override
-    public <R1> C.Sequence<R1> flatMap(_.Function<? super R, Iterable<R1>> mapper) {
+    public <R1> C.Sequence<R1> flatMap(_.Function<? super R, ? extends Iterable<? extends R1>> mapper) {
         return applyMapper().flatMap(mapper);
     }
 
@@ -199,13 +198,10 @@ class MappedSeq<T, R> extends AbstractSeq<R, MappedSeq<T, R>> implements C.Seque
     }
 
     @Override
-    public EnumSet<C.Feature> features() {
-        return EnumSet.copyOf(features);
-    }
-
-    @Override
-    public boolean is(C.Feature c) {
-        return features.contains(c);
+    protected EnumSet<C.Feature> initFeatures() {
+        EnumSet<C.Feature> fs = data.features();
+        fs.add(C.Feature.READONLY);
+        return fs;
     }
 
     @Override

@@ -35,7 +35,17 @@ abstract class FeaturedBase implements C.Featured {
     }
 
     @Override
-    public final boolean is(C.Feature c) {
-        return features_().contains(c);
+    public final boolean is(C.Feature feature) {
+        return features_().contains(feature);
+    }
+
+    protected FeaturedBase setFeature(C.Feature feature) {
+        features_().add(feature);
+        return this;
+    }
+
+    protected FeaturedBase unsetFeature(C.Feature feature) {
+        features_().remove(feature);
+        return this;
     }
 }

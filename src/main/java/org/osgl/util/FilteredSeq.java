@@ -152,7 +152,7 @@ class FilteredSeq<T> implements C.Sequence<T> {
         } else if (n == 0) {
             return Nil.seq();
         } else {
-            C.List<T> l = DelegatingList.createWithInitialCapacity(n);
+            C.List<T> l = DelegatingList1.createWithInitialCapacity(n);
             Iterator<T> itr = iterator();
             for (int i = 0; i < n && itr.hasNext(); ++i) {
                 l.add(itr.next());

@@ -10,16 +10,16 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 public class DelegatingIterator<T> implements Iterator<T> {
-    private final Iterator<T> itr;
+    private final Iterator<? extends T> itr_;
     protected final boolean readOnly;
 
-    DelegatingIterator(Iterator<T> itr, boolean readOnly) {
-        this.itr = itr;
+    DelegatingIterator(Iterator<? extends T> itr, boolean readOnly) {
+        this.itr_ = itr;
         this.readOnly = readOnly;
     }
 
-    protected Iterator<T> itr() {
-        return itr;
+    protected Iterator<? extends T> itr() {
+        return itr_;
     }
 
     protected final void mutableOperation() {
@@ -30,17 +30,17 @@ public class DelegatingIterator<T> implements Iterator<T> {
 
     @Override
     public boolean hasNext() {
-        return itr.hasNext();
+        return itr_.hasNext();
     }
 
     @Override
     public T next() {
-        return itr.next();
+        return itr_.next();
     }
 
     @Override
     public void remove() {
         mutableOperation();
-        itr.remove();
+        itr_.remove();
     }
 }
