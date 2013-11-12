@@ -9,7 +9,6 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.Iterator;
 
 /**
@@ -74,10 +73,6 @@ public class LazyRange<ELEMENT> extends LazySeq<ELEMENT> implements C.Range<ELEM
         this.order = order;
         this.step = step;
 
-        this.feature = EnumSet.of(
-                C.Feature.IMMUTABLE,
-                C.Feature.LAZY,
-                C.Feature.LIMITED);
         this.next = _.f2(step()).curry(-ordering);
         this.prev = _.f2(step()).curry(ordering);
         this.tail = new _.F0<C.Sequence<ELEMENT>>() {
@@ -90,6 +85,8 @@ public class LazyRange<ELEMENT> extends LazySeq<ELEMENT> implements C.Range<ELEM
                 }
             }
         };
+
+        this.setFeature(C.Feature.LIMITED);
     }
 
     @Override
@@ -217,16 +214,6 @@ public class LazyRange<ELEMENT> extends LazySeq<ELEMENT> implements C.Range<ELEM
     @Override
     public C.Range<ELEMENT> reverse() throws UnsupportedOperationException {
         return of(prev.apply(to), prev.apply(from()));
-    }
-
-    @Override
-    public C.Sequence<ELEMENT> append(C.Sequence<ELEMENT> tail) {
-        return C.concat(this, tail);
-    }
-
-    @Override
-    public C.Sequence<ELEMENT> prepend(C.Sequence<ELEMENT> seq) {
-        return C.concat(seq, this);
     }
 
     @Override

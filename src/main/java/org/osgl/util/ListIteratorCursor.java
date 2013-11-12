@@ -12,24 +12,10 @@ import java.util.NoSuchElementException;
  */
 class ListIteratorCursor<T> extends CursorBase<T> implements C.List.Cursor<T> {
     private final ListIterator<T> itr_;
+    private boolean parked = false;
     ListIteratorCursor(ListIterator<T> itr) {
         E.NPE(itr);
         itr_ = itr;
-    }
-
-    @Override
-    public int safeIndex() {
-        return itr_.previousIndex();
-    }
-
-    @Override
-    public boolean safeHasNext() {
-        return itr_.hasNext();
-    }
-
-    @Override
-    public boolean safeHasPrevious() {
-        return itr_.hasPrevious();
     }
 
     @Override
@@ -58,4 +44,36 @@ class ListIteratorCursor<T> extends CursorBase<T> implements C.List.Cursor<T> {
         itr_.add(t);
     }
 
+    @Override
+    public int index() {
+        return itr_.previousIndex();
+    }
+
+    @Override
+    public boolean hasNext() {
+        return itr_.hasNext();
+    }
+
+    @Override
+    public boolean hasPrevious() {
+        return itr_.hasPrevious();
+    }
+
+    @Override
+    public C.List.Cursor<T> parkLeft() {
+        while (itr_.hasPrevious()) {
+            itr_.previous();
+        }
+        parked = true;
+        return this;
+    }
+
+    @Override
+    public C.List.Cursor<T> parkRight() {
+        while (itr_.hasNext()) {
+            itr_.nextIndex();
+        }
+        parked = true;
+        return this;
+    }
 }

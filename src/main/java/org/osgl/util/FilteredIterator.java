@@ -16,7 +16,10 @@ class FilteredIterator<T> extends StatefulIterator<T> {
     static enum Type {
         ALL,
         WHILE,
-        UNTIL
+        UNTIL;
+        <T> Iterator<T> filter(Iterator<T> raw, _.Function<? super T, Boolean> predicate) {
+            return new FilteredIterator<T>(raw, predicate, this);
+        }
     }
 
     private final Iterator<? extends T> itr_;
@@ -37,9 +40,9 @@ class FilteredIterator<T> extends StatefulIterator<T> {
 
     @Override
     protected _.Option<T> getCurrent() {
-        T t = itr_.next();
         boolean ok;
         while (itr_.hasNext()) {
+            T t = itr_.next();
             switch (type_) {
             case ALL:
                 ok = filter_.test(t);

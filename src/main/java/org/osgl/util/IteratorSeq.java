@@ -10,9 +10,9 @@ import java.util.Iterator;
  */
 class IteratorSeq<T> extends SequenceBase<T> {
 
-    private final Iterator<? extends T> itr_;
+    private final Iterator<T> itr_;
 
-    IteratorSeq(final Iterator<? extends T> itr) {
+    IteratorSeq(final Iterator<T> itr) {
         E.NPE(itr);
         itr_ = itr;
     }
@@ -29,6 +29,12 @@ class IteratorSeq<T> extends SequenceBase<T> {
 
     @Override
     public C.Sequence<T> head(int n) {
+        if (n < 0) {
+            throw new UnsupportedOperationException();
+        }
+        if (n == 0) {
+            return Nil.seq();
+        }
         return of(Iterators.filterIndex(itr_, N.F.lt(n)));
     }
 
@@ -38,11 +44,6 @@ class IteratorSeq<T> extends SequenceBase<T> {
             throw new UnsupportedOperationException();
         }
         return of(Iterators.filterIndex(itr_, N.F.gt(0)));
-    }
-
-    @Override
-    public C.Sequence<T> take(int n) {
-        return head(n);
     }
 
     @Override
@@ -101,7 +102,7 @@ class IteratorSeq<T> extends SequenceBase<T> {
         return new IteratorSeq<R>(Iterators.flatMap(itr_, mapper));
     }
 
-    static <T> IteratorSeq<T> of(Iterator<? extends T> itr) {
+    static <T> IteratorSeq<T> of(Iterator<T> itr) {
         return new IteratorSeq<T>(itr);
     }
 }

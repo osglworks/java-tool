@@ -30,6 +30,6 @@ class FlatMappedIterator<T, R> extends StatefulIterator<R> {
             }
             curMapped = mapper.apply(data.next()).iterator();
         }
-        return _.some(curMapped.next());
+        return _.some((R)curMapped.next());
     }
 }

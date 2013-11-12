@@ -19,10 +19,12 @@
 */
 package org.osgl.exception;
 
+import org.osgl.util.S;
+
 /**
  * Argument(s) is not valid
  */
-public class InvalidArgException extends UnexpectedException {
+public class InvalidArgException extends IllegalArgumentException {
 
     public InvalidArgException() {
     }
@@ -32,7 +34,7 @@ public class InvalidArgException extends UnexpectedException {
     }
 
     public InvalidArgException(String message, Object... args){
-        super(message, args);
+        super(S.fmt(message, args));
     }
 
     public InvalidArgException(Throwable cause){

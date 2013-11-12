@@ -29,12 +29,12 @@ enum Iterators {
         return new FilteredIterator<T>(itr, predicate, FilteredIterator.Type.UNTIL);
     }
 
-    public static <T> Iterator<T> composite(Iterator<? extends T> i1, Iterator<? extends T> i2) {
+    public static <T> Iterator<T> composite(Iterator<T> i1, Iterator<T> i2) {
         return new CompositeIterator<T>(i1, i2);
     }
 
     public static <T> Iterator<T> of(T t) {
-        return new SingletonItr<T>(t);
+        return new SingletonIterator<T>(t);
     }
 
     public static <T, R> Iterator<R> map(Iterator<? extends T> itr, _.Function<? super T, ? extends R> mapper) {

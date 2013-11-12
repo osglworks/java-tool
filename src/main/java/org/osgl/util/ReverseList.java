@@ -4,6 +4,7 @@ import org.osgl._;
 
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -13,141 +14,96 @@ import java.util.NoSuchElementException;
  * Time: 9:39 PM
  * To change this template use File | Settings | File Templates.
  */
-class ReverseList<T> extends ListBase1<T> implements C.List<T> {
-    private final C.List<T> lst_;
+class ReverseList<T> extends DelegatingList<T> implements C.List<T> {
 
-    ReverseList(C.List<T> list) {
-        E.NPE(list);
-        lst_ = list;
+    private ReverseList(C.List<T> list) {
+        super(true);
+        data = list;
+    }
+
+    C.List<T> data() {
+        return (C.List<T>)data;
     }
 
     @Override
     protected EnumSet<C.Feature> initFeatures() {
-        return lst_.features();
+        EnumSet<C.Feature> fs = data().features();
+        fs.add(C.Feature.READONLY);
+        return fs;
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return lst_.reverseIterator();
+    public ListIterator<T> listIterator(int index) {
+        return new ReverseListIterator<T>(data().listIterator(size() - index));
     }
 
     @Override
-    public int size() throws UnsupportedOperationException {
-        return lst_.size();
+    public T get(int index) {
+        return data.get(size() - index);
     }
 
     @Override
-    public <R> C.List<R> map(_.Function<? super T, ? extends R> mapper) {
-        //TODO ...
-        return null;
+    protected void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break {
+        data().acceptRight(visitor);
     }
 
     @Override
-    public <R> C.List<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
-    ) {
-        //TODO ...
-        return null;
-    }
-
-    @Override
-    public C.List<T> accept(_.Function<? super T, ?> visitor) {
-        return acceptLeft(visitor);
-    }
-
-    @Override
-    public C.List<T> acceptLeft(_.Function<? super T, ?> visitor) {
-        return lst_.acceptRight(visitor);
-    }
-
-    @Override
-    public C.List<T> acceptRight(_.Function<? super T, ?> visitor) {
-        return lst_.acceptLeft(visitor);
-    }
-
-    @Override
-    public <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator) {
-        return lst_.reduceLeft(identity, accumulator);
-    }
-
-    @Override
-    public _.Option<T> reduceRight(_.Func2<T, T, T> accumulator) {
-        return lst_.reduceLeft(accumulator);
+    protected void forEachRight(_.Function<? super T, ?> visitor) throws _.Break {
+        data().acceptLeft(visitor);
     }
 
     @Override
     public <R> R reduceLeft(R identity, _.Func2<R, T, R> accumulator) {
-        return lst_.reduceRight(identity, accumulator);
+        return data().reduceRight(identity, accumulator);
     }
 
     @Override
     public _.Option<T> reduceLeft(_.Func2<T, T, T> accumulator) {
-        return lst_.reduceRight(accumulator);
+        return data().reduceRight(accumulator);
     }
 
     @Override
-    public T first() throws NoSuchElementException {
-        return lst_.last();
+    public <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator) {
+        return data().reduceLeft(identity, accumulator);
     }
 
     @Override
-    public T last() throws UnsupportedOperationException, NoSuchElementException {
-        return lst_.first();
+    public _.Option<T> reduceRight(_.Func2<T, T, T> accumulator) {
+        return data().reduceLeft(accumulator);
     }
 
     @Override
-    public _.Option<T> findFirst(_.Function<? super T, Boolean> predicate) {
-        return lst_.findLast(predicate);
+    public T head() throws NoSuchElementException {
+        return data().last();
     }
 
     @Override
-    protected void forEachRight(_.Function<? super T, ?> visitor) {
-        super.forEachLeft(visitor);
+    public T last() throws NoSuchElementException {
+        return data().head();
     }
 
     @Override
-    protected void forEachLeft(_.Function<? super T, ?> visitor) {
-        super.forEachRight(visitor);
+    public Iterator<T> reverseIterator() {
+        return data().iterator();
     }
 
     @Override
-    protected void forEach(_.Function<? super T, ?> visitor) {
-        super.forEachRight(visitor);
+    public C.List<T> reverse() {
+        return data();
     }
 
     @Override
-    public boolean isEmpty() {
-        return lst_.isEmpty();
+    public C.List<T> subList(int fromIndex, int toIndex) {
+        return data().subList(toIndex - 1, fromIndex - 1);
     }
 
-    @Override
-    public <R> R reduce(R identity, _.Func2<R, T, R> accumulator) {
-        return lst_.reduceRight(identity, accumulator);
-    }
-
-    @Override
-    public _.Option<T> reduce(_.Func2<T, T, T> accumulator) {
-        return lst_.reduceRight(accumulator);
-    }
-
-    @Override
-    public _.Option<T> findOne(_.Function<? super T, Boolean> predicate) {
-        return lst_.findOne(predicate);
-    }
-
-
-
-    @Override
-    public boolean anyMatch(_.Function<? super T, Boolean> predicate) {
-        return super.anyMatch(predicate);    //To change body of overridden methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean noneMatch(_.Function<? super T, Boolean> predicate) {
-        return super.noneMatch(predicate);    //To change body of overridden methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean allMatch(_.Function<? super T, Boolean> predicate) {
-        return super.allMatch(predicate);    //To change body of overridden methods use File | Settings | File Templates.
+    static <T> C.List<T> wrap(C.List<T> list) {
+        if (list instanceof ReverseList) {
+            return ((ReverseList<T>)list).data();
+        }
+        if (list.size() == 0 && list.is(C.Feature.IMMUTABLE)) {
+            return Nil.list();
+        }
+        return new ReverseList<T>(list);
     }
 }

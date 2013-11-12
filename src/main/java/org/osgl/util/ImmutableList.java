@@ -1,17 +1,16 @@
 package org.osgl.util;
 
 import org.osgl._;
+import org.osgl.exception.NotAppliedException;
+import org.osgl.util.algo.Algorithms;
 
 import java.util.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 28/10/13
- * Time: 4:08 PM
- * To change this template use File | Settings | File Templates.
+ * An immutable list implementation. This class is guaranteed to be NOT empty
  */
 class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
+
     private final T[] data_;
 
     /**
@@ -20,19 +19,24 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
      *
      * @param data an array of element backing this list
      */
-    private ImmutableList(T[] data) {
+    protected ImmutableList(T[] data) {
         E.NPE(data);
         data_ = data;
     }
 
     @Override
     protected EnumSet<C.Feature> initFeatures() {
-        return EnumSet.of(C.Feature.READONLY, C.Feature.LIMITED, C.Feature.ORDERED, C.Feature.IMMUTABLE, C.Feature.LAZY);
+        return EnumSet.of(C.Feature.READONLY, C.Feature.LIMITED, C.Feature.ORDERED, C.Feature.IMMUTABLE, C.Feature.LAZY, C.Feature.PARALLEL, C.Feature.RANDOM_ACCESS);
     }
 
     @Override
     public int size() throws UnsupportedOperationException {
         return data_.length;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
     }
 
     @Override
@@ -44,9 +48,6 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
     public Object[] toArray() {
         T[] da = data_;
         int sz = da.length;
-        if (0 == sz) {
-            return new Object[0];
-        }
         Object[] ret = new Object[sz];
         System.arraycopy(da, 0, ret, 0, sz);
 
@@ -64,9 +65,7 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
         }
         System.arraycopy(da, 0, a, 0, sz);
         if (sza > sz) {
-            for (int i = sz; i < sza; ++i) {
-                a[i] = null;
-            }
+            a[sz] = null;
         }
         return a;
     }
@@ -136,6 +135,8 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
     public T remove(int index) {
         throw new UnsupportedOperationException();
     }
+
+
 
     @Override
     public int indexOf(Object o) {
@@ -254,40 +255,161 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
         return new LstItr(index);
     }
 
-
-
-    private class SubLst extends ListBase1<T> implements C.List<T> {
-
-    }
-
-    @Override
-    public List<T> subList(int fromIndex, int toIndex) {
-        return null;
-    }
-
     @Override
     public <R> C.List<R> map(_.Function<? super T, ? extends R> mapper) {
-        //TODO ...
-        return null;
+        // TODO: handle lazy operation
+        int sz = size();
+        ListBuilder<R> lb = new ListBuilder<R>(sz);
+        forEach(_.f1(mapper).andThen(C.F.addTo(lb)));
+        return lb.toList();
     }
 
     @Override
     public <R> C.List<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
     ) {
-        //TODO ...
-        return null;
+        // TODO: handle lazy operation
+        int sz = size();
+        ListBuilder<R> lb = new ListBuilder<R>(sz * 3);
+        forEach(_.f1(mapper).andThen(C.F.addAllTo(lb)));
+        return lb.toList();
+    }
+
+    @Override
+    public C.Sequence<T> append(Iterable<? extends T> iterable) {
+        return super.append(iterable);
+    }
+
+    private C.List<T> unLazyAppend(Collection<? extends T> collection) {
+        int szB = collection.size();
+        if (szB == 0) {
+            return this;
+        }
+        int szA = size();
+        T[] dataA = data_;
+        Object[] dataB = collection.toArray();
+        T[] data = _.newArray(dataA, szA + szB);
+        System.arraycopy(dataA, 0, data, 0, szA);
+        System.arraycopy(dataB, 0, data, szA, szB);
+        return of(data);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public C.List<T> append(Collection<? extends T> collection) {
+        if (collection instanceof C.List) {
+            return append((C.List<T>) collection);
+        } else {
+            return unLazyAppend(collection);
+        }
+    }
+
+    @Override
+    public C.ReversibleSequence<T> append(C.ReversibleSequence<T> seq) {
+        return super.append(seq);
     }
 
     @Override
     public C.Sequence<T> append(C.Sequence<T> seq) {
-        //TODO ...
-        return null;
+        if (seq instanceof C.List) {
+            return append((C.List<T>) seq);
+        }
+        if (isLazy()) {
+            return CompositeSeq.of(this, seq);
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
+        lb.append(this).append(seq);
+        return lb.toList();
+    }
+
+    public C.List<T> append(C.List<T> l) {
+        if (isLazy()) {
+            return CompositeList.of(this, l);
+        }
+        if (l instanceof ImmutableList) {
+            return append((ImmutableList<T>) l);
+        }
+        return unLazyAppend(l);
+    }
+
+    public C.List<T> append(ImmutableList<T> l) {
+        int szA = size();
+        int szB = l.size();
+        T[] dataA = data_;
+        T[] data = _.newArray(dataA, szA + szB);
+        System.arraycopy(dataA, 0, data, 0, szA);
+        System.arraycopy(l.data_, 0, data, szA, szB);
+        return of(data);
+    }
+
+    private C.List<T> unLazyPrepend(Collection<? extends T> collection) {
+        int szB = collection.size();
+        if (szB == 0) {
+            return this;
+        }
+        int szA = size();
+        T[] dataA = data_;
+        Object[] dataB = collection.toArray();
+        T[] data = _.newArray(dataA, szA + szB);
+        System.arraycopy(dataB, 0, data, 0, szB);
+        System.arraycopy(dataA, 0, data, szB, szA);
+        return of(data);
+    }
+
+
+    @Override
+    public C.Sequence<T> prepend(Iterable<? extends T> iterable) {
+        return super.prepend(iterable);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public C.List<T> prepend(Collection<? extends T> collection) {
+        if (collection instanceof C.List) {
+            return prepend((C.List<T>) collection);
+        } else {
+            return unLazyPrepend(collection);
+        }
+    }
+
+    @Override
+    public C.ReversibleSequence<T> prepend(C.ReversibleSequence<T> seq) {
+        return super.prepend(seq);
     }
 
     @Override
     public C.Sequence<T> prepend(C.Sequence<T> seq) {
-        //TODO ...
-        return null;
+        if (seq instanceof C.List) {
+            return prepend((C.List<T>) seq);
+        }
+        if (isLazy()) {
+            return CompositeSeq.of(this, seq);
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
+        lb.append(seq).append(this);
+        return lb.toList();
+    }
+
+    public C.List<T> prepend(C.List<T> l) {
+        if (isLazy()) {
+            return CompositeList.of(l, this);
+        }
+        if (l instanceof ImmutableList) {
+            return prepend((ImmutableList<T>) l);
+        }
+        return unLazyPrepend(l);
+    }
+
+    public C.List<T> prepend(ImmutableList<T> l) {
+        if (isLazy()) {
+            return CompositeList.of(l, this);
+        }
+        int szA = size();
+        int szB = l.size();
+        T[] myData = data_;
+        T[] data = _.newArray(myData, szA + szB);
+        System.arraycopy(l.data_, 0, data, 0, szB);
+        System.arraycopy(myData, 0, data, szB, szA);
+        return of(data);
     }
 
     private class ReverseItr implements Iterator<T> {
@@ -332,121 +454,392 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
 
     @Override
     public C.List<T> takeWhile(_.Function<? super T, Boolean> predicate) {
-        return null;
+        int sz = size();
+        ListBuilder<T> lb = new ListBuilder<T>(sz);
+        for (T t : this) {
+            if (predicate.apply(t)) {
+                lb.add(t);
+            } else {
+                break;
+            }
+        }
+        return lb.toList();
     }
 
     @Override
-    public C.ReversibleSequence<T> append(C.ReversibleSequence<T> seq) {
-        //TODO ...
-        return null;
+    public C.List<T> without(Collection<? super T> col) {
+        int sz = size();
+        T[] data = data_;
+        ListBuilder<T> lb = new ListBuilder<T>(sz);
+        for (int i = 0; i < sz; ++i) {
+            T t = data[i];
+            if (!col.contains(t)) {
+                lb.add(t);
+            }
+        }
+        return lb.toList();
     }
 
     @Override
-    public C.ReversibleSequence<T> prepend(C.ReversibleSequence<T> seq) {
-        //TODO ...
-        return null;
-    }
-
-    @Override
-    public C.List<T> without(Collection<? extends T> col) {
-        //TODO ...
-        return null;
-    }
-
-    @Override
+    @SuppressWarnings("unchecked")
     public C.List<T> reverse() {
-        //TODO ...
-        return null;
-    }
-
-    @Override
-    public C.List<T> prepend(C.List<T> list) {
-        //TODO ...
-        return null;
+        if (isLazy()) {
+            return ReverseList.wrap(this);
+        }
+        T[] data = (T[]) Algorithms.ARRAY_REVERSE.apply(data_);
+        return of(data);
     }
 
     @Override
     public C.List<T> prepend(T t) {
-        //TODO ...
-        return null;
-    }
-
-    @Override
-    public C.List<T> append(C.List<T> list) {
-        //TODO ...
-        return null;
+        int sz = size();
+        T[] myData = data_;
+        T[] data = _.newArray(myData, sz + 1);
+        data[0] = t;
+        System.arraycopy(myData, 0, data, 1, sz);
+        return of(data);
     }
 
     @Override
     public C.List<T> append(T t) {
-        //TODO ...
-        return null;
+        int sz = size();
+        T[] myData = data_;
+        T[] data = _.newArray(myData, sz + 1);
+        data[sz] = t;
+        System.arraycopy(myData, 0, data, 0, sz);
+        return of(data);
     }
 
     @Override
-    public C.List<T> insert(T t, int index) throws IndexOutOfBoundsException {
-        //TODO ...
-        return null;
+    public C.List<T> insert(int index, T t) throws IndexOutOfBoundsException {
+        T[] myData = data_;
+        int sz = data_.length;
+        T[] data = _.newArray(myData, sz + 1);
+        System.arraycopy(myData, 0, data, 0, index);
+        data[index] = t;
+        System.arraycopy(myData, index, data, index + 1, sz - index);
+        return of(data);
+    }
+
+    private class Csr implements Cursor<T> {
+
+        private int id_;
+
+        Csr() {this(-1);}
+
+        Csr(int index) {
+            if (index < -1) {
+                index = -1;
+            } else if (index > size()) {
+                index = size();
+            }
+            id_ = index;
+        }
+
+        @Override
+        public boolean isDefined() {
+            int id = id_;
+            return id > -1 && id < size();
+        }
+
+        @Override
+        public int index() {
+            return id_;
+        }
+
+        @Override
+        public T get() throws NoSuchElementException {
+            if (!isDefined()) {
+                throw new NoSuchElementException();
+            }
+            return data_[id_];
+        }
+
+        @Override
+        public boolean hasNext() {
+            return id_ < size() - 1;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return id_ > 0;
+        }
+
+        @Override
+        public Cursor<T> parkLeft() {
+            id_ = -1;
+            return this;
+        }
+
+        @Override
+        public Cursor<T> parkRight() {
+            id_ = size();
+            return this;
+        }
+
+        @Override
+        public Cursor<T> forward() {
+            if (id_ >= size()) {
+                id_ = size();
+                throw new UnsupportedOperationException();
+            }
+            id_++;
+            return this;
+        }
+
+        @Override
+        public Cursor<T> backward() throws UnsupportedOperationException {
+            if (id_ <= -1) {
+                id_ = -1;
+                throw new UnsupportedOperationException();
+            }
+            id_--;
+            return this;
+        }
+
+        @Override
+        public Cursor<T> set(T t) throws IndexOutOfBoundsException, NullPointerException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Cursor<T> drop() throws NoSuchElementException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Cursor<T> prepend(T t) throws IndexOutOfBoundsException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Cursor<T> append(T t) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
     public Cursor<T> locateLast(_.Function<T, Boolean> predicate) {
-        //TODO ...
-        return null;
+        int sz = size();
+        T[] data = data_;
+        for (int i = sz - 1; i >= 0; --i) {
+            T t = data[i];
+            if (predicate.apply(t)) {
+                return new Csr(i);
+            }
+        }
+        return new Csr(-1);
     }
 
     @Override
     public Cursor<T> locate(_.Function<T, Boolean> predicate) {
-        //TODO ...
-        return null;
+        return locateFirst(predicate);
     }
 
     @Override
     public Cursor<T> locateFirst(_.Function<T, Boolean> predicate) {
-        //TODO ...
-        return null;
+        int sz = size();
+        T[] data = data_;
+        for (int i = 0; i < sz; ++i) {
+            T t = data[i];
+            if (predicate.apply(t)) {
+                return new Csr(i);
+            }
+        }
+        return new Csr(sz);
     }
 
     @Override
     public C.List<T> filter(_.Function<? super T, Boolean> predicate) {
-        //TODO ...
-        return null;
+        // TODO: handle lazy operation
+        int sz = size();
+        T[] data = _.newArray(data_);
+        int cursor = 0;
+        for (int i = 0; i < sz; ++i) {
+            T t = data_[i];
+            if (predicate.apply(t)) {
+                data[cursor++] = t;
+            }
+        }
+        if (0 == cursor) {
+            return Nil.list();
+        }
+        data = Arrays.copyOf(data, cursor);
+        return of(data);
     }
 
     @Override
     public C.List<T> dropWhile(_.Function<? super T, Boolean> predicate) {
-        //TODO ...
-        return null;
+        //TODO: handle lazy operation
+        int sz = size();
+        Cursor<T> cursor = locateFirst(_.F.negate(predicate));
+        if (!cursor.isDefined()) {
+            return Nil.list();
+        }
+        int id = cursor.index();
+        return subList(id, size());
     }
 
     @Override
     public C.List<T> drop(int n) throws IndexOutOfBoundsException {
-        //TODO ...
-        return null;
+        if (n < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (0 == n) {
+            return this;
+        }
+        return subList(n, size());
     }
 
     @Override
     public C.List<T> tail(int n) {
-        //TODO ...
-        return null;
+        if (n < 0) {
+            return head(-n);
+        }
+        int sz = size();
+        if (n >= sz) {
+            return this;
+        }
+        return subList(sz - n, sz);
     }
 
     @Override
     public C.List<T> tail() {
-        //TODO ...
-        return null;
+        int sz = size();
+        if (sz == 0) {
+            throw new UnsupportedOperationException();
+        }
+        return subList(1, sz);
     }
 
     @Override
     public C.List<T> take(int n) {
-        //TODO ...
-        return null;
+        if (n < 0) {
+            return tail(-n);
+        }
+        int sz = size();
+        if (n >= sz) {
+            return this;
+        }
+        return subList(0, n);
     }
 
     @Override
-    public C.List<T> head(int n) {
-        //TODO ...
-        return null;
+    protected void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break {
+        int sz = size();
+        T[] data = data_;
+        for (int i = 0; i < sz; ++i) {
+            T t = data[i];
+            try {
+                visitor.apply(t);
+            } catch (NotAppliedException e) {
+                // ignore
+            }
+        }
+    }
+
+    @Override
+    protected void forEachRight(_.Function<? super T, ?> visitor) throws _.Break {
+        int sz = size();
+        T[] data = data_;
+        for (int i = sz - 1; i >= 0; --i) {
+            T t = data[i];
+            try {
+                visitor.apply(t);
+            } catch (NotAppliedException e) {
+                // ignore
+            }
+        }
+    }
+
+    @Override
+    public _.Option<T> findOne(_.Function<? super T, Boolean> predicate) {
+        //todo parallel finding
+        int sz = size();
+        T[] data = data_;
+        for (int i = 0; i < sz; ++i) {
+            T t = data[i];
+            if (predicate.apply(t)) {
+                return _.some(t);
+            }
+        }
+        return _.none();
+    }
+
+    @Override
+    public T head() throws NoSuchElementException {
+        return data_[0];
+    }
+
+    @Override
+    public T last() throws NoSuchElementException {
+        return data_[size() - 1];
+    }
+
+    @Override
+    public <R> R reduce(R identity, _.Func2<R, T, R> accumulator) {
+        // TODO: parallel
+        return reduceLeft(identity, accumulator);
+    }
+
+    @Override
+    public <R> R reduceLeft(R identity, _.Func2<R, T, R> accumulator) {
+        int sz = size();
+        R ret = identity;
+        T[] data = data_;
+        for (int i = 0; i < sz; ++i) {
+            ret = accumulator.apply(ret, data[i]);
+        }
+        return ret;
+    }
+
+    @Override
+    public <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator) {
+        int sz = size();
+        R ret = identity;
+        T[] data = data_;
+        for (int i = sz - 1; i >= 0; --i) {
+            ret = accumulator.apply(ret, data[i]);
+        }
+        return ret;
+    }
+
+    @Override
+    public _.Option<T> reduce(_.Func2<T, T, T> accumulator) {
+        // TODO parallel
+        return reduceLeft(accumulator);
+    }
+
+    @Override
+    public _.Option<T> reduceLeft(_.Func2<T, T, T> accumulator) {
+        int sz = size();
+        T[] data = data_;
+        T ret = data[0];
+        for (int i = 1; i < sz; ++i) {
+            ret = accumulator.apply(ret, data[i]);
+        }
+        return _.some(ret);
+    }
+
+    @Override
+    public _.Option<T> reduceRight(_.Func2<T, T, T> accumulator) {
+        int sz = size();
+        T[] data = data_;
+        T ret = data[sz - 1];
+        for (int i = sz - 2; i >= 0; --i) {
+            ret = accumulator.apply(ret, data[i]);
+        }
+        return _.some(ret);
+    }
+
+    @Override
+    int modCount() {
+        return 0;
+    }
+
+    @Override
+    void removeRange2(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
     }
 
     static <T> C.List<T> of(T[] data) {
@@ -458,8 +851,91 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
         }
     }
 
-    static <T> ImmutableList<T> copyOf(T[] data) {
-        T[] a = Arrays.copyOf(data, data.length);
+    static <T> C.List<T> copyOf(T[] data) {
+        int sz = data.length;
+        if (sz == 0) {
+            return Nil.list();
+        }
+        T[] a = Arrays.copyOf(data, sz);
         return new ImmutableList<T>(a);
     }
+
+}
+
+class ImmutableSubList<T> extends RandomAccessSubList<T> {
+
+    ImmutableSubList(ListBase<T> list, int fromIndex, int toIndex) {
+        super(list, fromIndex, toIndex);
+    }
+
+    @Override
+    public C.List<T> subList(int fromIndex, int toIndex) {
+        return new ImmutableSubList<T>(this, fromIndex, toIndex);
+    }
+
+    @Override
+    protected void checkForComodification() {
+        return;
+    }
+
+    @Override
+    public T set(int index, T element) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void add(int index, T element) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public T remove(int index) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void removeRange(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends T> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(Iterable<? extends T> iterable) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean add(T t) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
 }

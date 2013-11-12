@@ -12,10 +12,9 @@ import java.util.*;
  * Time: 8:53 PM
  * To change this template use File | Settings | File Templates.
  */
-abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
+public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     // utilities
-
     protected final boolean isLazy() {
         return is(C.Feature.LAZY);
     }
@@ -46,7 +45,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         forEachLeft(visitor);
     }
 
-    protected final void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break{
+    protected void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break{
         for (T t : this) {
             try {
                 visitor.apply(t);
@@ -56,7 +55,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
     }
 
-    protected final void forEachRight(_.Function<? super T, ?> visitor) throws _.Break {
+    protected void forEachRight(_.Function<? super T, ?> visitor) throws _.Break {
         Iterator<T> itr = reverseIterator();
         while (itr.hasNext()) {
             try {
@@ -64,6 +63,42 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             } catch (NotAppliedException e) {
                 // ignore
             }
+        }
+    }
+
+    @Override
+    public C.List<T> parallel() {
+        setFeature(C.Feature.PARALLEL);
+        return this;
+    }
+
+    @Override
+    public C.List<T> sequential() {
+        unsetFeature(C.Feature.PARALLEL);
+        return this;
+    }
+
+    @Override
+    public C.List<T> lazy() {
+        setFeature(C.Feature.LAZY);
+        return this;
+    }
+
+    @Override
+    public C.List<T> eager() {
+        unsetFeature(C.Feature.LAZY);
+        return this;
+    }
+
+    @Override
+    public C.List<T> subList(int fromIndex, int toIndex) {
+        if (fromIndex == toIndex) {
+            return Nil.list();
+        }
+        if (is(C.Feature.RANDOM_ACCESS)) {
+            return new RandomAccessSubList<T>(this, fromIndex, toIndex);
+        } else {
+            return new SubList<T>(this, fromIndex, toIndex);
         }
     }
 
@@ -162,6 +197,13 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
 
     @Override
+    public Iterator<T> iterator() {
+        return listIterator();
+    }
+
+    public abstract ListIterator<T> listIterator(int index);
+
+    @Override
     public Iterator<T> reverseIterator() {
         final ListIterator<T> li = listIterator(size());
 
@@ -213,7 +255,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             return this;
         }
         if (immutable) {
-            return new DelegatingList<T>(subList(0, n));
+            return subList(0, n);
         }
         C.List<T> l = C.newList(n);
         l.addAll(subList(0, n));
@@ -236,7 +278,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                     break;
                 }
             }
-            return lb.asList();
+            return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
@@ -256,7 +298,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     @Override
     public C.List<T> drop(int n) throws IndexOutOfBoundsException {
         if (n < 0) {
-            throw new IndexOutOfBoundsException();
+            throw new IllegalArgumentException();
         }
         if (0 == n) {
             return this;
@@ -264,10 +306,14 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         // TODO handle lazy drop
         boolean immutable = isImmutable();
         if (immutable) {
-            return new DelegatingList<T>(subList(n, size()));
+            return subList(n, size());
         }
-        C.List<T> l = C.newList(size() - n);
-        l.addAll(subList(n, size()));
+        int sz = size();
+        if (n >= sz) {
+            return C.newList();
+        }
+        C.List<T> l = C.newList(sz - n);
+        l.addAll(subList(n, sz));
         return l;
     }
 
@@ -287,7 +333,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                     break;
                 }
             }
-            return lb.asList();
+            return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
@@ -315,7 +361,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             }
             ListBuilder<T> lb = new ListBuilder<T>(sz);
             forEach(_.predicate(predicate).ifThen(C.F.addTo(lb)));
-            return lb.asList();
+            return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
@@ -337,7 +383,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             }
             ListBuilder<R> lb = new ListBuilder<R>(sz);
             forEach(_.f1(mapper).andThen(C.F.addTo(lb)));
-            return lb.asList();
+            return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
@@ -360,7 +406,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             }
             ListBuilder<R> lb = new ListBuilder<R>(sz * 3);
             forEach(_.f1(mapper).andThen(C.F.addAllTo(lb)));
-            return lb.asList();
+            return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
@@ -382,7 +428,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             }
             ListBuilder<T> lb = new ListBuilder<T>(sz);
             forEach(_.predicate(predicate).ifThen(C.F.addTo(lb)));
-            return lb.asList();
+            return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
@@ -393,18 +439,18 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
     }
 
-    private Cursor<T> start() {
-        return new ListIteratorCursor<T>(listIterator());
+    private Cursor<T> fromLeft() {
+        return new ListIteratorCursor<T>(listIterator(0));
     }
 
-    private Cursor<T> stop() {
+    private Cursor<T> fromRight() {
         return new ListIteratorCursor<T>(listIterator(size()));
     }
 
     @Override
     public Cursor<T> locateFirst(_.Function<T, Boolean> predicate) {
-        Cursor<T> c = start();
-        while (c.isDefined()) {
+        Cursor<T> c = fromLeft();
+        while (c.hasNext()) {
             T t = c.forward().get();
             if (predicate.apply(t)) {
                 return c;
@@ -420,8 +466,8 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     @Override
     public Cursor<T> locateLast(_.Function<T, Boolean> predicate) {
-        Cursor<T> c = stop();
-        while (c.isDefined()) {
+        Cursor<T> c = fromRight();
+        while (c.hasPrevious()) {
             T t = c.backward().get();
             if (predicate.apply(t)) {
                 return c;
@@ -449,7 +495,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             if (index < sz) {
                 lb.addAll(subList(index, sz));
             }
-            return lb.asList();
+            return lb.toList();
         } else {
             C.List<T> l = C.newList(sz + 1);
             if (index > 0) {
@@ -465,6 +511,9 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     @Override
     public C.List<T> reverse() {
+        if (isLazy()) {
+            return ReverseList.wrap(this);
+        }
         boolean immutable = isImmutable();
         int sz = size();
         if (immutable) {
@@ -476,7 +525,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             while (itr.hasNext()) {
                 lb.add(itr.next());
             }
-            return lb.asList();
+            return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
@@ -525,11 +574,11 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             throw new UnsupportedOperationException();
         }
         if (isImmutable()) {
-            return new DelegatingList<T>(subList(1, sz));
+            return subList(1, sz);
         }
         C.List<T> l = C.newList(sz - 1);
         l.addAll(subList(1, sz));
-        return null;
+        return l;
     }
 
     @Override
@@ -547,46 +596,85 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         } else if (n >= sz) {
             return this;
         }
-        java.util.List<T> sl = subList(sz - n, sz);
+        C.List<T> sl = subList(sz - n, sz);
         if (immutable) {
-            return new DelegatingList<T>(sl);
+            return sl;
         }
         C.List<T> l = C.newList(n);
         l.addAll(sl);
-        return null;
+        return l;
     }
 
-
-    @Override
-    public C.Sequence<T> append(C.Sequence<T> seq) {
-        if (isLazy() && seq.is(C.Feature.LAZY)) {
-            return C.concat(this, seq);
-        }
+    private C.List<T> unLazyAppend(Iterable<? extends T> iterable) {
         if (isMutable()) {
-            C.forEach(seq, C.F.addTo(this));
+            C.forEach(iterable, C.F.addTo(this));
             return this;
         }
         // immutable
         if (isImmutable()) {
             ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
-            lb.addAll(this);
-            lb.addAll(seq);
-            return lb.asList();
+            lb.append(this).append(iterable);
+            return lb.toList();
         }
         // mutable but read only
         C.List<T> l = C.newList(size() * 2);
         l.addAll(this);
-        return l.append(seq);
+        l.addAll(iterable);
+        return l;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public C.Sequence<T> append(Iterable<? extends T> iterable) {
+        if (iterable instanceof C.List) {
+            return append((C.List<T>) iterable);
+        } else if (iterable instanceof C.Sequence) {
+            return append((C.Sequence<T>) iterable);
+        } else if (iterable instanceof Collection) {
+            return append((Collection<? extends T>) iterable);
+        } else if (isLazy()) {
+            return CompositeSeq.of(this, IterableSeq.of(iterable));
+        } else {
+            return unLazyAppend(iterable);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public C.List<T> append(Collection<? extends T> collection) {
+        if (collection instanceof C.List) {
+            return append((C.List<T>) collection);
+        } else {
+            return unLazyAppend(collection);
+        }
+    }
+
+    @Override
+    public C.Sequence<T> append(C.Sequence<T> seq) {
+        if (seq instanceof C.List) {
+            return append((C.List<T>) seq);
+        }
+        if (isLazy()) {
+            return CompositeSeq.of(this, seq);
+        }
+        return unLazyAppend(seq);
     }
 
     @Override
     public C.ReversibleSequence<T> append(C.ReversibleSequence<T> seq) {
-        return (C.ReversibleSequence<T>) append((C.Sequence<T>) seq);
+        if (seq instanceof C.List) {
+            return append((C.List<T>) seq);
+        }
+        // TODO support lazy append reversible sequence
+        return unLazyAppend(seq);
     }
 
     @Override
     public C.List<T> append(C.List<T> list) {
-        return (C.List<T>) append((C.Sequence<T>) list);
+        if (isLazy()) {
+            return CompositeList.of(this, list);
+        }
+        return unLazyAppend(list);
     }
 
     @Override
@@ -600,7 +688,7 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             ListBuilder<T> lb = new ListBuilder<T>(size() + 1);
             lb.addAll(this);
             lb.add(t);
-            return lb.asList();
+            return lb.toList();
         }
         // mutable but readonly
         C.List<T> l = C.newList(size() + 1);
@@ -609,56 +697,125 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return l;
     }
 
-    @Override
-    public C.Sequence<T> prepend(C.Sequence<T> seq) {
-        if (isLazy() && seq.is(C.Feature.LAZY)) {
-            return C.concat(this, seq);
-        }
+    private C.List<T> unLazyPrepend(Iterable<? extends T> iterable) {
         if (isMutable()) {
-            C.forEach(seq, C.F.addTo(this));
+            int pos = 0;
+            for (T t : iterable) {
+                add(pos++, t);
+            }
             return this;
         }
         // immutable
         if (isImmutable()) {
             ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
-            lb.addAll(this);
-            lb.addAll(seq);
-            return lb.asList();
+            lb.append(iterable).append(this);
+            return lb.toList();
         }
+        // mutable but read only
         C.List<T> l = C.newList(size() * 2);
+        l.addAll(iterable);
         l.addAll(this);
-        l.addAll(seq);
         return l;
+    }
+
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public C.List<T> prepend(Collection<? extends T> collection) {
+        if (collection instanceof C.List) {
+            return prepend((C.List<T>) collection);
+        }
+        return unLazyPrepend(collection);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public C.ReversibleSequence<T> prepend(C.ReversibleSequence<T> seq) {
-        return (C.ReversibleSequence<T>) prepend((C.Sequence<T>) seq);
+    public C.Sequence<T> prepend(Iterable<? extends T> iterable) {
+        if (iterable instanceof C.List) {
+            return prepend((C.List<T>) iterable);
+        } else if (iterable instanceof C.Sequence) {
+            return prepend((C.Sequence<T>) iterable);
+        } else if (iterable instanceof Collection) {
+            return prepend((Collection<? extends T>) iterable);
+        } else if (isLazy()) {
+            return CompositeSeq.of(IterableSeq.of(iterable), this);
+        } else {
+            return unLazyPrepend(iterable);
+        }
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * This method will NOT change the underline list
+     *
+     * @param seq the sequence to be prepended
+     * @return
+     */
+    @Override
+    public C.Sequence<T> prepend(C.Sequence<T> seq) {
+        if (seq instanceof C.List) {
+            return prepend((C.List<T>) seq);
+        }
+        if (isLazy()) {
+            return new CompositeSeq<T>(seq, this);
+        }
+        return unLazyPrepend(seq);
+    }
+
 
     @Override
-    public C.List<T> prepend(C.List<T> list) {
-        return (C.List<T>) prepend((C.Sequence<T>) list);
+    @SuppressWarnings("unchecked")
+    public C.ReversibleSequence<T> prepend(C.ReversibleSequence<T> seq) {
+        if (seq instanceof C.List) {
+            return prepend((C.List<T>) seq);
+        }
+        // TODO support lazy append reversible sequence
+        return unLazyPrepend(seq);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * This method will NOT change the underline list
+     *
+     * @param list
+     * @return
+     */
+    @Override
+    public C.List<T> prepend(C.List<T> list) {
+        if (isLazy()) {
+            return CompositeList.of(list, this);
+        }
+        return unLazyPrepend(list);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For mutable list, this method will insert the
+     * element at {@code 0} position.
+     *
+     * @param t
+     * @return
+     */
     @Override
     public C.List<T> prepend(T t) {
         if (isMutable()) {
-            add(t);
+            add(0, t);
             return this;
         }
         // immutable
         if (isImmutable()) {
             ListBuilder<T> lb = new ListBuilder<T>(size() + 1);
-            lb.addAll(this);
             lb.add(t);
-            return lb.asList();
+            lb.addAll(this);
+            return lb.toList();
         }
         // readonly but mutable
         C.List<T> l = C.newList(size() + 1);
-        l.addAll(this);
         l.add(t);
+        l.addAll(this);
         return l;
     }
 
@@ -730,6 +887,225 @@ abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return findIterator(reverseIterator(), predicate);
     }
 
+    @Override
+    public <T2> C.List<_.T2<T, T2>> zip(List<T2> list) {
+        return new ZippedList<T, T2>(this, list);
+    }
 
+    @Override
+    public <T2> C.List<_.T2<T, T2>> zipAll(List<T2> list, T def1, T2 def2) {
+        return new ZippedList<T, T2>(this, list, def1, def2);
+    }
 
+    @Override
+    public C.Sequence<_.T2<T, Integer>> zipWithIndex() {
+        return new ZippedSeq<T, Integer>(this, new IndexIterable(this));
+    }
+
+    @Override
+    public <T2> C.Sequence<_.T2<T, T2>> zip(Iterable<T2> iterable) {
+        if (iterable instanceof List) {
+            return zip((List<T2>) iterable);
+        }
+        return new ZippedSeq<T, T2>(this, iterable);
+    }
+
+    @Override
+    public <T2> C.Sequence<_.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2) {
+        if (iterable instanceof List) {
+            return zipAll((List<T2>) iterable, def1, def2);
+        }
+        return new ZippedSeq<T, T2>(this, iterable, def1, def2);
+    }
+
+    int modCount() {
+        return modCount;
+    }
+
+    void removeRange2(int fromIndex, int toIndex) {
+        super.removeRange(fromIndex, toIndex);
+    }
+}
+
+class SubList<E> extends ListBase<E> implements C.List<E> {
+    private ListBase<E> l;
+    private int offset;
+    private int size;
+    private int expectedModCount;
+
+    SubList(ListBase<E> list, int fromIndex, int toIndex) {
+        if (fromIndex < 0)
+            throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
+        if (toIndex > list.size())
+            throw new IndexOutOfBoundsException("toIndex = " + toIndex);
+        if (fromIndex > toIndex)
+            throw new IllegalArgumentException("fromIndex(" + fromIndex +
+                                               ") > toIndex(" + toIndex + ")");
+        l = list;
+        offset = fromIndex;
+        size = toIndex - fromIndex;
+        expectedModCount = l.modCount();
+    }
+
+    @Override
+    protected EnumSet<C.Feature> initFeatures() {
+        return l.features();
+    }
+
+    public E set(int index, E element) {
+        rangeCheck(index);
+        checkForComodification();
+        return l.set(index+offset, element);
+    }
+
+    public E get(int index) {
+        rangeCheck(index);
+        checkForComodification();
+        return l.get(index+offset);
+    }
+
+    public int size() {
+        checkForComodification();
+        return size;
+    }
+
+    public void add(int index, E element) {
+        if (index<0 || index>size)
+            throw new IndexOutOfBoundsException();
+        checkForComodification();
+        l.add(index+offset, element);
+        expectedModCount = l.modCount();
+        size++;
+        modCount++;
+    }
+
+    public E remove(int index) {
+        rangeCheck(index);
+        checkForComodification();
+        E result = l.remove(index+offset);
+        expectedModCount = l.modCount();
+        size--;
+        modCount++;
+        return result;
+    }
+
+    protected void removeRange(int fromIndex, int toIndex) {
+        checkForComodification();
+        l.removeRange2(fromIndex+offset, toIndex+offset);
+        expectedModCount = l.modCount();
+        size -= (toIndex-fromIndex);
+        modCount++;
+    }
+
+    public boolean addAll(Collection<? extends E> c) {
+        return addAll(size, c);
+    }
+
+    public boolean addAll(int index, Collection<? extends E> c) {
+        if (index<0 || index>size)
+            throw new IndexOutOfBoundsException(
+                "Index: "+index+", Size: "+size);
+        int cSize = c.size();
+        if (cSize==0)
+            return false;
+
+        checkForComodification();
+        l.addAll(offset+index, c);
+        expectedModCount = l.modCount();
+        size += cSize;
+        modCount++;
+        return true;
+    }
+
+    public Iterator<E> iterator() {
+        return listIterator();
+    }
+
+    public ListIterator<E> listIterator(final int index) {
+        checkForComodification();
+        if (index<0 || index>size)
+            throw new IndexOutOfBoundsException(
+                "Index: "+index+", Size: "+size);
+
+        return new ListIterator<E>() {
+            private ListIterator<E> i = l.listIterator(index+offset);
+
+            public boolean hasNext() {
+                return nextIndex() < size;
+            }
+
+            public E next() {
+                if (hasNext())
+                    return i.next();
+                else
+                    throw new NoSuchElementException();
+            }
+
+            public boolean hasPrevious() {
+                return previousIndex() >= 0;
+            }
+
+            public E previous() {
+                if (hasPrevious())
+                    return i.previous();
+                else
+                    throw new NoSuchElementException();
+            }
+
+            public int nextIndex() {
+                return i.nextIndex() - offset;
+            }
+
+            public int previousIndex() {
+                return i.previousIndex() - offset;
+            }
+
+            public void remove() {
+                i.remove();
+                expectedModCount = l.modCount();
+                size--;
+                modCount++;
+            }
+
+            public void set(E e) {
+                i.set(e);
+            }
+
+            public void add(E e) {
+                i.add(e);
+                expectedModCount = l.modCount();
+                size++;
+                modCount++;
+            }
+        };
+    }
+
+    public C.List<E> subList(int fromIndex, int toIndex) {
+        if (is(C.Feature.RANDOM_ACCESS)) {
+            return new RandomAccessSubList<E>(this, fromIndex, toIndex);
+        } else {
+            return new SubList<E>(this, fromIndex, toIndex);
+        }
+    }
+
+    private void rangeCheck(int index) {
+        if (index<0 || index>=size)
+            throw new IndexOutOfBoundsException("Index: "+index+
+                                                ",Size: "+size);
+    }
+
+    protected void checkForComodification() {
+        if (l.modCount() != expectedModCount)
+            throw new ConcurrentModificationException();
+    }
+}
+
+class RandomAccessSubList<E> extends SubList<E> implements RandomAccess {
+    RandomAccessSubList(ListBase<E> list, int fromIndex, int toIndex) {
+        super(list, fromIndex, toIndex);
+    }
+
+    public C.List<E> subList(int fromIndex, int toIndex) {
+        return new RandomAccessSubList<E>(this, fromIndex, toIndex);
+    }
 }

@@ -126,9 +126,36 @@ public enum C {
      *
      * @param <T> The element type
      */
-    public static interface
-            Traversable<T>
-            extends Iterable<T>, Featured {
+    public static interface Traversable<T> extends Iterable<T>, Featured {
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is set
+         *
+         * @return this reference with parallel turned on
+         */
+        Traversable<T> parallel();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is unset
+         *
+         * @return this reference with parallel turned off
+         */
+        Traversable<T> sequential();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#LAZY} is set
+         *
+         * @return this reference with lazy turned on
+         */
+        Traversable<T> lazy();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#LAZY} is unset
+         *
+         * @return this reference with lazy turned off
+         */
+        Traversable<T> eager();
+
         /**
          * Is this traversal empty?
          *
@@ -320,6 +347,34 @@ public enum C {
             extends Traversable<T> {
 
         /**
+         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is set
+         *
+         * @return this reference with parallel turned on
+         */
+        Sequence<T> parallel();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is unset
+         *
+         * @return this reference with parallel turned off
+         */
+        Sequence<T> sequential();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#LAZY} is set
+         *
+         * @return this reference with lazy turned on
+         */
+        Sequence<T> lazy();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#LAZY} is unset
+         *
+         * @return this reference with lazy turned off
+         */
+        Sequence<T> eager();
+
+        /**
          * Alias of {@link #head()}
          *
          * @since 0.2
@@ -429,9 +484,10 @@ public enum C {
          * @param n specify the number of elements to be taken from the head of this {@code Sequence}
          *          must not less than 0
          * @return a {@code Sequence} consisting of the elements of this {@code Sequence} except the first {@code n} ones
+         * @throws IllegalArgumentException if {@code n} is less than zero
          * @since 0.2
          */
-        Sequence<T> drop(int n);
+        Sequence<T> drop(int n) throws IllegalArgumentException;
 
         /**
          * Returns a {@code Sequence} consisting of the elements from this traversal until the predicate returns
@@ -450,6 +506,19 @@ public enum C {
          * @since 0.2
          */
         Sequence<T> dropWhile(_.Function<? super T, Boolean> predicate);
+
+        /**
+         * Returns a sequence consists of all elements of this sequence
+         * followed by all elements of the specified iterable.
+         * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might append specified seq to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param iterable
+         * @return
+         */
+        Sequence<T> append(Iterable<? extends T> iterable);
 
         /**
          * Returns a sequence consists of all elements of this sequence
@@ -481,8 +550,26 @@ public enum C {
         Sequence<T> append(T t);
 
         /**
+         * Returns a sequence consists of all elements of the iterable specified
+         * followed by all elements of this sequence
+         * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might prepend specified seq to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param iterable the iterable to be prepended
+         * @return a sequence consists of elements of both sequences
+         * @since 0.2
+         */
+        Sequence<T> prepend(Iterable<? extends T> iterable);
+
+        /**
          * Returns a sequence consists of all elements of the sequence specified
          * followed by all elements of this sequence
+         * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might prepend specified seq to {@code this} sequence instance
+         * directly</p>
          *
          * @param seq the sequence to be prepended
          * @return a sequence consists of elements of both sequences
@@ -636,6 +723,50 @@ public enum C {
          * @since 0.2
          */
         Sequence<T> acceptLeft(_.Function<? super T, ?> visitor);
+
+        /**
+         * Returns a sequence formed from this sequence and another iterable
+         * collection by combining corresponding elements in pairs.
+         * If one of the two collections is longer than the other,
+         * its remaining elements are ignored.
+         *
+         * @param iterable the part B to be zipped with this sequence
+         * @param <T2> the type of the iterable
+         * @return a new sequence containing pairs consisting of
+         *         corresponding elements of this sequence and that.
+         *         The length of the returned collection is the
+         *         minimum of the lengths of this sequence and that.
+         */
+        <T2> Sequence<_.T2<T, T2>> zip(Iterable<T2> iterable);
+
+        /**
+         * Returns a sequence formed from this sequence and another iterable
+         * collection by combining corresponding elements in pairs.
+         * If one of the two collections is longer than the other,
+         * placeholder elements are used to extend the shorter collection
+         * to the length of the longer.
+         *
+         * @param iterable the part B to be zipped with this sequence
+         * @param <T2> the type of the iterable
+         * @param def1 the element to be used to fill up the result if
+         *             this sequence is shorter than that iterable
+         * @param def2 the element to be used to fill up the result if
+         *             the iterable is shorter than this sequence
+         * @return a new sequence containing pairs consisting of
+         *         corresponding elements of this sequence and that.
+         *         The length of the returned collection is the
+         *         maximum of the lengths of this sequence and that.
+         */
+        <T2> Sequence<_.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2);
+
+        /**
+         * Zip this sequence with its indices
+         *
+         * @return A new list containing pairs consisting of all
+         *         elements of this list paired with their index.
+         *         Indices start at 0.
+         */
+        Sequence<_.T2<T, Integer>> zipWithIndex();
     }
 
     /**
@@ -645,6 +776,34 @@ public enum C {
      */
     public static interface ReversibleSequence<T>
             extends Sequence<T> {
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is set
+         *
+         * @return this reference with parallel turned on
+         */
+        ReversibleSequence<T> parallel();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is unset
+         *
+         * @return this reference with parallel turned off
+         */
+        ReversibleSequence<T> sequential();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#LAZY} is set
+         *
+         * @return this reference with lazy turned on
+         */
+        ReversibleSequence<T> lazy();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#LAZY} is unset
+         *
+         * @return this reference with lazy turned off
+         */
+        ReversibleSequence<T> eager();
 
         /**
          * {@inheritDoc}
@@ -685,8 +844,16 @@ public enum C {
         @Override
         ReversibleSequence<T> takeWhile(_.Function<? super T, Boolean> predicate);
 
+        /**
+         * {@inheritDoc}
+         *
+         * @param n specify the number of elements to be taken from the head of this {@code Sequence}
+         *          must not less than 0
+         * @return a reversible sequence without the first {@code n} number of elements
+         * @throws IllegalArgumentException
+         */
         @Override
-        ReversibleSequence<T> drop(int n);
+        ReversibleSequence<T> drop(int n) throws IllegalArgumentException;
 
         @Override
         ReversibleSequence<T> dropWhile(_.Function<? super T, Boolean> predicate);
@@ -770,7 +937,7 @@ public enum C {
          *     assertEquals(C1.list(1, 2, 3), seq.tail(-3));
          *     assertEquals(C1.list(1, 2, 3, 4), seq.tail(-200));
          * </pre>
-         *
+         * <p/>
          * <p>This method does not mutate the underline container</p>
          *
          * @param n specify the number of elements to be taken from the tail of this {@code Sequence}
@@ -1036,7 +1203,7 @@ public enum C {
         /**
          * A cursor points to an element of a {@link List}. It performs like
          * {@link java.util.ListIterator} but differs in the following way:
-         *
+         * <p/>
          * <ul>
          * <li>Add insert, append method</li>
          * <li>Support method chain calling style for most methods</li>
@@ -1058,14 +1225,8 @@ public enum C {
             boolean isDefined();
 
             /**
-             * Returns true if the cursor is obsoleted
-             *
-             * @return true if the cursor is obsoleted
-             */
-            boolean isObsolete();
-
-            /**
              * Returns the index of the element to which the cursor pointed
+             *
              * @return the cursor index
              */
             int index();
@@ -1093,16 +1254,38 @@ public enum C {
              * the current element
              *
              * @return the cursor points to the next element
+             * @throws UnsupportedOperationException if cannot move forward anymore
              */
-            Cursor<T> forward();
+            Cursor<T> forward() throws UnsupportedOperationException;
 
             /**
              * Move the cursor backward to make it point to the previous element to
              * the current element
              *
              * @return the cursor points to the previous element
+             * @throws UnsupportedOperationException if cannot move backward anymore
              */
-            Cursor<T> backward();
+            Cursor<T> backward() throws UnsupportedOperationException;
+
+            /**
+             * Park the cursor at the position before the first element.
+             * <p/>
+             * <p>After calling this method, {@link #isDefined()}
+             * shall return {@code false}</p>
+             *
+             * @return this cursor
+             */
+            Cursor<T> parkLeft();
+
+            /**
+             * Park the cursor at the position after the last element
+             * <p/>
+             * <p>After calling this method, {@link #isDefined()}
+             * shall return {@code false}</p>
+             *
+             * @return this cursor
+             */
+            Cursor<T> parkRight();
 
             /**
              * Returns the element this cursor points to. If the cursor isn't point
@@ -1122,8 +1305,8 @@ public enum C {
              * @param t the new element to be set to this cursor
              * @return the cursor itself
              * @throws IndexOutOfBoundsException if the cursor isn't point to any element
-             * @throws NullPointerException if when passing null value to this method and
-             *                              the underline list does not allow null value
+             * @throws NullPointerException      if when passing null value to this method and
+             *                                   the underline list does not allow null value
              */
             Cursor<T> set(T t) throws IndexOutOfBoundsException, NullPointerException;
 
@@ -1135,9 +1318,12 @@ public enum C {
              * points to {@code -1} position and the current element is not defined
              *
              * @return the cursor itself
-             * @throws IndexOutOfBoundsException if the
+             * @throws UnsupportedOperationException if the operation is not supported
+             *         by the underline container does not support removing elements
+             * @throws NoSuchElementException if the cursor is parked either left or
+             *         right
              */
-            Cursor<T> drop() throws NoSuchElementException;
+            Cursor<T> drop() throws NoSuchElementException, UnsupportedOperationException;
 
             /**
              * Add an element in front of the element this cursor points to.
@@ -1157,27 +1343,43 @@ public enum C {
              * @return this cursor which is still pointing to the current element
              */
             Cursor<T> append(T t);
-
-            /**
-             * Put the cursor into obsolete state so that {@code cursor.isDefined()}
-             * returns {@code false}. Once a cursor is obsoleted, then calling to the
-             * following methods will trigger the {@link IllegalStateException}
-             * <ul>
-             * <li>{@link #index()}</li>
-             * <li>{@link #hasNext()}</li>
-             * <li>{@link #hasPrevious()}</li>
-             * <li>{@link #forward()}</li>
-             * <li>{@link #backward()}</li>
-             * <li>{@link #set(Object)}</li>
-             * <li>{@link #drop()}</li>
-             * <li>{@link #append(Object)}</li>
-             * <li>{@link #prepend(Object)}</li>
-             * </ul>
-             *
-             * @return the reference to this cursor
-             */
-            Cursor<T> obsolete();
         }
+
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is set
+         *
+         * @return this reference with parallel turned on
+         */
+        @Override
+        List<T> parallel();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is unset
+         *
+         * @return this reference with parallel turned off
+         */
+        @Override
+        List<T> sequential();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#LAZY} is set
+         *
+         * @return this reference with lazy turned on
+         */
+        @Override
+        List<T> lazy();
+
+        /**
+         * Returns this traversable and make sure {@link C.Feature#LAZY} is unset
+         *
+         * @return this reference with lazy turned off
+         */
+        @Override
+        List<T> eager();
+
+        @Override
+        List<T> subList(int fromIndex, int toIndex);
 
         boolean addAll(Iterable<? extends T> iterable);
 
@@ -1192,7 +1394,7 @@ public enum C {
 
         /**
          * {@inheritDoc}
-         *
+         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param n {@inheritDoc}
@@ -1212,7 +1414,7 @@ public enum C {
 
         /**
          * {@inheritDoc}
-         *
+         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param n {@inheritDoc}
@@ -1223,18 +1425,18 @@ public enum C {
 
         /**
          * {@inheritDoc}
-         *
+         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param n {@inheritDoc}
-         * @return a reference to the list itself or an new list
-         *         if the current list is readonly or immutable
+         * @return a List contains all elements of this list
+         *         except the first {@code n} number
          */
-        List<T> drop(int n) throws IndexOutOfBoundsException;
+        List<T> drop(int n) throws IllegalArgumentException;
 
         /**
          * {@inheritDoc}
-         *
+         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param predicate
@@ -1245,7 +1447,7 @@ public enum C {
 
         /**
          * {@inheritDoc}
-         *
+         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param predicate {@inheritDoc}
@@ -1257,7 +1459,7 @@ public enum C {
         /**
          * For mutable list, remove all element that matches the predicate
          * specified from this List and return this list once done.
-         *
+         * <p/>
          * <p>For immutable or readonly list, an new List contains all element from
          * this list that does not match the predicate specified is returned</p>
          *
@@ -1335,6 +1537,7 @@ public enum C {
          * @param index specify the position where the element should be inserted
          * @param t     the element to be inserted
          * @return a reference to the List itself
+         * @throws IndexOutOfBoundsException if index &lt; 0 or index &gt; size()
          */
         List<T> insert(int index, T t) throws IndexOutOfBoundsException;
 
@@ -1347,6 +1550,15 @@ public enum C {
          */
         @Override
         List<T> append(T t);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param iterable
+         * @return a List contains all elements of this list followed
+         *         by all elements in the iterable
+         */
+        List<T> append(Collection<? extends T> iterable);
 
         /**
          * Returns a List contains all elements in this List followed by
@@ -1367,6 +1579,8 @@ public enum C {
 
         @Override
         List<T> prepend(T t);
+
+        List<T> prepend(Collection<? extends T> collection);
 
         List<T> prepend(List<T> list);
 
@@ -1391,6 +1605,51 @@ public enum C {
 
         @Override
         List<T> acceptRight(_.Function<? super T, ?> visitor);
+
+
+        /**
+         * Returns a list formed from this list and another iterable
+         * collection by combining corresponding elements in pairs.
+         * If one of the two collections is longer than the other,
+         * its remaining elements are ignored.
+         *
+         * @param list the part B to be zipped with this list
+         * @param <T2> the type of the iterable
+         * @return an new list containing pairs consisting of
+         *         corresponding elements of this sequence and that.
+         *         The length of the returned collection is the
+         *         minimum of the lengths of this sequence and that.
+         */
+        <T2> List<_.T2<T, T2>> zip(java.util.List<T2> list);
+
+        /**
+         * Returns a list formed from this list and another iterable
+         * collection by combining corresponding elements in pairs.
+         * If one of the two collections is longer than the other,
+         * placeholder elements are used to extend the shorter collection
+         * to the length of the longer.
+         *
+         * @param list the part B to be zipped with this list
+         * @param <T2> the type of the iterable
+         * @param def1 the element to be used to fill up the result if
+         *             this sequence is shorter than that iterable
+         * @param def2 the element to be used to fill up the result if
+         *             the iterable is shorter than this sequence
+         * @return a new list containing pairs consisting of
+         *         corresponding elements of this list and that.
+         *         The length of the returned collection is the
+         *         maximum of the lengths of this list and that.
+         */
+        <T2> List<_.T2<T, T2>> zipAll(java.util.List<T2> list, T def1, T2 def2);
+
+        /**
+         * Zip this sequence with its indices
+         *
+         * @return A new list containing pairs consisting of all
+         *         elements of this list paired with their index.
+         *         Indices start at 0.
+         */
+        Sequence<_.T2<T, Integer>> zipWithIndex();
     }
 
     /**
@@ -1413,7 +1672,7 @@ public enum C {
 
     /**
      * Defines a factory to create {@link java.util.List java List} instance
-     * used by {@link DelegatingList1} to create it's backing data structure
+     * used by {@link DelegatingList} to create it's backing data structure
      *
      * @since 0.2
      */
@@ -1446,6 +1705,50 @@ public enum C {
          * @return the list been created
          */
         <ET> java.util.List<ET> create(int initialCapacity);
+
+        static enum Predefined {
+            ;
+            static final ListFactory JDK_ARRAYLIST_FACT = new ListFactory() {
+                @Override
+                public <ET> java.util.List<ET> create() {
+                    return new ArrayList<ET>();
+                }
+
+                @Override
+                public <ET> java.util.List<ET> create(Collection<ET> collection) {
+                    return new ArrayList<ET>(collection);
+                }
+
+                @Override
+                public <ET> java.util.List<ET> create(int initialCapacity) {
+                    return new ArrayList<ET>(initialCapacity);
+                }
+            };
+            static final ListFactory JDK_LINKEDLIST_FACT = new ListFactory() {
+                @Override
+                public <ET> java.util.List<ET> create() {
+                    return new LinkedList<ET>();
+                }
+
+                @Override
+                public <ET> java.util.List<ET> create(Collection<ET> collection) {
+                    return new LinkedList<ET>(collection);
+                }
+
+                @Override
+                public <ET> java.util.List<ET> create(int initialCapacity) {
+                    return new LinkedList<ET>();
+                }
+            };
+
+            static ListFactory defLinked() {
+                return JDK_LINKEDLIST_FACT;
+            }
+
+            static ListFactory defRandomAccess() {
+                return JDK_ARRAYLIST_FACT;
+            }
+        }
     }
 
     /**
@@ -1470,8 +1773,33 @@ public enum C {
      */
     public static final String CONF_RANDOM_ACCESS_LIST_FACTORY = "osgl.random_access_list.factory";
 
-    static ListFactory linkedListFact;
-    static ListFactory randomAccessListFact;
+    static ListFactory linkedListFact; static {
+        String factCls = System.getProperty(CONF_LINKED_LIST_FACTORY);
+        if (null == factCls) {
+            linkedListFact = ListFactory.Predefined.defLinked();
+        } else {
+            _.Option<ListFactory> fact = _.safeNewInstance(factCls);
+            if (fact.isDefined()) {
+                linkedListFact = fact.get();
+            } else {
+                linkedListFact = ListFactory.Predefined.defLinked();
+            }
+        }
+    }
+
+    static ListFactory randomAccessListFact; static {
+        String factCls = System.getProperty(CONF_RANDOM_ACCESS_LIST_FACTORY);
+        if (null == factCls) {
+            randomAccessListFact = ListFactory.Predefined.defRandomAccess();
+        } else {
+            _.Option<ListFactory> fact = _.safeNewInstance(factCls);
+            if (fact.isDefined()) {
+                randomAccessListFact = fact.get();
+            } else {
+                randomAccessListFact = ListFactory.Predefined.defRandomAccess();
+            }
+        }
+    }
 
     // --- factory methods ---
 
@@ -1563,36 +1891,14 @@ public enum C {
         return Nil.list();
     }
 
-    public static <T> List<T> list(T t) {
-        return new SingletonList<T>(t);
-    }
-
-    public static <T> List<T> list(T t1, T t2) {
-        return null;
-    }
-
-    public static <T> List<T> list(T t1, T t2, T t3) {
-        return null;
-    }
-
-    public static <T> List<T> list(T t1, T t2, T t3, T t4) {
-        return null;
-    }
-
-    public static <T> List<T> list(T t1, T t2, T t3, T t4, T t5) {
-        return null;
-    }
-
-    /**
-     * Create an immutable list of an array of elements. If an empty
-     * array specified, then an empty immutable list is returned
-     *
-     * @param elements the array of elements
-     * @param <T>      the element type
-     * @return an immutable list contains specified elements
-     */
-    public static <T> List<T> list(T t1, T t2, T t3, T t4, T t5, T... elements) {
-        return null;
+    public static <T> List<T> list(T... ta) {
+        if (ta.length == 0) {
+            return list();
+        }
+        if (ta.length == 1) {
+            return _.val(ta[0]);
+        }
+        return ImmutableList.of(ta);
     }
 
     /**
@@ -1634,7 +1940,7 @@ public enum C {
         if (0 == elements.length) {
             return list();
         }
-        return null;
+        return ImmutableList.of(_.asObject(elements));
     }
 
     /**
@@ -1648,7 +1954,7 @@ public enum C {
         if (0 == elements.length) {
             return list();
         }
-        return null;
+        return ImmutableList.of(_.asObject(elements));
     }
 
     /**
@@ -1687,7 +1993,11 @@ public enum C {
         if (javaList instanceof List) {
             return _.cast(javaList);
         }
-        return new DelegatingList1<T>(javaList);
+        return new DelegatingList<T>(javaList);
+    }
+
+    public static <T> C.List<T> singletonList(T t) {
+        return list(t);
     }
 
     public static <T> List<T> newList() {
@@ -1695,7 +2005,11 @@ public enum C {
     }
 
     public static <T> List<T> newList(int size) {
-        //
+        return new DelegatingList<T>(size);
+    }
+
+    public static <T> Sequence<T> seq(Iterable<? extends T> iterable) {
+        return IterableSeq.of(iterable);
     }
 
     public static <T, R> Sequence<R> map(Sequence<T> seq, _.Function<? super T, ? extends R> mapper) {
@@ -1705,10 +2019,10 @@ public enum C {
         return new MappedSeq<T, R>(seq, mapper);
     }
 
-    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, _.Function<? super T, ? extends R> mapper
-    ) {
-        return new ReversibleMappedSeq<T, R>(seq, mapper);
-    }
+//    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, _.Function<? super T, ? extends R> mapper
+//    ) {
+//        return new ReversibleMappedSeq<T, R>(seq, mapper);
+//    }
 
     public static <T> Sequence<T> filter(Sequence<T> seq, _.Function<? super T, Boolean> predicate) {
         return new FilteredSeq<T>(seq, predicate);
@@ -1723,54 +2037,16 @@ public enum C {
         }
     }
 
-    public static <T> ReversibleSequence<T> prepend(T t, ReversibleSequence<T> seq) {
-        E.NPE(seq);
-        return concat(C.list(t), seq);
-    }
-
-    public static <T> Sequence<T> append(Sequence<T> seq, T t) {
-        E.NPE(seq);
-        return concat(seq, C.list(t));
-    }
-
     public static <T> Sequence<T> concat(Sequence<T> s1, Sequence<T> s2) {
-        if (s1 instanceof ReversibleSequence && s2 instanceof ReversibleSequence) {
-            ReversibleSequence<T> rs1 = (ReversibleSequence<T>) s1;
-            ReversibleSequence<T> rs2 = (ReversibleSequence<T>) s2;
-            return concat(rs1, rs2);
-        }
-        if (s1.isEmpty()) {
-            return s2;
-        } else if (s2.isEmpty()) {
-            return s1;
-        } else {
-            return new CompositeSeq<T>(s1, s2);
-        }
-    }
-
-    public static <T> ReversibleSequence<T> append(ReversibleSequence<T> seq, T t) {
-        E.NPE(seq);
-        return concat(seq, C.list(t));
+        return s1.append(s2);
     }
 
     public static <T> ReversibleSequence<T> concat(ReversibleSequence<T> s1, ReversibleSequence<T> s2) {
-        if (s1.isEmpty()) {
-            return s2;
-        } else if (s2.isEmpty()) {
-            return s1;
-        } else {
-            return new CompositeReversibleSeq<T>(s1, s2);
-        }
+        return s1.append(s2);
     }
 
     public static <T> List<T> concat(List<T> l1, List<T> l2) {
-        if (l1.isEmpty()) {
-            return l2;
-        } else if (l2.isEmpty()) {
-            return l1;
-        } else {
-            return new CompositeList<T>(l1, l2);
-        }
+        return l1.append(l2);
     }
     // --- eof factory methods ---
 
@@ -1803,11 +2079,11 @@ public enum C {
     /**
      * Iterate through an iterable, apply the visitor function
      * to each element.
-     *
+     * <p/>
      * <p>It is possible to stop the iteration by throwing out
      * the {@link org.osgl._.Break} from within the visitor
      * function</p>
-     *
+     * <p/>
      * <p>This method support partial function by allowing the
      * visitor throw out the {@link NotAppliedException} which
      * will be simply ignored</p>
@@ -1819,7 +2095,7 @@ public enum C {
      */
     //TODO: implement forEach iteration in parallel
     public static <T> void forEach(Iterable<? extends T> iterable, _.Function<? super T, ?> visitor) throws _.Break {
-        for (T t: iterable) {
+        for (T t : iterable) {
             try {
                 visitor.apply(t);
             } catch (NotAppliedException e) {
@@ -1941,7 +2217,7 @@ public enum C {
                 @Override
                 public boolean test(Iterable<? extends T> itr) throws NotAppliedException, _.Break {
                     if (itr instanceof Collection) {
-                        return l.addAll(index, ((Collection<? extends T>)itr));
+                        return l.addAll(index, ((Collection<? extends T>) itr));
                     }
                     boolean modified = false;
                     for (T t : itr) {
@@ -1974,7 +2250,7 @@ public enum C {
                 @Override
                 public boolean test(Collection<? super T> c1) throws NotAppliedException, _.Break {
                     if (c instanceof Collection) {
-                        return c1.retainAll((Collection) c)
+                        return c1.retainAll((Collection) c);
                     }
                     HashSet<T> s = new HashSet<T>();
                     for (T t : c) {

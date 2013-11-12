@@ -34,8 +34,9 @@ class IndexFilteredIterator<T> extends StatefulIterator<T> {
     @Override
     protected _.Option<T> getCurrent() {
         while (rawHasNext()) {
+            int curCursor = cursor;
             T t = rawNext();
-            if (filter_.test(cursor)) {
+            if (filter_.test(curCursor)) {
                 return _.some(t);
             }
         }

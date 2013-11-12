@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * Implementing immutable empty collection types
  */
-abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>, Collection<T>, Serializable {
+abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Collection<T>, Serializable {
 
     private static final long serialVersionUID = -5058901899659394002L;
 
@@ -59,22 +59,26 @@ abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>
         return (EmptyList<T>) EmptyList.INSTANCE;
     }
 
-    public static final EmptySet SET = EmptySet.INSTANCE;
-
-    @SuppressWarnings("unchecked")
-    public static <T> EmptySet<T> set() {
-        return (EmptySet<T>) EmptySet.INSTANCE;
-    }
-
-    public static final EmptySortedSet SORTED_SET = EmptySortedSet.INSTANCE;
-
-    @SuppressWarnings("unchecked")
-    public static <T> EmptySortedSet<T> sortedSet() {
-        return (EmptySortedSet<T>) EmptySortedSet.INSTANCE;
-    }
-
+//    public static final EmptySet SET = EmptySet.INSTANCE;
+//
+//    @SuppressWarnings("unchecked")
+//    public static <T> EmptySet<T> set() {
+//        return (EmptySet<T>) EmptySet.INSTANCE;
+//    }
+//
+//    public static final EmptySortedSet SORTED_SET = EmptySortedSet.INSTANCE;
+//
+//    @SuppressWarnings("unchecked")
+//    public static <T> EmptySortedSet<T> sortedSet() {
+//        return (EmptySortedSet<T>) EmptySortedSet.INSTANCE;
+//    }
+//
     private Nil() {
-        super(EnumSet.of(C.Feature.IMMUTABLE, C.Feature.ORDERED, C.Feature.LIMITED, C.Feature.RANDOM_ACCESS, C.Feature.READONLY, C.Feature.SORTED, C.Feature.PARALLEL));
+    }
+
+    @Override
+    protected EnumSet<C.Feature> initFeatures() {
+        return EnumSet.of(C.Feature.IMMUTABLE, C.Feature.ORDERED, C.Feature.LIMITED, C.Feature.RANDOM_ACCESS, C.Feature.READONLY, C.Feature.SORTED, C.Feature.PARALLEL);
     }
 
     protected final java.util.List<T> emptyJavaList() {
@@ -227,8 +231,8 @@ abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>
 
         /**
          * {@inheritDoc}
-         * <p>Returns an immutable {@link SingletonList} contains the
-         * element specified</p>
+         * <p>Returns an immutable singleton list contains the element
+         * specified</p>
          *
          * @param t the element to be appended to this sequence
          * @return a singleton list of the element
@@ -240,7 +244,7 @@ abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>
 
         /**
          * {@inheritDoc}
-         * <p>Returns an immutable {@link SingletonList} contains the
+         * <p>Returns an immutable singleton list contains the
          * element specified</p>
          *
          * @param t the element to be prepended to this sequence
@@ -355,13 +359,33 @@ abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>
     }
 
     static class EmptyReversibleSequence<T>
-            extends EmptySequence<T> implements C.ReversibleSequence<T> {
+    extends EmptySequence<T> implements C.ReversibleSequence<T> {
 
         private static final EmptyReversibleSequence INSTANCE = new EmptyReversibleSequence();
 
         @Override
         protected <T1> EmptyReversibleSequence<T1> singleton() {
             return INSTANCE;
+        }
+
+        @Override
+        public C.ReversibleSequence<T> lazy() {
+            return (C.ReversibleSequence<T>)super.lazy();
+        }
+
+        @Override
+        public C.ReversibleSequence<T> eager() {
+            return (C.ReversibleSequence<T>)super.eager();
+        }
+
+        @Override
+        public C.ReversibleSequence<T> parallel() {
+            return (C.ReversibleSequence<T>)super.parallel();
+        }
+
+        @Override
+        public C.ReversibleSequence<T> sequential() {
+            return (C.ReversibleSequence<T>)super.sequential();
         }
 
         @Override
@@ -480,7 +504,7 @@ abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>
         }
     }
 
-    static class EmptyRange<T> extends EmptySequence<T> implements C.Range<T> {
+    static class EmptyRange<T> extends EmptySequence<T> implements C.Range<T>, RandomAccess {
         private static final EmptyRange INSTANCE = new EmptyRange();
 
         @Override
@@ -506,7 +530,7 @@ abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>
         @Override
         @SuppressWarnings("unchecked")
         public Comparator<T> order() {
-            return _.F.NATURAL_ORDER;
+            return (Comparator<T>)_.F.NATURAL_ORDER;
         }
 
         @Override
@@ -565,162 +589,24 @@ abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>
         }
     }
 
-    static class EmptyList<T> extends EmptyReversibleSequence<T> implements C.List<T> {
+    static class EmptyList<T> extends ImmutableList<T> implements C.List<T>, RandomAccess {
 
         private static final long serialVersionUID = 2142813031316831861L;
 
         private EmptyList() {
+            super((T[])new Object[]{});
         }
 
         private static final EmptyList<?> INSTANCE = new EmptyList();
 
-        @Override
         @SuppressWarnings("unchecked")
         protected <T1> EmptyList<T1> singleton() {
             return (EmptyList<T1>) INSTANCE;
         }
 
         @Override
-        public EmptyList<T> accept(_.Function<? super T, ?> visitor) {
-            return this;
-        }
-
-        @Override
-        public boolean addAll(int index, Collection<? extends T> c) {
-            if (c.isEmpty()) {
-                return false;
-            }
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public T get(int index) {
-            throw new IndexOutOfBoundsException();
-        }
-
-        @Override
-        public T set(int index, T element) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void add(int index, T element) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public T remove(int index) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int indexOf(Object o) {
-            return -1;
-        }
-
-        @Override
-        public int lastIndexOf(Object o) {
-            return -1;
-        }
-
-        @Override
-        public ListIterator<T> listIterator() {
-            return emptyJavaList().listIterator();
-        }
-
-        @Override
-        public ListIterator<T> listIterator(int index) {
-            return emptyJavaList().listIterator(index);
-        }
-
-        @Override
-        public List<T> subList(int fromIndex, int toIndex) {
-            return emptyJavaList().subList(fromIndex, toIndex);
-        }
-
-        @Override
-        public EmptyList<T> reverse() throws UnsupportedOperationException {
-            return this;
-        }
-
-        @Override
-        public EmptyList<T> take(int n) {
-            return this;
-        }
-
-        @Override
-        public EmptyList<T> head(int n) {
-            return this;
-        }
-
-        @Override
-        public EmptyList<T> tail() throws UnsupportedOperationException {
-            return this;
-        }
-
-        @Override
-        public EmptyList<T> tail(int n) throws UnsupportedOperationException {
-            return this;
-        }
-
-        @Override
-        public EmptyList<T> takeWhile(_.Function<? super T, Boolean> predicate) {
-            return this;
-        }
-
-        @Override
-        public EmptyList<T> dropWhile(_.Function<? super T, Boolean> predicate) {
-            return this;
-        }
-
-        @Override
-        public <R> EmptyList<R> map(_.Function<? super T, ? extends R> mapper) {
-            return singleton();
-        }
-
-        @Override
-        public <R> EmptyList<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
-            return singleton();
-        }
-
-        @Override
-        public EmptyList<T> filter(_.Function<? super T, Boolean> predicate) {
-            return this;
-        }
-
-        @Override
-        public EmptyList<T> acceptLeft(_.Function<? super T, ?> visitor) {
-            return this;
-        }
-
-        @Override
-        public EmptyList<T> acceptRight(_.Function<? super T, ?> visitor) {
-            return this;
-        }
-
-        @Override
-        public C.List<T> append(C.List<T> list) {
-            return list;
-        }
-
-        @Override
-        public C.List<T> prepend(T t) {
-            return C.list(t);
-        }
-
-        @Override
-        public C.List<T> append(T t) {
-            return C.list(t);
-        }
-
-        @Override
-        public C.List<T> prepend(C.List<T> list) {
-            return list;
-        }
-
-        @Override
-        public C.List<T> without(Collection<? extends T> col) {
-            return this;
+        public boolean isEmpty() {
+            return true;
         }
 
         // Preserves singleton property
@@ -729,77 +615,77 @@ abstract class Nil<T> extends AbstractSeq<T, Nil<T>> implements C.Traversable<T>
         }
     }
 
-    static class EmptySet<T> extends Nil<T> implements C.Set<T>, Serializable {
-
-        private static final long serialVersionUID = 4142843931316831861L;
-
-
-        private EmptySet() {
-        }
-
-        private static final EmptySet<?> INSTANCE = new EmptySet();
-
-        @Override
-        @SuppressWarnings("unchecked")
-        protected EmptySet<T> singleton() {
-            return (EmptySet<T>) INSTANCE;
-        }
-
-        @Override
-        public EmptySet<T> accept(_.Function<? super T, ?> visitor) {
-            return this;
-        }
-
-        // Preserves singleton property
-        private Object readResolve() {
-            return INSTANCE;
-        }
-    }
-
-    static class EmptySortedSet<T> extends EmptyReversibleSequence<T> implements C.SortedSet<T>, Serializable {
-
-        private static final long serialVersionUID = 8142843931221131271L;
-
-        private EmptySortedSet() {
-        }
-
-        private static final EmptySortedSet<?> INSTANCE = new EmptySortedSet();
-
-        @Override
-        @SuppressWarnings("unchecked")
-        protected EmptySortedSet<T> singleton() {
-            return (EmptySortedSet<T>) INSTANCE;
-        }
-
-        @Override
-        public EmptySortedSet<T> accept(_.Function<? super T, ?> visitor) {
-            return this;
-        }
-
-        @Override
-        public Comparator<? super T> comparator() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public SortedSet<T> subSet(T fromElement, T toElement) {
-            return this;
-        }
-
-        @Override
-        public SortedSet<T> headSet(T toElement) {
-            return this;
-        }
-
-        @Override
-        public SortedSet<T> tailSet(T fromElement) {
-            return this;
-        }
-
-        // Preserves singleton property
-        private Object readResolve() {
-            return INSTANCE;
-        }
-    }
+//    static class EmptySet<T> extends Nil<T> implements C.Set<T>, Serializable {
+//
+//        private static final long serialVersionUID = 4142843931316831861L;
+//
+//
+//        private EmptySet() {
+//        }
+//
+//        private static final EmptySet<?> INSTANCE = new EmptySet();
+//
+//        @Override
+//        @SuppressWarnings("unchecked")
+//        protected EmptySet<T> singleton() {
+//            return (EmptySet<T>) INSTANCE;
+//        }
+//
+//        @Override
+//        public EmptySet<T> accept(_.Function<? super T, ?> visitor) {
+//            return this;
+//        }
+//
+//        // Preserves singleton property
+//        private Object readResolve() {
+//            return INSTANCE;
+//        }
+//    }
+//
+//    static class EmptySortedSet<T> extends EmptyReversibleSequence<T> implements C.SortedSet<T>, Serializable {
+//
+//        private static final long serialVersionUID = 8142843931221131271L;
+//
+//        private EmptySortedSet() {
+//        }
+//
+//        private static final EmptySortedSet<?> INSTANCE = new EmptySortedSet();
+//
+//        @Override
+//        @SuppressWarnings("unchecked")
+//        protected EmptySortedSet<T> singleton() {
+//            return (EmptySortedSet<T>) INSTANCE;
+//        }
+//
+//        @Override
+//        public EmptySortedSet<T> accept(_.Function<? super T, ?> visitor) {
+//            return this;
+//        }
+//
+//        @Override
+//        public Comparator<? super T> comparator() {
+//            throw new UnsupportedOperationException();
+//        }
+//
+//        @Override
+//        public SortedSet<T> subSet(T fromElement, T toElement) {
+//            return this;
+//        }
+//
+//        @Override
+//        public SortedSet<T> headSet(T toElement) {
+//            return this;
+//        }
+//
+//        @Override
+//        public SortedSet<T> tailSet(T fromElement) {
+//            return this;
+//        }
+//
+//        // Preserves singleton property
+//        private Object readResolve() {
+//            return INSTANCE;
+//        }
+//    }
 
 }

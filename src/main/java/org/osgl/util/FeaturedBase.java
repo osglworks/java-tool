@@ -5,7 +5,7 @@ import java.util.EnumSet;
 /**
  * Provide common logic to handle {@link C.Featured} interface
  */
-abstract class FeaturedBase implements C.Featured {
+public abstract class FeaturedBase implements C.Featured {
 
     volatile private EnumSet<C.Feature> features_;
 

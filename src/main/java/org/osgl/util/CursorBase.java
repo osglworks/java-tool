@@ -10,11 +10,10 @@ import java.util.NoSuchElementException;
  * To change this template use File | Settings | File Templates.
  */
 abstract class CursorBase<T> implements C.List.Cursor<T> {
-    private boolean obsoleted_ = false;
     private boolean defined_ = false;
     private T cur_;
 
-    protected final C.List.Cursor<T> setCurrent(T t) {
+    private C.List.Cursor<T> cur(T t) {
         cur_ = t;
         defined_ = true;
         return this;
@@ -25,56 +24,12 @@ abstract class CursorBase<T> implements C.List.Cursor<T> {
         return defined_;
     }
 
-    @Override
-    public final boolean isObsolete() {
-        return obsoleted_;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public final C.List.Cursor<T> obsolete() {
-        obsoleted_ = true;
-        cur_ = null;
-        defined_ = false;
-        return this;
-    }
-
-    private void checkState_() {
-        if (obsoleted_) {
-            throw new IllegalStateException();
-        }
-    }
-
-    protected abstract int safeIndex();
-
-    @Override
-    public int index() {
-        checkState_();
-        return safeIndex();
-    }
-
-    protected abstract boolean safeHasNext();
-
-    @Override
-    public boolean hasNext() {
-        checkState_();
-        return safeHasNext();
-    }
-
-    protected abstract boolean safeHasPrevious();
-
-    @Override
-    public boolean hasPrevious() {
-        checkState_();
-        return safeHasPrevious();
-    }
 
     protected abstract T next();
 
     @Override
     public C.List.Cursor<T> forward() {
-        checkState_();
-        setCurrent(next());
+        cur(next());
         return this;
     }
 
@@ -82,8 +37,7 @@ abstract class CursorBase<T> implements C.List.Cursor<T> {
 
     @Override
     public C.List.Cursor<T> backward() {
-        checkState_();
-        setCurrent(previous());
+        cur(previous());
         return this;
     }
 
@@ -103,7 +57,6 @@ abstract class CursorBase<T> implements C.List.Cursor<T> {
 
     @Override
     public C.List.Cursor<T> set(T t) throws IndexOutOfBoundsException, NullPointerException {
-        checkState_();
         update(t);
         return this;
     }
@@ -112,9 +65,8 @@ abstract class CursorBase<T> implements C.List.Cursor<T> {
 
     @Override
     public C.List.Cursor<T> drop() throws NoSuchElementException {
-        checkState_();
         remove();
-        setCurrent(next());
+        cur(next());
         return this;
     }
 
@@ -126,7 +78,6 @@ abstract class CursorBase<T> implements C.List.Cursor<T> {
 
     @Override
     public C.List.Cursor<T> prepend(T t) throws IndexOutOfBoundsException {
-        checkState_();
         previous();
         add(t);
         next();
@@ -135,7 +86,6 @@ abstract class CursorBase<T> implements C.List.Cursor<T> {
 
     @Override
     public C.List.Cursor<T> append(T t) {
-        checkState_();
         add(t);
         previous();
         return this;

@@ -2,54 +2,97 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b0cdce9e-07ac-4625-970b-4f5f6fc837af" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/CompositeIterator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/CompositeListIterator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/CursorBase.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/FlatMappedList.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ImmutableList.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IterableTrav.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase1.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBuilder.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListIteratorCursor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedList.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedTrav.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ReverseList.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ReversibleSeqBase.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/SingletonItr.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Traversals.java" />
-      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\util\AbstractSeq.java" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/algo/Algorithm.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/algo/Algorithms.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/algo/ArrayAlgorithm.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/algo/ArrayReverse.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/DelegatingListTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/FilteredTrav.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/FlatMappedSeq.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/FlatMappedTrav.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/ImmutableListFactory.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/ImmutableListTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IndexFilteredList.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IndexFilteredSeq.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IndexIterable.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IndexIterator.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/algo/InplaceArrayReverse.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IterableSeq.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/ListBuilderTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/ListTestBase.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ReadOnlyListBase.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ReadOnlyListIterator.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ReverseListIterator.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/ReversibleSeqTestBase.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/SequenceTestBase.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/SingletonListIterator.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/TestListFactory.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/TraversableTestBase.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/UtilTestBase.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ZippedIterator.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ZippedList.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ZippedListIterator.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ZippedSeq.java" />
+      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\X.java" afterPath="" />
+      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\util\DelegatingList1.java" afterPath="" />
+      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\util\FlatMappedList.java" afterPath="" />
+      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\util\ReversibleSeqBase.java" afterPath="" />
+      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\util\SingletonList.java" afterPath="" />
+      <change type="DELETED" beforePath="P:\java-tool\src\main\java\org\osgl\util\Traversals.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/CompositeIterator.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/CompositeIterator.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/CompositeList.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/CompositeList.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/CompositeSeq.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/CompositeSeq.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/CursorBase.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/CursorBase.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingIterator.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingIterator.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingList.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingList.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/E.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/E.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/FeaturedBase.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/FeaturedBase.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/FilteredIterator.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/FilteredIterator.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/FilteredSeq.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/FilteredSeq.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/FlatMappedIterator.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/FlatMappedIterator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/ImmutableList.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ImmutableList.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/IndexFilteredIterator.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IndexFilteredIterator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidArgException.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/exception/InvalidArgException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/IterableTrav.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IterableTrav.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/IteratorSeq.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IteratorSeq.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedIterator.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedIterator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/IteratorTrav.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/IteratorTrav.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Iterators.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Iterators.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/LazyRange.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/LazyRange.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/org/osgl/util/LazyRangeTest.java" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/LazyRangeTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/LazySeq.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/LazySeq.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/org/osgl/util/LazySeqTest.java" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/LazySeqTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBuilder.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBuilder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListIteratorCursor.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ListIteratorCursor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedList.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedList.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedSeq.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedSeq.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedTrav.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedTrav.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/N.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/N.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/Nil.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Nil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/ReverseList.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/ReverseList.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/SequenceBase.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/SequenceBase.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/TraversalBase.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/TraversalBase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/util/StatefulIterator.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/StatefulIterator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/org/osgl/TestBase.java" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/TestBase.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/osgl/_.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/_.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\$.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/Iterators.java" />
-      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\DelegatingList.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingList1.java" />
+      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\CompositeReversibleSeq.java" afterPath="$PROJECT_DIR$/src/main/old/CompositeReversibleSeq.java" />
+      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\ListBase1.java" afterPath="$PROJECT_DIR$/src/main/old/ListBase1.java" />
+      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\ReversibleMappedSeq.java" afterPath="$PROJECT_DIR$/src/main/old/ReversibleMappedSeq.java" />
+      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\SingletonItr.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/SingletonIterator.java" />
+      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\SubSeq.java" afterPath="$PROJECT_DIR$/src/main/old/SubSeq.java" />
+      <change type="MOVED" beforePath="P:\java-tool\src\main\java\org\osgl\util\TraversalBase.java" afterPath="$PROJECT_DIR$/src/main/java/org/osgl/util/TraversableBase.java" />
+      <change type="MOVED" beforePath="P:\java-tool\src\test\java\org\osgl\util\LazySeqTest.java" afterPath="$PROJECT_DIR$/src/test/java/org/osgl/util/LazySeqTest2.java" />
     </list>
     <ignored path="osgl-tool.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383352546493" ignored="false" />
-    <file path="/_.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382833306482" ignored="false" />
-    <file path="/fragment.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383098542698" ignored="false" />
-    <file path="/LazySeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381226982605" ignored="false" />
-    <file path="/LazyRange.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381192815112" ignored="false" />
-    <file path="/N.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382440711460" ignored="false" />
-    <file path="/C.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383563689377" ignored="false" />
+    <file path="/Dummy.txt" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384218083832" ignored="false" />
+    <file path="/_.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384169785437" ignored="false" />
+    <file path="/fragment.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384084463446" ignored="false" />
+    <file path="/LazySeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384045322487" ignored="false" />
+    <file path="/LazyRange.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384040988389" ignored="false" />
+    <file path="/N.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383879861983" ignored="false" />
+    <file path="/C.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384256315400" ignored="false" />
     <file path="P:/rythm/pom.xml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380504004455" ignored="false" />
     <file path="/pom.xml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380780882254" ignored="false" />
     <file path="P:/rythm/src/main/java/org/rythmengine/RythmEngine.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380512804665" ignored="false" />
@@ -66,7 +109,7 @@
     <file path="/home.textile" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380780871211" ignored="false" />
     <file path="P:/play-rythm/documentation/manual/home.textile" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380780871211" ignored="false" />
     <file path="P:/play-rythm/pom.xml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380780882254" ignored="false" />
-    <file path="/a.dummy" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383533500905" ignored="false" />
+    <file path="/a.dummy" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384218339048" ignored="false" />
     <file path="/CodeBuilder.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380538896477" ignored="false" />
     <file path="P:/rythm/src/main/java/org/rythmengine/internal/CodeBuilder.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380539201728" ignored="false" />
     <file path="/DelegateList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380884573331" ignored="false" />
@@ -77,35 +120,35 @@
     <file path="/RythmPlugin.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380779537054" ignored="false" />
     <file path="P:/play-rythm/samples-and-tests/gae-new/precompiled/templates/from_play/framework/templates/errors/404.xml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380780748336" ignored="false" />
     <file path="P:/play-rythm/samples-and-tests/gae-new/precompiled/templates/from_play/framework/templates/errors/500.xml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380780748336" ignored="false" />
-    <file path="/Nil.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381263183374" ignored="false" />
+    <file path="/Nil.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384169959917" ignored="false" />
     <file path="/MappedSequence.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380856291014" ignored="false" />
-    <file path="/MappedList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382959125996" ignored="false" />
+    <file path="/MappedList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383731148767" ignored="false" />
     <file path="/MappedIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380847503122" ignored="false" />
     <file path="/E.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382522148843" ignored="false" />
-    <file path="/MappedSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382876092482" ignored="false" />
-    <file path="/FlatMappedSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1380882255073" ignored="false" />
-    <file path="/DelegatingList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383444557353" ignored="false" />
-    <file path="/CompositeSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382785509793" ignored="false" />
+    <file path="/MappedSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384027026117" ignored="false" />
+    <file path="/FlatMappedSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384027143229" ignored="false" />
+    <file path="/DelegatingList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384254447603" ignored="false" />
+    <file path="/CompositeSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383991449476" ignored="false" />
     <file path="P:/rythm/src/main/java/org/rythmengine/resource/FileResourceLoader.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381009940869" ignored="false" />
     <file path="/FileResourceLoader.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381009939615" ignored="false" />
     <file path="/a.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383123653140" ignored="false" />
     <file path="/sample.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381014963304" ignored="false" />
     <file path="/DelegatingListIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381016929037" ignored="false" />
-    <file path="/DelegatingIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382512038503" ignored="false" />
+    <file path="/DelegatingIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383995815046" ignored="false" />
     <file path="/ReversibleCompositeSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381178346918" ignored="false" />
     <file path="/IntRange.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381212334505" ignored="false" />
-    <file path="/ReversibleMappedSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381193654729" ignored="false" />
-    <file path="/SingletonList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381135418480" ignored="false" />
-    <file path="/CompositeList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382833037747" ignored="false" />
+    <file path="/ReversibleMappedSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383729064258" ignored="false" />
+    <file path="/SingletonList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384084603053" ignored="false" />
+    <file path="/CompositeList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384034594035" ignored="false" />
     <file path="/CompositeReversibleSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381189611124" ignored="false" />
-    <file path="/FilteredSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381196493905" ignored="false" />
+    <file path="/FilteredSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383996076186" ignored="false" />
     <file path="/SeqBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382476195033" ignored="false" />
     <file path="/SeqView.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381217650910" ignored="false" />
     <file path="/SubSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382477994807" ignored="false" />
-    <file path="/FlatMappedIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382525429511" ignored="false" />
+    <file path="/FlatMappedIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383736031801" ignored="false" />
     <file path="/ReadOnlyIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381224777570" ignored="false" />
-    <file path="/StatefulIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382440020524" ignored="false" />
-    <file path="/TraversalBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383021827369" ignored="false" />
+    <file path="/StatefulIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383771089282" ignored="false" />
+    <file path="/TraversalBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383819119397" ignored="false" />
     <file path="/SeqDefault.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381273851571" ignored="false" />
     <file path="/AbstractSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381277043655" ignored="false" />
     <file path="/X.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1381972142220" ignored="false" />
@@ -158,11 +201,11 @@
     <file path="P:/play-app-base/src/org/osgl/play/Auth.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382661479704" ignored="false" />
     <file path="/Auth.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382661468942" ignored="false" />
     <file path="P:/play-app-base/conf/dependencies.yml" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382661531686" ignored="false" />
-    <file path="/FilteredIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382519564123" ignored="false" />
+    <file path="/FilteredIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383960707996" ignored="false" />
     <file path="/IteratorTrav.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382475762887" ignored="false" />
-    <file path="/FeaturedBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382866807696" ignored="false" />
-    <file path="/SequenceBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382957819560" ignored="false" />
-    <file path="/IteratorSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382525444910" ignored="false" />
+    <file path="/FeaturedBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384029609131" ignored="false" />
+    <file path="/SequenceBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384169975911" ignored="false" />
+    <file path="/IteratorSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383772765509" ignored="false" />
     <file path="P:/LE3/app/rythm/component/runtime/fileupload.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382488596276" ignored="false" />
     <file path="/fileupload.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382486897793" ignored="false" />
     <file path="P:/LE3/app/rythm/component/runtime/universal_file_uploader.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382491929651" ignored="false" />
@@ -171,30 +214,30 @@
     <file path="/app.lib.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382489866898" ignored="false" />
     <file path="P:/LE3/public/javascripts/rt/uuploader.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382922541407" ignored="false" />
     <file path="/uuploader.js" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382491830349" ignored="false" />
-    <file path="/IndexFilteredIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382512337588" ignored="false" />
+    <file path="/IndexFilteredIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383772220777" ignored="false" />
     <file path="/Iterators.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382525415497" ignored="false" />
     <file path="/CompositeIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382522365855" ignored="false" />
     <file path="/SingletonItr.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382522679462" ignored="false" />
     <file path="/DelegatingItr.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382582234012" ignored="false" />
-    <file path="/IterableTrav.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382584451652" ignored="false" />
-    <file path="/MappedTrav.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382584473203" ignored="false" />
+    <file path="/IterableTrav.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384030804391" ignored="false" />
+    <file path="/MappedTrav.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384029323906" ignored="false" />
     <file path="/Traversals.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382584465240" ignored="false" />
-    <file path="/ListIteratorCursor.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382832470449" ignored="false" />
+    <file path="/ListIteratorCursor.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384254747519" ignored="false" />
     <file path="/CompositeListIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382828450919" ignored="false" />
-    <file path="/CursorBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382833137897" ignored="false" />
-    <file path="/ListBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383564551473" ignored="false" />
-    <file path="/ReversibleSeqBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383021796971" ignored="false" />
+    <file path="/CursorBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383629760204" ignored="false" />
+    <file path="/ListBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384254665157" ignored="false" />
+    <file path="/ReversibleSeqBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384029951713" ignored="false" />
     <file path="P:/LE3/app/rythm/RuntimeServer/uuploader.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382922541407" ignored="false" />
-    <file path="P:/LE3/app/models/Campaign.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383102180641" ignored="false" />
+    <file path="P:/LE3/app/models/Campaign.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383699799030" ignored="false" />
     <file path="P:/LE3/app/models/Vote.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383006718339" ignored="false" />
-    <file path="P:/LE3/app/controllers/RuntimeServer.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383006718339" ignored="false" />
+    <file path="P:/LE3/app/controllers/RuntimeServer.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383794645316" ignored="false" />
     <file path="P:/LE3/app/models/CampActivity.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383102249563" ignored="false" />
     <file path="/CampActivity.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383102248586" ignored="false" />
-    <file path="/Campaign.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383101950914" ignored="false" />
-    <file path="/ImmutableList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383542588182" ignored="false" />
-    <file path="/ReverseList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382958532769" ignored="false" />
+    <file path="/Campaign.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383699789596" ignored="false" />
+    <file path="/ImmutableList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384257195407" ignored="false" />
+    <file path="/ReverseList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383724637549" ignored="false" />
     <file path="/FlatMappedList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1382960562714" ignored="false" />
-    <file path="/ListBuilder.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383542554534" ignored="false" />
+    <file path="/ListBuilder.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384086161304" ignored="false" />
     <file path="P:/LE3/app/models/Page.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383258072255" ignored="false" />
     <file path="P:/LE3/app/controllers/data/CampaignData.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383006718339" ignored="false" />
     <file path="P:/LE3/app/models/IClientProperty.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383006718339" ignored="false" />
@@ -204,18 +247,18 @@
     <file path="P:/LE3/app/models/DataEntry.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383006718339" ignored="false" />
     <file path="P:/LE3/app/models/Client.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383100607166" ignored="false" />
     <file path="P:/LE3/app/controllers/campaign/Manager.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383006718339" ignored="false" />
-    <file path="P:/LE3/app/rythm/rt/freeweb/page.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383013247819" ignored="false" />
-    <file path="/page.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383007330400" ignored="false" />
+    <file path="P:/LE3/app/rythm/rt/freeweb/page.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383859850578" ignored="false" />
+    <file path="/page.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383859849648" ignored="false" />
     <file path="P:/LE3/app/rythm/rt/facebook/_.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383013247819" ignored="false" />
     <file path="/_.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383007302509" ignored="false" />
-    <file path="P:/LE3/app/rythm/rt/page.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383013247819" ignored="false" />
+    <file path="P:/LE3/app/rythm/rt/page.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383793644521" ignored="false" />
     <file path="P:/LE3/tmp/rythm/SuperUser_checkSuperUserFirstName_html__R_T_C__.rythm" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383014048676" ignored="false" />
     <file path="P:/LE3/tmp/rythm/SuperUser_checkSuperUserFirstName_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383014048676" ignored="false" />
     <file path="P:/LE3/app/rythm/SuperUser/campActivities/html.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383014149045" ignored="false" />
     <file path="P:/LE3/app/rythm/SuperUser/campActivities.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383014324077" ignored="false" />
     <file path="/campActivities.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383014324077" ignored="false" />
     <file path="P:/LE3/app/rythm/SuperUser/index.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383103407325" ignored="false" />
-    <file path="/index.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383103394041" ignored="false" />
+    <file path="/index.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383657490155" ignored="false" />
     <file path="P:/play-morphia/src/play/modules/morphia/Model.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383080959185" ignored="false" />
     <file path="/Model.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383080958856" ignored="false" />
     <file path="P:/LE3/app/rythm/campaign/Manager/setting.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383175551801" ignored="false" />
@@ -256,11 +299,11 @@
     <file path="P:/LE3/app/rythm/ui/CampaignDesigner/_leftPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383516782137" ignored="false" />
     <file path="/_leftPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383516780207" ignored="false" />
     <file path="P:/LE3/tmp/rythm/ui_CampaignDesigner__leftPanel_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383516817890" ignored="false" />
-    <file path="/fangate.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383526591343" ignored="false" />
+    <file path="/fangate.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383699330233" ignored="false" />
     <file path="P:/LE3/app/rythm/component/designtime/fangate.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383534392008" ignored="false" />
     <file path="C:/d/ydgt.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383369972593" ignored="false" />
-    <file path="P:/LE3/app/models/components/FanGate.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383526928716" ignored="false" />
-    <file path="/FanGate.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383526836682" ignored="false" />
+    <file path="P:/LE3/app/models/components/FanGate.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383699639615" ignored="false" />
+    <file path="/FanGate.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383699639186" ignored="false" />
     <file path="P:/LE3/app/rythm/ui/CampaignDesigner/facebook/pageSettingPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383265226745" ignored="false" />
     <file path="P:/LE3/app/rythm/ui/CampaignDesigner/microweb/pageSettingPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383534178056" ignored="false" />
     <file path="P:/LE3/public/gs/137dc582-ee92-30a4-9350-f7c9a2cd2399.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383265266509" ignored="false" />
@@ -272,18 +315,94 @@
     <file path="P:/LE3/.version" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383512655119" ignored="false" />
     <file path="P:/LE3/app/rythm/ui/CampaignDesigner/_designPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383516028914" ignored="false" />
     <file path="/_designPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383515964069" ignored="false" />
-    <file path="P:/LE3/public/gs/acb232d1-8aae-344e-b7c8-e6369158d626.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383516040749" ignored="false" />
+    <file path="P:/LE3/public/gs/acb232d1-8aae-344e-b7c8-e6369158d626.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383704011264" ignored="false" />
     <file path="P:/LE3/app/sys/Feature.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383535894664" ignored="false" />
     <file path="/Feature.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383535894289" ignored="false" />
     <file path="P:/LE3/app/rythm/component/designtime/property/likebutton.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383523961065" ignored="false" />
     <file path="/likebutton.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383523851442" ignored="false" />
     <file path="P:/LE3/app/rythm/component/designtime/property/fangate.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383523951409" ignored="false" />
-    <file path="P:/LE3/app/rythm/component/runtime/fangate.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383526628985" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/runtime/fangate.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383699350531" ignored="false" />
     <file path="P:/LE3/app/models/validation/components/ErrorMessage.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383526799732" ignored="false" />
-    <file path="P:/LE3/app/rythm/campaign/GoLive/step1.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383527140073" ignored="false" />
-    <file path="/step1.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383527140073" ignored="false" />
+    <file path="P:/LE3/app/rythm/campaign/GoLive/step1.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383700424708" ignored="false" />
+    <file path="/step1.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383700350469" ignored="false" />
     <file path="P:/LE3/public/gs/5a08b712-1d3e-362f-9a45-4794b3295348.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383534280075" ignored="false" />
     <file path="P:/LE3/app/rythm/ui/CampaignDesigner/tablet/pageSettingPanel.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383534171645" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/link.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383697748502" ignored="false" />
+    <file path="/link.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383697725818" ignored="false" />
+    <file path="P:/LE3/app/rythm/campaign/Manager/setting/sectSetting.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383607969809" ignored="false" />
+    <file path="P:/LE3/tmp/rythm/campaign_Manager_setting_sectSetting_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383607996776" ignored="false" />
+    <file path="/ArrayAlgorithm.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383612729661" ignored="false" />
+    <file path="/InplaceArrayAlgorithm.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383613439775" ignored="false" />
+    <file path="/InplaceReverse.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383613252334" ignored="false" />
+    <file path="/InplaceArrayReverse.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383613054155" ignored="false" />
+    <file path="/ArrayReverse.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383614453070" ignored="false" />
+    <file path="/Algorithms.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383614299253" ignored="false" />
+    <file path="P:/kudoz/app/controllers/ImageController.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383655337068" ignored="false" />
+    <file path="/ImageController.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383655335315" ignored="false" />
+    <file path="P:/kudoz/app/models/Image.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383655957730" ignored="false" />
+    <file path="/Image.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383655953942" ignored="false" />
+    <file path="P:/kudoz/app/rythm/ImageController/index.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383657493277" ignored="false" />
+    <file path="P:/kudoz/tmp/rythm/ImageController_index_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383657241055" ignored="false" />
+    <file path="P:/kudoz/tmp/rythm/ImageController_index_html__R_T_C__.rythm" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383657241055" ignored="false" />
+    <file path="P:/kudoz/conf/routes" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383657717400" ignored="false" />
+    <file path="/ReverseListIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383693399928" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/label.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383695794914" ignored="false" />
+    <file path="/label.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383695691959" ignored="false" />
+    <file path="P:/LE3/app/models/components/Label.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383697086540" ignored="false" />
+    <file path="/TypeBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383698918971" ignored="false" />
+    <file path="P:/LE3/app/models/components/TypeBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383698919956" ignored="false" />
+    <file path="P:/LE3/tmp/rythm/campaign_GoLive_step1_html__R_T_C__.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383703147496" ignored="false" />
+    <file path="P:/LE3/public/gs/e684591e-a00b-321c-837f-c768e2506b20.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383704998932" ignored="false" />
+    <file path="P:/LE3/app/rythm/campaign/Manager/entry.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383704624072" ignored="false" />
+    <file path="/entry.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383704621645" ignored="false" />
+    <file path="P:/LE3/public/stylesheets/nui/campaign/manager/entry.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383704433546" ignored="false" />
+    <file path="/entry.css" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383704418877" ignored="false" />
+    <file path="/WrappedList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383707092744" ignored="false" />
+    <file path="/ReadOnlyListBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383731009220" ignored="false" />
+    <file path="/ReadOnlyListIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383731614962" ignored="false" />
+    <file path="/StatefulListIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383732194338" ignored="false" />
+    <file path="/LazySeqTest.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384044922728" ignored="false" />
+    <file path="/InvalidArgException.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383772913696" ignored="false" />
+    <file path="/LazyRangeTest.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383776564106" ignored="false" />
+    <file path="/TestListFactory.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383774610024" ignored="false" />
+    <file path="/ImmutableListFactory.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383792265156" ignored="false" />
+    <file path="/ListBuilderTest.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383790110446" ignored="false" />
+    <file path="/UtilTestBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383787741497" ignored="false" />
+    <file path="P:/LE3/app/models/components/Gallery.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383780479213" ignored="false" />
+    <file path="/Gallery.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383780479213" ignored="false" />
+    <file path="/TestBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383892383165" ignored="false" />
+    <file path="P:/LE3/app/rythm/RuntimeServer/gallery.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384127145839" ignored="false" />
+    <file path="/gallery.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384127070067" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/gallery.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383794539882" ignored="false" />
+    <file path="/RuntimeServer.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383794638050" ignored="false" />
+    <file path="/ListTestBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384256865086" ignored="false" />
+    <file path="/TraversalTestBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383816309237" ignored="false" />
+    <file path="/DelegatingListTest.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383892159735" ignored="false" />
+    <file path="/TraversableTestBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383896518005" ignored="false" />
+    <file path="/SequenceTestBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384170576037" ignored="false" />
+    <file path="/ReversibleSeqTestBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383879751224" ignored="false" />
+    <file path="/TraversableBase.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384029446870" ignored="false" />
+    <file path="/IndexFilteredSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384045052597" ignored="false" />
+    <file path="/IterableSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384030647700" ignored="false" />
+    <file path="/IterableTraversable.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383976580887" ignored="false" />
+    <file path="/MappedTraversable.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1383976635360" ignored="false" />
+    <file path="/FilteredTrav.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384029454990" ignored="false" />
+    <file path="/FlatMappedTrav.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384029386135" ignored="false" />
+    <file path="/IndexFilteredList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384038416066" ignored="false" />
+    <file path="/ZippedSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384075353545" ignored="false" />
+    <file path="/ZippSeq.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384074378375" ignored="false" />
+    <file path="/ZippedIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384075120935" ignored="false" />
+    <file path="/IndexIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384075974776" ignored="false" />
+    <file path="/IndexIterable.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384076311855" ignored="false" />
+    <file path="/ZippedList.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384084287493" ignored="false" />
+    <file path="/ZippedListIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384083832992" ignored="false" />
+    <file path="/SingletonListIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384165936234" ignored="false" />
+    <file path="/SingletonIterator.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384085100140" ignored="false" />
+    <file path="P:/LE3/app/rythm/component/designtime/property/share.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384211544384" ignored="false" />
+    <file path="/share.html" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384211534532" ignored="false" />
+    <file path="P:/LE3/app/sys/AppConfig.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384212732695" ignored="false" />
+    <file path="P:/azaria/app/models/SMSNotification.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384218436563" ignored="false" />
+    <file path="/ImmutableListTest.java" changelist="b0cdce9e-07ac-4625-970b-4f5f6fc837af" time="1384255852324" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -303,6 +422,113 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
+    <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
+      <breakpoint url="jar://R:/jdk/src.zip!/java/io/ObjectOutputStream.java" line="1163" class="java.io.ObjectOutputStream" package="java.io">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/src/main/java/org/osgl/exception/NotAppliedException.java" line="6" class="org.osgl.exception.NotAppliedException" package="org.osgl.exception">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/src/test/java/org/osgl/util/TraversableTestBase.java" line="94" class="org.osgl.util.TraversableTestBase" package="org.osgl.util">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/src/test/java/org/osgl/util/TraversableTestBase.java" line="65" class="org.osgl.util.TraversableTestBase" package="org.osgl.util">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase.java" line="451" class="org.osgl.util.ListBase" package="org.osgl.util">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/src/test/java/org/osgl/util/ReversibleSeqTestBase.java" line="35" class="org.osgl.util.ReversibleSeqTestBase" package="org.osgl.util">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/src/test/java/org/osgl/util/ReversibleSeqTestBase.java" line="73" class="org.osgl.util.ReversibleSeqTestBase" package="org.osgl.util">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </line_breakpoints>
     <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
@@ -340,38 +566,6 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
-    <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
-      <breakpoint url="jar://R:/jdk/src.zip!/java/io/ObjectOutputStream.java" line="1163" class="java.io.ObjectOutputStream" package="java.io">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="REMOVE_AFTER_HIT" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/src/main/java/org/osgl/exception/NotAppliedException.java" line="6" class="org.osgl.exception.NotAppliedException" package="org.osgl.exception">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="REMOVE_AFTER_HIT" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-    </line_breakpoints>
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -381,16 +575,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ListBase.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ListBase.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="557" column="0" selection-start="14864" selection-end="14864" vertical-scroll-proportion="-3.3246753">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#3819#4067#0" expanded="true" />
-                <element signature="e#4052#4053#0" expanded="true" />
-                <element signature="e#16886#16916#0" expanded="true" />
-              </folding>
+            <state line="850" column="24" selection-start="22559" selection-end="22559" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -398,64 +587,30 @@
       <file leaf-file-name="C.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1965" column="21" selection-start="72250" selection-end="72250" vertical-scroll-proportion="0.0">
+            <state line="1893" column="45" selection-start="71700" selection-end="71700" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="e#63470#63500#0" expanded="true" />
-                <element signature="e#67440#67641#0" expanded="true" />
-                <element signature="e#67626#67627#0" expanded="true" />
-                <element signature="e#67753#67949#0" expanded="true" />
-                <element signature="e#67934#67935#0" expanded="true" />
-                <element signature="e#70250#70815#0" expanded="true" />
-                <element signature="e#70800#70801#0" expanded="true" />
-                <element signature="e#71079#71660#0" expanded="true" />
-                <element signature="e#71645#71646#0" expanded="true" />
-                <element signature="e#71800#72326#0" expanded="true" />
-                <element signature="e#72311#72312#0" expanded="true" />
-                <element signature="e#72474#72996#0" expanded="true" />
-                <element signature="e#72981#72982#0" expanded="true" />
-                <element signature="e#73138#73424#0" expanded="true" />
-                <element signature="e#73409#73410#0" expanded="true" />
+                <element signature="e#0#84787#0" expanded="true" />
+                <element signature="e#75766#75796#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Collection.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://R:/jdk/src.zip!/java/util/Collection.java">
+      <file leaf-file-name="ListIteratorCursor.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListIteratorCursor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="357" column="12" selection-start="17558" selection-end="17558" vertical-scroll-proportion="0.0">
+            <state line="18" column="0" selection-start="492" selection-end="492" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CursorBase.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/CursorBase.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="60" column="23" selection-start="1274" selection-end="1274" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ImmutableList.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ImmutableList.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ImmutableList.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="453" column="0" selection-start="9822" selection-end="9822" vertical-scroll-proportion="0.0">
+            <state line="21" column="39" selection-start="609" selection-end="609" vertical-scroll-proportion="-0.43269232">
               <folding>
-                <element signature="e#1331#1361#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="_.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/_.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2007" column="20" selection-start="75521" selection-end="75521" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#18108#18277#0" expanded="true" />
-                <element signature="e#18262#18263#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -464,8 +619,30 @@
       <file leaf-file-name="AbstractList.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://R:/jdk/src.zip!/java/util/AbstractList.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="129" column="16" selection-start="4912" selection-end="4912" vertical-scroll-proportion="0.0">
+            <state line="310" column="58" selection-start="10779" selection-end="10779" vertical-scroll-proportion="0.0">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ListTestBase.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/ListTestBase.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="146" column="13" selection-start="3579" selection-end="3579" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ReversibleSeqTestBase.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/ReversibleSeqTestBase.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="73" column="0" selection-start="1903" selection-end="1903" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -473,25 +650,25 @@
       <file leaf-file-name="ArrayList.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://R:/jdk/src.zip!/java/util/ArrayList.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="364" column="16" selection-start="13555" selection-end="13555" vertical-scroll-proportion="0.0">
+            <state line="81" column="13" selection-start="3991" selection-end="3991" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AbstractCollection.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://R:/jdk/src.zip!/java/util/AbstractCollection.java">
+      <file leaf-file-name="DelegatingListTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/DelegatingListTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="367" column="19" selection-start="12400" selection-end="12400" vertical-scroll-proportion="0.0">
+            <state line="16" column="5" selection-start="402" selection-end="402" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Object.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://R:/jdk/src.zip!/java/lang/Object.java">
+      <file leaf-file-name="ImmutableListTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/ImmutableListTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="194" column="28" selection-start="9314" selection-end="9314" vertical-scroll-proportion="0.0">
+            <state line="22" column="26" selection-start="528" selection-end="528" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -515,22 +692,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/FeaturedBase.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedSeq.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/SequenceBase.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ReverseList.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/MappedList.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/FlatMappedList.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ReversibleSeqBase.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/TraversalBase.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase1.java" />
-        <option value="D:/ydgt-utf-8.html" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingList1.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingList.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ZippedList.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/SingletonList.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/SingletonIterator.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBuilder.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ImmutableList.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/SingletonListIterator.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/_.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/Nil.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/SequenceBase.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/osgl/util/SequenceTestBase.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingList.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ListIteratorCursor.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/osgl/util/ImmutableListTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/C.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/osgl/util/ListTestBase.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/osgl/util/ImmutableList.java" />
       </list>
     </option>
   </component>
@@ -545,9 +722,10 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="24" />
-    <option name="width" value="1366" />
-    <option name="height" value="744" />
+    <option name="x" value="-4" />
+    <option name="y" value="20" />
+    <option name="width" value="1374" />
+    <option name="height" value="752" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -597,7 +775,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -629,6 +806,48 @@
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -716,44 +935,25 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osgl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="util" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ListBase1.java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="project.structure.last.edited" value="Project" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="192" />
-    <property name="project.structure.proportion" value="0.15" />
-    <property name="OverrideImplement.combined" value="true" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="217" />
+    <property name="OverrideImplement.combined" value="true" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="recentsLimit" value="5" />
-    <property name="MemberChooser.sorted" value="false" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="214" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="recentsLimit" value="5" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="222" />
@@ -770,16 +970,16 @@
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
     <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
-    <property name="options.lastSelected" value="editor" />
+    <property name="options.lastSelected" value="reference.projectsettings.compiler.javacompiler" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="MemberChooser.copyJavadoc" value="false" />
-    <property name="dynamic.classpath" value="false" />
     <property name="options.searchVisible" value="true" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -787,63 +987,19 @@
       <recent name="org.osgl.exception" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="P:\java-tool\src\main\old" />
       <recent name="P:\java-tool\src\test\java" />
       <recent name="P:\java-tool\src" />
-      <recent name="P:\java-tool\src\main\old" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.FSM">
-    <configuration default="false" name="LazyRangeTest.contains" type="JUnit" factoryName="JUnit" temporary="true">
+  <component name="RunManager" selected="JUnit.ImmutableListTest.testAcceptRight">
+    <configuration default="false" name="DelegatingListTest.testLocateFirst" type="JUnit" factoryName="JUnit" temporary="true">
       <module name="osgl-tool" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="org.osgl.util" />
-      <option name="MAIN_CLASS_NAME" value="org.osgl.util.LazyRangeTest" />
-      <option name="METHOD_NAME" value="contains" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="LazyRangeTest.containsAll" type="JUnit" factoryName="JUnit" temporary="true">
-      <module name="osgl-tool" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.osgl.util" />
-      <option name="MAIN_CLASS_NAME" value="org.osgl.util.LazyRangeTest" />
-      <option name="METHOD_NAME" value="containsAll" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="LazyRangeTest.serialize" type="JUnit" factoryName="JUnit" temporary="true">
-      <module name="osgl-tool" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.osgl.util" />
-      <option name="MAIN_CLASS_NAME" value="org.osgl.util.LazyRangeTest" />
-      <option name="METHOD_NAME" value="serialize" />
+      <option name="MAIN_CLASS_NAME" value="org.osgl.util.DelegatingListTest" />
+      <option name="METHOD_NAME" value="testLocateFirst" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
@@ -865,18 +1021,68 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="IntRange" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="org.osgl.util.IntRange" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <configuration default="false" name="DelegatingListTest.testLocateLast" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="osgl-tool" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="PACKAGE_NAME" value="org.osgl.util" />
+      <option name="MAIN_CLASS_NAME" value="org.osgl.util.DelegatingListTest" />
+      <option name="METHOD_NAME" value="testLocateLast" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="osgl-tool" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
       <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="DelegatingListTest.testLocate" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="osgl-tool" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="org.osgl.util" />
+      <option name="MAIN_CLASS_NAME" value="org.osgl.util.DelegatingListTest" />
+      <option name="METHOD_NAME" value="testLocate" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="ImmutableListTest" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="osgl-tool" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="org.osgl.util" />
+      <option name="MAIN_CLASS_NAME" value="org.osgl.util.ImmutableListTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="" />
         <option name="TRANSPORT" value="0" />
@@ -887,19 +1093,31 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="FSM" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="org.osgl.FSM" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <configuration default="false" name="ImmutableListTest.testAcceptRight" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="osgl-tool" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="PACKAGE_NAME" value="org.osgl.util" />
+      <option name="MAIN_CLASS_NAME" value="org.osgl.util.ImmutableListTest" />
+      <option name="METHOD_NAME" value="testAcceptRight" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="osgl-tool" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
       <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
@@ -959,19 +1177,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="JUnit.LazyRangeTest.contains" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.LazyRangeTest.containsAll" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.LazyRangeTest.serialize" />
-      <item index="3" class="java.lang.String" itemvalue="Application.IntRange" />
-      <item index="4" class="java.lang.String" itemvalue="Application.FSM" />
+      <item index="0" class="java.lang.String" itemvalue="JUnit.DelegatingListTest.testLocateFirst" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.DelegatingListTest.testLocateLast" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.DelegatingListTest.testLocate" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.ImmutableListTest" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.ImmutableListTest.testAcceptRight" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Application.FSM" />
-        <item index="1" class="java.lang.String" itemvalue="Application.IntRange" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.LazyRangeTest.serialize" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.LazyRangeTest.containsAll" />
-        <item index="4" class="java.lang.String" itemvalue="JUnit.LazyRangeTest.contains" />
+        <item index="0" class="java.lang.String" itemvalue="JUnit.ImmutableListTest.testAcceptRight" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.ImmutableListTest" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.DelegatingListTest.testLocate" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.DelegatingListTest.testLocateLast" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.DelegatingListTest.testLocateFirst" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
@@ -1007,23 +1225,25 @@
     <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="24" width="1366" height="744" extended-state="0" />
+    <frame x="-4" y="20" width="1374" height="752" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32930514" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22550544" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22427036" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24962063" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5092025" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.7219662" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928678" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3291536" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.52073735" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22077923" sideWeight="0.7744945" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24069856" sideWeight="0.74654377" order="7" side_tool="false" content_ui="tabs" x="588" y="20" width="981" height="1650" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928678" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22077923" sideWeight="0.7744945" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37423313" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24601367" sideWeight="0.74654377" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24905087" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25345623" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1031,8 +1251,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.7009202" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24962063" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -1105,142 +1323,127 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://R:/jdk/src.zip!/java/util/Arrays.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/Nil.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2733" column="25" selection-start="104211" selection-end="104211" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingList1.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="0" selection-start="69" selection-end="144" vertical-scroll-proportion="0.0">
+        <state line="233" column="44" selection-start="6139" selection-end="6139" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/SequenceBase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="41" selection-start="244" selection-end="244" vertical-scroll-proportion="0.0">
+        <state line="184" column="5" selection-start="4762" selection-end="4762" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/LazySeq.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="13" selection-start="1599" selection-end="1599" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/SequenceTestBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="186" column="0" selection-start="4902" selection-end="5359" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/CursorBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="39" selection-start="377" selection-end="377" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/DelegatingList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="13" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="109" column="30" selection-start="2911" selection-end="2911" vertical-scroll-proportion="0.0">
+        <state line="10" column="6" selection-start="231" selection-end="231" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#476#506#1" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListIteratorCursor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="19" selection-start="583" selection-end="583" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/CursorBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="23" selection-start="1274" selection-end="1274" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ImmutableList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="453" column="0" selection-start="9822" selection-end="9822" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#1331#1361#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="jar://R:/jdk/src.zip!/java/util/ArrayList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="364" column="16" selection-start="13555" selection-end="13555" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/_.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2007" column="20" selection-start="75521" selection-end="75521" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#18108#18277#0" expanded="true" />
-            <element signature="e#18262#18263#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://R:/jdk/src.zip!/java/util/Collection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="357" column="12" selection-start="17558" selection-end="17558" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1965" column="21" selection-start="72250" selection-end="72250" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#63470#63500#0" expanded="true" />
-            <element signature="e#67440#67641#0" expanded="true" />
-            <element signature="e#67626#67627#0" expanded="true" />
-            <element signature="e#67753#67949#0" expanded="true" />
-            <element signature="e#67934#67935#0" expanded="true" />
-            <element signature="e#70250#70815#0" expanded="true" />
-            <element signature="e#70800#70801#0" expanded="true" />
-            <element signature="e#71079#71660#0" expanded="true" />
-            <element signature="e#71645#71646#0" expanded="true" />
-            <element signature="e#71800#72326#0" expanded="true" />
-            <element signature="e#72311#72312#0" expanded="true" />
-            <element signature="e#72474#72996#0" expanded="true" />
-            <element signature="e#72981#72982#0" expanded="true" />
-            <element signature="e#73138#73424#0" expanded="true" />
-            <element signature="e#73409#73410#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://R:/jdk/src.zip!/java/util/AbstractCollection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="367" column="19" selection-start="12400" selection-end="12400" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://R:/jdk/src.zip!/java/lang/Object.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="194" column="28" selection-start="9314" selection-end="9314" vertical-scroll-proportion="0.0">
+        <state line="81" column="13" selection-start="3991" selection-end="3991" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://R:/jdk/src.zip!/java/util/AbstractList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="129" column="16" selection-start="4912" selection-end="4912" vertical-scroll-proportion="0.0">
+        <state line="310" column="58" selection-start="10779" selection-end="10779" vertical-scroll-proportion="0.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/DelegatingListTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="5" selection-start="402" selection-end="402" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListIteratorCursor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="0" selection-start="492" selection-end="492" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/C.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1893" column="45" selection-start="71700" selection-end="71700" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#84787#0" expanded="true" />
+            <element signature="e#75766#75796#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/ImmutableListTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="26" selection-start="528" selection-end="528" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/ListTestBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="146" column="13" selection-start="3579" selection-end="3579" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ListBase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="557" column="0" selection-start="14864" selection-end="14864" vertical-scroll-proportion="-3.3246753">
+        <state line="850" column="24" selection-start="22559" selection-end="22559" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/osgl/util/ReversibleSeqTestBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="0" selection-start="1903" selection-end="1903" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3819#4067#0" expanded="true" />
-            <element signature="e#4052#4053#0" expanded="true" />
-            <element signature="e#16886#16916#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/osgl/util/ImmutableList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="39" selection-start="609" selection-end="609" vertical-scroll-proportion="-0.43269232">
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

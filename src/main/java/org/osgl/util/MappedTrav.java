@@ -2,7 +2,7 @@ package org.osgl.util;
 
 import org.osgl._;
 
-import java.util.EnumSet;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -12,46 +12,30 @@ import java.util.Iterator;
  * Time: 2:05 PM
  * To change this template use File | Settings | File Templates.
  */
-class MappedTrav<T, R> extends TraversalBase<R> {
-    private final Iterable<T> itrb_;
+class MappedTrav<T, R> extends TraversableBase<R> {
+    private final Iterable<? extends T> data;
     private final _.F1<T, R> mapper_;
-    MappedTrav(Iterable<T> iterable, _.Function<? super T, ? extends R> mapper) {
+
+    MappedTrav(Iterable<? extends T> iterable, _.Function<? super T, ? extends R> mapper) {
         E.NPE(iterable, mapper);
-        itrb_ = iterable;
+        data = iterable;
         mapper_ = _.f1(mapper);
     }
 
     @Override
-    protected EnumSet<C.Feature> initFeatures() {
-        return null;
-    }
-
-    @Override
     public Iterator<R> iterator() {
-        return Iterators.map(itrb_.iterator(), mapper_);
-    }
-
-    @Override
-    public C.Traversable<R> filter(_.Function<? super R, Boolean> predicate) {
-        return null;
-    }
-
-    @Override
-    public <R1> C.Traversable<R1> flatMap(_.Function<? super R, ? extends Iterable<? extends R1>> mapper
-    ) {
-        //TODO ...
-        return null;
-    }
-
-    @Override
-    public <R1> C.Traversable<R1> map(_.Function<? super R, ? extends R1> mapper) {
-        //TODO ...
-        return null;
+        return Iterators.map(data.iterator(), mapper_);
     }
 
     @Override
     public int size() throws UnsupportedOperationException {
-        //TODO ...
-        return 0;
+        if (data instanceof Collection) {
+            return ((Collection<?>) data).size();
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T, R> C.Traversable<R> of(Iterable<? extends T> iterable, _.Function<? super T, ? extends R> mapper) {
+        return new MappedTrav<T, R>(iterable, mapper);
     }
 }

@@ -143,6 +143,5 @@ extends MappedSeq<T, R> implements C.ReversibleSequence<R> {
 
     @Override
     public C.ReversibleSequence<R> filter(_.Function<? super R, Boolean> predicate) {
-
     }
 }

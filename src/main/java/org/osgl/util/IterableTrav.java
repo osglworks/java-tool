@@ -1,44 +1,38 @@
 package org.osgl.util;
 
-import org.osgl._;
-
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
  * A {@link C.Traversable} implementation based on an {@link Iterable}
  */
-class IterableTrav<T> extends TraversalBase<T> {
-    private final Iterable<T> itrb_;
-    IterableTrav(Iterable<T> iterable) {
+class IterableTrav<T> extends TraversableBase<T> {
+
+    private final Iterable<? extends T> data;
+
+    IterableTrav(Iterable<? extends T> iterable) {
         E.NPE(iterable);
-        itrb_ = iterable;
+        data = iterable;
     }
 
     @Override
     public Iterator<T> iterator() {
-        return itrb_.iterator();
+        return DelegatingIterator.of(data.iterator(), is(C.Feature.READONLY));
     }
 
     @Override
     public int size() throws UnsupportedOperationException {
-        return reduce(1, N.F.<T>counter());
+        if (data instanceof Collection) {
+            return ((Collection<?>) data).size();
+        }
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public <R> C.Traversable<R> map(_.Function<? super T, ? extends R> mapper) {
-        return Traversals.map(itrb_, mapper);
-    }
-
-    @Override
-    public <R> C.Traversable<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
-    ) {
-        //TODO ...
-        return null;
-    }
-
-    @Override
-    public C.Traversable<T> filter(_.Function<? super T, Boolean> predicate) {
-        //TODO ...
-        return null;
+    @SuppressWarnings("unchecked")
+    public static <T> C.Traversable<T> of(Iterable<? extends T> iterable) {
+        if (iterable instanceof C.Traversable) {
+            return (C.Traversable<T>)iterable;
+        }
+        return new IterableTrav<T>(iterable);
     }
 }

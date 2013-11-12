@@ -297,19 +297,19 @@ public enum N {
             return _n.doubleValue();
         }
 
-        public Num add(Number n) {
+        public Num<?> add(Number n) {
             return valueOf(Op.ADD.apply(_n, n));
         }
 
-        public Num sub(Number n) {
+        public Num<?> sub(Number n) {
             return valueOf(Op.SUB.apply(_n, n));
         }
 
-        public Num mul(Number n) {
+        public Num<?> mul(Number n) {
             return valueOf(Op.MUL.apply(_n, n));
         }
 
-        public Num div(Number n) {
+        public Num<?> div(Number n) {
             return valueOf(Op.DIV.apply(_n, n));
         }
 
@@ -818,6 +818,24 @@ public enum N {
             };
         }
 
+        public static <T extends Number> _.F2<T, T, Number> addTwo() {
+            return new _.F2<T, T, Number>() {
+                @Override
+                public Number apply(T t1, T t2) throws NotAppliedException, _.Break {
+                    return num(t1).add(t2);
+                }
+            };
+        }
+
+        public static <T extends Number> _.F2<T, T, T> addTwo(final Class<T> c) {
+            return new _.F2<T, T, T>() {
+                @Override
+                public T apply(T t1, T t2) throws NotAppliedException, _.Break {
+                    return (T)num(t1).add(t2).as(c);
+                }
+            };
+        }
+
         public static <T extends Number> _.F1<T, Number> mul(final Number n) {
             return new _.F1<T, Number>() {
                 @Override
@@ -932,6 +950,15 @@ public enum N {
             };
         }
 
+        public static <T extends Number> _.F2<T, T, T> subtract(final Class<T> clz) {
+            return new _.F2<T, T, T>() {
+                @Override
+                public T apply(T minuend, T subtraend) throws NotAppliedException, _.Break {
+                    return (T)N.num(minuend).sub(subtraend).as(clz);
+                }
+            };
+        }
+
         public static final IntRangeStep INT_RANGE_STEP = new IntRangeStep();
 
         public static final IntRangeStep intRangeStep(int times) {
@@ -940,19 +967,19 @@ public enum N {
 
         public static final ByteRangeStep BYTE_RANGE_STEP = new ByteRangeStep();
 
-        public static final ByteRangeStep byteRangeStep(int times) {
+        public static ByteRangeStep byteRangeStep(int times) {
             return new ByteRangeStep(times);
         }
 
         public static final ShortRangeStep SHORT_RANGE_STEP = new ShortRangeStep();
 
-        public static final ByteRangeStep shortRangeStep(int times) {
+        public static ByteRangeStep shortRangeStep(int times) {
             return new ByteRangeStep(times);
         }
 
         public static final LongRangeStep LONG_RANGE_STEP = new LongRangeStep();
 
-        public static final LongRangeStep longRangeStep(int times) {
+        public static LongRangeStep longRangeStep(int times) {
             return new LongRangeStep(times);
         }
 
@@ -963,8 +990,17 @@ public enum N {
             }
         };
 
-        public static final <T> _.F2<Integer, T, Integer> counter() {
+        public static <T> _.F2<Integer, T, Integer> counter() {
             return _.cast(COUNTER);
         }
+
+        public static _.Predicate<Integer> IS_EVEN = new _.Predicate<Integer>() {
+            @Override
+            public boolean test(Integer integer) {
+                return integer % 2 == 0;
+            }
+        };
+
+        public static _.Predicate<Integer> IS_ODD = _.F.negate(IS_EVEN);
     }
 }

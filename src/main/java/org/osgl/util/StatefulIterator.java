@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
  */
 abstract class StatefulIterator<T> extends ReadOnlyIterator<T> {
 
-    private _.Option<T> current;
+    private _.Option<T> current = _.none();
 
     /**
      * If there are still elements, then return the an option describing the next element,

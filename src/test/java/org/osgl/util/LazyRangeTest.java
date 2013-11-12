@@ -2,14 +2,13 @@ package org.osgl.util;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.osgl.TestBase;
 import org.osgl._;
 import org.osgl.exception.InvalidArgException;
 
 import java.io.IOException;
 import java.util.Random;
 
-public class LazyRangeTest extends TestBase {
+public class LazyRangeTest extends UtilTestBase {
 
     protected C.Range<Integer> range;
 
@@ -39,7 +38,7 @@ public class LazyRangeTest extends TestBase {
         eq(C.range(0, 100), range.merge(C.range(10, 20)));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void merge1() {
         eq(C.range(0, 200), range.merge(C.range(200, 100)));
     }

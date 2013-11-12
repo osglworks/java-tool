@@ -165,7 +165,7 @@ abstract class ListBase1<T> extends ReversibleSeqBase<T> implements C.List<T> {
         if (is(C.Feature.IMMUTABLE)) {
             ListBuilder<R> lb = new ListBuilder<R>(size());
             forEach(m.andThen(C.F.addTo(lb)));
-            return lb.asList();
+            return lb.toList();
         } else {
             C.List<R> ret = C.newList(size());
             forEach(m.andThen(C.F.addTo(ret)));
@@ -184,7 +184,7 @@ abstract class ListBase1<T> extends ReversibleSeqBase<T> implements C.List<T> {
         if (is(C.Feature.IMMUTABLE)) {
             ListBuilder<R> lb = new ListBuilder<R>(capacity);
             forEach(m.andThen(C.F.forEach(C.F.addTo(lb))));
-            return lb.asList();
+            return lb.toList();
         } else {
             C.List<R> ret = C.newList(capacity);
             forEach(m.andThen(C.F.forEach(C.F.addTo(ret))));
@@ -470,176 +470,4 @@ abstract class ListBase1<T> extends ReversibleSeqBase<T> implements C.List<T> {
 }
 
 
-class SubList<T> extends ListBase1<T> {
-    private ListBase1<T> l;
-    private int offset;
-    private int size;
-    private int expectedModCount;
 
-    SubList(ListBase1<T> list, int fromIndex, int toIndex) {
-        if (fromIndex < 0)
-            throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
-        if (toIndex > list.size())
-            throw new IndexOutOfBoundsException("toIndex = " + toIndex);
-        if (fromIndex > toIndex)
-            throw new IllegalArgumentException("fromIndex(" + fromIndex +
-                                               ") > toIndex(" + toIndex + ")");
-        l = list;
-        offset = fromIndex;
-        size = toIndex - fromIndex;
-        expectedModCount = l.modCount;
-    }
-
-    public T set(int index, T element) {
-        rangeCheck(index);
-        checkForComodification();
-        return l.set(index+offset, element);
-    }
-
-    public T get(int index) {
-        rangeCheck(index);
-        checkForComodification();
-        return l.get(index+offset);
-    }
-
-    public int size() {
-        checkForComodification();
-        return size;
-    }
-
-    public void add(int index, T element) {
-        if (index<0 || index>size)
-            throw new IndexOutOfBoundsException();
-        checkForComodification();
-        l.add(index+offset, element);
-        expectedModCount = l.modCount;
-        size++;
-        modCount++;
-    }
-
-    public T remove(int index) {
-        rangeCheck(index);
-        checkForComodification();
-        T result = l.remove(index+offset);
-        expectedModCount = l.modCount;
-        size--;
-        modCount++;
-        return result;
-    }
-
-    protected void removeRange(int fromIndex, int toIndex) {
-        checkForComodification();
-        l.removeRange(fromIndex+offset, toIndex+offset);
-        expectedModCount = l.modCount;
-        size -= (toIndex-fromIndex);
-        modCount++;
-    }
-
-    public boolean addAll(Collection<? extends T> c) {
-        return addAll(size, c);
-    }
-
-    public boolean addAll(int index, Collection<? extends T> c) {
-        if (index<0 || index>size)
-            throw new IndexOutOfBoundsException(
-                "Index: "+index+", Size: "+size);
-        int cSize = c.size();
-        if (cSize==0)
-            return false;
-
-        checkForComodification();
-        l.addAll(offset+index, c);
-        expectedModCount = l.modCount;
-        size += cSize;
-        modCount++;
-        return true;
-    }
-
-    public Iterator<T> iterator() {
-        return listIterator();
-    }
-
-    public ListIterator<T> listIterator(final int index) {
-        checkForComodification();
-        if (index<0 || index>size)
-            throw new IndexOutOfBoundsException(
-                "Index: "+index+", Size: "+size);
-
-        return new ListIterator<T>() {
-            private ListIterator<T> i = l.listIterator(index+offset);
-
-            public boolean hasNext() {
-                return nextIndex() < size;
-            }
-
-            public T next() {
-                if (hasNext())
-                    return i.next();
-                else
-                    throw new NoSuchElementException();
-            }
-
-            public boolean hasPrevious() {
-                return previousIndex() >= 0;
-            }
-
-            public T previous() {
-                if (hasPrevious())
-                    return i.previous();
-                else
-                    throw new NoSuchElementException();
-            }
-
-            public int nextIndex() {
-                return i.nextIndex() - offset;
-            }
-
-            public int previousIndex() {
-                return i.previousIndex() - offset;
-            }
-
-            public void remove() {
-                i.remove();
-                expectedModCount = l.modCount;
-                size--;
-                modCount++;
-            }
-
-            public void set(T t) {
-                i.set(t);
-            }
-
-            public void add(T t) {
-                i.add(t);
-                expectedModCount = l.modCount;
-                size++;
-                modCount++;
-            }
-        };
-    }
-
-    public List<T> subList(int fromIndex, int toIndex) {
-        return new SubList<T>(this, fromIndex, toIndex);
-    }
-
-    private void rangeCheck(int index) {
-        if (index<0 || index>=size)
-            throw new IndexOutOfBoundsException("Index: "+index+
-                                                ",Size: "+size);
-    }
-
-    private void checkForComodification() {
-        if (l.modCount != expectedModCount)
-            throw new ConcurrentModificationException();
-    }
-}
-
-class RandomAccessSubList<E> extends SubList<E> implements RandomAccess {
-    RandomAccessSubList(AbstractList<E> list, int fromIndex, int toIndex) {
-        super(list, fromIndex, toIndex);
-    }
-
-    public List<E> subList(int fromIndex, int toIndex) {
-        return new RandomAccessSubList<E>(this, fromIndex, toIndex);
-    }
-}

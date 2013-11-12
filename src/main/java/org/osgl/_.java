@@ -21,8 +21,7 @@ package org.osgl;
 
 import org.osgl.exception.FastRuntimeException;
 import org.osgl.exception.NotAppliedException;
-import org.osgl.util.E;
-import org.osgl.util.S;
+import org.osgl.util.*;
 
 import java.io.*;
 import java.lang.reflect.Array;
@@ -307,7 +306,7 @@ public enum _ {
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
-    public static final F0 F0 = new F0() {
+    public static final F0<?> F0 = new F0() {
         @Override
         public Object apply() {
             return null;
@@ -321,7 +320,7 @@ public enum _ {
      */
     @SuppressWarnings("unchecked")
     public static <T> F0<T> f0() {
-        return F0;
+        return (F0<T>)F0;
     }
 
     /**
@@ -717,7 +716,7 @@ public enum _ {
      * @see #f1()
      * @since 0.2
      */
-    public static final F1 F1 = new F1() {
+    public static final F1<?, ?> F1 = new F1() {
         @Override
         public Object apply(Object o) {
             return null;
@@ -731,7 +730,7 @@ public enum _ {
      */
     @SuppressWarnings("unchecked")
     public static <P1, R> F1<P1, R> f1() {
-        return F1;
+        return (F1<P1, R>)F1;
     }
 
 
@@ -993,7 +992,7 @@ public enum _ {
      * @see #f2()
      * @since 0.2
      */
-    public static final F2 F2 = new F2() {
+    public static final F2<?, ?, ?> F2 = new F2() {
         @Override
         public Object apply(Object p1, Object p2) {
             return null;
@@ -1007,7 +1006,7 @@ public enum _ {
      */
     @SuppressWarnings("unchecked")
     public static <P1, P2, R> F2<P1, P2, R> f2() {
-        return F2;
+        return (F2<P1, P2, R>)F2;
     }
 
 
@@ -2525,15 +2524,15 @@ public enum _ {
             this._3 = _3;
         }
 
-        public T3 set1(A a) {
+        public T3<A, B, C> set1(A a) {
             return T3(a, _2, _3);
         }
 
-        public T3 set2(B b) {
+        public T3<A, B, C> set2(B b) {
             return T3(_1, b, _3);
         }
 
-        public T3 set3(C c) {
+        public T3<A, B, C> set3(C c) {
             return T3(_1, _2, c);
         }
 
@@ -2820,6 +2819,7 @@ public enum _ {
          * or {@link #NONE} if the value is {@code null}
          * @since 0.2
          */
+        @SuppressWarnings("unchecked")
         public static <T> Option<T> of(T value) {
             return null == value ? NONE : some(value);
         }
@@ -2984,6 +2984,7 @@ public enum _ {
             return value;
         }
 
+        @Override
         public Iterator<T> iterator() {
             return Collections.singletonList(value).iterator();
         }
@@ -3004,6 +3005,696 @@ public enum _ {
     @SuppressWarnings("unchecked")
     public static <T> None<T> none() {
         return (None<T>) NONE;
+    }
+
+    private static class VarListIterator<T> implements ListIterator<T> {
+        private Var<T> var;
+        private volatile boolean consumed;
+
+        VarListIterator(Var<T> var, boolean consumed) {
+            this(var);
+            this.consumed = consumed;
+        }
+
+        VarListIterator(Var<T> var) {
+            this.var = var;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !consumed;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return consumed;
+        }
+
+        @Override
+        public T next() {
+            if (consumed) {
+                throw new NoSuchElementException();
+            }
+            consumed = true;
+            return var.get();
+        }
+
+        @Override
+        public T previous() {
+            if (!consumed) {
+                throw new NoSuchElementException();
+            }
+            consumed = false;
+            return var.get();
+        }
+
+        @Override
+        public int nextIndex() {
+            return consumed ? 1 : 0;
+        }
+
+        @Override
+        public int previousIndex() {
+            return consumed ? 0 : -1;
+        }
+
+        @Override
+        public void set(T t) {
+            var.set(t);
+        }
+
+        @Override
+        public void add(T t) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public static class Var<T> extends ListBase<T> implements C.List<T>, Set<T> {
+
+        private T v;
+
+        public Var(T value) {
+            v = value;
+        }
+
+        @Override
+        protected EnumSet<C.Feature> initFeatures() {
+            return EnumSet.allOf(C.Feature.class);
+        }
+
+        @Override
+        public Var<T> accept(Function<? super T, ?> visitor) {
+            visitor.apply(v);
+            return this;
+        }
+
+        @Override
+        public T head() throws NoSuchElementException {
+            return v;
+        }
+
+        @Override
+        public Var<T> acceptLeft(Function<? super T, ?> visitor) {
+            visitor.apply(v);
+            return this;
+        }
+
+        @Override
+        public <R> R reduceLeft(R identity, Func2<R, T, R> accumulator) {
+            return accumulator.apply(identity, v);
+        }
+
+        @Override
+        public Option<T> reduceLeft(Func2<T, T, T> accumulator) {
+            return _.some(v);
+        }
+
+        @Override
+        public Option<T> findFirst(Function<? super T, Boolean> predicate) {
+            if (predicate.apply(v)) {
+                return _.some(v);
+            } else {
+                return _.none();
+            }
+        }
+
+        @Override
+        public C.List<T> take(int n) {
+            if (n == 0) {
+                return C.list();
+            } else if (n < 0) {
+                return drop(size() + n);
+            } else {
+                return this;
+            }
+        }
+
+        @Override
+        public C.List<T> tail() throws UnsupportedOperationException {
+            return C.list();
+        }
+
+        @Override
+        public C.List<T> takeWhile(Function<? super T, Boolean> predicate) {
+            if (predicate.apply(v)) {
+                return this;
+            }
+            return C.list();
+        }
+
+        @Override
+        public C.List<T> drop(int n) throws IllegalArgumentException {
+            if (n < 0) {
+                throw new IllegalArgumentException();
+            }
+            if (n == 0) {
+                return this;
+            }
+            return C.list();
+        }
+
+        @Override
+        public C.List<T> dropWhile(Function<? super T, Boolean> predicate) {
+            if (predicate.apply(v)) {
+                return C.list();
+            }
+            return this;
+        }
+
+        @Override
+        public C.List<T> filter(Function<? super T, Boolean> predicate) {
+            if (predicate.apply(v)) {
+                return this;
+            }
+            return C.list();
+        }
+
+        @Override
+        public <R> C.List<R> map(Function<? super T, ? extends R> mapper) {
+            return new Var<R>(mapper.apply(v));
+        }
+
+        @Override
+        public <R> C.List<R> flatMap(Function<? super T, ? extends Iterable<? extends R>> mapper) {
+            ListBuilder<R> lb = new ListBuilder<R>(3);
+            forEach(_.f1(mapper).andThen(C.F.addAllTo(lb)));
+            return lb.toList();
+        }
+
+        @Override
+        public <T2> C.List<_.T2<T, T2>> zip(Iterable<T2> iterable) {
+            Iterator<T2> itr = iterable.iterator();
+            if (itr.hasNext()) {
+                return new Var<_.T2<T, T2>>(_.T2(v, itr.next()));
+            }
+            return C.list();
+        }
+
+        @Override
+        public C.Sequence<T2<T, Integer>> zipWithIndex() {
+            return new Var<T2<T, Integer>>(T2(v, 0));
+        }
+
+        @Override
+        public Var<T> lazy() {
+            return this;
+        }
+
+        @Override
+        public Var<T> eager() {
+            return this;
+        }
+
+        @Override
+        public Var<T> parallel() {
+            return this;
+        }
+
+        @Override
+        public Var<T> sequential() {
+            return this;
+        }
+
+        @Override
+        public int hashCode() {
+            return hc(v);
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public <R> R reduce(R identity, Func2<R, T, R> accumulator) {
+            return reduceLeft(identity, accumulator);
+        }
+
+        @Override
+        public Option<T> reduce(Func2<T, T, T> accumulator) {
+            return reduceLeft(accumulator);
+        }
+
+        @Override
+        public Option<T> findOne(Function<? super T, Boolean> predicate) {
+            if (predicate.apply(v)) {
+                return _.some(v);
+            } else {
+                return _.none();
+            }
+        }
+
+        @Override
+        public boolean anyMatch(Function<? super T, Boolean> predicate) {
+            return predicate.apply(v);
+        }
+
+        @Override
+        public boolean noneMatch(Function<? super T, Boolean> predicate) {
+            return !anyMatch(predicate);
+        }
+
+        @Override
+        public boolean allMatch(Function<? super T, Boolean> predicate) {
+            return anyMatch(predicate);
+        }
+
+        @Override
+        public int size() throws UnsupportedOperationException {
+            return 1;
+        }
+
+        @Override
+        public C.List<T> subList(int fromIndex, int toIndex) {
+            if (fromIndex < 0 || toIndex > 1 || fromIndex > toIndex) {
+                throw new IndexOutOfBoundsException();
+            }
+            if (fromIndex == toIndex) {
+                return C.list();
+            }
+            return this;
+        }
+
+        @Override
+        public boolean addAll(Iterable<? extends T> iterable) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public C.List<T> tail(int n) {
+            if (n == 0) {
+                return C.list();
+            }
+            return this;
+        }
+
+        @Override
+        public C.List<T> remove(Function<? super T, Boolean> predicate) {
+            throw new UnsupportedOperationException();
+        }
+
+        private class Csr implements Cursor<T> {
+            private int id = 0;
+            @Override
+            public boolean isDefined() {
+                return 0 == id;
+            }
+
+            @Override
+            public int index() {
+                return id;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return -1 == id;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return 1 == id;
+            }
+
+            @Override
+            public Cursor<T> forward() throws UnsupportedOperationException {
+                if (id == -1) {
+                    id = 0;
+                    return this;
+                }
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Cursor<T> backward() throws UnsupportedOperationException {
+                if (id == 1) {
+                    id = 0;
+                }
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Cursor<T> parkLeft() {
+                id = -1;
+                return this;
+            }
+
+            @Override
+            public Cursor<T> parkRight() {
+                id = 1;
+                return this;
+            }
+
+            @Override
+            public T get() throws NoSuchElementException {
+                if (id == 0) {
+                    return v;
+                }
+                throw new NoSuchElementException();
+            }
+
+            @Override
+            public Cursor<T> set(T t) throws IndexOutOfBoundsException, NullPointerException {
+                if (id == 0) {
+                    v = t;
+                    return this;
+                }
+                throw new IndexOutOfBoundsException();
+            }
+
+            @Override
+            public Cursor<T> drop() throws NoSuchElementException, UnsupportedOperationException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Cursor<T> prepend(T t) throws IndexOutOfBoundsException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Cursor<T> append(T t) {
+                throw new UnsupportedOperationException();
+            }
+        }
+
+        @Override
+        public Cursor<T> locateFirst(Function<T, Boolean> predicate) {
+            if (predicate.apply(v)) {
+                return new Csr();
+            }
+            return new Csr().parkRight();
+        }
+
+        @Override
+        public Cursor<T> locate(Function<T, Boolean> predicate) {
+            return locateFirst(predicate);
+        }
+
+        @Override
+        public Cursor<T> locateLast(Function<T, Boolean> predicate) {
+            if (predicate.apply(v)) {
+                return new Csr();
+            }
+            return new Csr().parkLeft();
+        }
+
+        @Override
+        public C.List<T> insert(int index, T t) throws IndexOutOfBoundsException {
+            if (index == 0) {
+                return C.list(t, v);
+            } else if (index == 1) {
+                return C.list(v, t);
+            } else {
+                throw new IndexOutOfBoundsException();
+            }
+        }
+
+        @Override
+        public C.List<T> reverse() {
+            return this;
+        }
+
+        @Override
+        public C.List<T> without(Collection<? super T> col) {
+            if (col.contains(v)) {
+                return C.list();
+            }
+            return this;
+        }
+
+        @Override
+        public C.List<T> acceptRight(Function<? super T, ?> visitor) {
+            return accept(visitor);
+        }
+
+        @Override
+        public <B> C.List<T2<T, B>> zip(List<B> list) {
+            if (list.size() == 0) {
+                return C.list();
+            }
+            return C.list(T2(v, list.get(0)));
+        }
+
+        @Override
+        public boolean add(T t) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ListIterator<T> listIterator(int index) {
+            if (index == 0) {
+                return new VarListIterator<T>(this);
+            } else if (index == 1) {
+                return new VarListIterator<T>(this, true);
+            }
+            throw new IndexOutOfBoundsException();
+        }
+
+        @Override
+        public ListIterator<T> listIterator() {
+            return new VarListIterator<T>(this);
+        }
+
+
+
+        @Override
+        public T last() throws NoSuchElementException {
+            return v;
+        }
+
+        @Override
+        public Iterator<T> reverseIterator() {
+            return listIterator(0);
+        }
+
+        @Override
+        public T get(int index) {
+            if (index == 0) {
+                return v;
+            }
+            throw new IndexOutOfBoundsException();
+        }
+
+
+
+        public T get() {
+            return v;
+        }
+
+        public Var<T> set(T value) {
+            v = value;
+            return this;
+        }
+
+        @Override
+        public T set(int index, T element) {
+            if (0 == index) {
+                v = element;
+            }
+            throw new IndexOutOfBoundsException();
+        }
+
+        @Override
+        public void add(int index, T element) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public T remove(int index) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int indexOf(Object o) {
+            if (_.eq(o, v)) {
+                return 0;
+            }
+            return -1;
+        }
+
+        @Override
+        public int lastIndexOf(Object o) {
+            return indexOf(o);
+        }
+
+        @Override
+        public void clear() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean addAll(int index, Collection<? extends T> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void removeRange(int fromIndex, int toIndex) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return _.eq(v, o);
+        }
+
+        @Override
+        public Object[] toArray() {
+            return new Object[]{v};
+        }
+
+        @Override
+        public <T> T[] toArray(T[] a) {
+            T[] ta = newArray(a, 1);
+            ta[0] = (T)v;
+            return ta;
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c) {
+            for (Object o : c) {
+                if (_.ne(o, v)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends T> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public <R> R reduceRight(R identity, Func2<R, T, R> accumulator) {
+            return reduce(identity, accumulator);
+        }
+
+        @Override
+        public Option<T> reduceRight(Func2<T, T, T> accumulator) {
+            return reduce(accumulator);
+        }
+
+        @Override
+        public Option<T> findLast(Function<? super T, Boolean> predicate) {
+            return findFirst(predicate);
+        }
+
+        @Override
+        public Iterator<T> iterator() {
+            return listIterator();
+        }
+
+        public Var<T> update(Function<T, T> changer) {
+            v = changer.apply(v);
+            return this;
+        }
+
+        public Var<T> update(_.Func0<T> changer) {
+            v = changer.apply();
+            return this;
+        }
+
+        public Option<T> toOption() {
+            if (null == v) {
+                return _.none();
+            } else {
+                return _.some(v);
+            }
+        }
+
+        public class _f {
+
+            public F1<T, Var<T>> setter() {
+                return new F1<T, Var<T>>() {
+                    @Override
+                    public Var<T> apply(T t) throws NotAppliedException, Break {
+                        return Var.this.set(t);
+                    }
+                };
+            }
+
+            public <R> F1<R, Var<T>> mapper(final Function<R, T> mapper) {
+                return new F1<R, Var<T>>() {
+                    @Override
+                    public Var<T> apply(R r) throws NotAppliedException, Break {
+                        return Var.this.set(mapper.apply(r));
+                    }
+                };
+            }
+
+            public F1<T, Var<T>> updater(final Function<T, T> changer) {
+                return new F1<T, Var<T>>() {
+                    @Override
+                    public Var<T> apply(T t) throws NotAppliedException, Break {
+                        return Var.this.update(f1(changer).curry(t));
+                    }
+                };
+            }
+
+            public F1<T, Var<T>> updater(final Func2<T, T, T> changer) {
+                return new _.F1<T, Var<T>>() {
+                    @Override
+                    public Var<T> apply(T t) throws NotAppliedException, Break {
+                        return Var.this.update(f2(changer).curry(t));
+                    }
+                };
+            }
+
+        }
+
+        public _f f = new _f();
+
+        public static <T> Var<T> of(T t) {
+            return new Var<T>(t);
+        }
+    }
+
+    public static class Val<T> extends Var<T> {
+        public Val(T value) {
+            super(value);
+        }
+
+        @Override
+        public Var<T> set(T value) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public T set(int index, T element) {
+            throw new UnsupportedOperationException();
+        }
+
+        public static <T> Val<T> of(T t) {
+            return new Val<T>(t);
+        }
+    }
+
+    public static <T> Var<T> var(T t) {
+        return Var.of(t);
+    }
+
+    public static <T> Val<T> val(T t) {
+        return Val.of(t);
     }
 
     // --- common utilities
@@ -3616,7 +4307,7 @@ public enum _ {
      *
      * @since 0.2
      */
-    public static final long ms() {
+    public static long ms() {
         return System.currentTimeMillis();
     }
 
@@ -3625,7 +4316,7 @@ public enum _ {
      *
      * @since 0.2
      */
-    public static final long ns() {
+    public static long ns() {
         return System.nanoTime();
     }
 
@@ -3634,8 +4325,12 @@ public enum _ {
      *
      * @since 0.2
      */
-    public static final long ts() {
+    public static long ts() {
         return System.nanoTime();
+    }
+
+    public static void echo(String msg, Object... args) {
+        System.out.println(S.fmt(msg, args));
     }
 
     /**
@@ -3690,6 +4385,15 @@ public enum _ {
         return obj;
     }
 
+    public static <T> Option<T> safeNewInstance(String className) {
+        try {
+            Class<T> c = (Class<T>) Class.forName(className);
+            return _.some(c.newInstance());
+        } catch (Exception e) {
+            return _.none();
+        }
+    }
+
     public static <T> byte[] serialize(T obj) {
         E.NPE(obj);
         try {
@@ -3700,6 +4404,21 @@ public enum _ {
             return baos.toByteArray();
         } catch (IOException e) {
             throw E.ioException(e);
+        }
+    }
+
+    public static <T> T materialize(byte[] ba, Class<T> c) {
+        E.NPE(ba);
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            T t = (T) ois.readObject();
+            ois.close();
+            return t;
+        } catch (IOException e) {
+            throw E.ioException(e);
+        } catch (ClassNotFoundException e) {
+            throw E.unexpected(e);
         }
     }
 
@@ -3716,6 +4435,124 @@ public enum _ {
         } catch (ClassNotFoundException e) {
             throw E.unexpected(e);
         }
+    }
+
+    /**
+     * Create an new array with specified array type and length
+     * @param model the model array
+     * @param <T> the array component type
+     * @return an new array with the same component type of model and length of model
+     */
+    public static <T> T[] newArray(T[] model) {
+        return newArray(model, model.length);
+    }
+
+    /**
+     * Create an new array with specified type and length
+     * @param model the model array
+     * @param size the new array length
+     * @param <T> the component type
+     * @return an new array with the same type of model and length equals to size
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] newArray(T[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        Class<?> c = model.getClass();
+        if (c == Object[].class) {
+            return (T[]) new Object[size];
+        }
+        return (T[]) Array.newInstance(c.getComponentType(), size);
+    }
+
+    public static int[] newArray(int[] model) {
+        return newArray(model, model.length);
+    }
+
+    public static int[] newArray(int[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        return new int[size];
+    }
+
+
+    public static byte[] newArray(byte[] model) {
+        return newArray(model, model.length);
+    }
+
+    public static byte[] newArray(byte[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        return new byte[size];
+    }
+
+    public static char[] newArray(char[] model) {
+        return newArray(model, model.length);
+    }
+
+    public static char[] newArray(char[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        return new char[size];
+    }
+
+    public static short[] newArray(short[] model) {
+        return newArray(model, model.length);
+    }
+
+    public static short[] newArray(short[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        return new short[size];
+    }
+
+    public static long[] newArray(long[] model) {
+        return newArray(model, model.length);
+    }
+
+    public static long[] newArray(long[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        return new long[size];
+    }
+
+    public static float[] newArray(float[] model) {
+        return newArray(model, model.length);
+    }
+
+    public static float[] newArray(float[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        return new float[size];
+    }
+
+    public static double[] newArray(double[] model) {
+        return newArray(model, model.length);
+    }
+
+    public static double[] newArray(double[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        return new double[size];
+    }
+
+    public static boolean[] newArray(boolean[] model) {
+        return newArray(model, model.length);
+    }
+
+    public static boolean[] newArray(boolean[] model, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        return new boolean[size];
     }
 
     public static <T> T[] concat(T[] a1, T[] a2) {
@@ -3739,6 +4576,208 @@ public enum _ {
         }
 
         return ret;
+    }
+
+    public static int[] concat(int[] a1, int[] a2) {
+        int[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static int[] concat(int[] a1, int[] a2, int[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (int[] a: rest) {
+            len += a.length;
+        }
+        int[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (int[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
+
+    public static boolean[] concat(boolean[] a1, boolean[] a2) {
+        boolean[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static boolean[] concat(boolean[] a1, boolean[] a2, boolean[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (boolean[] a: rest) {
+            len += a.length;
+        }
+        boolean[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (boolean[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
+
+    public static byte[] concat(byte[] a1, byte[] a2) {
+        byte[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static byte[] concat(byte[] a1, byte[] a2, byte[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (byte[] a: rest) {
+            len += a.length;
+        }
+        byte[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (byte[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
+
+    public static short[] concat(short[] a1, short[] a2) {
+        short[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static short[] concat(short[] a1, short[] a2, short[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (short[] a: rest) {
+            len += a.length;
+        }
+        short[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (short[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
+
+    public static char[] concat(char[] a1, char[] a2) {
+        char[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static char[] concat(char[] a1, char[] a2, char[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (char[] a: rest) {
+            len += a.length;
+        }
+        char[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (char[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
+
+    public static long[] concat(long[] a1, long[] a2) {
+        long[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static long[] concat(long[] a1, long[] a2, long[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (long[] a: rest) {
+            len += a.length;
+        }
+        long[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (long[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
+
+    public static float[] concat(float[] a1, float[] a2) {
+        float[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static float[] concat(float[] a1, float[] a2, float[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (float[] a: rest) {
+            len += a.length;
+        }
+        float[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (float[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
+
+    public static double[] concat(double[] a1, double[] a2) {
+        double[] ret = Arrays.copyOf(a1, a1.length + a2.length);
+        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        return ret;
+    }
+
+    public static double[] concat(double[] a1, double[] a2, double[]... rest) {
+        int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
+        for (double[] a: rest) {
+            len += a.length;
+        }
+        double[] ret = Arrays.copyOf(a1, len);
+        System.arraycopy(a2, 0, ret, l1, l2);
+        int offset = l12;
+        for (double[] a : rest) {
+            int la = a.length;
+            System.arraycopy(a, 0, ret, offset, la);
+            offset += la;
+        }
+
+        return ret;
+    }
+
+    public static Integer[] asObject(int[] pa) {
+        int len = pa.length;
+        Integer[] oa = new Integer[len];
+        for (int i = 0; i < len; ++i) {
+            oa[i] = pa[i];
+        }
+        return oa;
+    }
+
+    public static Long[] asObject(long[] pa) {
+        int len = pa.length;
+        Long[] oa = new Long[len];
+        for (int i = 0; i < len; ++i) {
+            oa[i] = pa[i];
+        }
+        return oa;
     }
     // --- eof common utilities
 
@@ -4939,6 +5978,10 @@ public enum _ {
          */
         @SuppressWarnings("unchecked")
         public static <T> F1<T, String> asString() {
+            return AS_STRING;
+        }
+
+        public static <T> F1<T, String> asString(Class<T> tClass) {
             return AS_STRING;
         }
     }

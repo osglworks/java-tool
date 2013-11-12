@@ -43,4 +43,8 @@ public class DelegatingIterator<T> implements Iterator<T> {
         mutableOperation();
         itr_.remove();
     }
+
+    public static <T> Iterator<T> of(Iterator<? extends T> iterator, boolean readOnly) {
+        return new DelegatingIterator<T>(iterator, readOnly);
+    }
 }

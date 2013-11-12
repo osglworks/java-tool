@@ -2,14 +2,21 @@ package org.osgl.util;
 
 import org.osgl._;
 
+import java.util.EnumSet;
 import java.util.Iterator;
 
 /**
  * Provide default implementation to some {@link C.Traversable} interface
  */
-public abstract class TraversalBase<T> extends FeaturedBase implements C.Traversable<T> {
+public abstract class
+TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
 
     private volatile int hc_;
+
+    @Override
+    protected EnumSet<C.Feature> initFeatures() {
+        return EnumSet.of(C.Feature.LAZY, C.Feature.READONLY);
+    }
 
     /**
      * Iterate through this traversal and apply the visitor function specified
@@ -44,6 +51,9 @@ public abstract class TraversalBase<T> extends FeaturedBase implements C.Travers
      */
     @Override
     public int hashCode() {
+        if (!is(C.Feature.LIMITED)) {
+            return super.hashCode();
+        }
         if (is(C.Feature.IMMUTABLE)) {
             if (0 == hc_) {
                 hc_ = generateHashCode();
@@ -52,6 +62,30 @@ public abstract class TraversalBase<T> extends FeaturedBase implements C.Travers
         } else {
             return generateHashCode();
         }
+    }
+
+    @Override
+    public C.Traversable<T> lazy() {
+        setFeature(C.Feature.PARALLEL);
+        return this;
+    }
+
+    @Override
+    public C.Traversable<T> eager() {
+        unsetFeature(C.Feature.PARALLEL);
+        return this;
+    }
+
+    @Override
+    public C.Traversable<T> parallel() {
+        setFeature(C.Feature.LAZY);
+        return this;
+    }
+
+    @Override
+    public C.Traversable<T> sequential() {
+        unsetFeature(C.Feature.LAZY);
+        return this;
     }
 
     @Override
@@ -144,4 +178,19 @@ public abstract class TraversalBase<T> extends FeaturedBase implements C.Travers
         return this;
     }
 
+    @Override
+    public <R> C.Traversable<R> map(_.Function<? super T, ? extends R> mapper) {
+        return MappedTrav.of(this, mapper);
+    }
+
+    @Override
+    public <R> C.Traversable<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
+    ) {
+        return FlatMappedTrav.of(this, mapper);
+    }
+
+    @Override
+    public C.Traversable<T> filter(_.Function<? super T, Boolean> predicate) {
+        return FilteredTrav.of(this, predicate);
+    }
 }

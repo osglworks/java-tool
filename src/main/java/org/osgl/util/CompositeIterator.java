@@ -12,11 +12,11 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 class CompositeIterator<T> extends StatefulIterator<T> {
-    private final Iterator<? extends T> left_;
-    private final Iterator<? extends T> right_;
+    private final Iterator<T> left_;
+    private final Iterator<T> right_;
     private volatile boolean leftOver_;
 
-    CompositeIterator(Iterator<? extends T> i1, Iterator<? extends T> i2) {
+    CompositeIterator(Iterator<T> i1, Iterator<T> i2) {
         E.NPE(i1, i2);
         left_ = i1;
         right_ = i2;

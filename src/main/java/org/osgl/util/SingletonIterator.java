@@ -10,11 +10,11 @@ import java.util.NoSuchElementException;
  * Time: 9:02 PM
  * To change this template use File | Settings | File Templates.
  */
-class SingletonItr<T> implements Iterator<T> {
+public class SingletonIterator<T> implements Iterator<T> {
     private final T t_;
     private volatile boolean consumed_;
 
-    SingletonItr(T t) {
+    public SingletonIterator(T t) {
         t_ = t;
     }
 

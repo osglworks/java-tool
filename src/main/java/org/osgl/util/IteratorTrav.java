@@ -8,7 +8,7 @@ import java.util.Iterator;
 /**
  * A simple readonly {@link C.Traversable} implementation based on an {@link java.util.Iterator}
  */
-class IteratorTrav<T> extends TraversalBase<T> {
+class IteratorTrav<T> extends TraversableBase<T> {
 
     private Iterator<T> itr_;
 
