@@ -4762,6 +4762,24 @@ public enum _ {
         return ret;
     }
 
+    public static Byte[] asObject(byte[] pa) {
+        int len = pa.length;
+        Byte[] oa = new Byte[len];
+        for (int i = 0; i < len; ++i) {
+            oa[i] = pa[i];
+        }
+        return oa;
+    }
+
+    public static Short[] asObject(short[] pa) {
+        int len = pa.length;
+        Short[] oa = new Short[len];
+        for (int i = 0; i < len; ++i) {
+            oa[i] = pa[i];
+        }
+        return oa;
+    }
+
     public static Integer[] asObject(int[] pa) {
         int len = pa.length;
         Integer[] oa = new Integer[len];
@@ -4774,6 +4792,24 @@ public enum _ {
     public static Long[] asObject(long[] pa) {
         int len = pa.length;
         Long[] oa = new Long[len];
+        for (int i = 0; i < len; ++i) {
+            oa[i] = pa[i];
+        }
+        return oa;
+    }
+
+    public static Float[] asObject(float[] pa) {
+        int len = pa.length;
+        Float[] oa = new Float[len];
+        for (int i = 0; i < len; ++i) {
+            oa[i] = pa[i];
+        }
+        return oa;
+    }
+
+    public static Double[] asObject(double[] pa) {
+        int len = pa.length;
+        Double[] oa = new Double[len];
         for (int i = 0; i < len; ++i) {
             oa[i] = pa[i];
         }
@@ -5900,6 +5936,8 @@ public enum _ {
 
         public static final Comparator NATURAL_ORDER = Comparator.NaturalOrderComparator.INSTANCE;
 
+        public static final Comparator REVERSE_ORDER = reverseOrder();
+
         @SuppressWarnings("unchecked")
         public static <T extends Comparable<T>> Comparator<T> naturalOrder() {
             return (Comparator<T>) NATURAL_ORDER;
@@ -5907,7 +5945,16 @@ public enum _ {
 
         @SuppressWarnings("unchecked")
         public static <T extends Comparable<? super T>> Comparator<T> reverseOrder() {
-            return (Comparator<T>) _.comparator(Collections.reverseOrder());
+            return _.comparator(Collections.reverseOrder());
+        }
+
+        public static <T> Comparator<T> reverse(final java.util.Comparator<? super T> c) {
+            return new Comparator<T>() {
+                @Override
+                public int compare(T o1, T o2) {
+                    return c.compare(o2, o1);
+                }
+            };
         }
 
         public static <T, U extends Comparable<? super U>> Comparator<T> comparing(

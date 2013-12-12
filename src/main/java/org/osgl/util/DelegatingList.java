@@ -15,7 +15,6 @@ class DelegatingList<T> extends ListBase<T> implements C.List<T> {
         setableFeatures.addAll(freeFeatures);
     }
 
-
     protected java.util.List<T> data;
 
     protected DelegatingList(boolean noInit) {
@@ -41,16 +40,19 @@ class DelegatingList<T> extends ListBase<T> implements C.List<T> {
         data = fact.create(initialCapacity);
     }
 
-    DelegatingList(Iterable<T> iterable) {
+    DelegatingList(Iterable<? extends T> iterable) {
         this(iterable, C.randomAccessListFact);
     }
 
-    DelegatingList(Iterable<T> iterable, C.ListFactory fact) {
+    DelegatingList(Iterable<? extends T> iterable, C.ListFactory fact) {
         E.NPE(iterable);
         if (iterable instanceof Collection) {
-            data = fact.create((Collection<T>)iterable);
+            data = fact.create((Collection<? extends T>)iterable);
         } else {
             data = fact.create();
+            for (T t : iterable) {
+                data.add(t);
+            }
         }
     }
 

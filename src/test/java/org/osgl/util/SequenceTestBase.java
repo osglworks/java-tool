@@ -109,7 +109,7 @@ public abstract class SequenceTestBase extends TraversableTestBase {
         eq(data, data().drop(0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testDropFail() {
         data = prepareData();
         data().drop(-1);

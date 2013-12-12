@@ -20,6 +20,6 @@ public class ImmutableListTest extends ListTestBase {
 
     @Override
     protected <T> C.List<T> prepareTypedData(T... ta) {
-        return C.list(ta);
+        return C.listOf(ta);
     }
 }

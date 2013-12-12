@@ -167,7 +167,7 @@ abstract class ListBase1<T> extends ReversibleSeqBase<T> implements C.List<T> {
             forEach(m.andThen(C.F.addTo(lb)));
             return lb.toList();
         } else {
-            C.List<R> ret = C.newList(size());
+            C.List<R> ret = C.newSizedList(size());
             forEach(m.andThen(C.F.addTo(ret)));
             return ret;
         }
@@ -186,7 +186,7 @@ abstract class ListBase1<T> extends ReversibleSeqBase<T> implements C.List<T> {
             forEach(m.andThen(C.F.forEach(C.F.addTo(lb))));
             return lb.toList();
         } else {
-            C.List<R> ret = C.newList(capacity);
+            C.List<R> ret = C.newSizedList(capacity);
             forEach(m.andThen(C.F.forEach(C.F.addTo(ret))));
             return ret;
         }

@@ -14,8 +14,19 @@ public enum Algorithms {
         return (ArrayReverse<T>)ARRAY_REVERSE;
     }
 
-    public static final InplaceArrayReverse ARRAY_REVERSE_INPLACE = new InplaceArrayReverse();
-    public static final <T> InplaceArrayReverse<T> arrayReverseInplace() {
-        return (InplaceArrayReverse<T>)ARRAY_REVERSE_INPLACE;
+    public static final ArrayReverseInplace ARRAY_REVERSE_INPLACE = new ArrayReverseInplace();
+    public static final <T> ArrayReverseInplace<T> arrayReverseInplace() {
+        return (ArrayReverseInplace<T>)ARRAY_REVERSE_INPLACE;
+    }
+
+    public static final ArrayInsertionSort ARRAY_INSERTION_SORT = new ArrayInsertionSort();
+    public static final <T> ArrayInsertionSort<T> arrayInsertionSort() {
+        return ARRAY_INSERTION_SORT;
+    }
+
+
+    public static final ArrayInsertionSortInplace ARRAY_INSERTION_SORT_INPLACE = new ArrayInsertionSortInplace();
+    public static final <T> ArrayInsertionSortInplace<T> arrayInsertionSortInplace() {
+        return ARRAY_INSERTION_SORT_INPLACE;
     }
 }

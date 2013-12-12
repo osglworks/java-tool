@@ -156,7 +156,7 @@ extends TraversableBase<T> implements C.Sequence<T> {
     @Override
     public C.Sequence<T> drop(int n) throws IllegalArgumentException {
         if (n < 0) {
-            throw new IllegalArgumentException();
+            throw new IndexOutOfBoundsException();
         }
         if (n == 0) {
             return this;
@@ -176,6 +176,9 @@ extends TraversableBase<T> implements C.Sequence<T> {
 
     @Override
     public C.Sequence<T> append(C.Sequence<T> seq) {
+        if (seq.isEmpty()) {
+            return this;
+        }
         return CompositeSeq.of(this, seq);
     }
 
@@ -186,11 +189,17 @@ extends TraversableBase<T> implements C.Sequence<T> {
 
     @Override
     public C.Sequence<T> prepend(Iterable<? extends T> iterable) {
+        if (!iterable.iterator().hasNext()) {
+            return this;
+        }
         return prepend(C.seq(iterable));
     }
 
     @Override
     public C.Sequence<T> prepend(C.Sequence<T> seq) {
+        if (seq.isEmpty()) {
+            return this;
+        }
         return seq.append(this);
     }
 

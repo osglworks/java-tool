@@ -20,6 +20,7 @@
 package org.osgl.util;
 
 import org.osgl._;
+import org.osgl.exception.NotAppliedException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -501,6 +502,21 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         @Override
         public C.ReversibleSequence<T> prepend(T t) {
             return C.list(t);
+        }
+
+        @Override
+        public <T2> C.ReversibleSequence<_.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
+            return rseq();
+        }
+
+        @Override
+        public <T2> C.ReversibleSequence<_.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, final T def1, final T2 def2) {
+            return rseq.map(new _.F1<T2, _.T2<T, T2>>(){
+                @Override
+                public _.T2<T, T2> apply(T2 t) throws NotAppliedException, _.Break {
+                    return _.T2(def1, t);
+                }
+            });
         }
     }
 

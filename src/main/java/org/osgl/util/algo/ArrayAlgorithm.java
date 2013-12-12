@@ -1,7 +1,5 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
-
 /**
  * Created with IntelliJ IDEA.
  * User: luog
@@ -9,6 +7,20 @@ import org.osgl._;
  * Time: 11:53 AM
  * To change this template use File | Settings | File Templates.
  */
-public interface ArrayAlgorithm<T, R> extends _.Func1<T[], R>, Algorithm {
+public interface ArrayAlgorithm extends Algorithm {
+    static enum Util {
+        ;
+        public static void checkIndex(Object[] array, int index) {
+            if (index < 0 || index >= array.length) {
+                throw new IndexOutOfBoundsException();
+            }
+        }
 
+        public static void checkIndex(Object[] array, int from, int to) {
+            if (array.length == 0) return;
+            if (from < 0 || from >= array.length || to < 0 || to > array.length) {
+                throw new IndexOutOfBoundsException();
+            }
+        }
+    }
 }

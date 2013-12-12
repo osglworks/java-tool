@@ -2,6 +2,7 @@ package org.osgl.util;
 
 import org.junit.Test;
 import org.osgl._;
+import org.osgl.exception.UnsupportedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,7 +94,7 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
     @Test(expected = UnsupportedOperationException.class)
     public void testROAddAll() {
         if (isMutable()) {
-            return;
+            throw new UnsupportedOperationException(); // to make junit happy
         }
         l().addAll(Arrays.asList(1, 2, 3));
     }
@@ -208,6 +209,26 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
     @Test
     public void testLocate() {
         yes(data().locate(_.F.lessThan(3)).get() < 3);
+    }
+
+    @Test
+    public void testToArray() {
+        Object[] oa = {1, 2, 3, 4, 5};
+        eq(oa, data().toArray());
+    }
+
+    @Test
+    public void testToArray2() {
+        Integer[] oa = {1, 2, 3, 4, 5};
+        eq(oa, data().toArray(new Integer[]{}));
+    }
+
+    @Test
+    public void testToArray3() {
+        Integer[] oa = {1, 2, 3, 4, 5};
+        Integer[] ob = new Integer[5];
+        data().toArray(ob);
+        eq(oa, ob);
     }
 
 }

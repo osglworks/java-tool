@@ -382,7 +382,7 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
             return prepend((C.List<T>) seq);
         }
         if (isLazy()) {
-            return CompositeSeq.of(this, seq);
+            return CompositeSeq.of(seq, this);
         }
         ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
         lb.append(seq).append(this);
@@ -486,7 +486,7 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
         if (isLazy()) {
             return ReverseList.wrap(this);
         }
-        T[] data = (T[]) Algorithms.ARRAY_REVERSE.apply(data_);
+        T[] data = (T[]) Algorithms.ARRAY_REVERSE.apply(data_, 0, data_.length);
         return of(data);
     }
 
@@ -688,6 +688,10 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
         if (0 == n) {
             return this;
         }
+        int size = size();
+        if (n >= size) {
+            return Nil.list();
+        }
         return subList(n, size());
     }
 
@@ -844,8 +848,11 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
 
     static <T> C.List<T> of(T[] data) {
         E.NPE(data);
-        if (data.length == 0) {
+        int len = data.length;
+        if (len == 0) {
             return Nil.list();
+        } else if (len == 1) {
+            return _.val(data[0]);
         } else {
             return new ImmutableList<T>(data);
         }

@@ -23,7 +23,7 @@ public class DelegatingListTest extends ListTestBase {
 
     @Override
     protected <T> C.List<T> prepareTypedData(T... ta) {
-        C.List<T> l = C.newList(ta.length);
+        C.List<T> l = C.newSizedList(ta.length);
         for (T t : ta) {
             l.add(t);
         }

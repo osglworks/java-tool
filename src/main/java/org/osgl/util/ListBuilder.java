@@ -1,5 +1,8 @@
 package org.osgl.util;
 
+import org.osgl._;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -23,6 +26,19 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
 
     ListBuilder() {
         this(10);
+    }
+
+    @SuppressWarnings("unchecked")
+    private ListBuilder(Collection<? extends T> collection) {
+        int len = collection.size();
+        if (len == 0) {
+            buf = (T[]) new Object[10];
+        } else {
+            Object[] a0 = collection.toArray();
+            T t = collection.iterator().next();
+            buf = (T[]) Array.newInstance(t.getClass(), len);
+            System.arraycopy(a0, 0, buf, 0, len);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -348,10 +364,10 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
 
     @SuppressWarnings("unchecked")
     public ListBuilder<T> append(Iterable<? extends T> iterable) {
+        checkState();
         if (iterable instanceof Collection) {
             append((Collection<? extends T>) iterable);
         }
-        checkState();
         Iterator<? extends T> e = iterable.iterator();
         while (e.hasNext()) {
             append(e.next());
@@ -373,5 +389,42 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         T[] data = buf;
         buf = null;
         return ImmutableList.of(data);
+    }
+
+    /**
+     * Returns an immutable {@link C.List} from iterable
+     * @param iterable the iterable
+     * @param <T> the element type
+     * @return an immutable list contains all elements from the iterable
+     */
+    public static <T> C.List<T> toList(Iterable<? extends T> iterable) {
+        if (iterable instanceof Collection) {
+            return toList((Collection<T>) iterable);
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(10);
+        for (T t : iterable) {
+            lb.add(t);
+        }
+        return lb.toList();
+    }
+
+    /**
+     * Returns an immutable {@link C.List} from a collection
+     *
+     * @param col the collection specified
+     * @param <T> element type
+     * @return an immutable list contains all elements in the collection
+     */
+    public static <T> C.List<T> toList(Collection<? extends T> col) {
+        if (col.size() == 0) {
+            return Nil.list();
+        }
+        if (col instanceof C.List) {
+            C.List<T> list = _.cast(col);
+            if (list.is(C.Feature.IMMUTABLE)) {
+                return list;
+            }
+        }
+        return new ListBuilder<T>(col).toList();
     }
 }

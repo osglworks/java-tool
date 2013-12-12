@@ -5,9 +5,14 @@ import org.osgl.exception.NotAppliedException;
 import org.osgl.util.E;
 
 /**
- * Return an new array contains elements specified by from and to in an array in reverse order
+ * Created with IntelliJ IDEA.
+ * User: luog
+ * Date: 5/11/13
+ * Time: 11:55 AM
+ * To change this template use File | Settings | File Templates.
  */
-public class ArrayReverse<T> implements ArrayAlgorithm, _.Func3<T[], Integer, Integer,  T[]> {
+public class ArrayReverseInplace<T> implements ArrayAlgorithm, _.Func3<T[], Integer, Integer,  T[]> {
+
     @Override
     public T[] apply(T[] ts, Integer from, Integer to) throws NotAppliedException, _.Break {
         return reverse(ts, from, to);
@@ -17,18 +22,20 @@ public class ArrayReverse<T> implements ArrayAlgorithm, _.Func3<T[], Integer, In
         E.NPE(ts);
         Util.checkIndex(ts, from, to);
         if (to < from) {
-            int t = to; to = from; from = t;
+            int t = to;
+            to = from;
+            from = t;
         }
         int len = to - from;
-        T[] newTs = _.newArray(ts, len);
         if (0 == len) {
-            return newTs;
+            return ts;
         }
         int steps = len / 2, max = to - 1;
         for (int i = from; i < from + steps; ++i) {
-            newTs[i] = ts[max - i];
-            newTs[max - i] = ts[i];
+            T t = ts[i];
+            ts[i] = ts[max - i];
+            ts[max - i] = t;
         }
-        return newTs;
+        return ts;
     }
 }

@@ -21,6 +21,7 @@ package org.osgl.util;
 
 import org.osgl._;
 import org.osgl.exception.NotAppliedException;
+import org.osgl.util.algo.Algorithms;
 
 import java.util.*;
 
@@ -731,7 +732,7 @@ public enum C {
          * its remaining elements are ignored.
          *
          * @param iterable the part B to be zipped with this sequence
-         * @param <T2> the type of the iterable
+         * @param <T2>     the type of the iterable
          * @return a new sequence containing pairs consisting of
          *         corresponding elements of this sequence and that.
          *         The length of the returned collection is the
@@ -747,11 +748,11 @@ public enum C {
          * to the length of the longer.
          *
          * @param iterable the part B to be zipped with this sequence
-         * @param <T2> the type of the iterable
-         * @param def1 the element to be used to fill up the result if
-         *             this sequence is shorter than that iterable
-         * @param def2 the element to be used to fill up the result if
-         *             the iterable is shorter than this sequence
+         * @param <T2>     the type of the iterable
+         * @param def1     the element to be used to fill up the result if
+         *                 this sequence is shorter than that iterable
+         * @param def2     the element to be used to fill up the result if
+         *                 the iterable is shorter than this sequence
          * @return a new sequence containing pairs consisting of
          *         corresponding elements of this sequence and that.
          *         The length of the returned collection is the
@@ -1048,6 +1049,115 @@ public enum C {
          * @since 0.2
          */
         ReversibleSequence<T> acceptRight(_.Function<? super T, ?> visitor);
+
+        <T2> C.ReversibleSequence<_.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq);
+
+        <T2> C.ReversibleSequence<_.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2);
+
+    }
+
+    public static class Array<T> extends ReversibleSeqBase<T> implements ReversibleSequence<T> {
+        @Override
+        public Array<T> lazy() {
+            super.lazy();
+            return this;
+        }
+
+        @Override
+        public Array<T> eager() {
+            super.eager();
+            return this;
+        }
+
+        @Override
+        public Array<T> parallel() {
+            super.parallel();
+            return this;
+        }
+
+        @Override
+        public Array<T> sequential() {
+            super.sequential();
+            return this;
+        }
+
+        T[] data;
+
+        Array(T[] data) {
+            E.NPE(data);
+            this.data = data;
+        }
+
+        @Override
+        public int size() throws UnsupportedOperationException {
+            return data.length;
+        }
+
+        @Override
+        public Iterator<T> iterator() {
+            final int size = size();
+            return new ReadOnlyIterator<T>() {
+                int cursor = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return cursor < size;
+                }
+
+                @Override
+                public T next() {
+                    if (cursor >= size) {
+                        throw new NoSuchElementException();
+                    }
+                    return data[cursor++];
+                }
+            };
+        }
+
+        @Override
+        public Iterator<T> reverseIterator() {
+            final int size = size();
+            return new ReadOnlyIterator<T>() {
+                int cursor = size - 1;
+
+                @Override
+                public boolean hasNext() {
+                    return cursor < 0;
+                }
+
+                @Override
+                public T next() {
+                    if (cursor < 0) {
+                        throw new NoSuchElementException();
+                    }
+                    return data[cursor--];
+                }
+            };
+        }
+
+        @Override
+        public ReversibleSequence<T> reverse() throws UnsupportedOperationException {
+            if (isLazy()) {
+                return ReversedRSeq.of(this);
+            }
+            if (isMutable()) {
+                Algorithms.arrayReverseInplace().reverse(data, 0, data.length);
+                return this;
+            }
+            T[] newData = (T[]) Algorithms.ARRAY_REVERSE.apply(data, 0, data.length);
+            return of(newData);
+        }
+
+        public static <T> Array<T> of(T[] data) {
+            return new Array<T>(data);
+        }
+
+        public static <T> Array<T> copyOf(T[] data) {
+            int len = data.length;
+            T[] newData = _.newArray(data, len);
+            System.arraycopy(data, 0, newData, 0, len);
+            return new Array<T>(newData);
+        }
     }
 
     /**
@@ -1319,9 +1429,9 @@ public enum C {
              *
              * @return the cursor itself
              * @throws UnsupportedOperationException if the operation is not supported
-             *         by the underline container does not support removing elements
-             * @throws NoSuchElementException if the cursor is parked either left or
-             *         right
+             *                                       by the underline container does not support removing elements
+             * @throws NoSuchElementException        if the cursor is parked either left or
+             *                                       right
              */
             Cursor<T> drop() throws NoSuchElementException, UnsupportedOperationException;
 
@@ -1377,6 +1487,30 @@ public enum C {
          */
         @Override
         List<T> eager();
+
+        /**
+         * Returns an immutable list contains all elements of the current list.
+         * If the current list is immutable, then return the current list itself.
+         *
+         * @return an immutable list.
+         * @see #readOnly()
+         */
+        List<T> snapshot();
+
+        /**
+         * Returns a view of this list that is readonly. If the current list is
+         * readonly or immutable then return the current list itself
+         *
+         * @return a readonly view of this list
+         */
+        List<T> readOnly();
+
+        /**
+         * Returns a mutable copy of this list
+         *
+         * @return a mutable list contains all elements of this list
+         */
+        List<T> copy();
 
         @Override
         List<T> subList(int fromIndex, int toIndex);
@@ -1695,7 +1829,7 @@ public enum C {
          * @throws <code>NullPointerException</code>
          *          if the specified collection is null
          */
-        <ET> java.util.List<ET> create(Collection<ET> collection);
+        <ET> java.util.List<ET> create(Collection<? extends ET> collection);
 
         /**
          * Create a <code>java.util.List</code> with initial capacity
@@ -1715,7 +1849,7 @@ public enum C {
                 }
 
                 @Override
-                public <ET> java.util.List<ET> create(Collection<ET> collection) {
+                public <ET> java.util.List<ET> create(Collection<? extends ET> collection) {
                     return new ArrayList<ET>(collection);
                 }
 
@@ -1731,7 +1865,7 @@ public enum C {
                 }
 
                 @Override
-                public <ET> java.util.List<ET> create(Collection<ET> collection) {
+                public <ET> java.util.List<ET> create(Collection<? extends ET> collection) {
                     return new LinkedList<ET>(collection);
                 }
 
@@ -1891,42 +2025,116 @@ public enum C {
         return Nil.list();
     }
 
-    public static <T> List<T> list(T... ta) {
-        if (ta.length == 0) {
-            return list();
-        }
-        if (ta.length == 1) {
-            return _.val(ta[0]);
-        }
+    public static <T> List<T> list(T t) {
+        return _.val(t);
+    }
+
+    /**
+     * Creates an immutable list of an array of elements.
+     * <p/>
+     * <p>Note the array will not be copied, instead it will
+     * be used directly as the backing data for the list.
+     * To create an immutable list with a copy of the array
+     * specified. Use the {@link #listOf(Object[])} method</p>
+     *
+     * @param ta  an array of elements
+     * @param <T> the element type
+     * @return an immutable list backed by the specified array
+     */
+    public static <T> List<T> listOf(T... ta) {
         return ImmutableList.of(ta);
     }
 
     /**
-     * Create an immutable Byte list of a byte array. If an empty array specified,
-     * the nan empty immutable list is returned
+     * Creates an immutable list from an array. The element of the array is copied
+     * to the list been returned.
+     *
+     * @param ta  the array
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> list(T t, T... ta) {
+        int len = ta.length;
+        T[] a = _.newArray(ta, len + 1);
+        a[0] = t;
+        System.arraycopy(ta, 0, a, 1, len);
+        return ImmutableList.of(a);
+    }
+
+    /**
+     * Create an immutable Byte list from a byte (primary type) array.
+     * <p>At the moment the implementation will convert the byte (primary)
+     * array to Byte (reference) array, thus a copy of the array
+     * will actually take place. However it should assume the
+     * array will directly be used as backing data in user application
+     * to cater to the future optimized implementation</p>
+     *
+     * @param elements an array of primary byte
+     * @return a Byte typed list
+     */
+    public static List<Byte> listOf(byte[] elements) {
+        return list(elements);
+    }
+
+    /**
+     * Create an immutable Byte list of a byte (pimary type) array.
+     * The elements of the array is copied into the returned list
      *
      * @param elements an array of bytes
      * @return an immutable list contains specified elements
      */
     public static List<Byte> list(byte[] elements) {
-        if (0 == elements.length) {
-            return list();
+        if (elements.length == 0) {
+            return Nil.list();
         }
-        return null;
+        Byte[] ba = _.asObject(elements);
+        return ImmutableList.of(ba);
+    }
+
+
+    /**
+     * Create an immutable Short list from a short (primary type) array.
+     * <p>At the moment the implementation will convert the short (primary)
+     * array to Short (reference) array, thus a copy of the array
+     * will actually take place. However it should assume the
+     * array will directly be used as backing data in user application
+     * to cater to the future optimized implementation</p>
+     *
+     * @param elements an array of primary short
+     * @return a Short typed list
+     */
+    public static List<Short> listOf(short[] elements) {
+        return list(elements);
     }
 
     /**
-     * Create an immutable Short list of a short array. If an empty array specified,
-     * the nan empty immutable list is returned
+     * Create an immutable Short list of a short array.
+     * The elements of the array is copied into the returned list
      *
      * @param elements an array of shorts
      * @return an immutable list contains specified elements
      */
     public static List<Short> list(short[] elements) {
         if (0 == elements.length) {
-            return list();
+            return Nil.list();
         }
-        return null;
+        Short[] a = _.asObject(elements);
+        return ImmutableList.of(a);
+    }
+
+    /**
+     * Create an immutable Integer list from an int (primary type) array.
+     * <p>At the moment the implementation will convert the int (primary)
+     * array to Integer (reference) array, thus a copy of the array
+     * will actually take place. However it should assume the
+     * array will directly be used as backing data in user application
+     * to cater to the future optimized implementation</p>
+     *
+     * @param elements an array of primary int
+     * @return an Integer list
+     */
+    public static List<Integer> listOf(int[] elements) {
+        return list(elements);
     }
 
     /**
@@ -1937,10 +2145,26 @@ public enum C {
      * @return an immutable list contains specified elements
      */
     public static List<Integer> list(int[] elements) {
-        if (0 == elements.length) {
-            return list();
+        if (elements.length == 0) {
+            return Nil.list();
         }
-        return ImmutableList.of(_.asObject(elements));
+        Integer[] a = _.asObject(elements);
+        return ImmutableList.of(a);
+    }
+
+    /**
+     * Create an immutable Long list from a long (primary type) array.
+     * <p>At the moment the implementation will convert the long (primary)
+     * array to Long (reference) array, thus a copy of the array
+     * will actually take place. However it should assume the
+     * array will directly be used as backing data in user application
+     * to cater to the future optimized implementation</p>
+     *
+     * @param elements an array of primary long
+     * @return an Long list
+     */
+    public static List<Long> listOf(long[] elements) {
+        return list(elements);
     }
 
     /**
@@ -1958,6 +2182,21 @@ public enum C {
     }
 
     /**
+     * Create an immutable Float list from a float (primary type) array.
+     * <p>At the moment the implementation will convert the float (primary)
+     * array to Float (reference) array, thus a copy of the array
+     * will actually take place. However it should assume the
+     * array will directly be used as backing data in user application
+     * to cater to the future optimized implementation</p>
+     *
+     * @param elements an array of primary float
+     * @return an Float list
+     */
+    public static List<Float> listOf(float[] elements) {
+        return list(elements);
+    }
+
+    /**
      * Create an immutable byte list of a float array. If an empty array specified,
      * the nan empty immutable list is returned
      *
@@ -1968,7 +2207,22 @@ public enum C {
         if (0 == elements.length) {
             return list();
         }
-        return null;
+        return ImmutableList.of(_.asObject(elements));
+    }
+
+    /**
+     * Create an immutable Double list from an double (primary type) array.
+     * <p>At the moment the implementation will convert the double (primary)
+     * array to Double (reference) array, thus a copy of the array
+     * will actually take place. However it should assume the
+     * array will directly be used as backing data in user application
+     * to cater to the future optimized implementation</p>
+     *
+     * @param elements an array of primary double
+     * @return an Double list
+     */
+    public static List<Double> listOf(double[] elements) {
+        return list(elements);
     }
 
     /**
@@ -1982,33 +2236,66 @@ public enum C {
         if (0 == elements.length) {
             return list();
         }
-        return null;
+        return ImmutableList.of(_.asObject(elements));
     }
 
-    public static <T> List<T> listFrom(Iterable<T> iterable) {
-        return null; //TODO
+    public static <T> List<T> list(Iterable<? extends T> iterable) {
+        return ListBuilder.toList(iterable);
     }
 
-    public static <T> List<T> listFrom(java.util.List<T> javaList) {
+    public static <T> List<T> list(Collection<? extends T> col) {
+        return ListBuilder.toList(col);
+    }
+
+    public static <T> List<T> list(java.util.List<T> javaList) {
         if (javaList instanceof List) {
-            return _.cast(javaList);
+            List<T> list = _.cast(javaList);
+            if (list.is(Feature.IMMUTABLE)) {
+                return list;
+            }
         }
-        return new DelegatingList<T>(javaList);
+        return new ReadOnlyDelegatingList<T>(javaList);
     }
 
     public static <T> C.List<T> singletonList(T t) {
         return list(t);
     }
 
-    public static <T> List<T> newList() {
-        return newList(10);
-    }
-
-    public static <T> List<T> newList(int size) {
+    public static <T> List<T> newSizedList(int size) {
         return new DelegatingList<T>(size);
     }
 
+    public static <T> List<T> newList() {
+        return newSizedList(10);
+    }
+
+    public static <T> List<T> newList(Iterable<? extends T> iterable) {
+        return new DelegatingList<T>(iterable);
+    }
+
+    public static <T> List<T> newList(T t) {
+        return new DelegatingList<T>(10).append(t);
+    }
+
+    public static <T> List<T> newList(T t1, T t2) {
+        return new DelegatingList<T>(10).append(t1).append(t2);
+    }
+
+    public static <T> List<T> newList(T t1, T t2, T t3) {
+        return new DelegatingList<T>(10).append(t1).append(t2).append(t3);
+    }
+
+    public static <T> List<T> newList(T t1, T t2, T t3, T... ta) {
+        int len = ta.length;
+        List<T> l = new DelegatingList<T>(len + 3).append(t1).append(t2).append(t3);
+        l.addAll(listOf(ta));
+        return l;
+    }
+
     public static <T> Sequence<T> seq(Iterable<? extends T> iterable) {
+        if (iterable instanceof Sequence) {
+            return ((Sequence<T>) iterable);
+        }
         return IterableSeq.of(iterable);
     }
 
@@ -2019,10 +2306,10 @@ public enum C {
         return new MappedSeq<T, R>(seq, mapper);
     }
 
-//    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, _.Function<? super T, ? extends R> mapper
-//    ) {
-//        return new ReversibleMappedSeq<T, R>(seq, mapper);
-//    }
+    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, _.Function<? super T, ? extends R> mapper
+    ) {
+        return new ReversibleMappedSeq<T, R>(seq, mapper);
+    }
 
     public static <T> Sequence<T> filter(Sequence<T> seq, _.Function<? super T, Boolean> predicate) {
         return new FilteredSeq<T>(seq, predicate);

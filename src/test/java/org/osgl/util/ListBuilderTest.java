@@ -194,10 +194,4 @@ public class ListBuilderTest extends UtilTestBase {
         lb.append(1);
     }
 
-
-    @Test(expected = IllegalStateException.class)
-    public void testConsumed2() {
-        lb.toList();
-        lb.clear();
-    }
 }
