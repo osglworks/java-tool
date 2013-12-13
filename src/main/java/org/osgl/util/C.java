@@ -2335,6 +2335,14 @@ public enum C {
     public static <T> List<T> concat(List<T> l1, List<T> l2) {
         return l1.append(l2);
     }
+
+    public static <K, V> Map<K, V> newMap() {
+        return new HashMap<K, V>();
+    }
+
+    public static <K, V> Map<K, V> newMap(Map<? extends K, ? extends V> map) {
+        return new HashMap(map);
+    }
     // --- eof factory methods ---
 
     // --- utility methods ---

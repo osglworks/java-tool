@@ -2,7 +2,6 @@ package org.osgl.util;
 
 import org.junit.Test;
 import org.osgl._;
-import org.osgl.exception.UnsupportedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

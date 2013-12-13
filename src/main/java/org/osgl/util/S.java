@@ -158,4 +158,11 @@ public class S {
         return random(8);
     }
 
+    public static String string(Object o) {
+        if (null == o) {
+            return "";
+        }
+        return o.toString();
+    }
+
 }
