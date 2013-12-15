@@ -21,10 +21,12 @@ package org.osgl;
 
 import org.osgl.exception.FastRuntimeException;
 import org.osgl.exception.NotAppliedException;
+import org.osgl.exception.UnexpectedException;
 import org.osgl.util.*;
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -306,7 +308,7 @@ public enum _ {
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
-    public static final F0<?> F0 = new F0() {
+    public static final F0 F0 = new F0() {
         @Override
         public Object apply() {
             return null;
@@ -716,7 +718,7 @@ public enum _ {
      * @see #f1()
      * @since 0.2
      */
-    public static final F1<?, ?> F1 = new F1() {
+    public static final F1 F1 = new F1() {
         @Override
         public Object apply(Object o) {
             return null;
@@ -992,7 +994,7 @@ public enum _ {
      * @see #f2()
      * @since 0.2
      */
-    public static final F2<?, ?, ?> F2 = new F2() {
+    public static final F2 F2 = new F2() {
         @Override
         public Object apply(Object p1, Object p2) {
             return null;
@@ -4333,6 +4335,92 @@ public enum _ {
         System.out.println(S.fmt(msg, args));
     }
 
+    public final static <T> T ensureGet(T t1, T def1) {
+        if (null != t1) {
+            return t1;
+        }
+        E.invalidArgIf(null == def1);
+        return def1;
+    }
+
+    public final static <T> T ensureGet(T t1, T def1, T def2) {
+        if (null != t1) {
+            return t1;
+        }
+        if (null != def1) {
+            return def1;
+        }
+        E.npeIf(null == def2);
+        return def2;
+    }
+
+    public final static <T> T ensureGet(T t1, T def1, T def2, T def3) {
+        if (null != t1) {
+            return t1;
+        }
+        if (null != def1) {
+            return def1;
+        }
+        if (null != def2) {
+            return def2;
+        }
+        E.npeIf(null == def3);
+        return def2;
+    }
+
+    public final static <T> T ensureGet(T t1, List<T> defs) {
+        if (null != t1) {
+            return t1;
+        }
+        for (T t : defs) {
+            if (null != t) {
+                return t;
+            }
+        }
+        throw new NullPointerException();
+    }
+
+    public final static <T> T times(Function<T, T> func, T initVal, int n) {
+        if (n < 0) {
+            throw E.invalidArg("the number of times must not be negative");
+        }
+        if (n == 0) {
+            return initVal;
+        }
+        T retVal = initVal;
+        for (int i = 1; i < n; ++i) {
+            retVal = func.apply(retVal);
+        }
+        return retVal;
+    }
+
+    public static <T> Meta<T> meta(T t) {
+        return new Meta<T>(t);
+    }
+
+    // ---
+    public static class Meta<T> {
+        private T o;
+
+        public Meta(T obj) {
+            E.NPE(obj);
+            o = obj;
+        }
+
+        public boolean is(Class<?> clz) {
+            return clz.isAssignableFrom(o.getClass());
+        }
+
+        public boolean isNot(Class<?> clz) {
+            return !is(clz);
+        }
+
+        public boolean kindOf(Object object) {
+            return is(object.getClass());
+        }
+
+    }
+
     /**
      * Cast an object to a type. Returns an {@link Option} describing the casted value if
      * it can be casted to the type specified, otherwise returns {@link #NONE}.
@@ -4385,12 +4473,152 @@ public enum _ {
         return obj;
     }
 
+    public static <T> Class<T> classForName(String className) {
+        try {
+            return (Class<T>) Class.forName(className);
+        } catch (Exception e) {
+            throw new UnexpectedException(e);
+        }
+    }
+
+    public static <T> Option<Class<T>> safeClassForName(String className) {
+        try {
+            return _.some((Class<T>) Class.forName(className));
+        } catch (Exception e) {
+            return _.none();
+        }
+    }
+
+    public static <T> T newInstance(String className) {
+        try {
+            Class<T> c = (Class<T>) Class.forName(className);
+            return c.newInstance();
+        } catch (Exception e) {
+            throw new UnexpectedException();
+        }
+    }
+
     public static <T> Option<T> safeNewInstance(String className) {
         try {
             Class<T> c = (Class<T>) Class.forName(className);
             return _.some(c.newInstance());
         } catch (Exception e) {
             return _.none();
+        }
+    }
+
+    private static boolean testConstructor(Constructor c, Object p, int pos) {
+        E.invalidArgIf(pos < 0);
+        Class[] pts = c.getParameterTypes();
+        if (pos < pts.length) {
+            Class pt = pts[pos];
+            return (pt.isAssignableFrom(p.getClass()));
+        } else {
+            return false;
+        }
+    }
+
+    public final static <T, P1> T newInstance(Class<T> c, P1 p1) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (testConstructor(ct, p1, 0)) {
+                    return ct.newInstance(p1);
+                }
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public final static <T, P1, P2> T newInstance(Class<T> c, P1 p1, P2 p2) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (!testConstructor(ct, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p2, 1)) {
+                    continue;
+                }
+                return ct.newInstance(p1, p2);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public final static <T, P1, P2, P3> T newInstance(Class<T> c, P1 p1, P2 p2, P3 p3) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (!testConstructor(ct, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p2, 1)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p3, 2)) {
+                    continue;
+                }
+                return ct.newInstance(p1, p2, p3);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public final static <T, P1, P2, P3, P4> T newInstance(Class<T> c, P1 p1, P2 p2, P3 p3, P4 p4) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (!testConstructor(ct, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p2, 1)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p3, 2)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p4, 4)) {
+                    continue;
+                }
+                return ct.newInstance(p1, p2, p3, p4);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public final static <T, P1, P2, P3, P4, P5> T newInstance(Class<T> c, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            for (Constructor<T> ct : ca) {
+                if (!testConstructor(ct, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p2, 1)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p3, 2)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p4, 4)) {
+                    continue;
+                }
+                if (!testConstructor(ct, p5, 5)) {
+                    continue;
+                }
+                return ct.newInstance(p1, p2, p3, p4, p5);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
         }
     }
 

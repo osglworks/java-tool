@@ -257,7 +257,9 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
 
     @Override
     public <R> C.List<R> map(_.Function<? super T, ? extends R> mapper) {
-        // TODO: handle lazy operation
+        if (isLazy()) {
+            return MappedList.of(this, mapper);
+        }
         int sz = size();
         ListBuilder<R> lb = new ListBuilder<R>(sz);
         forEach(_.f1(mapper).andThen(C.F.addTo(lb)));
@@ -653,6 +655,9 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
     public C.List<T> filter(_.Function<? super T, Boolean> predicate) {
         // TODO: handle lazy operation
         int sz = size();
+        if (0 == sz) {
+            return Nil.list();
+        }
         T[] data = _.newArray(data_);
         int cursor = 0;
         for (int i = 0; i < sz; ++i) {

@@ -23,6 +23,14 @@ class MappedIterator<T, R> implements Iterator<R> {
         this.mapper = _.f1(mapper);
     }
 
+    protected Iterator<? extends T> data() {
+        return data;
+    }
+
+    protected _.F1<? super T, ? extends R> mapper() {
+        return mapper;
+    }
+
     @Override
     public boolean hasNext() {
         return data.hasNext();

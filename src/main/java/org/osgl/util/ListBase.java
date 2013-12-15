@@ -397,7 +397,9 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     public <R> C.List<R> map(_.Function<? super T, ? extends R> mapper) {
         boolean immutable = isImmutable();
         int sz = size();
-        // TODO: handle lazy map
+        if (isLazy()) {
+            return MappedList.of(this, mapper);
+        }
         if (immutable) {
             if (0 == sz) {
                 return Nil.list();
@@ -584,7 +586,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
-    public final C.List<T> head(int n) {
+    public C.List<T> head(int n) {
         return take(n);
     }
 

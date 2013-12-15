@@ -19,11 +19,12 @@
 */
 package org.osgl.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.osgl.exception.UnexpectedException;
+
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.util.Arrays;
+import java.security.MessageDigest;
 import java.util.UUID;
 
 /**
@@ -49,12 +50,12 @@ public class Codec {
         try {
             return new String(Base64.encode(value.getBytes("utf-8")));
         } catch (UnsupportedEncodingException ex) {
-            throw E.encodingException(ex);
+            throw new UnexpectedException(ex);
         }
     }
 
     /**
-     * Encode binary data to base64 
+     * Encode binary data to base64
      * @param value The binary data
      * @return The base64 encoded String
      */
@@ -70,53 +71,67 @@ public class Codec {
     public static byte[] decodeBASE64(String value) {
         return Base64.decode(value);
     }
-    
-    public static String toHexString(String s) {
-        return toHexString(s, "utf-8");
-    }
 
-    public static String toHexString(String s, String encode) {
+    /**
+     * Build an hexadecimal MD5 hash for a String
+     * @param value The String to hash
+     * @return An hexadecimal Hash
+     */
+    public static String hexMD5(String value) {
         try {
-            return toHexString(s.getBytes(encode));
-        } catch (UnsupportedEncodingException e) {
-            throw E.encodingException(e);
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.reset();
+            messageDigest.update(value.getBytes("utf-8"));
+            byte[] digest = messageDigest.digest();
+            return byteToHexString(digest);
+        } catch (Exception ex) {
+            throw new UnexpectedException(ex);
         }
     }
-    
-    public static String toHexString(byte[] bytes) {
-        if (bytes.length == 0) return "";
-        return String.format("%x", new BigInteger(bytes));
-    }
 
-    public static String fromHexString(String hex) {
-        return fromHexString(hex, "utf-8");
-    }
-
-    public static String fromHexString(String hex, String encode) {
+    /**
+     * Build an hexadecimal SHA1 hash for a String
+     * @param value The String to hash
+     * @return An hexadecimal Hash
+     */
+    public static String hexSHA1(String value) {
         try {
-            return new String(bytesFromHexString(hex), encode);
-        } catch (UnsupportedEncodingException e) {
-            throw E.encodingException(e);
+            MessageDigest md;
+            md = MessageDigest.getInstance("SHA-1");
+            md.update(value.getBytes("utf-8"));
+            byte[] digest = md.digest();
+            return byteToHexString(digest);
+        } catch (Exception ex) {
+            throw new UnexpectedException(ex);
         }
     }
-    
-    public static byte[] bytesFromHexString(String hex) {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+    /**
+     * Write a byte array as hexadecimal String.
+     */
+    public static String byteToHexString(byte[] bytes) {
+        return String.valueOf(Hex.encodeHex(bytes));
+    }
+
+    /**
+     * Transform an hexadecimal String to a byte array.
+     */
+    public static byte[] hexStringToByte(String hexString) {
         try {
-            byte[] buffer = new byte[512];
-            int _start=0;
-            for (int i = 0; i < hex.length(); i+=2) {
-                buffer[_start++] = (byte)Integer.parseInt(hex.substring(i, i + 2), 16);
-                if (_start >=buffer.length || i+2>=hex.length()) {
-                    bout.write(buffer);
-                    Arrays.fill(buffer, 0, buffer.length, (byte) 0);
-                    _start  = 0;
-                }
-            }
-            return bout.toByteArray();
-        } catch (IOException e) {
-            throw E.ioException(e);
+            return Hex.decodeHex(hexString.toCharArray());
+        } catch (DecoderException e) {
+            throw new UnexpectedException(e);
         }
+    }
+
+    public static void main(String[] args) {
+        String s = "�e�d঻!i\u00071��\u001A��";
+        byte[] ba = s.getBytes();
+
+        String hex = byteToHexString(ba);
+        String s1 = new String(hexStringToByte(hex));
+
+        System.out.println(String.format("%s\n%s\n%s", s, hex, s1));
     }
 
 }

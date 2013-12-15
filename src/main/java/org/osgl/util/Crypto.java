@@ -21,10 +21,15 @@ package org.osgl.util;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 
 /**
  * Cryptography utils. Comes from play!framework under apache license
@@ -39,8 +44,15 @@ public class Crypto {
         SHA256("SHA-256"),
         SHA512("SHA-512");
         private String algorithm;
-        HashType(String algorithm) { this.algorithm = algorithm; }
-        @Override public String toString() { return this.algorithm; }
+
+        HashType(String algorithm) {
+            this.algorithm = algorithm;
+        }
+
+        @Override
+        public String toString() {
+            return this.algorithm;
+        }
     }
 
     /**
@@ -52,8 +64,9 @@ public class Crypto {
 
     /**
      * Sign a message with a key
+     *
      * @param message The message to sign
-     * @param key The key to use
+     * @param key     The key to use
      * @return The signed message (in hexadecimal)
      * @throws java.lang.Exception
      */
@@ -88,22 +101,23 @@ public class Crypto {
     }
 
     /**
-        * Create a password hash using the default hashing algorithm
-        * @param input The password
-        * @return The password hash
-        */
+     * Create a password hash using the default hashing algorithm
+     *
+     * @param input The password
+     * @return The password hash
+     */
     public static String passwordHash(String input) {
         return passwordHash(input, DEFAULT_HASH_TYPE);
     }
 
     /**
-        * Create a password hash using specific hashing algorithm
-        * @param input The password
-        * @param hashType The hashing algorithm
-        * @return The password hash
-        */
-    public static String passwordHash(String input, HashType hashType)
-    {
+     * Create a password hash using specific hashing algorithm
+     *
+     * @param input    The password
+     * @param hashType The hashing algorithm
+     * @return The password hash
+     */
+    public static String passwordHash(String input, HashType hashType) {
         try {
             MessageDigest m = MessageDigest.getInstance(hashType.toString());
             byte[] out = m.digest(input.getBytes());
@@ -113,40 +127,110 @@ public class Crypto {
         }
     }
 
+    private static SecretKey secretKeyAES(String pass,String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        int len = pass.length();
+        if (len < 16) {
+            pass = pass + "                ";
+        }
+        pass = pass.substring(0, 16);
+        if (S.empty(salt)) {
+            salt = pass.substring(0, 16);
+        }
+
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+
+
+        // NOTE: last argument is the key length, and it is 256
+        KeySpec spec = new PBEKeySpec(pass.toCharArray(), salt.getBytes(), 1024, 256);
+        SecretKey tmp = factory.generateSecret(spec);
+        SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
+        return(secret);
+    }
+
     /**
      * Encrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
-     * @param value The String to encrypt
+     *
+     * @param value      The String to encrypt
      * @param privateKey The key used to encrypt
      * @return An hexadecimal encrypted string
      */
     public static String encryptAES(String value, String privateKey) {
         try {
-            byte[] raw = privateKey.getBytes();
-            SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+            SecretKey key = secretKeyAES(privateKey, privateKey);
             Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-            return Codec.toHexString(cipher.doFinal(value.getBytes()));
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return Codec.byteToHexString(cipher.doFinal(value.getBytes()));
         } catch (Exception ex) {
             throw E.unexpected(ex);
         }
     }
 
     /**
-     * Decrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
-     * @param value An hexadecimal encrypted string
+     * Encrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
+     *
+     * @param value      The String to encrypt
      * @param privateKey The key used to encrypt
-     * @return The decrypted String
+     * @param salt       The salt
+     * @return An hexadecimal encrypted string
      */
-    public static String decryptAES(String value, String privateKey) {
+    public static String encryptAES(String value, String privateKey, String salt) {
         try {
-            byte[] raw = privateKey.getBytes();
-            SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+            SecretKey key = secretKeyAES(privateKey, salt);
             Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-            return new String(cipher.doFinal(Codec.bytesFromHexString(value)));
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return Codec.byteToHexString(cipher.doFinal(value.getBytes()));
         } catch (Exception ex) {
             throw E.unexpected(ex);
         }
     }
 
+
+    /**
+     * Decrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
+     *
+     * @param value      An hexadecimal encrypted string
+     * @param privateKey The key used to encrypt
+     * @return The decrypted String
+     */
+    public static String decryptAES(String value, String privateKey) {
+        try {
+            SecretKey key = secretKeyAES(privateKey, privateKey);
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            return new String(cipher.doFinal(Codec.hexStringToByte(value)));
+        } catch (Exception ex) {
+            throw E.unexpected(ex);
+        }
+    }
+
+
+    /**
+     * Decrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
+     *
+     * @param value      An hexadecimal encrypted string
+     * @param privateKey The key used to encrypt
+     * @return The decrypted String
+     */
+    public static String decryptAES(String value, String privateKey, String salt) {
+        try {
+            SecretKey key = secretKeyAES(privateKey, salt);
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            return new String(cipher.doFinal(Codec.hexStringToByte(value)));
+        } catch (Exception ex) {
+            throw E.unexpected(ex);
+        }
+    }
+
+    public static void main(String[] args) {
+        String key = S.random(64);
+        String s = "Hello world!";
+//        String es = encryptBlowfish(s, key);
+//        String s1 = decryptBlowfish(es, key);
+
+        String es = encryptAES(s, key);
+        String s1 = decryptAES(es, key);
+
+        System.out.println(String.format("%s\n %s\n %s\n %s", key, s, es, s1));
+    }
 }

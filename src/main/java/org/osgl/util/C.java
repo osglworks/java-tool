@@ -1786,22 +1786,167 @@ public enum C {
         Sequence<_.T2<T, Integer>> zipWithIndex();
     }
 
-    /**
-     * The osgl Set interface is a mixture of {@link java.util.Set} and osgl {@link Traversable}
-     *
-     * @param <T> the element type of the {@code Set}
-     * @since 0.2
-     */
-    public static interface Set<T> extends java.util.Set<T>, Traversable<T> {
-    }
+//    /**
+//     * The osgl Set interface is a mixture of {@link java.util.Set} and osgl {@link Traversable}
+//     *
+//     * @param <T> the element type of the {@code Set}
+//     * @since 0.2
+//     */
+//    public static interface Set<T> extends java.util.Set<T>, Traversable<T> {
+//    }
+//
+//    /**
+//     * The osgl sorted Set interface is a mixture of {@link java.util.Set} and osgl {@link Sequence}
+//     *
+//     * @param <T> the element type of the {@code SortedSet}
+//     * @since 0.2
+//     */
+//    public static interface SortedSet<T> extends java.util.SortedSet<T>, ReversibleSequence<T> {
+//    }
+//
 
-    /**
-     * The osgl sorted Set interface is a mixture of {@link java.util.Set} and osgl {@link Sequence}
-     *
-     * @param <T> the element type of the {@code SortedSet}
-     * @since 0.2
-     */
-    public static interface SortedSet<T> extends java.util.SortedSet<T>, ReversibleSequence<T> {
+    public static class Map<K, V> implements java.util.Map<K, V> {
+        public static class Entry<K, V> extends _.T2<K, V> implements java.util.Map.Entry<K, V> {
+            public Entry(K _1, V _2) {
+                super(_1, _2);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public K getKey() {
+                return _1;
+            }
+
+            @Override
+            public V getValue() {
+                return _2;
+            }
+
+            @Override
+            public V setValue(V value) {
+                throw E.unsupport();
+            }
+
+            public static <K, V> Entry<K, V> valueOf(K k, V v) {
+                return new Entry<K, V>(k, v);
+            }
+        }
+
+        private java.util.Map<K, V> _m;
+
+        private boolean ro;
+
+        protected Map(boolean readOnly, Object ... args) {
+            HashMap<K, V> map = new HashMap<K, V>();
+            int len = args.length;
+            for (int i = 0; i < len; i += 2) {
+                K k = (K) args[i];
+                V v = null;
+                if (i + 1 < len) {
+                    v = (V) args[i + 1];
+                }
+                map.put(k, v);
+            }
+            ro = readOnly;
+            if (readOnly) {
+                _m = Collections.unmodifiableMap(map);
+            } else {
+                _m = map;
+            }
+        }
+
+        protected Map(boolean readOnly, java.util.Map<? extends K, ? extends V> map) {
+            E.NPE(map);
+            boolean sorted = map instanceof SortedMap;
+            java.util.Map<K, V> m = sorted ? new TreeMap<K, V>() : new HashMap<K, V>();
+            for (K k : map.keySet()) {
+                V v = map.get(k);
+                m.put(k, v);
+            }
+            ro = readOnly;
+            if (readOnly) {
+                _m = Collections.unmodifiableMap(m);
+            } else {
+                _m = m;
+            }
+        }
+
+        @Override
+        public int size() {
+            return _m.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return _m.isEmpty();
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return _m.containsKey(key);
+        }
+
+        @Override
+        public boolean containsValue(Object value) {
+            return _m.containsValue(value);
+        }
+
+        @Override
+        public V get(Object key) {
+            return _m.get(key);
+        }
+
+        @Override
+        public V put(K key, V value) {
+            return _m.put(key, value);
+        }
+
+        @Override
+        public V remove(Object key) {
+            return remove(key);
+        }
+
+        @Override
+        public void putAll(java.util.Map<? extends K, ? extends V> m) {
+            _m.putAll(m);
+        }
+
+        @Override
+        public void clear() {
+            _m.clear();
+        }
+
+        @Override
+        public java.util.Set<K> keySet() {
+            return _m.keySet();
+        }
+
+        @Override
+        public Collection<V> values() {
+            return _m.values();
+        }
+
+        @Override
+        public Set<java.util.Map.Entry<K, V>> entrySet() {
+            Set<java.util.Map.Entry<K, V>> set = C.newSet();
+            for (K k : _m.keySet()) {
+                V v = _m.get(k);
+                set.add(Entry.valueOf(k, v));
+            }
+            return set;
+        }
+
+        // --- extensions
+        public boolean readOnly() {
+            return ro;
+        }
+
+        public Map<K, V> readOnly(boolean readOnly) {
+            if (ro ^ readOnly) {
+                return new Map<K, V>(readOnly, _m);
+            } else {
+                return this;
+            }
+        }
     }
 
     /**
@@ -2336,12 +2481,108 @@ public enum C {
         return l1.append(l2);
     }
 
-    public static <K, V> Map<K, V> newMap() {
-        return new HashMap<K, V>();
+    public static <T> Set<T> set(T t) {
+        Set<T> set = new HashSet<T>();
+        set.add(t);
+        return set;
     }
 
-    public static <K, V> Map<K, V> newMap(Map<? extends K, ? extends V> map) {
-        return new HashMap(map);
+    public static <T> Set<T> set(T t1, T t2) {
+        Set<T> set = new HashSet<T>();
+        set.add(t1);
+        set.add(t2);
+        return set;
+    }
+
+    public static <T> Set<T> set(T t1, T t2, T t3) {
+        Set<T> set = new HashSet<T>();
+        set.add(t1);
+        set.add(t2);
+        set.add(t2);
+        return set;
+    }
+
+    public static <T> Set<T> set(T t1, T t2, T t3, T t4) {
+        Set<T> set = new HashSet<T>();
+        set.add(t1);
+        set.add(t2);
+        set.add(t2);
+        set.add(t4);
+        return set;
+    }
+
+    public static <T> Set<T> set(T t1, T t2, T t3, T t4, T t5) {
+        Set<T> set = new HashSet<T>();
+        set.add(t1);
+        set.add(t2);
+        set.add(t2);
+        set.add(t4);
+        set.add(t5);
+        return set;
+    }
+
+    public static <T> Set<T> set(T t1, T t2, T t3, T t4, T t5, T... ta) {
+        Set<T> set = new HashSet<T>();
+        set.add(t1);
+        set.add(t2);
+        set.add(t2);
+        set.add(t4);
+        set.add(t5);
+        for (T t : ta) {
+            set.add(t);
+        }
+        return set;
+    }
+
+    public static <T> Set<T> set(T[] ta) {
+        Set<T> set = new HashSet<T>();
+        for (T t : ta) {
+            set.add(t);
+        }
+        return set;
+    }
+
+    public static <T> Set<T> set(Collection<? extends T> col) {
+        return Collections.unmodifiableSet(new HashSet(col));
+    }
+
+    public static <T> Set<T> set(Iterable<? extends T> itr) {
+        if (itr instanceof Collection) {
+            return set((Collection<T>)itr);
+        }
+        Set<T> set = new HashSet<T>();
+        for (T t: itr) set.add(t);
+        return Collections.unmodifiableSet(set);
+    }
+
+    public static <T> Set<T> newSet() {
+        return new HashSet<T>();
+    }
+
+    public static <K, V> java.util.Map<K, V> map(Object... args) {
+        if (null == args || args.length == 0) {
+            return Collections.EMPTY_MAP;
+        }
+        return new Map(true, args);
+    }
+
+    public static <K, V> java.util.Map<K, V> map(java.util.Map<? extends K, ? extends V> map) {
+        if (null == map) {
+            return Collections.EMPTY_MAP;
+        }
+        return Collections.unmodifiableMap(map);
+    }
+
+    public static <K, V> java.util.Map<K, V> map(Map<? extends K, ? extends V> map) {
+        return Collections.unmodifiableMap(map);
+    }
+
+    public static <K, V> Map<K, V> newMap(Object... args) {
+        return new Map(false, args);
+    }
+
+    public static <K, V> Map<K, V> newMap(java.util.Map<? extends K, ? extends V> map) {
+        return new Map(false, map);
     }
     // --- eof factory methods ---
 

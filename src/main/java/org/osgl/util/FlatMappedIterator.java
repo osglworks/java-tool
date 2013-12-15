@@ -22,6 +22,10 @@ class FlatMappedIterator<T, R> extends StatefulIterator<R> {
         this.mapper = mapper;
     }
 
+    protected Iterator<? extends T> data() {return data;}
+
+    protected _.Function<? super T, ? extends Iterable<? extends R>> mapper() {return mapper;}
+
     @Override
     protected _.Option<R> getCurrent() {
         while (null == curMapped || !curMapped.hasNext()) {

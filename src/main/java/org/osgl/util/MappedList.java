@@ -14,10 +14,10 @@ import java.util.ListIterator;
  */
 class MappedList<T, R> extends ReadOnlyListBase<R> implements C.List<R> {
 
-    private final C.List<T> l_;
+    private final C.List<? extends T> l_;
     private final _.Function<? super T, ? extends R> m_;
 
-    MappedList(C.List<T> list, _.Function<? super T, ? extends R> mapper) {
+    MappedList(C.List<? extends T> list, _.Function<? super T, ? extends R> mapper) {
         E.NPE(list, mapper);
         l_ = list;
         m_ = mapper;
@@ -30,8 +30,7 @@ class MappedList<T, R> extends ReadOnlyListBase<R> implements C.List<R> {
 
     @Override
     public ListIterator<R> listIterator(int index) {
-        //TODO ...
-        return null;
+        return new MappedListIterator<T, R>(l_.listIterator(index), m_);
     }
 
     @Override
@@ -45,5 +44,9 @@ class MappedList<T, R> extends ReadOnlyListBase<R> implements C.List<R> {
         return m_.apply(t);
     }
 
+    public static <T, R> MappedList<T, R>
+    of(C.List<? extends T> data, _.Function<? super T, ? extends R> mapper) {
+        return new MappedList<T, R>(data, mapper);
+    }
 
 }

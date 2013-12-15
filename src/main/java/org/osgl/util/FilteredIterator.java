@@ -38,6 +38,8 @@ class FilteredIterator<T> extends StatefulIterator<T> {
         type_ = type;
     }
 
+    protected Iterator<? extends T> data() {return itr_;}
+
     @Override
     protected _.Option<T> getCurrent() {
         boolean ok;
