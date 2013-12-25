@@ -134,7 +134,7 @@ public class Crypto {
         }
         pass = pass.substring(0, 16);
         if (S.empty(salt)) {
-            salt = pass.substring(0, 16);
+            salt = pass;
         }
 
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
