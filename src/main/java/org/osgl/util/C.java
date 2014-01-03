@@ -1902,7 +1902,7 @@ public enum C {
 
         @Override
         public V remove(Object key) {
-            return remove(key);
+            return _m.remove(key);
         }
 
         @Override
