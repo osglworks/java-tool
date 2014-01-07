@@ -376,7 +376,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
         if (EMPTY_STR.equals(this)) {
             return s;
         }
-        return of(s.concat(s.s));
+        return of(this.s.concat(s.s));
     }
 
     public Str append(String s) {
@@ -386,7 +386,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
         if (EMPTY_STR.equals(this)) {
             return of(s);
         }
-        return of(s.concat(s));
+        return of(this.s.concat(s));
     }
 
     @Override
@@ -413,6 +413,27 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
     public C.List<Character> prepend(Character character) {
         StringBuilder sb = new StringBuilder(character).append(s);
         return of(sb);
+    }
+
+
+    public Str prepend(Str s) {
+        if (EMPTY_STR.equals(s)) {
+            return this;
+        }
+        if (EMPTY_STR.equals(this)) {
+            return s;
+        }
+        return of(s.s.concat(this.s));
+    }
+
+    public Str prepend(String s) {
+        if ("".equals(s)) {
+            return this;
+        }
+        if (EMPTY_STR.equals(this)) {
+            return of(s);
+        }
+        return of(s.concat(this.s));
     }
 
     @Override
