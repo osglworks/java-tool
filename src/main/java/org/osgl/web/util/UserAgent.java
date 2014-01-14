@@ -65,7 +65,7 @@ public class UserAgent {
     }
 
     public static enum Browser {
-        IE_6, IE_7, IE_8, IE_9, IE_10,
+        IE_6, IE_7, IE_8, IE_9, IE_10, IE_11,
         CHROME, SAFARI, FIREFOX_3, FIREFOX, OPERA, UCWEB, BOT, UNKNOWN
     }
 
@@ -81,7 +81,17 @@ public class UserAgent {
 
     public final boolean isIE9Up() {
         Browser b = browser_;
-        return Browser.IE_9 == b || Browser.IE_10 == b;
+        return Browser.IE_9 == b || Browser.IE_10 == b || Browser.IE_11 == b;
+    }
+
+    public final boolean isIE10Up() {
+        Browser b = browser_;
+        return Browser.IE_10 == b || Browser.IE_11 == b;
+    }
+
+    public final boolean isIE11Up() {
+        Browser b = browser_;
+        return Browser.IE_11 == b;
     }
 
     public final boolean isIE() {
@@ -169,7 +179,8 @@ public class UserAgent {
         IE7(Pattern.compile(".*MSIE\\s+[7]\\.0.*"), Device.PC, Browser.IE_7, null),
         IE8(Pattern.compile(".*MSIE\\s+[8]\\.0.*"), Device.PC, Browser.IE_8, null),
         IE9(Pattern.compile(".*MSIE\\s+(9)\\.0.*"), Device.PC, Browser.IE_9, null),
-        IE10(Pattern.compile(".*MSIE\\s+(10|11|12)\\.0.*"), null, Browser.IE_10, null),
+        IE10(Pattern.compile(".*MSIE\\s+(10)\\.0.*"), null, Browser.IE_10, null),
+        IE11(Pattern.compile(".*Windows\\s+NT.+rv:(11|12)\\.0.*"), null, Browser.IE_11, null),
         FIREFOX(Pattern.compile(".*Firefox.*"), null, Browser.FIREFOX, null),
         FIREFOX3(Pattern.compile(".*Firefox/3.*"), null, Browser.FIREFOX_3, null),
         SAFARI(Pattern.compile(".*Safari.*"), null, Browser.SAFARI, null),
@@ -255,6 +266,10 @@ public class UserAgent {
         ua = set(s);
         assert_(ua.is(Device.DROID_TABLET), "droid tablet");
         assert_(ua.isTablet(), "tablet");
+
+        s = "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko";
+        ua = valueOf(s);
+        assert_(ua.isIE10Up(), "IE 10");
 
         System.out.println("success!");
     }
