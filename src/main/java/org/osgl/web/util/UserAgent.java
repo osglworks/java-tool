@@ -79,6 +79,11 @@ public class UserAgent {
         return Browser.IE_6 == b || Browser.IE_7 == b || Browser.IE_8 == b;
     }
 
+    public final boolean isIE9Down() {
+        Browser b = browser_;
+        return Browser.IE_8 == b || Browser.IE_9 == b || Browser.IE_6 == b || Browser.IE_7 == b;
+    }
+
     public final boolean isIE9Up() {
         Browser b = browser_;
         return Browser.IE_9 == b || Browser.IE_10 == b || Browser.IE_11 == b;
