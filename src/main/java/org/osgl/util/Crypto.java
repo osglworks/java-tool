@@ -34,7 +34,15 @@ import java.security.spec.KeySpec;
 /**
  * Cryptography utils. Comes from play!framework under apache license
  */
-public class Crypto {
+public enum Crypto {
+    ;
+
+    private static CryptoService svc;
+
+    public static void setCryptoService(CryptoService service) {
+        svc = service;
+    }
+
     /**
      * Define a hash type enumeration for strong-typing
      */
@@ -127,7 +135,8 @@ public class Crypto {
         }
     }
 
-    private static SecretKey secretKeyAES(String pass,String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private static SecretKey secretKeyAES(String pass, String salt)
+    throws NoSuchAlgorithmException, InvalidKeySpecException {
         int len = pass.length();
         if (len < 16) {
             pass = pass + "                ";
@@ -156,6 +165,7 @@ public class Crypto {
      */
     public static String encryptAES(String value, String privateKey) {
         try {
+            if (null != svc) return svc.encrypt(value, privateKey);
             SecretKey key = secretKeyAES(privateKey, privateKey);
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -175,6 +185,7 @@ public class Crypto {
      */
     public static String encryptAES(String value, String privateKey, String salt) {
         try {
+            if (null != svc) return svc.encrypt(value, privateKey, salt);
             SecretKey key = secretKeyAES(privateKey, salt);
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -194,6 +205,7 @@ public class Crypto {
      */
     public static String decryptAES(String value, String privateKey) {
         try {
+            if (null != svc) return svc.decrypt(value, privateKey);
             SecretKey key = secretKeyAES(privateKey, privateKey);
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, key);
@@ -213,6 +225,7 @@ public class Crypto {
      */
     public static String decryptAES(String value, String privateKey, String salt) {
         try {
+            if (null != svc) return svc.decrypt(value, privateKey, salt);
             SecretKey key = secretKeyAES(privateKey, salt);
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, key);
