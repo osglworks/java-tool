@@ -40,6 +40,10 @@ public enum Crypto {
     private static CryptoService svc;
 
     public static void setCryptoService(CryptoService service) {
+        SecurityManager security = System.getSecurityManager();
+       	if (security != null) {
+       	    security.checkPermission(new RuntimePermission("OSGL.SetCryptoService"));
+       	}
         svc = service;
     }
 
