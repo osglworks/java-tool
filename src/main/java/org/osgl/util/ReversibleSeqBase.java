@@ -83,8 +83,11 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
 
     @Override
     public C.ReversibleSequence<T> drop(int n) throws IllegalArgumentException {
+        int sz = size();
         if (n < 0) {
-            throw new IllegalArgumentException();
+            n = -n;
+            if (n >= sz) return Nil.rseq();
+            return take(sz - n);
         }
         if (n == 0) {
             return this;

@@ -3151,9 +3151,6 @@ public enum _ {
 
         @Override
         public C.List<T> drop(int n) throws IllegalArgumentException {
-            if (n < 0) {
-                throw new IllegalArgumentException();
-            }
             if (n == 0) {
                 return this;
             }

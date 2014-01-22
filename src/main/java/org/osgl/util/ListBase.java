@@ -318,18 +318,24 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     @Override
     public C.List<T> drop(int n) throws IndexOutOfBoundsException {
+        int sz = size();
+        boolean immutable = isImmutable();
         if (n < 0) {
-            throw new IndexOutOfBoundsException();
+            n = -n;
+            if (n >= sz) {
+                if (immutable) return C.newList();
+                else return C.list();
+            } else {
+                return take(sz - n);
+            }
         }
         if (0 == n) {
             return this;
         }
         // TODO handle lazy drop
-        boolean immutable = isImmutable();
         if (immutable) {
             return subList(n, size());
         }
-        int sz = size();
         if (n >= sz) {
             return C.newList();
         }

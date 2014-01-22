@@ -470,8 +470,9 @@ public enum C {
          * <p>If the number {@code n} is zero, then a copy of this {@code Sequence} or this {@code Sequence}
          * itself is returned depending on the implementation</p>
          * <p/>
-         * <p>If the number {@code n} is negative, then {@link IllegalArgumentException} should
-         * be thrown out</p>
+         * <p>If the number {@code n} is negative, then either {@link IllegalArgumentException} should
+         * be thrown out if this sequence is not {@link org.osgl.util.C.Feature#LIMITED} or it drop
+         * {@code -n} element starts from the tail side</p>
          * <p/>
          * <pre>
          *     C.Sequence seq = C.list(1, 2, 3, 4, 5);
@@ -485,7 +486,6 @@ public enum C {
          * @param n specify the number of elements to be taken from the head of this {@code Sequence}
          *          must not less than 0
          * @return a {@code Sequence} consisting of the elements of this {@code Sequence} except the first {@code n} ones
-         * @throws IllegalArgumentException if {@code n} is less than zero
          * @since 0.2
          */
         Sequence<T> drop(int n) throws IllegalArgumentException;
@@ -848,13 +848,13 @@ public enum C {
         /**
          * {@inheritDoc}
          *
-         * @param n specify the number of elements to be taken from the head of this {@code Sequence}
-         *          must not less than 0
+         * @param n specify the number of elements to be taken from the head of this {@code Sequence} or
+         *          the {@code -n} number of elements to be taken from the tail of this sequence if n is
+         *          an negative number
          * @return a reversible sequence without the first {@code n} number of elements
-         * @throws IllegalArgumentException
          */
         @Override
-        ReversibleSequence<T> drop(int n) throws IllegalArgumentException;
+        ReversibleSequence<T> drop(int n);
 
         @Override
         ReversibleSequence<T> dropWhile(_.Function<? super T, Boolean> predicate);
@@ -1566,7 +1566,7 @@ public enum C {
          * @return a List contains all elements of this list
          *         except the first {@code n} number
          */
-        List<T> drop(int n) throws IllegalArgumentException;
+        List<T> drop(int n);
 
         /**
          * {@inheritDoc}
@@ -2159,6 +2159,10 @@ public enum C {
     public static Range<Integer> oddNumbers() {
         return new LazyRange<Integer>(1, Integer.MAX_VALUE, N.F.intRangeStep(2));
     }
+
+    public static final List EMPTY_LIST = Nil.list();
+    public static final Set EMPTY_SET = Collections.EMPTY_SET;
+    public static final java.util.Map EMPTY_MAP = Collections.EMPTY_MAP;
 
     /**
      * Returns an empty immutable list

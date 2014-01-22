@@ -687,13 +687,15 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
 
     @Override
     public C.List<T> drop(int n) throws IndexOutOfBoundsException {
+        int size = size();
         if (n < 0) {
-            throw new IndexOutOfBoundsException();
+            n = -n;
+            if (n >= size) return C.list();
+            return take(size - n);
         }
         if (0 == n) {
             return this;
         }
-        int size = size();
         if (n >= size) {
             return Nil.list();
         }

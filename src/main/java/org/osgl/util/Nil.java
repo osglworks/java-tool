@@ -317,9 +317,6 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public EmptySequence<T> drop(int n) {
-            if (n < 0) {
-                throw new IllegalArgumentException();
-            }
             return this;
         }
 

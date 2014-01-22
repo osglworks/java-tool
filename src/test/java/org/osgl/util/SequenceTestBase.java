@@ -107,12 +107,16 @@ public abstract class SequenceTestBase extends TraversableTestBase {
         eq(Nil.seq(), data().drop(5));
         eq(Nil.seq(), data().drop(6));
         eq(data, data().drop(0));
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void testDropFail() {
-        data = prepareData();
-        data().drop(-1);
+        if (data.is(C.Feature.LIMITED)) {
+            eq(seqOf(1, 2, 3, 4), data().drop(-1));
+        } else {
+            try {
+                data().drop(-1);
+                fail("unlimited sequence cannot drop with negative number");
+            } catch (IndexOutOfBoundsException e) {
+                // success
+            }
+        }
     }
 
     @Test

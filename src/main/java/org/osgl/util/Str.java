@@ -207,8 +207,10 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
         if (n == 0) {
             return EMPTY_STR;
         } else if (n < 0) {
-            return drop(size() + n);
-        } else if (n >= size()) {
+            n = -n;
+            if (n >= sz) return this;
+            return drop(sz - n);
+        } else if (n >= sz) {
             return this;
         }
         return subList(0, n);
@@ -229,11 +231,13 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
 
     @Override
     public Str drop(int n) throws IndexOutOfBoundsException {
+        int sz = size();
         if (n < 0) {
-            throw new IndexOutOfBoundsException();
+            n = -n;
+            if (n >= sz) return EMPTY_STR;
+            return take(sz - n);
         }
         if (n == 0) return this;
-        int sz = size();
         if (n > sz) return EMPTY_STR;
         return subList(n, sz);
     }
@@ -1204,6 +1208,12 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
 
     public int countWithOverlay(Str search) {
         return S.count(s, search.value(), true);
+    }
+
+    public static void main(String[] args) {
+        Str s = S.str("abc");
+        System.out.println(s.drop(1));
+        System.out.println(s.drop(-1));
     }
 
 }
