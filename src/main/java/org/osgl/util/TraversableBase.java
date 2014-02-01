@@ -66,25 +66,25 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
 
     @Override
     public C.Traversable<T> lazy() {
-        setFeature(C.Feature.PARALLEL);
-        return this;
-    }
-
-    @Override
-    public C.Traversable<T> eager() {
-        unsetFeature(C.Feature.PARALLEL);
-        return this;
-    }
-
-    @Override
-    public C.Traversable<T> parallel() {
         setFeature(C.Feature.LAZY);
         return this;
     }
 
     @Override
-    public C.Traversable<T> sequential() {
+    public C.Traversable<T> eager() {
         unsetFeature(C.Feature.LAZY);
+        return this;
+    }
+
+    @Override
+    public C.Traversable<T> parallel() {
+        setFeature(C.Feature.PARALLEL);
+        return this;
+    }
+
+    @Override
+    public C.Traversable<T> sequential() {
+        unsetFeature(C.Feature.PARALLEL);
         return this;
     }
 

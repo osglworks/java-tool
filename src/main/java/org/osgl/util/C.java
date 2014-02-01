@@ -130,28 +130,35 @@ public enum C {
     public static interface Traversable<T> extends Iterable<T>, Featured {
 
         /**
-         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is set
+         * Returns this traversable and try to turn on
+         * {@link C.Feature#PARALLEL}. If this traversable does not
+         * support {@link org.osgl.util.C.Feature#PARALLEL} then
+         * return this traversable directly without any state change
          *
-         * @return this reference with parallel turned on
+         * @return this reference with parallel turned on if parallel
+         *         is supported
          */
         Traversable<T> parallel();
 
         /**
-         * Returns this traversable and make sure {@link C.Feature#PARALLEL} is unset
+         * Returns this traversable and turn off
+         * {@link C.Feature#PARALLEL}
          *
          * @return this reference with parallel turned off
          */
         Traversable<T> sequential();
 
         /**
-         * Returns this traversable and make sure {@link C.Feature#LAZY} is set
+         * Returns this traversable and try to turn on {@link C.Feature#LAZY}.
+         * If lazy is not supported then return this traversable directly without
+         * any state change
          *
-         * @return this reference with lazy turned on
+         * @return this reference with lazy turned on if it is supported
          */
         Traversable<T> lazy();
 
         /**
-         * Returns this traversable and make sure {@link C.Feature#LAZY} is unset
+         * Returns this traversable and turn off {@link C.Feature#LAZY}
          *
          * @return this reference with lazy turned off
          */

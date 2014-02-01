@@ -301,19 +301,21 @@ public enum _ {
         public abstract T create();
     }
 
+    private static class DumbF0 extends F0<Object> implements Serializable {
+        private static final long serialVersionUID = 2856835860950L;
+        @Override
+        public Object apply() throws NotAppliedException, Break {
+            return null;
+        }
+    }
+
     /**
      * A dumb function for {@link org.osgl._.Func0} that does nothing and return <code>null</code>
      *
      * @see #f0()
      * @since 0.2
      */
-    @SuppressWarnings("unchecked")
-    public static final F0 F0 = new F0() {
-        @Override
-        public Object apply() {
-            return null;
-        }
-    };
+    public static final F0 F0 = new DumbF0();
 
     /**
      * Return a dumb function for {@link org.osgl._.Func0}. This is the type-safe version of {@link #F0}
@@ -712,18 +714,21 @@ public enum _ {
         }
     }
 
+    private static class DumbF1 extends F1<Object, Object> implements Serializable {
+        private static final long serialVersionUID = 2856835860951L;
+        @Override
+        public Object apply(Object o) throws NotAppliedException, Break {
+            return null;
+        }
+    }
+
     /**
      * A dumb {@link org.osgl._.Function} implementation that does nothing and return null
      *
      * @see #f1()
      * @since 0.2
      */
-    public static final F1 F1 = new F1() {
-        @Override
-        public Object apply(Object o) {
-            return null;
-        }
-    };
+    public static final F1 F1 = new DumbF1();
 
     /**
      * The type-safe version of {@link #F1}
@@ -988,18 +993,22 @@ public enum _ {
         }
     }
 
+    private static class DumbF2 extends F2<Object, Object, Object> implements Serializable {
+        private static final long serialVersionUID = 2856835860952L;
+
+        @Override
+        public Object apply(Object o, Object o2) throws NotAppliedException, Break {
+            return null;
+        }
+    }
+
     /**
      * A dumb {@link org.osgl._.Func2} implementation that does nothing and return null
      *
      * @see #f2()
      * @since 0.2
      */
-    public static final F2 F2 = new F2() {
-        @Override
-        public Object apply(Object p1, Object p2) {
-            return null;
-        }
-    };
+    public static final F2 F2 = new DumbF2();
 
     /**
      * The type-safe version of {@link #F2}
@@ -1250,18 +1259,23 @@ public enum _ {
         }
     }
 
+
+    private static class DumbF3 extends F3<Object, Object, Object, Object> implements Serializable {
+        private static final long serialVersionUID = 2856835860953L;
+
+        @Override
+        public Object apply(Object o, Object o2, Object o3) throws NotAppliedException, Break {
+            return null;
+        }
+    }
+
     /**
      * A dumb {@link org.osgl._.Func3} implementation that does nothing and return null
      *
      * @see #f3()
      * @since 0.2
      */
-    public static final F3 F3 = new F3() {
-        @Override
-        public Object apply(Object p1, Object p2, Object p3) {
-            return null;
-        }
-    };
+    public static final F3 F3 = new DumbF3();
 
     /**
      * The type-safe version of {@link #F3}
@@ -1524,18 +1538,22 @@ public enum _ {
         }
     }
 
+    private static class DumbF4 extends F4<Object, Object, Object, Object, Object> implements Serializable {
+        private static final long serialVersionUID = 2856835860954L;
+
+        @Override
+        public Object apply(Object o, Object o2, Object o3, Object o4) throws NotAppliedException, Break {
+            return null;
+        }
+    }
+
     /**
      * A dumb {@link org.osgl._.Func4} implementation that does nothing and return null
      *
      * @see #f4()
      * @since 0.2
      */
-    public static final F4 F4 = new F4() {
-        @Override
-        public Object apply(Object p1, Object p2, Object p3, Object p4) {
-            return null;
-        }
-    };
+    public static final F4 F4 = new DumbF4();
 
     /**
      * The type-safe version of {@link #F4}
@@ -1810,18 +1828,22 @@ public enum _ {
         }
     }
 
+    private static class DumbF5 extends F5<Object, Object, Object, Object, Object, Object> implements Serializable {
+        private static final long serialVersionUID = 2856835860955L;
+
+        @Override
+        public Object apply(Object o, Object o2, Object o3, Object o4, Object o5) throws NotAppliedException, Break {
+            return null;
+        }
+    }
+
     /**
      * A dumb {@link org.osgl._.Func5} implementation that does nothing and return null
      *
      * @see #f5()
      * @since 0.2
      */
-    public static final F5 F5 = new F5() {
-        @Override
-        public Object apply(Object p1, Object p2, Object p3, Object p4, Object p5) {
-            return null;
-        }
-    };
+    public static final F5 F5 = new DumbF5();
 
     /**
      * The type-safe version of {@link #F5}
@@ -2643,7 +2665,7 @@ public enum _ {
         return new T5<A, B, C, D, E>(a, b, c, d, e);
     }
 
-    public static abstract class Option<T> implements Iterable<T> {
+    public static abstract class Option<T> implements Iterable<T>, Serializable {
 
         private Option() {
         }
@@ -2943,6 +2965,8 @@ public enum _ {
 
     public static class None<T> extends Option<T> {
 
+        private static final long serialVersionUID = 962498820763181262L;
+
         private None() {
         }
 
@@ -2974,6 +2998,8 @@ public enum _ {
     }
 
     public static class Some<T> extends Option<T> {
+
+        private static final long serialVersionUID = 962498820763181265L;
 
         final T value;
 
@@ -6267,6 +6293,9 @@ public enum _ {
 
         F1<Integer, String> toString = _.F.asString();
         System.out.println(toString.apply(33));
+
+        F0<String> f0 = _.F0;
+        System.out.println(f0.apply());
     }
 
 }
