@@ -391,6 +391,11 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         return ImmutableList.of(data);
     }
 
+    public C.Set<T> toSet() {
+        checkState();
+        return ImmutableSet.of(buf);
+    }
+
     /**
      * Returns an immutable {@link C.List} from iterable
      * @param iterable the iterable

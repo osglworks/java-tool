@@ -299,7 +299,7 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
     @SuppressWarnings("unchecked")
     public C.List<T> append(Collection<? extends T> collection) {
         if (collection instanceof C.List) {
-            return append((C.List<T>) collection);
+            return appendList((C.List<T>) collection);
         } else {
             return unLazyAppend(collection);
         }
@@ -307,13 +307,16 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
 
     @Override
     public C.ReversibleSequence<T> append(C.ReversibleSequence<T> seq) {
-        return super.append(seq);
+        if (seq instanceof C.List) {
+            return appendList((C.List<T>) seq);
+        }
+        return super.appendReversibleSeq(seq);
     }
 
     @Override
     public C.Sequence<T> append(C.Sequence<T> seq) {
         if (seq instanceof C.List) {
-            return append((C.List<T>) seq);
+            return appendList((C.List<T>) seq);
         }
         if (isLazy()) {
             return CompositeSeq.of(this, seq);
@@ -323,17 +326,21 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
         return lb.toList();
     }
 
-    public C.List<T> append(C.List<T> l) {
+    protected C.List<T> appendList(C.List<T> l) {
         if (isLazy()) {
             return CompositeList.of(this, l);
         }
         if (l instanceof ImmutableList) {
-            return append((ImmutableList<T>) l);
+            return appendImmutableList((ImmutableList<T>) l);
         }
         return unLazyAppend(l);
     }
 
-    public C.List<T> append(ImmutableList<T> l) {
+    public C.List<T> append(C.List<T> l) {
+        return appendList(l);
+    }
+
+    private C.List<T> appendImmutableList(ImmutableList<T> l) {
         int szA = size();
         int szB = l.size();
         T[] dataA = data_;
@@ -341,6 +348,10 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
         System.arraycopy(dataA, 0, data, 0, szA);
         System.arraycopy(l.data_, 0, data, szA, szB);
         return of(data);
+    }
+
+    public C.List<T> append(ImmutableList<T> l) {
+        return appendImmutableList(l);
     }
 
     private C.List<T> unLazyPrepend(Collection<? extends T> collection) {
@@ -367,7 +378,7 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
     @SuppressWarnings("unchecked")
     public C.List<T> prepend(Collection<? extends T> collection) {
         if (collection instanceof C.List) {
-            return prepend((C.List<T>) collection);
+            return prependList((C.List<T>) collection);
         } else {
             return unLazyPrepend(collection);
         }
@@ -375,13 +386,13 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
 
     @Override
     public C.ReversibleSequence<T> prepend(C.ReversibleSequence<T> seq) {
-        return super.prepend(seq);
+        return super.prependReversibleSeq(seq);
     }
 
     @Override
     public C.Sequence<T> prepend(C.Sequence<T> seq) {
         if (seq instanceof C.List) {
-            return prepend((C.List<T>) seq);
+            return prependList((C.List<T>) seq);
         }
         if (isLazy()) {
             return CompositeSeq.of(seq, this);
@@ -396,7 +407,7 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
             return CompositeList.of(l, this);
         }
         if (l instanceof ImmutableList) {
-            return prepend((ImmutableList<T>) l);
+            return prependList((ImmutableList<T>) l);
         }
         return unLazyPrepend(l);
     }

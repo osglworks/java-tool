@@ -60,6 +60,20 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         return (EmptyList<T>) EmptyList.INSTANCE;
     }
 
+    public static EmptySet SET = EmptySet.INSTANCE;
+
+    @SuppressWarnings("unchecked")
+    public static <T> EmptySet<T> set() {
+        return (EmptySet<T>) EmptySet.INSTANCE;
+    }
+
+    public static final Empty EMPTY = Empty.INSTANCE;
+
+    @SuppressWarnings("unchecked")
+    public static <T> Empty<T> empty() {
+        return (Empty<T>) Empty.INSTANCE;
+    }
+
 //    public static final EmptySet SET = EmptySet.INSTANCE;
 //
 //    @SuppressWarnings("unchecked")
@@ -628,32 +642,87 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
     }
 
-//    static class EmptySet<T> extends Nil<T> implements C.Set<T>, Serializable {
-//
-//        private static final long serialVersionUID = 4142843931316831861L;
-//
-//
-//        private EmptySet() {
-//        }
-//
-//        private static final EmptySet<?> INSTANCE = new EmptySet();
-//
-//        @Override
-//        @SuppressWarnings("unchecked")
-//        protected EmptySet<T> singleton() {
-//            return (EmptySet<T>) INSTANCE;
-//        }
-//
-//        @Override
-//        public EmptySet<T> accept(_.Function<? super T, ?> visitor) {
-//            return this;
-//        }
-//
-//        // Preserves singleton property
-//        private Object readResolve() {
-//            return INSTANCE;
-//        }
-//    }
+    static class EmptySet<T> extends ImmutableSet<T> implements C.Set<T>, Serializable {
+
+        private static final long serialVersionUID = 4142843931316831861L;
+
+        private EmptySet() {
+            super(Collections.EMPTY_SET);
+        }
+
+        private static final EmptySet<?> INSTANCE = new EmptySet();
+
+        @SuppressWarnings("unchecked")
+        protected EmptySet<T> singleton() {
+            return (EmptySet<T>) INSTANCE;
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return false;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c) {
+            return c.isEmpty();
+        }
+
+        @Override
+        public EmptySet<T> accept(_.Function<? super T, ?> visitor) {
+            return this;
+        }
+
+        // Preserves singleton property
+        private Object readResolve() {
+            return INSTANCE;
+        }
+    }
+
+    static class Empty<T> extends EmptyList<T> implements C.ListOrSet<T> {
+
+        private static final Empty INSTANCE = new Empty();
+
+        @Override
+        public Empty<T> parallel() {
+            return this;
+        }
+
+        @Override
+        public Empty<T> lazy() {
+            return this;
+        }
+
+        @Override
+        public Empty<T> filter(_.Function<? super T, Boolean> predicate) {
+            return this;
+        }
+
+        @Override
+        public Empty<T> eager() {
+            return this;
+        }
+
+        @Override
+        public Empty<T> sequential() {
+            return this;
+        }
+
+        @Override
+        public Empty<T> accept(_.Function<? super T, ?> visitor) {
+            return this;
+        }
+
+    }
 //
 //    static class EmptySortedSet<T> extends EmptyReversibleSequence<T> implements C.SortedSet<T>, Serializable {
 //

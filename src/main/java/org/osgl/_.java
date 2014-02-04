@@ -3102,7 +3102,7 @@ public enum _ {
         }
     }
 
-    public static class Var<T> extends ListBase<T> implements C.List<T>, Set<T> {
+    public static class Var<T> extends ListBase<T> implements C.ListOrSet<T> {
 
         private T v;
 
@@ -3192,11 +3192,11 @@ public enum _ {
         }
 
         @Override
-        public C.List<T> filter(Function<? super T, Boolean> predicate) {
+        public C.ListOrSet<T> filter(Function<? super T, Boolean> predicate) {
             if (predicate.apply(v)) {
                 return this;
             }
-            return C.list();
+            return C.empty();
         }
 
         @Override

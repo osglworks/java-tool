@@ -1956,6 +1956,46 @@ public enum C {
         }
     }
 
+    public static interface Set<T> extends java.util.Set<T>, Traversable<T> {
+        @Override
+        Set<T> parallel();
+
+        @Override
+        Set<T> sequential();
+
+        @Override
+        Set<T> lazy();
+
+        @Override
+        Set<T> eager();
+
+        @Override
+        Set<T> filter(_.Function<? super T, Boolean> predicate);
+
+        @Override
+        Set<T> accept(_.Function<? super T, ?> visitor);
+    }
+
+    public static interface ListOrSet<T> extends List<T>, Set<T> {
+        @Override
+        ListOrSet<T> parallel();
+
+        @Override
+        ListOrSet<T> sequential();
+
+        @Override
+        ListOrSet<T> lazy();
+
+        @Override
+        ListOrSet<T> eager();
+
+        @Override
+        ListOrSet<T> accept(_.Function<? super T, ?> visitor);
+
+        @Override
+        ListOrSet<T> filter(_.Function<? super T, Boolean> predicate);
+    }
+
     /**
      * Defines a factory to create {@link java.util.List java List} instance
      * used by {@link DelegatingList} to create it's backing data structure
@@ -2168,8 +2208,13 @@ public enum C {
     }
 
     public static final List EMPTY_LIST = Nil.list();
-    public static final Set EMPTY_SET = Collections.EMPTY_SET;
+    public static final Set EMPTY_SET = Nil.set();
     public static final java.util.Map EMPTY_MAP = Collections.EMPTY_MAP;
+    public static final ListOrSet EMPTY = Nil.EMPTY;
+
+    public static <T> ListOrSet<T> empty() {
+        return EMPTY;
+    }
 
     /**
      * Returns an empty immutable list
@@ -2493,47 +2538,47 @@ public enum C {
     }
 
     public static <T> Set<T> set(T t) {
-        Set<T> set = new HashSet<T>();
+        java.util.Set<T> set = new HashSet<T>();
         set.add(t);
-        return set;
+        return ImmutableSet.of(set);
     }
 
     public static <T> Set<T> set(T t1, T t2) {
-        Set<T> set = new HashSet<T>();
+        java.util.Set<T> set = new HashSet<T>();
         set.add(t1);
         set.add(t2);
-        return set;
+        return ImmutableSet.of(set);
     }
 
     public static <T> Set<T> set(T t1, T t2, T t3) {
-        Set<T> set = new HashSet<T>();
+        java.util.Set<T> set = new HashSet<T>();
         set.add(t1);
         set.add(t2);
         set.add(t2);
-        return set;
+        return ImmutableSet.of(set);
     }
 
     public static <T> Set<T> set(T t1, T t2, T t3, T t4) {
-        Set<T> set = new HashSet<T>();
+        java.util.Set<T> set = new HashSet<T>();
         set.add(t1);
         set.add(t2);
         set.add(t2);
         set.add(t4);
-        return set;
+        return ImmutableSet.of(set);
     }
 
     public static <T> Set<T> set(T t1, T t2, T t3, T t4, T t5) {
-        Set<T> set = new HashSet<T>();
+        java.util.Set<T> set = new HashSet<T>();
         set.add(t1);
         set.add(t2);
         set.add(t2);
         set.add(t4);
         set.add(t5);
-        return set;
+        return ImmutableSet.of(set);
     }
 
     public static <T> Set<T> set(T t1, T t2, T t3, T t4, T t5, T... ta) {
-        Set<T> set = new HashSet<T>();
+        java.util.Set<T> set = new HashSet<T>();
         set.add(t1);
         set.add(t2);
         set.add(t2);
@@ -2542,32 +2587,32 @@ public enum C {
         for (T t : ta) {
             set.add(t);
         }
-        return set;
+        return ImmutableSet.of(set);
     }
 
     public static <T> Set<T> set(T[] ta) {
-        Set<T> set = new HashSet<T>();
+        java.util.Set<T> set = new HashSet<T>();
         for (T t : ta) {
             set.add(t);
         }
-        return set;
+        return ImmutableSet.of(set);
     }
 
     public static <T> Set<T> set(Collection<? extends T> col) {
-        return Collections.unmodifiableSet(new HashSet(col));
+        return ImmutableSet.of(col);
     }
 
     public static <T> Set<T> set(Iterable<? extends T> itr) {
         if (itr instanceof Collection) {
             return set((Collection<T>)itr);
         }
-        Set<T> set = new HashSet<T>();
+        java.util.Set<T> set = new HashSet<T>();
         for (T t: itr) set.add(t);
-        return Collections.unmodifiableSet(set);
+        return ImmutableSet.of(set);
     }
 
     public static <T> Set<T> newSet() {
-        return new HashSet<T>();
+        return new DelegatingSet<T>();
     }
 
     public static <K, V> java.util.Map<K, V> map(Object... args) {

@@ -660,7 +660,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     @SuppressWarnings("unchecked")
     public C.Sequence<T> append(Iterable<? extends T> iterable) {
         if (iterable instanceof C.List) {
-            return append((C.List<T>) iterable);
+            return appendList((C.List<T>) iterable);
         } else if (iterable instanceof C.Sequence) {
             return append((C.Sequence<T>) iterable);
         } else if (iterable instanceof Collection) {
@@ -676,7 +676,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     @SuppressWarnings("unchecked")
     public C.List<T> append(Collection<? extends T> collection) {
         if (collection instanceof C.List) {
-            return append((C.List<T>) collection);
+            return appendList((C.List<T>) collection);
         } else {
             return unLazyAppend(collection);
         }
@@ -685,7 +685,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     @Override
     public C.Sequence<T> append(C.Sequence<T> seq) {
         if (seq instanceof C.List) {
-            return append((C.List<T>) seq);
+            return appendList((C.List<T>) seq);
         }
         if (isLazy()) {
             return CompositeSeq.of(this, seq);
@@ -693,21 +693,28 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return unLazyAppend(seq);
     }
 
-    @Override
-    public C.ReversibleSequence<T> append(C.ReversibleSequence<T> seq) {
+    protected C.ReversibleSequence<T> appendReversibleSeq(C.ReversibleSequence<T> seq) {
         if (seq instanceof C.List) {
-            return append((C.List<T>) seq);
+            return appendList((C.List<T>) seq);
         }
         // TODO support lazy append reversible sequence
         return unLazyAppend(seq);
     }
 
-    @Override
-    public C.List<T> append(C.List<T> list) {
+    public C.ReversibleSequence<T> append(C.ReversibleSequence<T> seq) {
+        return appendReversibleSeq(seq);
+    }
+
+    protected C.List<T> appendList(C.List<T> list) {
         if (isLazy()) {
             return CompositeList.of(this, list);
         }
         return unLazyAppend(list);
+    }
+
+    @Override
+    public C.List<T> append(C.List<T> list) {
+        return appendList(list);
     }
 
     @Override
@@ -756,7 +763,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     @SuppressWarnings("unchecked")
     public C.List<T> prepend(Collection<? extends T> collection) {
         if (collection instanceof C.List) {
-            return prepend((C.List<T>) collection);
+            return prependList((C.List<T>) collection);
         }
         return unLazyPrepend(collection);
     }
@@ -765,7 +772,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     @SuppressWarnings("unchecked")
     public C.Sequence<T> prepend(Iterable<? extends T> iterable) {
         if (iterable instanceof C.List) {
-            return prepend((C.List<T>) iterable);
+            return prependList((C.List<T>) iterable);
         } else if (iterable instanceof C.Sequence) {
             return prepend((C.Sequence<T>) iterable);
         } else if (iterable instanceof Collection) {
@@ -788,7 +795,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     @Override
     public C.Sequence<T> prepend(C.Sequence<T> seq) {
         if (seq instanceof C.List) {
-            return prepend((C.List<T>) seq);
+            return prependList((C.List<T>) seq);
         }
         if (isLazy()) {
             return new CompositeSeq<T>(seq, this);
@@ -796,15 +803,23 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return unLazyPrepend(seq);
     }
 
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public C.ReversibleSequence<T> prepend(C.ReversibleSequence<T> seq) {
+    protected C.ReversibleSequence<T> prependReversibleSeq(C.ReversibleSequence<T> seq) {
         if (seq instanceof C.List) {
-            return prepend((C.List<T>) seq);
+            return prependList((C.List<T>) seq);
         }
         // TODO support lazy append reversible sequence
         return unLazyPrepend(seq);
+    }
+
+    public C.ReversibleSequence<T> prepend(C.ReversibleSequence<T> seq) {
+        return prependReversibleSeq(seq);
+    }
+
+    protected C.List<T> prependList(C.List<T> list) {
+        if (isLazy()) {
+            return CompositeList.of(list, this);
+        }
+        return unLazyPrepend(list);
     }
 
     /**
@@ -817,10 +832,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
      */
     @Override
     public C.List<T> prepend(C.List<T> list) {
-        if (isLazy()) {
-            return CompositeList.of(list, this);
-        }
-        return unLazyPrepend(list);
+        return prependList(list);
     }
 
     /**
