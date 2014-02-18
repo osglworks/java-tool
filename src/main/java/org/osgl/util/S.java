@@ -15,6 +15,10 @@ import java.util.Random;
  */
 public class S {
 
+    public final static String fmt(String tmpl) {
+        return tmpl;
+    }
+
     /**
      * A handy alias for {@link String#format(String, Object...)}
      *
@@ -23,11 +27,7 @@ public class S {
      * @return the formatted string
      */
     public final static String fmt(String tmpl, Object... args) {
-        if (args.length == 0) {
-            return tmpl;
-        } else {
-            return String.format(tmpl, args);
-        }
+        return String.format(tmpl, args);
     }
 
     /**
