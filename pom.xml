@@ -22,7 +22,7 @@
     <groupId>org.osgl</groupId>
     <artifactId>osgl-tool</artifactId>
     <packaging>jar</packaging>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
 
     <name>Java Tool</name>
     <description>A simple Java toolkit</description>
@@ -150,6 +150,9 @@
                         <configuration>
                             <stylesheetfile>src/etc/javadoc.css</stylesheetfile>
                             <quiet/>
+                            <excludePackageNames>
+                                org.osgl.util:org.osgl
+                            </excludePackageNames>
                         </configuration>
                         <executions>
                             <execution>
