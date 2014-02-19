@@ -38,6 +38,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
             T t = collection.iterator().next();
             buf = (T[]) Array.newInstance(t.getClass(), len);
             System.arraycopy(a0, 0, buf, 0, len);
+            size = len;
         }
     }
 
