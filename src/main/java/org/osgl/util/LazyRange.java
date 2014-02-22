@@ -73,8 +73,9 @@ public class LazyRange<ELEMENT> extends LazySeq<ELEMENT> implements C.Range<ELEM
         this.order = order;
         this.step = step;
 
-        this.next = _.f2(step()).curry(-ordering);
-        this.prev = _.f2(step()).curry(ordering);
+        _.F2<ELEMENT, Integer, ELEMENT> f2 = _.f2(step());
+        this.next = f2.curry(-ordering);
+        this.prev = f2.curry(ordering);
         this.tail = new _.F0<C.Sequence<ELEMENT>>() {
             @Override
             public C.Sequence<ELEMENT> apply() throws NotAppliedException, _.Break {

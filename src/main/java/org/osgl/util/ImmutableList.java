@@ -688,7 +688,8 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
     public C.List<T> dropWhile(_.Function<? super T, Boolean> predicate) {
         //TODO: handle lazy operation
         int sz = size();
-        Cursor<T> cursor = locateFirst(_.F.negate(predicate));
+        _.Function<T, Boolean> f = _.F.negate(predicate);
+        Cursor<T> cursor = locateFirst(f);
         if (!cursor.isDefined()) {
             return Nil.list();
         }

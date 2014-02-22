@@ -3680,7 +3680,8 @@ public enum _ {
                 return new _.F1<T, Var<T>>() {
                     @Override
                     public Var<T> apply(T t) throws NotAppliedException, Break {
-                        return Var.this.update(f2(changer).curry(t));
+                        F2<T, T, T> f2 = f2(changer);
+                        return Var.this.update(f2.curry(t));
                     }
                 };
             }
@@ -5799,7 +5800,7 @@ public enum _ {
          *
          * @since 0.2
          */
-        public static final F2 LESS_THAN = _cmp(true);
+        public static final F2 LESS_THAN = F.<Comparable>_cmp(true);
 
         /**
          * A function that apply to two parameters then return {@code true} if the first parameter
@@ -5808,7 +5809,7 @@ public enum _ {
          *
          * @since 0.2
          */
-        public static final F2 GREATER_THAN = _cmp(false);
+        public static final F2 GREATER_THAN = F.<Comparable>_cmp(false);
 
         /**
          * A function that apply to two parameters then return {@code true} if the first parameter
@@ -6187,7 +6188,7 @@ public enum _ {
 
         public static final Comparator NATURAL_ORDER = Comparator.NaturalOrderComparator.INSTANCE;
 
-        public static final Comparator REVERSE_ORDER = reverseOrder();
+        public static final Comparator REVERSE_ORDER = F.<Comparable>reverseOrder();
 
         @SuppressWarnings("unchecked")
         public static <T extends Comparable<T>> Comparator<T> naturalOrder() {
