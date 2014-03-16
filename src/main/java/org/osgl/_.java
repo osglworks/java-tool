@@ -4518,7 +4518,7 @@ public enum _ {
             Class<T> c = (Class<T>) Class.forName(className);
             return c.newInstance();
         } catch (Exception e) {
-            throw new UnexpectedException();
+            throw new UnexpectedException(e);
         }
     }
 

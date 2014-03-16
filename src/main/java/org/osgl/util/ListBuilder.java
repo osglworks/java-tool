@@ -2,7 +2,6 @@ package org.osgl.util;
 
 import org.osgl._;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -21,7 +20,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
-    T[] buf;
+    Object[] buf;
     int size;
 
     ListBuilder() {
@@ -32,11 +31,11 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
     private ListBuilder(Collection<? extends T> collection) {
         int len = collection.size();
         if (len == 0) {
-            buf = (T[]) new Object[10];
+            buf = new Object[10];
         } else {
             Object[] a0 = collection.toArray();
             T t = collection.iterator().next();
-            buf = (T[]) Array.newInstance(t.getClass(), len);
+            buf = new Object[len];
             System.arraycopy(a0, 0, buf, 0, len);
             size = len;
         }
@@ -91,7 +90,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
-        return buf[index];
+        return (T)buf[index];
     }
 
     @Override
@@ -164,12 +163,12 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         }
         size += cSz;
         ensureCapacity(size);
-        T[] data = buf;
+        Object[] data = buf;
         if (index < oldSz) {
             System.arraycopy(data, index, data, index + cSz, oldSz - index);
         }
         ListBuilder<T> that = (ListBuilder<T>) c;
-        T[] newData = that.buf;
+        Object[] newData = that.buf;
         System.arraycopy(newData, 0, data, index, cSz);
         return true;
     }
@@ -186,7 +185,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         }
         size += cSz;
         ensureCapacity(size);
-        T[] data = buf;
+        Object[] data = buf;
         if (index < oldSz) {
             System.arraycopy(data, index, data, index + cSz, oldSz - index);
         }
@@ -212,7 +211,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         int len = ta.length, oldSz = size;
         size += len;
         ensureCapacity(size);
-        T[] data = buf;
+        Object[] data = buf;
         System.arraycopy(ta, 0, data, oldSz, len);
         return this;
     }
@@ -222,7 +221,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         int l1 = ta1.length, l2 = ta2.length, oldSz = size;
         size += l1 + l2;
         ensureCapacity(size);
-        T[] data = buf;
+        Object[] data = buf;
         System.arraycopy(ta1, 0, data, oldSz, l1);
         System.arraycopy(ta2, 0, data, oldSz + l1, l2);
         return this;
@@ -237,7 +236,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         }
         size += len;
         ensureCapacity(size);
-        T[] data = buf;
+        Object[] data = buf;
         System.arraycopy(ta1, 0, data, oldSz, l1);
         System.arraycopy(ta2, 0, data, oldSz += l1, l2);
         oldSz += l2;
@@ -255,7 +254,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         size += 2;
         int sz = size;
         ensureCapacity(sz);
-        T[] data = buf;
+        Object[] data = buf;
         data[sz - 1] = t2;
         data[sz - 2] = t1;
         return this;
@@ -266,7 +265,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         size += 3;
         int sz = size;
         ensureCapacity(sz);
-        T[] data = buf;
+        Object[] data = buf;
         data[sz - 1] = t3;
         data[sz - 2] = t2;
         data[sz - 3] = t1;
@@ -278,7 +277,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         size += 4;
         int sz = size;
         ensureCapacity(sz);
-        T[] data = buf;
+        Object[] data = buf;
         data[sz - 1] = t4;
         data[sz - 2] = t3;
         data[sz - 3] = t2;
@@ -291,7 +290,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         size += 5;
         int sz = size;
         ensureCapacity(sz);
-        T[] data = buf;
+        Object[] data = buf;
         data[sz - 1] = t5;
         data[sz - 2] = t4;
         data[sz - 3] = t3;
@@ -305,7 +304,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         int len = ta.length, oldSz = size;
         size += (len + 5);
         ensureCapacity(size);
-        T[] data = buf;
+        Object[] data = buf;
         System.arraycopy(ta, 0, data, oldSz + 5, len);
         data[oldSz + 4] = t5;
         data[oldSz + 3] = t4;
@@ -326,7 +325,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         size += l1 + l2;
         int sz = size;
         ensureCapacity(sz);
-        T[] data = buf;
+        Object[] data = buf;
         Object[] newData = c1.toArray();
         System.arraycopy(newData, 0, data, oldSz, l1);
         newData = c2.toArray();
@@ -345,7 +344,7 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         size += len;
         int sz = size;
         ensureCapacity(sz);
-        T[] data = buf;
+        Object[] data = buf;
 
         Object[] newData = c1.toArray();
         System.arraycopy(newData, 0, data, oldSz, l1);
@@ -387,14 +386,14 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
     public C.List<T> toList() {
         checkState();
         trimToSize();
-        T[] data = buf;
+        Object[] data = buf;
         buf = null;
-        return ImmutableList.of(data);
+        return (C.List<T>)ImmutableList.of(data);
     }
 
     public C.Set<T> toSet() {
         checkState();
-        return ImmutableSet.of(buf);
+        return (C.Set<T>)ImmutableSet.of(buf);
     }
 
     /**
