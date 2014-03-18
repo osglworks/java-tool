@@ -22,6 +22,8 @@ package org.osgl.util;
 import org.osgl.exception.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -242,6 +244,13 @@ public class E {
         if (test) {
             throw new IllegalStateException();
         }
+    }
+
+    public static String stackTrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw, true);
+        t.printStackTrace(pw);
+        return sw.getBuffer().toString();
     }
     
 }

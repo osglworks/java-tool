@@ -4359,12 +4359,29 @@ public enum _ {
         System.out.println(S.fmt(msg, args));
     }
 
+    public final static <T> T ifNullThen(T t1, T def1) {
+        return ensureGet(t1, def1);
+    }
+
     public final static <T> T ensureGet(T t1, T def1) {
         if (null != t1) {
             return t1;
         }
-        E.invalidArgIf(null == def1);
+        E.NPE(def1);
         return def1;
+    }
+
+    public final static <T> T ifNullThen(T t1, F0<T> def1) {
+        return ensureGet(t1, def1);
+    }
+
+    public final static <T> T ensureGet(T t1, F0<T> def1) {
+        if (null != t1) {
+            return t1;
+        }
+        t1 = def1.apply();
+        E.NPE(t1);
+        return t1;
     }
 
     public final static <T> T ensureGet(T t1, T def1, T def2) {
