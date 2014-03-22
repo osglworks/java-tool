@@ -27,6 +27,7 @@ public class S {
      * @return the formatted string
      */
     public final static String fmt(String tmpl, Object... args) {
+        if (0 == args.length) return tmpl;
         return String.format(tmpl, args);
     }
 

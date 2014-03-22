@@ -432,4 +432,14 @@ public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
         }
         return new ListBuilder<T>(col).toList();
     }
+
+    /**
+     * Create an empty ListBuilder instance
+     *
+     * @param <T> the type of the element in the builder
+     * @return a list builder
+     */
+    public static <T> ListBuilder<T> create() {
+        return new ListBuilder<T>();
+    }
 }

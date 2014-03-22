@@ -240,9 +240,33 @@ public class E {
         }
     }
 
+    public static void illegalArgumentIf(boolean test, String msg) {
+        if (test) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
+    public static void illegalArgumentIf(boolean test, String msg, Object... args) {
+        if (test) {
+            throw new IllegalArgumentException(S.fmt(msg, args));
+        }
+    }
+
     public static void illegalStateIf(boolean test) {
         if (test) {
             throw new IllegalStateException();
+        }
+    }
+
+    public static void illegalStateIf(boolean test, String msg) {
+        if (test) {
+            throw new IllegalStateException(msg);
+        }
+    }
+
+    public static void illegalStateIf(boolean test, String msg, Object... args) {
+        if (test) {
+            throw new IllegalStateException(S.fmt(msg, args));
         }
     }
 
