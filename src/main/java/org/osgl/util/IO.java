@@ -378,7 +378,7 @@ public class IO {
     }
 
     /**
-     * Write binay data to a file
+     * Write binary data to a file
      * @param data The binary data to write
      * @param file The file to write
      */
@@ -388,6 +388,15 @@ public class IO {
         } catch (FileNotFoundException e) {
             throw E.ioException(e);
         }
+    }
+
+    /**
+     * Write binary data to an output steam
+     * @param data the binary data to write
+     * @param os the output stream
+     */
+    public static void write(byte[] data, OutputStream os) {
+        write(new ByteArrayInputStream(data), os);
     }
 
     // If target does not exist, it will be created.
