@@ -2640,6 +2640,30 @@ public enum C {
     public static <K, V> Map<K, V> newMap(java.util.Map<? extends K, ? extends V> map) {
         return new Map(false, map);
     }
+
+    public static <T> Iterable<T> enumerable(final Enumeration<T> e) {
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+                    @Override
+                    public boolean hasNext() {
+                        return e.hasMoreElements();
+                    }
+
+                    @Override
+                    public T next() {
+                        return e.nextElement();
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw E.unsupport();
+                    }
+                };
+            }
+        };
+    }
     // --- eof factory methods ---
 
     // --- utility methods ---
