@@ -69,7 +69,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
             if (cursor >= len) {
                 throw new NoSuchElementException();
             }
-            return s.charAt(++cursor);
+            return s.charAt(cursor++);
         }
 
         @Override
