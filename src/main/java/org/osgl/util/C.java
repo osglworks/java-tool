@@ -2226,6 +2226,10 @@ public enum C {
         return Nil.list();
     }
 
+    public static <T> List<T> emptyListOf(Class<T> c) {
+        return Nil.list();
+    }
+
     public static <T> List<T> list(T t) {
         return _.val(t);
     }

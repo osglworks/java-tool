@@ -39,7 +39,7 @@ class ReverseList<T> extends DelegatingList<T> implements C.List<T> {
 
     @Override
     public T get(int index) {
-        return data.get(size() - index);
+        return data.get(size() - index - 1);
     }
 
     @Override

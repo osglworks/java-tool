@@ -6314,6 +6314,10 @@ public enum _ {
 
         F0<String> f0 = _.F0;
         System.out.println(f0.apply());
+
+        ListBuilder<String> lb = ListBuilder.create();
+        List<String> l = lb.toList();
+        System.out.println(l.size());
     }
 
 }
