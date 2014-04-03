@@ -2547,54 +2547,16 @@ public enum C {
         return ImmutableSet.of(set);
     }
 
-    public static <T> Set<T> set(T t1, T t2) {
+    public static <T> Set<T> set(T t1, T... ta) {
         java.util.Set<T> set = new HashSet<T>();
         set.add(t1);
-        set.add(t2);
-        return ImmutableSet.of(set);
-    }
-
-    public static <T> Set<T> set(T t1, T t2, T t3) {
-        java.util.Set<T> set = new HashSet<T>();
-        set.add(t1);
-        set.add(t2);
-        set.add(t2);
-        return ImmutableSet.of(set);
-    }
-
-    public static <T> Set<T> set(T t1, T t2, T t3, T t4) {
-        java.util.Set<T> set = new HashSet<T>();
-        set.add(t1);
-        set.add(t2);
-        set.add(t2);
-        set.add(t4);
-        return ImmutableSet.of(set);
-    }
-
-    public static <T> Set<T> set(T t1, T t2, T t3, T t4, T t5) {
-        java.util.Set<T> set = new HashSet<T>();
-        set.add(t1);
-        set.add(t2);
-        set.add(t2);
-        set.add(t4);
-        set.add(t5);
-        return ImmutableSet.of(set);
-    }
-
-    public static <T> Set<T> set(T t1, T t2, T t3, T t4, T t5, T... ta) {
-        java.util.Set<T> set = new HashSet<T>();
-        set.add(t1);
-        set.add(t2);
-        set.add(t2);
-        set.add(t4);
-        set.add(t5);
         for (T t : ta) {
             set.add(t);
         }
         return ImmutableSet.of(set);
     }
 
-    public static <T> Set<T> set(T[] ta) {
+    public static <T> Set<T> setOf(T... ta) {
         java.util.Set<T> set = new HashSet<T>();
         for (T t : ta) {
             set.add(t);
