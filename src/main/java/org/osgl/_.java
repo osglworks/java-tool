@@ -5084,6 +5084,21 @@ public enum _ {
         }
         return oa;
     }
+
+    public static <T> T random(T t1, T ... ta) {
+        int l = ta.length;
+        if (l == 0) return t1;
+        int i = new Random().nextInt(l + 1);
+        if (i == l) return t1;
+        return ta[i];
+    }
+
+    public static <T> T random(T[] ta) {
+        int l = ta.length;
+        if (0 == l) return null;
+        int i = new Random().nextInt(l);
+        return ta[i];
+    }
     // --- eof common utilities
 
     /**

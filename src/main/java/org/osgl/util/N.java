@@ -836,6 +836,24 @@ public enum N {
             };
         }
 
+        public static <T extends Number, X> _.F2<T, X, Number> adder(final _.Function<X, T> func) {
+            return new _.F2<T, X, Number>() {
+                @Override
+                public Number apply(T t, X x) throws NotAppliedException, _.Break {
+                    return num(t).add(func.apply(x));
+                }
+            };
+        }
+
+        public static <T extends Number, X> _.F2<T, X, T> adder(final _.Function<X, T> func, final Class<T> clz) {
+            return new _.F2<T, X, T>() {
+                @Override
+                public T apply(T t, X x) throws NotAppliedException, _.Break {
+                    return (T)num(t).add(func.apply(x)).as(clz);
+                }
+            };
+        }
+
         public static <T extends Number> _.F1<T, Number> mul(final Number n) {
             return new _.F1<T, Number>() {
                 @Override
