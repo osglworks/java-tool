@@ -5099,6 +5099,11 @@ public enum _ {
         int i = new Random().nextInt(l);
         return ta[i];
     }
+
+    public static <T> T random(C.Range<T> range) {
+        int n = new Random().nextInt(range.size()) + 1;
+        return range.tail(n).head();
+    }
     // --- eof common utilities
 
     /**

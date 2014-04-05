@@ -189,12 +189,12 @@ public class LazyRange<ELEMENT> extends LazySeq<ELEMENT> implements C.Range<ELEM
 
     @Override
     public C.Range<ELEMENT> head(int n) {
-        return head(n);
+        return take(n);
     }
 
     @Override
     public C.Range<ELEMENT> tail(int n) throws UnsupportedOperationException {
-        E.invalidArgIf(n <= 0, "n must be a positive int");
+        E.illegalArgumentIf(n <= 0, "n must be a positive int");
         return of(step().apply(to, -n), to);
     }
 

@@ -417,7 +417,7 @@ public class IO {
         }
     }
     
-    public static final class f {
+    public static final class F {
         public static <T> _.Function<?, T> println() {
             return PRINTLN;
         }
