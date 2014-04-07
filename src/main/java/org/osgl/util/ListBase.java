@@ -387,14 +387,14 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 return Nil.list();
             }
             ListBuilder<T> lb = new ListBuilder<T>(sz);
-            forEach(_.predicate(predicate).ifThen(C.F.addTo(lb)));
+            forEach(_.predicate(predicate).elseThen(C.F.addTo(lb)));
             return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
             }
             C.List<T> l = C.newSizedList(sz);
-            forEach(_.predicate(predicate).ifThen(C.F.addTo(l)));
+            forEach(_.predicate(predicate).elseThen(C.F.addTo(l)));
             return l;
         }
     }
