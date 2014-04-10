@@ -566,6 +566,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     @Override
     public C.List<T> without(T element, T... elements) {
+        elements = _.concat(elements, element);
         C.List<T> l = without(element);
         int len = elements.length;
         if (0 == len) {
@@ -593,7 +594,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                     if (_.eq(elements[i], t)) {
                         found = true;
                         break;
-                    };
+                    }
                 }
                 if (!found) lr.add(t);
             }

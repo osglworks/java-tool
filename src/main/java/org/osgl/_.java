@@ -3471,7 +3471,7 @@ public enum _ {
         @Override
         public C.List<T> without(T element, T... elements) {
             if (_.eq(v, element)) return C.list();
-            int id = Arrays.binarySearch(elements, v);
+            int id = search(v, elements);
             if (-1 == id) return this;
             return C.list();
         }
@@ -4380,6 +4380,41 @@ public enum _ {
         return System.nanoTime();
     }
 
+    /**
+     * Search an element in a array
+     *
+     * @param element the element to be located
+     * @param elements the array of element to be searched
+     * @param <T> the type
+     * @return the location of the element inside elements, or {@code -1} if not found
+     */
+    public static <T> int search(T element, T... elements) {
+        int len = elements.length;
+        if (len == 0) return -1;
+
+        boolean c = false;
+        if (6 < len) {
+            if (null != element) {
+                c = element instanceof Comparable;
+            } else {
+                T t0 = elements[0];
+                if (t0 == null) return 0;
+                c = t0 instanceof Comparable;
+            }
+            if (c) {
+                Arrays.sort(elements);
+            }
+        }
+        if (c) {
+            return Arrays.binarySearch(elements, element);
+        } else {
+            for (int i = 0; i < len; ++i) {
+                if (_.eq(element, elements[i])) return i;
+            }
+            return -1;
+        }
+    }
+
     public static void echo(String msg, Object... args) {
         System.out.println(S.fmt(msg, args));
     }
@@ -4847,6 +4882,13 @@ public enum _ {
             throw new IllegalArgumentException();
         }
         return new boolean[size];
+    }
+
+    public static <T> T[] concat(T[]a, T t) {
+        int l = a.length;
+        T[] ret = Arrays.copyOf(a, l + 1);
+        ret[l] = t;
+        return ret;
     }
 
     public static <T> T[] concat(T[] a1, T[] a2) {
