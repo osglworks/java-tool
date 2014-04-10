@@ -3469,6 +3469,15 @@ public enum _ {
         }
 
         @Override
+        public C.List<T> without(T element, T... elements) {
+            if (_.eq(v, element)) return C.list();
+            int id = Arrays.binarySearch(elements, v);
+            if (-1 == id) return this;
+            return C.list();
+        }
+
+
+        @Override
         public C.List<T> acceptRight(Function<? super T, ?> visitor) {
             return accept(visitor);
         }

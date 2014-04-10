@@ -1771,6 +1771,16 @@ public enum C {
          */
         List<T> without(T element);
 
+        /**
+         * Returns a list contains all elements in the list except the
+         * ones specified
+         *
+         * @param element the element that should not be in the resulting list
+         * @param elements the array contains elements that should not be in the resulting list
+         * @return a list without the element specified
+         */
+        List<T> without(T element, T... elements);
+
         @Override
         List<T> accept(_.Function<? super T, ?> visitor);
 
@@ -2546,6 +2556,10 @@ public enum C {
         List<T> l = new DelegatingList<T>(len + 3).append(t1).append(t2).append(t3);
         l.addAll(listOf(ta));
         return l;
+    }
+
+    public static <T> List<T> newListOf(T[] ts) {
+        return new DelegatingList<T>(C.listOf(ts));
     }
 
     public static <T> Sequence<T> seq(Iterable<? extends T> iterable) {

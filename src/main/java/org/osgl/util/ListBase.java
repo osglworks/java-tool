@@ -31,7 +31,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return !isImmutable() && !isReadOnly();
     }
 
-    protected void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break{
+    protected void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break {
         for (T t : this) {
             try {
                 visitor.apply(t);
@@ -109,14 +109,14 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
     }
 
-    public boolean addAll(Iterable <? extends T> iterable) {
+    public boolean addAll(Iterable<? extends T> iterable) {
         boolean modified = false;
-       	Iterator<? extends T> e = iterable.iterator();
-       	while (e.hasNext()) {
-       	    if (add(e.next()))
-       		modified = true;
-       	}
-       	return modified;
+        Iterator<? extends T> e = iterable.iterator();
+        while (e.hasNext()) {
+            if (add(e.next()))
+                modified = true;
+        }
+        return modified;
     }
 
     // --- Featured methods
@@ -128,7 +128,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             synchronized (this) {
                 if (null == features_) {
                     features_ = initFeatures();
-                    assert(null != features_);
+                    assert (null != features_);
                 }
             }
         }
@@ -233,7 +233,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
-    public final T first() throws NoSuchElementException{
+    public final T first() throws NoSuchElementException {
         return head();
     }
 
@@ -565,6 +565,43 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
+    public C.List<T> without(T element, T... elements) {
+        C.List<T> l = without(element);
+        int len = elements.length;
+        if (0 == len) {
+            return l;
+        }
+        boolean c = false;
+        if (8 < len) {
+            T t0 = elements[0];
+            if (t0 instanceof Comparable) {
+                c = true;
+                Arrays.sort(elements);
+            }
+        }
+        C.List<T> lr = C.newSizedList(l.size());
+        if (c) {
+            for (T t : l) {
+                int id = Arrays.binarySearch(elements, t);
+                if (id == -1) continue;
+                lr.add(t);
+            }
+        } else {
+            for (T t : l) {
+                boolean found = false;
+                for (int i = 0; i < len; ++i) {
+                    if (_.eq(elements[i], t)) {
+                        found = true;
+                        break;
+                    };
+                }
+                if (!found) lr.add(t);
+            }
+        }
+        return lr;
+    }
+
+    @Override
     public C.List<T> accept(_.Function<? super T, ?> visitor) {
         forEachLeft(visitor);
         return this;
@@ -787,7 +824,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * This method will NOT change the underline list
      *
      * @param seq the sequence to be prepended
@@ -825,7 +862,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * This method will NOT change the underline list
      *
      * @param list
@@ -838,7 +875,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * For mutable list, this method will insert the
      * element at {@code 0} position.
      *
@@ -924,6 +961,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
         return _.none();
     }
+
     public _.Option<T> findFirst(_.Function<? super T, Boolean> predicate) {
         return findIterator(iterator(), predicate);
     }
@@ -967,7 +1005,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     @Override
     public <T2> C.ReversibleSequence<_.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
         if (rseq instanceof C.List) {
-            return zip((java.util.List<T2>)rseq);
+            return zip((java.util.List<T2>) rseq);
         }
         return new ZippedRSeq<T, T2>(this, rseq);
     }
@@ -1002,7 +1040,7 @@ class SubList<E> extends ListBase<E> implements C.List<E> {
             throw new IndexOutOfBoundsException("toIndex = " + toIndex);
         if (fromIndex > toIndex)
             throw new IllegalArgumentException("fromIndex(" + fromIndex +
-                                               ") > toIndex(" + toIndex + ")");
+                    ") > toIndex(" + toIndex + ")");
         l = list;
         offset = fromIndex;
         size = toIndex - fromIndex;
@@ -1017,13 +1055,13 @@ class SubList<E> extends ListBase<E> implements C.List<E> {
     public E set(int index, E element) {
         rangeCheck(index);
         checkForComodification();
-        return l.set(index+offset, element);
+        return l.set(index + offset, element);
     }
 
     public E get(int index) {
         rangeCheck(index);
         checkForComodification();
-        return l.get(index+offset);
+        return l.get(index + offset);
     }
 
     public int size() {
@@ -1032,10 +1070,10 @@ class SubList<E> extends ListBase<E> implements C.List<E> {
     }
 
     public void add(int index, E element) {
-        if (index<0 || index>size)
+        if (index < 0 || index > size)
             throw new IndexOutOfBoundsException();
         checkForComodification();
-        l.add(index+offset, element);
+        l.add(index + offset, element);
         expectedModCount = l.modCount();
         size++;
         modCount++;
@@ -1044,7 +1082,7 @@ class SubList<E> extends ListBase<E> implements C.List<E> {
     public E remove(int index) {
         rangeCheck(index);
         checkForComodification();
-        E result = l.remove(index+offset);
+        E result = l.remove(index + offset);
         expectedModCount = l.modCount();
         size--;
         modCount++;
@@ -1053,9 +1091,9 @@ class SubList<E> extends ListBase<E> implements C.List<E> {
 
     protected void removeRange(int fromIndex, int toIndex) {
         checkForComodification();
-        l.removeRange2(fromIndex+offset, toIndex+offset);
+        l.removeRange2(fromIndex + offset, toIndex + offset);
         expectedModCount = l.modCount();
-        size -= (toIndex-fromIndex);
+        size -= (toIndex - fromIndex);
         modCount++;
     }
 
@@ -1064,15 +1102,15 @@ class SubList<E> extends ListBase<E> implements C.List<E> {
     }
 
     public boolean addAll(int index, Collection<? extends E> c) {
-        if (index<0 || index>size)
+        if (index < 0 || index > size)
             throw new IndexOutOfBoundsException(
-                "Index: "+index+", Size: "+size);
+                    "Index: " + index + ", Size: " + size);
         int cSize = c.size();
-        if (cSize==0)
+        if (cSize == 0)
             return false;
 
         checkForComodification();
-        l.addAll(offset+index, c);
+        l.addAll(offset + index, c);
         expectedModCount = l.modCount();
         size += cSize;
         modCount++;
@@ -1085,12 +1123,12 @@ class SubList<E> extends ListBase<E> implements C.List<E> {
 
     public ListIterator<E> listIterator(final int index) {
         checkForComodification();
-        if (index<0 || index>size)
+        if (index < 0 || index > size)
             throw new IndexOutOfBoundsException(
-                "Index: "+index+", Size: "+size);
+                    "Index: " + index + ", Size: " + size);
 
         return new ListIterator<E>() {
-            private ListIterator<E> i = l.listIterator(index+offset);
+            private ListIterator<E> i = l.listIterator(index + offset);
 
             public boolean hasNext() {
                 return nextIndex() < size;
@@ -1151,9 +1189,9 @@ class SubList<E> extends ListBase<E> implements C.List<E> {
     }
 
     private void rangeCheck(int index) {
-        if (index<0 || index>=size)
-            throw new IndexOutOfBoundsException("Index: "+index+
-                                                ",Size: "+size);
+        if (index < 0 || index >= size)
+            throw new IndexOutOfBoundsException("Index: " + index +
+                    ",Size: " + size);
     }
 
     protected void checkForComodification() {

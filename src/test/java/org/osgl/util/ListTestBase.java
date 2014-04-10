@@ -191,9 +191,10 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
 
     @Test
     public void testWithout() {
-        data = prepareData(1, 2);
-        eq(seqOf(1), data().without(arrayList(2, 4, 6)));
-        eq(seqOf(1), data().without(2));
+        data = prepareData(1, 2, 3);
+        eq(seqOf(1, 3), data().without(arrayList(2, 4, 6)));
+        eq(seqOf(1, 3), data().without(2));
+        eq(seqOf(1), data().without(2, 4, 6, 3));
     }
 
     @Test

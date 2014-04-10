@@ -508,6 +508,50 @@ class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
     }
 
     @Override
+    public C.List<T> without(T element, T... elements) {
+        int len = elements.length;
+        if (len == 0) return without(element);
+        int sz = size();
+        T[] data = data_;
+        ListBuilder<T> lb = new ListBuilder<T>(sz);
+        T t0 = elements[0];
+        boolean c = false;
+        if (len < 8 && t0 instanceof Comparable) {
+            Arrays.sort(elements);
+            c = true;
+        }
+        if (c) {
+            for (int i = 0; i < sz; ++i) {
+                T t = data[i];
+                if (_.eq(t, element)) {
+                    continue;
+                }
+                int id = Arrays.binarySearch(elements, t);
+                if (id > -1) continue;
+                lb.add(t);
+            }
+        } else {
+            for (int i = 0; i < sz; ++i) {
+                T t = data[i];
+                if (_.eq(t, element)) {
+                    continue;
+                }
+                boolean found = false;
+                for (int j = 0; j < len; ++j) {
+                    if (_.eq(elements[j], t)) {
+                        found = true;
+                        break;
+                    };
+                }
+                if (!found) {
+                    lb.add(t);
+                }
+            }
+        }
+        return lb.toList();
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public C.List<T> reverse() {
         if (isLazy()) {
