@@ -445,6 +445,17 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
             return this;
         }
 
+
+        @Override
+        public EmptyReversibleSequence<T> each(_.Function<? super T, ?> visitor) {
+            return this;
+        }
+
+        @Override
+        public EmptyReversibleSequence<T> forEach(_.Function<? super T, ?> visitor) {
+            return this;
+        }
+
         @Override
         public EmptyReversibleSequence<T> takeWhile(_.Function<? super T, Boolean> predicate) {
             return this;
@@ -572,6 +583,16 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public EmptyRange<T> accept(_.Function<? super T, ?> visitor) {
+            return this;
+        }
+
+        @Override
+        public EmptyRange<T> forEach(_.Function<? super T, ?> visitor) {
+            return this;
+        }
+
+        @Override
+        public EmptyRange<T> each(_.Function<? super T, ?> visitor) {
             return this;
         }
 
@@ -719,6 +740,16 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public Empty<T> accept(_.Function<? super T, ?> visitor) {
+            return this;
+        }
+
+        @Override
+        public Empty<T> each(_.Function<? super T, ?> visitor) {
+            return this;
+        }
+
+        @Override
+        public Empty<T> forEach(_.Function<? super T, ?> visitor) {
             return this;
         }
 

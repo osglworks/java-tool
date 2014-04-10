@@ -349,6 +349,16 @@ public enum C {
          * @since 0.2
          */
         Traversable<T> accept(_.Function<? super T, ?> visitor);
+
+        /**
+         * Alias of {@link #accept(org.osgl._.Function)}
+         */
+        Traversable<T> each(_.Function<? super T, ?> visitor);
+
+        /**
+         * Alias of {@link #accept(org.osgl._.Function)}
+         */
+        Traversable<T> forEach(_.Function<? super T, ?> visitor);
     }
 
     public static interface Sequence<T>
@@ -720,6 +730,9 @@ public enum C {
 
         Sequence<T> accept(_.Function<? super T, ?> visitor);
 
+        Sequence<T> each(_.Function<? super T, ?> visitor);
+
+        Sequence<T> forEach(_.Function<? super T, ?> visitor);
         /**
          * Iterate through this sequence from head to tail with
          * the visitor function specified
@@ -1043,6 +1056,11 @@ public enum C {
 
         ReversibleSequence<T> accept(_.Function<? super T, ?> visitor);
 
+
+        ReversibleSequence<T> each(_.Function<? super T, ?> visitor);
+
+        ReversibleSequence<T> forEach(_.Function<? super T, ?> visitor);
+
         ReversibleSequence<T> acceptLeft(_.Function<? super T, ?> visitor);
 
         /**
@@ -1288,6 +1306,12 @@ public enum C {
          */
         @Override
         Range<ELEMENT> accept(_.Function<? super ELEMENT, ?> visitor);
+
+        @Override
+        Range<ELEMENT> each(_.Function<? super ELEMENT, ?> visitor);
+
+        @Override
+        Range<ELEMENT> forEach(_.Function<? super ELEMENT, ?> visitor);
 
         /**
          * {@inheritDoc}
@@ -1738,8 +1762,23 @@ public enum C {
          */
         List<T> without(Collection<? super T> col);
 
+        /**
+         * Returns a list contains all elements in the list except the
+         * one specified
+         *
+         * @param element the element that should not be in the resulting list
+         * @return a list without the element specified
+         */
+        List<T> without(T element);
+
         @Override
         List<T> accept(_.Function<? super T, ?> visitor);
+
+        @Override
+        List<T> each(_.Function<? super T, ?> visitor);
+
+        @Override
+        List<T> forEach(_.Function<? super T, ?> visitor);
 
         @Override
         List<T> acceptLeft(_.Function<? super T, ?> visitor);
@@ -1974,6 +2013,12 @@ public enum C {
 
         @Override
         Set<T> accept(_.Function<? super T, ?> visitor);
+
+        @Override
+        Set<T> each(_.Function<? super T, ?> visitor);
+
+        @Override
+        Set<T> forEach(_.Function<? super T, ?> visitor);
     }
 
     public static interface ListOrSet<T> extends List<T>, Set<T> {
@@ -1991,6 +2036,12 @@ public enum C {
 
         @Override
         ListOrSet<T> accept(_.Function<? super T, ?> visitor);
+
+        @Override
+        ListOrSet<T> each(_.Function<? super T, ?> visitor);
+
+        @Override
+        ListOrSet<T> forEach(_.Function<? super T, ?> visitor);
 
         @Override
         ListOrSet<T> filter(_.Function<? super T, Boolean> predicate);

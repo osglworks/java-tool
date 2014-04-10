@@ -3122,6 +3122,16 @@ public enum _ {
         }
 
         @Override
+        public Var<T> each(Function<? super T, ?> visitor) {
+            return accept(visitor);
+        }
+
+        @Override
+        public Var<T> forEach(Function<? super T, ?> visitor) {
+            return accept(visitor);
+        }
+
+        @Override
         public T head() throws NoSuchElementException {
             return v;
         }
@@ -3449,6 +3459,12 @@ public enum _ {
             if (col.contains(v)) {
                 return C.list();
             }
+            return this;
+        }
+
+        @Override
+        public C.List<T> without(T element) {
+            if (_.eq(v, element)) return C.list();
             return this;
         }
 

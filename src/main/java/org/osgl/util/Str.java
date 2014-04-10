@@ -303,11 +303,6 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
     }
 
     @Override
-    public Str without(Collection<? super Character> col) {
-        return filter(_.F.negate(C.F.containsIn(col)));
-    }
-
-    @Override
     public Str accept(_.Function<? super Character, ?> visitor) {
         super.accept(visitor);
         return this;

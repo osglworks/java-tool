@@ -234,6 +234,16 @@ public class LazyRange<ELEMENT> extends LazySeq<ELEMENT> implements C.Range<ELEM
     }
 
     @Override
+    public LazyRange<ELEMENT> forEach(_.Function<? super ELEMENT, ?> visitor) {
+        return accept(visitor);
+    }
+
+    @Override
+    public LazyRange<ELEMENT> each(_.Function<? super ELEMENT, ?> visitor) {
+        return accept(visitor);
+    }
+
+    @Override
     public LazyRange<ELEMENT> acceptLeft(_.Function<? super ELEMENT, ?> visitor) {
         super.acceptLeft(visitor);
         return this;

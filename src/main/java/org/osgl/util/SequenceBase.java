@@ -62,9 +62,19 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public C.Sequence<T> accept(_.Function<? super T, ?> visitor) {
-        forEach(visitor);
+    public SequenceBase<T> accept(_.Function<? super T, ?> visitor) {
+        C.forEach(this, visitor);
         return this;
+    }
+
+    @Override
+    public SequenceBase<T> forEach(_.Function<? super T, ?> visitor) {
+        return accept(visitor);
+    }
+
+    @Override
+    public C.Sequence<T> each(_.Function<? super T, ?> visitor) {
+        return accept(visitor);
     }
 
     protected void forEachLeft(_.Function<? super T, ?> visitor) {

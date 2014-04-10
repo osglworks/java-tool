@@ -37,9 +37,19 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
     }
 
     @Override
-    public C.ReversibleSequence<T> accept(_.Function<? super T, ?> visitor) {
+    public ReversibleSeqBase<T> accept(_.Function<? super T, ?> visitor) {
         super.accept(visitor);
         return this;
+    }
+
+    @Override
+    public ReversibleSeqBase<T> each(_.Function<? super T, ?> visitor) {
+        return accept(visitor);
+    }
+
+    @Override
+    public ReversibleSeqBase<T> forEach(_.Function<? super T, ?> visitor) {
+        return accept(visitor);
     }
 
     @Override

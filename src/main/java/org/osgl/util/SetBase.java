@@ -58,9 +58,8 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     }
 
     @Override
-    public C.Set<T> accept(_.Function<? super T, ?> visitor) {
-        forEach(visitor);
-        return this;
+    public SetBase<T> accept(_.Function<? super T, ?> visitor) {
+        return forEach(visitor);
     }
 
     @Override
@@ -150,7 +149,7 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
      * @param visitor
      * @throws org.osgl._.Break if visitor needs to terminate the iteration
      */
-    protected void forEach(_.Function<? super T, ?> visitor) throws _.Break {
+    public SetBase<T> forEach(_.Function<? super T, ?> visitor) throws _.Break {
         for (T t : this) {
             try {
                 visitor.apply(t);
@@ -158,6 +157,12 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
                 // ignore
             }
         }
+        return this;
+    }
+
+    @Override
+    public SetBase<T> each(_.Function<? super T, ?> visitor) {
+        return forEach(visitor);
     }
 
     // --- Featured methods

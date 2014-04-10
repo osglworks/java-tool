@@ -31,20 +31,6 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return !isImmutable() && !isReadOnly();
     }
 
-    /**
-     * Sub class could override this method to implement iterating in parallel.
-     *
-     * <p>The iterating support partial function visitor by ignoring the
-     * {@link NotAppliedException} thrown out by visitor's apply
-     * method call</p>
-     *
-     * @param visitor
-     * @throws org.osgl._.Break if visitor needs to terminate the iteration
-     */
-    protected void forEach(_.Function<? super T, ?> visitor) throws _.Break {
-        forEachLeft(visitor);
-    }
-
     protected void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break{
         for (T t : this) {
             try {
@@ -574,9 +560,24 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
+    public C.List<T> without(T element) {
+        return filter((_.F.ne().curry(element)));
+    }
+
+    @Override
     public C.List<T> accept(_.Function<? super T, ?> visitor) {
-        forEach(visitor);
+        forEachLeft(visitor);
         return this;
+    }
+
+    @Override
+    public C.List<T> each(_.Function<? super T, ?> visitor) {
+        return accept(visitor);
+    }
+
+    @Override
+    public C.List<T> forEach(_.Function<? super T, ?> visitor) {
+        return accept(visitor);
     }
 
     @Override
