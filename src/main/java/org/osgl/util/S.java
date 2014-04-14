@@ -695,13 +695,19 @@ public class S {
     }
 
     public static StringBuilder builder(String s) {
-        return new StringBuilder(s);
+         return new StringBuilder(s);
+    }
+
+    public static StringBuilder builder() {
+        return new StringBuilder();
+    }
+
+    public static StringBuilder builder(int capacity) {
+        return new StringBuilder(capacity);
     }
 
     public static enum F {
         ;
-
-
     }
 
 }
