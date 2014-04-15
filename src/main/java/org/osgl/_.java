@@ -4419,6 +4419,10 @@ public enum _ {
         System.out.println(S.fmt(msg, args));
     }
 
+    public static void error(String msg, Object... args) {
+        System.err.println(S.fmt(msg, args));
+    }
+
     public final static <T> T ifNullThen(T t1, T def1) {
         return ensureGet(t1, def1);
     }
