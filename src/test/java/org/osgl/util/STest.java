@@ -16,4 +16,13 @@ public class STest extends TestBase {
     public void testPrepend() {
         eq(S.str("a").prepend("b"), S.str("ba"));
     }
+
+    @Test
+    public void testF_startsWith() {
+        String s = "foo.bar";
+        yes(S.F.startsWith("foo").apply(s));
+        yes(S.F.endsWith("bar").apply(s));
+        no(S.F.endsWith("foo").apply(s));
+        no(S.F.startsWith("bar").apply(s));
+    }
 }

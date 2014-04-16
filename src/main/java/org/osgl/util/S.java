@@ -1,5 +1,8 @@
 package org.osgl.util;
 
+import org.osgl._;
+import org.osgl.exception.NotAppliedException;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -646,14 +649,14 @@ public class S {
      */
     public static String random(int len) {
         final char[] chars = {'0', '1', '2', '3', '4',
-                              '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
-                              'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-                              'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                              'u', 'v', 'w', 'x', 'y', 'z',
-                              'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                              'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                              'U', 'V', 'W', 'X', 'Y', 'Z',
-                              '~', '!', '@'};
+                '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
+                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                'u', 'v', 'w', 'x', 'y', 'z',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+                'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                'U', 'V', 'W', 'X', 'Y', 'Z',
+                '~', '!', '@'};
 
         final int max = chars.length;
         Random r = new Random();
@@ -695,7 +698,7 @@ public class S {
     }
 
     public static StringBuilder builder(String s) {
-         return new StringBuilder(s);
+        return new StringBuilder(s);
     }
 
     public static StringBuilder builder() {
@@ -708,6 +711,119 @@ public class S {
 
     public static enum F {
         ;
+
+        public static _.F2<String, String, Boolean> STARTS_WITH = new _.F2<String, String, Boolean>() {
+            @Override
+            public Boolean apply(String s, String s2) throws NotAppliedException, _.Break {
+                return s.startsWith(s2);
+            }
+        };
+
+        public static _.F2<String, String, Boolean> ENDS_WITH = new _.F2<String, String, Boolean>() {
+            @Override
+            public Boolean apply(String s, String s2) throws NotAppliedException, _.Break {
+                return s.endsWith(s2);
+            }
+        };
+
+        public static _.Predicate<String> startsWith(final String prefix) {
+            return _.predicate(STARTS_WITH.curry(prefix));
+        }
+
+        public static _.Predicate<String> endsWith(final String suffix) {
+            return _.predicate(ENDS_WITH.curry(suffix));
+        }
+
+        public static _.F1<String, String> TO_UPPERCASE = new _.F1<String, String>() {
+            @Override
+            public String apply(String s) throws NotAppliedException, _.Break {
+                return s.toUpperCase();
+            }
+        };
+
+        public static _.F1<String, String> TO_LOWERCASE = new _.F1<String, String>() {
+            @Override
+            public String apply(String s) throws NotAppliedException, _.Break {
+                return s.toLowerCase();
+            }
+        };
+
+        public static _.F1<String, String> TRIM = new _.F1<String, String>() {
+            @Override
+            public String apply(String s) throws NotAppliedException, _.Break {
+                return s.trim();
+            }
+        };
+
+        public static _.F1<String, String> CAP_FIRST = new _.F1<String, String>() {
+            @Override
+            public String apply(String s) throws NotAppliedException, _.Break {
+                return S.capFirst(s);
+            }
+        };
+
+        public static _.F1<String, Boolean> IS_EMPTY = new _.F1<String, Boolean>() {
+            @Override
+            public Boolean apply(String s) throws NotAppliedException, _.Break {
+                return S.isEmpty(s);
+            }
+        };
+
+        public static _.F2<String, Integer, String> MAX_LENGTH = new _.F2<String, Integer, String>() {
+            @Override
+            public String apply(String s, Integer n) throws NotAppliedException, _.Break {
+                return S.maxLength(s, n);
+            }
+        };
+
+        public static _.F1<String, String> maxLength(int n) {
+            return MAX_LENGTH.curry(n);
+        }
+
+        public static _.F2<String, Integer, String> LAST = new _.F2<String, Integer, String>() {
+            @Override
+            public String apply(String s, Integer n) throws NotAppliedException, _.Break {
+                return S.last(s, n);
+            }
+        };
+
+        public static _.F1<String, String> last(int n) {
+            return LAST.curry(n);
+        }
+
+        public static _.F2<String, Integer, String> FIRST = new _.F2<String, Integer, String>() {
+            @Override
+            public String apply(String s, Integer n) throws NotAppliedException, _.Break {
+                return S.first(s, n);
+            }
+        };
+
+        public static _.F1<String, String> first(final int n) {
+            return FIRST.curry(n);
+        }
+
+        public static _.F0<String> RANDOM = new _.F0<String>() {
+            @Override
+            public String apply() throws NotAppliedException, _.Break {
+                return S.random();
+            }
+        };
+
+        public static _.F1<Integer, String> RANDOM_N = new _.F1<Integer, String>() {
+            @Override
+            public String apply(Integer n) throws NotAppliedException, _.Break {
+                return S.random(n);
+            }
+        };
+
+        public static _.F0<String> random() {
+            return RANDOM;
+        }
+
+        public static _.F0<String> random(int n) {
+            return RANDOM_N.curry(n);
+        }
+
     }
 
 }
