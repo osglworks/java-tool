@@ -450,6 +450,15 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<Str> {
         return subList(start, end);
     }
 
+    /**
+     * Return a joined str of this for n times
+     * @param n the times this str to be joined
+     * @return the joined str
+     */
+    public Str times(int n) {
+        return of(S.times(s, n));
+    }
+
     public static Str of(String s) {
         if (S.empty(s)) return EMPTY_STR;
         return new Str(s);

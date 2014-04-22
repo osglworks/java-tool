@@ -25,4 +25,16 @@ public class STest extends TestBase {
         no(S.F.endsWith("foo").apply(s));
         no(S.F.startsWith("bar").apply(s));
     }
+
+    @Test
+    public void testTimes() {
+        String s = "abc";
+        eq(S.times(s, 0), "");
+        eq(S.times(s, 1), s);
+        eq(S.times(s, 2), s + s);
+        eq(S.join(",", s, 2), s + "," + s);
+
+        Str s0 = Str.of(s);
+        eq(s0.times(2).toString(), s + s);
+    }
 }
