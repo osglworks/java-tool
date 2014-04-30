@@ -1543,6 +1543,26 @@ public enum C {
          */
         List<T> copy();
 
+        /**
+         * Returns a sorted copy of this list.
+         *
+         * <p>Note if the element type T is not a {@link java.lang.Comparable} then
+         * this method returns a {@link #copy() copy} of this list without any order
+         * changes</p>
+         *
+         * @return an ordered copy of this list
+         */
+        List<T> sort();
+
+        /**
+         * Returns a sorted copy of this list. The order is specified by the comparator
+         * provided
+         *
+         * @param comparator specify the order of elements in the result list
+         * @return an ordered copy of this list
+         */
+        List<T> sort(Comparator<? super T> comparator);
+
         @Override
         List<T> subList(int fromIndex, int toIndex);
 

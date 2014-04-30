@@ -98,6 +98,33 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
+    public C.List<T> sort() {
+        if (size() == 0) return C.newList();
+        T t = get(0);
+        C.List<T> l = copy();
+        if (!(t instanceof Comparable)) {
+            return l;
+        }
+        Object[] a = l.toArray();
+       	Arrays.sort(a);
+       	ListIterator<T> i = l.listIterator();
+       	for (int j=0; j<a.length; j++) {
+       	    i.next();
+       	    i.set((T)a[j]);
+       	}
+        ((ListBase)l).setFeature(C.Feature.SORTED);
+        return l;
+    }
+
+    @Override
+    public C.List<T> sort(Comparator<? super T> comparator) {
+        C.List<T> l = copy();
+        Collections.sort(l, comparator);
+        ((ListBase)l).setFeature(C.Feature.SORTED);
+        return l;
+    }
+
+    @Override
     public C.List<T> subList(int fromIndex, int toIndex) {
         if (fromIndex == toIndex) {
             return Nil.list();
