@@ -24,6 +24,9 @@ import org.apache.commons.codec.binary.Hex;
 import org.osgl.exception.UnexpectedException;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.UUID;
 
@@ -121,6 +124,22 @@ public class Codec {
             return Hex.decodeHex(hexString.toCharArray());
         } catch (DecoderException e) {
             throw new UnexpectedException(e);
+        }
+    }
+
+    public static String encodeUrl(String s, Charset enc) {
+        try {
+            return URLEncoder.encode(s, enc.name());
+        } catch (UnsupportedEncodingException e) {
+            throw E.encodingException(e);
+        }
+    }
+
+    public static String decodeUrl(String s, Charset enc) {
+        try {
+            return URLDecoder.decode(s, enc.name());
+        } catch (UnsupportedEncodingException e) {
+            throw E.encodingException(e);
         }
     }
 
