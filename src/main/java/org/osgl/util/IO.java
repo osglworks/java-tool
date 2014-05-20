@@ -20,12 +20,15 @@
 package org.osgl.util;
 
 import org.osgl._;
+import org.osgl.exception.NotAppliedException;
 
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * IO utilities
@@ -416,7 +419,40 @@ public class IO {
             }
         }
     }
-    
+
+    public static File zip(File... files) {
+        try {
+            File temp = File.createTempFile("osgl", ".zip");
+            zipInto(temp, files);
+            return temp;
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    public static void zipInto(File target, File... files) {
+        ZipOutputStream zos = null;
+        try {
+            zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(target)));
+            byte[] buffer = new byte[128];
+            for (File f : files) {
+                ZipEntry entry = new ZipEntry(f.getName());
+                InputStream is = new BufferedInputStream(new FileInputStream(f));
+                zos.putNextEntry(entry);
+                int read = 0;
+                while ((read = is.read(buffer)) != -1) {
+                    zos.write(buffer, 0, read);
+                }
+                zos.closeEntry();
+                IO.close(is);
+            }
+        } catch (IOException e) {
+            throw E.ioException(e);
+        } finally {
+            IO.close(zos);
+        }
+    }
+
     public static final class F {
         public static <T> _.Function<?, T> println() {
             return PRINTLN;
@@ -444,5 +480,16 @@ public class IO {
                 }
             }.curry(prefix, suffix, ps);
         }
+
+        public static final _.Function<File, InputStream> FILE_TO_IS = new _.F1<File, InputStream>() {
+            @Override
+            public InputStream apply(File file) throws NotAppliedException, _.Break {
+                try {
+                    return new BufferedInputStream(new FileInputStream(file));
+                } catch (IOException e) {
+                    throw E.ioException(e);
+                }
+            }
+        };
     }
 }

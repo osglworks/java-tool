@@ -91,10 +91,38 @@ import java.util.*;
  * @author Gelin Luo
  * @version 0.2
  */
-public enum _ {
-    INSTANCE;
+public class _ {
+    public static final _ INSTANCE = new _();
+
+    protected _() {}
 
     // --- Functions and their default implementations
+
+    /**
+     * The base for all Fx function class implemention
+     */
+    public static abstract class FuncBase {
+        /**
+         * Return a {@link Break} with payload. Here is an example of how to use this method:
+         * <p/>
+         * <pre>
+         *     myData.accept(new Visitor(){
+         *         public void apply(T e) {
+         *             if (...) {
+         *                 throw breakOut(e);
+         *             }
+         *         }
+         *     })
+         * </pre>
+         *
+         * @param payload the object passed through the <code>Break</code>
+         * @return a {@link Break} instance
+         */
+        protected final Break breakOut(Object payload) {
+            return new Break(payload);
+        }
+
+    }
 
     /**
      * Define a function that apply to no parameter (strictly this is not a function)
@@ -126,27 +154,7 @@ public enum _ {
      *
      * @since 0.2
      */
-    public static abstract class F0<R> implements Func0<R> {
-
-        /**
-         * Return a {@link Break} with payload. Here is an example of how to use this method:
-         * <p/>
-         * <pre>
-         *     myData.accept(new Visitor(){
-         *         public void apply(T e) {
-         *             if (...) {
-         *                 throw breakOut(e);
-         *             }
-         *         }
-         *     })
-         * </pre>
-         *
-         * @param payload the object passed through the <code>Break</code>
-         * @return a {@link Break} instance
-         */
-        protected Break breakOut(Object payload) {
-            return new Break(payload);
-        }
+    public static abstract class F0<R> extends FuncBase implements Func0<R> {
 
         /**
          * Applies this partial function to the given argument when it is contained in the function domain.
@@ -429,6 +437,7 @@ public enum _ {
      * @since 0.2
      */
     public static abstract class F1<P1, R>
+            extends FuncBase
             implements Func1<P1, R>, Bijection<P1, R>, MultiplicableFunction<P1, R> {
 
         @Override
@@ -439,13 +448,6 @@ public enum _ {
         @Override
         public MultiplicableFunction<P1, R> times(int n) {
             throw new NotAppliedException();
-        }
-
-        /**
-         * @see F0#breakOut(Object)
-         */
-        protected Break breakOut(Object payload) {
-            return new Break(payload);
         }
 
         /**
@@ -832,11 +834,9 @@ public enum _ {
      *
      * @since 0.2
      */
-    public static abstract class F2<P1, P2, R> implements Func2<P1, P2, R> {
-
-        protected Break breakOut(Object payload) {
-            return new Break(payload);
-        }
+    public static abstract class F2<P1, P2, R>
+            extends FuncBase
+            implements Func2<P1, P2, R> {
 
         /**
          * Applies this partial function to the given argument when it is contained in the function domain.
@@ -1082,13 +1082,9 @@ public enum _ {
      *
      * @since 0.2
      */
-    public static abstract class F3<P1, P2, P3, R> implements Func3<P1, P2, P3, R> {
-        /**
-         * @see F1#breakOut(Object)
-         */
-        protected Break breakOut(Object payload) {
-            return new Break(payload);
-        }
+    public static abstract class F3<P1, P2, P3, R>
+            extends FuncBase
+            implements Func3<P1, P2, P3, R> {
 
         /**
          * Applies this partial function to the given argument when it is contained in the function domain.
@@ -1346,13 +1342,9 @@ public enum _ {
      *
      * @since 0.2
      */
-    public static abstract class F4<P1, P2, P3, P4, R> implements Func4<P1, P2, P3, P4, R> {
-        /**
-         * @see F1#breakOut(Object)
-         */
-        public Break breakOut(Object payload) {
-            return new Break(payload);
-        }
+    public static abstract class F4<P1, P2, P3, P4, R>
+            extends FuncBase
+            implements Func4<P1, P2, P3, P4, R> {
 
         /**
          * Applies this partial function to the given argument when it is contained in the function domain.
@@ -1625,13 +1617,9 @@ public enum _ {
      *
      * @since 0.2
      */
-    public static abstract class F5<P1, P2, P3, P4, P5, R> implements Func5<P1, P2, P3, P4, P5, R> {
-        /**
-         * @see F1#breakOut(Object)
-         */
-        public Break breakOut(Object payload) {
-            return new Break(payload);
-        }
+    public static abstract class F5<P1, P2, P3, P4, P5, R>
+            extends FuncBase
+            implements Func5<P1, P2, P3, P4, P5, R> {
 
         /**
          * Applies this partial function to the given argument when it is contained in the function domain.
@@ -2317,7 +2305,7 @@ public enum _ {
          * @return the payload
          */
         public <T> T get() {
-            return (T) payload;
+            return _.cast(payload);
         }
     }
 
