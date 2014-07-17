@@ -2,6 +2,7 @@ package org.osgl.util;
 
 import org.osgl._;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -16,7 +17,8 @@ import java.util.*;
  * <li>{@link #clear()} method can be called to reset the builder before calling {@link #toList()}</li>
  * </ul>
  */
-public class ListBuilder<T> extends AbstractList<T> implements RandomAccess {
+public class ListBuilder<T> extends AbstractList<T>
+implements RandomAccess, Serializable {
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 

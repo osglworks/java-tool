@@ -344,7 +344,9 @@ public class IO {
     }
 
     /**
-     * Copy an stream to another one.
+     * Copy an stream to another one. It close the input stream anyway.
+     *
+     * If the param closeOs is true then close the output stream
      */
     public static void copy(InputStream is, OutputStream os, boolean closeOs) {
         try {

@@ -5,6 +5,7 @@ import org.junit.runner.JUnitCore;
 import org.osgl.util.S;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * The test base case
@@ -45,5 +46,10 @@ public abstract class TestBase extends Assert {
     
     protected static void println(String tmpl, Object... args) {
         System.out.println(String.format(tmpl, args));
+    }
+
+
+    protected static String newRandStr() {
+        return S.random(new Random().nextInt(30) + 15);
     }
 }

@@ -7,7 +7,7 @@ import org.osgl.util.S;
 /**
  * Created by luog on 4/04/14.
  */
-public class _Test extends TestBase {
+public class OsglTest extends TestBase {
 
     @Test
     public void testRandom() {

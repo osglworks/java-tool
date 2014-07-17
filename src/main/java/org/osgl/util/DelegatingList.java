@@ -1,14 +1,12 @@
 package org.osgl.util;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.ListIterator;
-import java.util.RandomAccess;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Implement {@link C.List} with a backing {@link java.util.List} instance
  */
-class DelegatingList<T> extends ListBase<T> implements C.List<T> {
+class DelegatingList<T> extends ListBase<T> implements C.List<T>, Serializable {
 
     private static EnumSet<C.Feature> freeFeatures = EnumSet.of(C.Feature.LAZY, C.Feature.PARALLEL);
     private static EnumSet<C.Feature> setableFeatures = EnumSet.of(C.Feature.READONLY); static {
@@ -213,6 +211,20 @@ class DelegatingList<T> extends ListBase<T> implements C.List<T> {
             l.features_().add(f3);
         }
         return l;
+    }
+
+    private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException{
+        s.defaultWriteObject();
+        s.writeObject(data);
+        s.writeObject(features_());
+    }
+
+    private void readObject(java.io.ObjectInputStream s)
+    throws java.io.IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        data = (List)s.readObject();
+        EnumSet<C.Feature> features = (EnumSet)s.readObject();
+        features_().addAll(features);
     }
 
 }

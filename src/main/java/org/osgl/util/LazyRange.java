@@ -14,7 +14,8 @@ import java.util.Iterator;
 /**
  * Implement {@link C.Range} using {@link LazySeq}.
  */
-public class LazyRange<ELEMENT> extends LazySeq<ELEMENT> implements C.Range<ELEMENT>, Serializable {
+public class LazyRange<ELEMENT> extends LazySeq<ELEMENT>
+implements C.Range<ELEMENT>, Serializable {
 
     private final ELEMENT to;
 

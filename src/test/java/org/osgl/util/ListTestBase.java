@@ -3,6 +3,10 @@ package org.osgl.util;
 import org.junit.Test;
 import org.osgl._;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -230,6 +234,17 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
         Integer[] ob = new Integer[5];
         data().toArray(ob);
         eq(oa, ob);
+    }
+
+    @Test
+    public void testSerialize() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        data = prepareData(1, 2, 3);
+        oos.writeObject(data());
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        List copy = (List)new ObjectInputStream(bais).readObject();
+        eq(copy, data);
     }
 
 }

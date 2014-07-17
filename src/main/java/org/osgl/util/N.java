@@ -7,14 +7,15 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * The namespace under which number relevant structures, functions and logics are
  * defined
  */
-public enum N {
+public class N {
 
-    INSTANCE;
+    N() {}
 
     public static enum Type {
         BYTE(1) {
@@ -135,6 +136,9 @@ public enum N {
 
             @Override
             Number div(Number a, Number b) {
+                if (b.floatValue() == 0.0d) {
+                    throw new ArithmeticException("/ by zero");
+                }
                 return a.floatValue() / b.floatValue();
             }
 
@@ -160,6 +164,9 @@ public enum N {
 
             @Override
             Number div(Number a, Number b) {
+                if (0.0d == b.doubleValue()) {
+                    throw new ArithmeticException("/ by zero");
+                }
                 return a.doubleValue() / b.doubleValue();
             }
 
@@ -220,7 +227,7 @@ public enum N {
         DIV {
             @Override
             public Number apply(Number a, Number b) {
-                return t(t(a, b), Type.FLOAT).div(a, b);
+                return t(t(a, b), Type.DOUBLE).div(a, b);
             }
         };
 
@@ -374,7 +381,8 @@ public enum N {
     public static class RangeStep<T extends Number> extends _.F2<T, Integer, T> implements Serializable {
         protected int times = 1;
 
-        public RangeStep() {}
+        public RangeStep() {
+        }
 
         public RangeStep(int times) {
             org.osgl.util.E.invalidArgIf(times < 1, "times must be positive integer");
@@ -387,7 +395,7 @@ public enum N {
 
         @Override
         public T apply(T t, Integer steps) throws NotAppliedException, _.Break {
-            return (T)num(t).add(steps * times).get();
+            return (T) num(t).add(steps * times).get();
         }
 
         public RangeStep<T> times(int n) {
@@ -403,7 +411,7 @@ public enum N {
                 return true;
             }
             if (obj instanceof RangeStep) {
-                RangeStep that = (RangeStep)obj;
+                RangeStep that = (RangeStep) obj;
                 return that.times == times && that.getClass().equals(getClass());
             }
             return false;
@@ -430,7 +438,7 @@ public enum N {
                 return true;
             }
             if (obj instanceof IntRangeStep) {
-                IntRangeStep that = (IntRangeStep)obj;
+                IntRangeStep that = (IntRangeStep) obj;
                 return that.times == times;
             }
             return false;
@@ -465,7 +473,7 @@ public enum N {
                 return true;
             }
             if (obj instanceof LongRangeStep) {
-                LongRangeStep that = (LongRangeStep)obj;
+                LongRangeStep that = (LongRangeStep) obj;
                 return that.times == times;
             }
             return false;
@@ -495,7 +503,7 @@ public enum N {
             if ((limit - from) < steps) {
                 throw new NoSuchElementException();
             }
-            return (short)(from + step(steps));
+            return (short) (from + step(steps));
         }
 
         @Override
@@ -504,7 +512,7 @@ public enum N {
                 return true;
             }
             if (obj instanceof ShortRangeStep) {
-                ShortRangeStep that = (ShortRangeStep)obj;
+                ShortRangeStep that = (ShortRangeStep) obj;
                 return that.times == times;
             }
             return false;
@@ -535,7 +543,7 @@ public enum N {
             if ((limit - from) < steps) {
                 throw new NoSuchElementException();
             }
-            return (byte)(from + step(steps));
+            return (byte) (from + step(steps));
         }
 
         @Override
@@ -544,7 +552,7 @@ public enum N {
                 return true;
             }
             if (obj instanceof ByteRangeStep) {
-                ByteRangeStep that = (ByteRangeStep)obj;
+                ByteRangeStep that = (ByteRangeStep) obj;
                 return that.times == times;
             }
             return false;
@@ -560,7 +568,9 @@ public enum N {
         }
     }
 
-    private static Map<Class<? extends Number>, Type> _m; static {
+    private static Map<Class<? extends Number>, Type> _m;
+
+    static {
         _m = new HashMap<Class<? extends Number>, Type>();
         _m.put(Byte.class, Type.BYTE);
         _m.put(Short.class, Type.SHORT);
@@ -641,8 +651,53 @@ public enum N {
         return Math.round(a);
     }
 
-    public static double random() {
-        return Math.random();
+    /**
+     * @see java.util.Random#nextInt()
+     */
+    public static int randInt() {
+        return new Random().nextInt();
+    }
+
+    public static int randIntWithSymbol() {
+        return randSymbol() * randInt();
+    }
+
+    /**
+     * @see Random#nextInt(int)
+     */
+    public static int randInt(int max) {
+        return new Random().nextInt(max);
+    }
+
+    public static int randIntWithSymbol(int max) {
+        return randSymbol() * randInt(max);
+    }
+
+    public static float randFloat() {
+        return new Random().nextFloat();
+    }
+
+    public static float randFloatWithSymbol() {
+        return randSymbol() * randFloat();
+    }
+
+    public static long randLong() {
+        return new Random().nextLong();
+    }
+
+    public static long randLongWithSymbol() {
+        return randSymbol() * randLong();
+    }
+
+    /**
+     * @see java.util.Random#nextDouble()
+     */
+    public static double randDouble() {
+        return new Random().nextDouble();
+    }
+
+    public static double randDoubleWithSymbol() {
+        return randSymbol() * randDouble();
     }
 
     public static int abs(int a) {
@@ -743,7 +798,14 @@ public enum N {
 
     public final static class F {
 
-        public static final _.F1 DBL = mul(2);
+        public static final _.F1<Number, Number> NEGATIVE = new _.F1<Number, Number>() {
+            @Override
+            public Number apply(Number number) throws NotAppliedException, _.Break {
+                return num(number).mul(-1);
+            }
+        };
+
+        public static final _.F1 DBL = multiplyBy(2);
 
         public static _.Predicate<Integer> gt(final int n) {
             return new _.Predicate<Integer>() {
@@ -831,7 +893,7 @@ public enum N {
             return new _.F2<T, T, T>() {
                 @Override
                 public T apply(T t1, T t2) throws NotAppliedException, _.Break {
-                    return (T)num(t1).add(t2).as(c);
+                    return (T) num(t1).add(t2).as(c);
                 }
             };
         }
@@ -849,12 +911,29 @@ public enum N {
             return new _.F2<T, X, T>() {
                 @Override
                 public T apply(T t, X x) throws NotAppliedException, _.Break {
-                    return (T)num(t).add(func.apply(x)).as(clz);
+                    return (T) num(t).add(func.apply(x)).as(clz);
                 }
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> mul(final Number n) {
+        public static _.F2<Number, Number, Number> MULTIPLY = new _.F2<Number, Number, Number>() {
+            @Override
+            public Number apply(Number n1, Number n2) throws NotAppliedException, _.Break {
+                return num(n1).mul(n2);
+            }
+        };
+
+        public static <P1 extends Number, P2 extends Number, R extends Number>
+        _.F2<P1, P2, R> multiply(final Class<R> type) {
+            return new _.F2<P1, P2, R>() {
+                @Override
+                public R apply(P1 n1, P2 n2) throws NotAppliedException, _.Break {
+                    return (R) num(n1).mul(n2).as(type);
+                }
+            };
+        }
+
+        public static <T extends Number> _.F1<T, Number> multiplyBy(final Number n) {
             return new _.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
@@ -863,6 +942,27 @@ public enum N {
             };
         }
 
+        public static <T extends Number> _.F1<T, Number> multiplyBy(final Number n, final Class<T> clz) {
+            return new _.F1<T, Number>() {
+                @Override
+                public Number apply(T t) {
+                    return num(t).mul(n).as(clz);
+                }
+            };
+        }
+
+        /**
+         * Use {@link #multiplyBy(Number)}
+         */
+        @Deprecated
+        public static <T extends Number> _.F1<T, Number> mul(final Number n) {
+            return multiplyBy(n);
+        }
+
+        /**
+         * Use {@link #multiplyBy(Number, Class)}
+         */
+        @Deprecated
         public static <T extends Number> _.F1<T, Number> mul(final Number n, final Class<T> clz) {
             return new _.F1<T, Number>() {
                 @Override
@@ -872,7 +972,25 @@ public enum N {
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> div(final Number n) {
+        public static <P1 extends Number, P2 extends Number, R extends Number> _.F2<P1, P2, R> divide(
+                final Class<R> type
+        ) {
+            return new _.F2<P1, P2, R>() {
+                @Override
+                public R apply(P1 n1, P2 n2) throws NotAppliedException, _.Break {
+                    return (R) num(n1).div(n2).as(type);
+                }
+            };
+        }
+
+        public static _.F2<Number, Number, Number> DIVIDE = new _.F2<Number, Number, Number>() {
+            @Override
+            public Number apply(Number n1, Number n2) throws NotAppliedException, _.Break {
+                return num(n1).div(n2);
+            }
+        };
+
+        public static <T extends Number> _.F1<T, Number> divideBy(final Number n) {
             return new _.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
@@ -881,13 +999,29 @@ public enum N {
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> div(final Number n, final Class<T> clz) {
+        public static <T extends Number> _.F1<T, Number> divideBy(final Number n, final Class<T> type) {
             return new _.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
-                    return num(t).div(n).as(clz);
+                    return num(t).div(n).as(type);
                 }
             };
+        }
+
+        /**
+         * Use {@link #divideBy(Number)} instead
+         */
+        @Deprecated
+        public static <T extends Number> _.F1<T, Number> div(final Number n) {
+            return divideBy(n);
+        }
+
+        /**
+         * Use {@link #divideBy(Number, Class)} instead
+         */
+        @Deprecated
+        public static <T extends Number> _.F1<T, Number> div(final Number n, final Class<T> clz) {
+            return divideBy(n, clz);
         }
 
         public static <T extends Number> _.F1<T, Number> sqr() {
@@ -972,7 +1106,7 @@ public enum N {
             return new _.F2<T, T, T>() {
                 @Override
                 public T apply(T minuend, T subtraend) throws NotAppliedException, _.Break {
-                    return (T)N.num(minuend).sub(subtraend).as(clz);
+                    return (T) N.num(minuend).sub(subtraend).as(clz);
                 }
             };
         }
@@ -1020,5 +1154,9 @@ public enum N {
         };
 
         public static _.Predicate<Integer> IS_ODD = _.F.negate(IS_EVEN);
+    }
+
+    private static int randSymbol() {
+        return new Random().nextInt(2) == 0 ? -1 : 1;
     }
 }

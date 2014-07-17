@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.ListIterator;
 
@@ -10,7 +11,7 @@ import java.util.ListIterator;
  * Time: 9:37 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CompositeList<T> extends ListBase<T> implements C.List<T> {
+public class CompositeList<T> extends ListBase<T> implements C.List<T>, Serializable {
 
     private final C.List<T> left;
 

@@ -89,7 +89,7 @@ import java.util.*;
  * <p>Utility methods</p>
  *
  * @author Gelin Luo
- * @version 0.2
+ * @version 0.3
  */
 public class _ {
     public static final _ INSTANCE = new _();
@@ -158,7 +158,8 @@ public class _ {
 
         /**
          * Applies this partial function to the given argument when it is contained in the function domain.
-         * Applies fallback function where this partial function is not defined.
+         * Applies fallback function where this partial function is not defined, i.e. any
+         * {@link java.lang.RuntimeException} is captured
          *
          * @param fallback
          * @return the result of this function or the fallback function application
@@ -166,7 +167,7 @@ public class _ {
         public R applyOrElse(F0<? extends R> fallback) {
             try {
                 return apply();
-            } catch (NotAppliedException e) {
+            } catch (RuntimeException e) {
                 return fallback.apply();
             }
         }
@@ -224,7 +225,7 @@ public class _ {
 
         /**
          * Returns a composed function that when applied, try to apply this function first, in case
-         * a {@link NotAppliedException} is captured apply to the fallback function specified. This
+         * a {@link java.lang.RuntimeException} is captured apply to the fallback function specified. This
          * method helps to implement partial function
          *
          * @param fallback the function to applied if this function doesn't apply in the current situation
@@ -237,7 +238,7 @@ public class _ {
                 public R apply() {
                     try {
                         return me.apply();
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return fallback.apply();
                     }
                 }
@@ -256,32 +257,8 @@ public class _ {
                 public Option<R> apply() {
                     try {
                         return _.some(me.apply());
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return _.none();
-                    }
-                }
-            };
-        }
-
-        /**
-         * Composes this partial function with an action function which gets applied to results
-         * of this partial function. The action function is invoked only for its side effects;
-         * its result is ignored.
-         *
-         * @param action the function that apply to the result of this function
-         * @return a function which maps arguments x to {@code true} if this function is applied and run
-         * the action function for the side effect, or {@code false} if this function is not applied.
-         */
-        public F0<Boolean> runWith(final F1<? super R, ?> action) {
-            final F0<R> me = this;
-            return new F0<Boolean>() {
-                @Override
-                public Boolean apply() {
-                    try {
-                        action.apply(me.apply());
-                        return true;
-                    } catch (NotAppliedException e) {
-                        return false;
                     }
                 }
             };
@@ -461,7 +438,7 @@ public class _ {
         public R applyOrElse(P1 p1, F1<? super P1, ? extends R> fallback) {
             try {
                 return apply(p1);
-            } catch (NotAppliedException e) {
+            } catch (RuntimeException e) {
                 return fallback.apply(p1);
             }
         }
@@ -543,7 +520,7 @@ public class _ {
                 public R apply(P1 p1) {
                     try {
                         return me.apply(p1);
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return fallback.apply(p1);
                     }
                 }
@@ -684,32 +661,8 @@ public class _ {
                 public Option<R> apply(P1 p1) {
                     try {
                         return _.some(me.apply(p1));
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return _.none();
-                    }
-                }
-            };
-        }
-
-        /**
-         * Composes this partial function with an action function which gets applied to results
-         * of this partial function. The action function is invoked only for its side effects;
-         * its result is ignored.
-         *
-         * @param action the function that apply to the result of this function
-         * @return a function which maps arguments x to {@code true} if this function is applied and run
-         * the action function for the side effect, or {@code false} if this function is not applied.
-         */
-        public F1<P1, Boolean> runWith(final F1<? super R, ?> action) {
-            final F1<P1, R> me = this;
-            return new F1<P1, Boolean>() {
-                @Override
-                public Boolean apply(P1 p1) {
-                    try {
-                        action.apply(me.apply(p1));
-                        return true;
-                    } catch (NotAppliedException e) {
-                        return false;
                     }
                 }
             };
@@ -850,7 +803,7 @@ public class _ {
         public R applyOrElse(P1 p1, P2 p2, F2<? super P1, ? super P2, ? extends R> fallback) {
             try {
                 return apply(p1, p2);
-            } catch (NotAppliedException e) {
+            } catch (RuntimeException e) {
                 return fallback.apply(p1, p2);
             }
         }
@@ -942,7 +895,7 @@ public class _ {
                 public R apply(P1 p1, P2 p2) {
                     try {
                         return me.apply(p1, p2);
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return fallback.apply(p1, p2);
                     }
                 }
@@ -961,32 +914,8 @@ public class _ {
                 public Option<R> apply(P1 p1, P2 p2) {
                     try {
                         return _.some(me.apply(p1, p2));
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return _.none();
-                    }
-                }
-            };
-        }
-
-        /**
-         * Composes this partial function with an action function which gets applied to results
-         * of this partial function. The action function is invoked only for its side effects;
-         * its result is ignored.
-         *
-         * @param action the function that apply to the result of this function
-         * @return a function which maps arguments x to {@code true} if this function is applied and run
-         * the action function for the side effect, or {@code false} if this function is not applied.
-         */
-        public F2<P1, P2, Boolean> runWith(final F1<? super R, ?> action) {
-            final F2<P1, P2, R> me = this;
-            return new F2<P1, P2, Boolean>() {
-                @Override
-                public Boolean apply(P1 p1, P2 p2) {
-                    try {
-                        action.apply(me.apply(p1, p2));
-                        return true;
-                    } catch (NotAppliedException e) {
-                        return false;
                     }
                 }
             };
@@ -1099,7 +1028,7 @@ public class _ {
         public R applyOrElse(P1 p1, P2 p2, P3 p3, F3<? super P1, ? super P2, ? super P3, ? extends R> fallback) {
             try {
                 return apply(p1, p2, p3);
-            } catch (NotAppliedException e) {
+            } catch (RuntimeException e) {
                 return fallback.apply(p1, p2, p3);
             }
         }
@@ -1204,7 +1133,7 @@ public class _ {
                 public R apply(P1 p1, P2 p2, P3 p3) {
                     try {
                         return me.apply(p1, p2, p3);
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return fallback.apply(p1, p2, p3);
                     }
                 }
@@ -1223,32 +1152,8 @@ public class _ {
                 public Option<R> apply(P1 p1, P2 p2, P3 p3) {
                     try {
                         return _.some(me.apply(p1, p2, p3));
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return _.none();
-                    }
-                }
-            };
-        }
-
-        /**
-         * Composes this partial function with an action function which gets applied to results
-         * of this partial function. The action function is invoked only for its side effects;
-         * its result is ignored.
-         *
-         * @param action the function that apply to the result of this function
-         * @return a function which maps arguments x to {@code true} if this function is applied and run
-         * the action function for the side effect, or {@code false} if this function is not applied.
-         */
-        public F3<P1, P2, P3, Boolean> runWith(final F1<? super R, ?> action) {
-            final F3<P1, P2, P3, R> me = this;
-            return new F3<P1, P2, P3, Boolean>() {
-                @Override
-                public Boolean apply(P1 p1, P2 p2, P3 p3) {
-                    try {
-                        action.apply(me.apply(p1, p2, p3));
-                        return true;
-                    } catch (NotAppliedException e) {
-                        return false;
                     }
                 }
             };
@@ -1362,7 +1267,7 @@ public class _ {
         ) {
             try {
                 return apply(p1, p2, p3, p4);
-            } catch (NotAppliedException e) {
+            } catch (RuntimeException e) {
                 return fallback.apply(p1, p2, p3, p4);
             }
         }
@@ -1479,7 +1384,7 @@ public class _ {
                 public R apply(P1 p1, P2 p2, P3 p3, P4 p4) {
                     try {
                         return me.apply(p1, p2, p3, p4);
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return fallback.apply(p1, p2, p3, p4);
                     }
                 }
@@ -1498,36 +1403,13 @@ public class _ {
                 public Option<R> apply(P1 p1, P2 p2, P3 p3, P4 p4) {
                     try {
                         return _.some(me.apply(p1, p2, p3, p4));
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return _.none();
                     }
                 }
             };
         }
 
-        /**
-         * Composes this partial function with an action function which gets applied to results
-         * of this partial function. The action function is invoked only for its side effects;
-         * its result is ignored.
-         *
-         * @param action the function that apply to the result of this function
-         * @return a function which maps arguments x to {@code true} if this function is applied and run
-         * the action function for the side effect, or {@code false} if this function is not applied.
-         */
-        public F4<P1, P2, P3, P4, Boolean> runWith(final F1<? super R, ?> action) {
-            final F4<P1, P2, P3, P4, R> me = this;
-            return new F4<P1, P2, P3, P4, Boolean>() {
-                @Override
-                public Boolean apply(P1 p1, P2 p2, P3 p3, P4 p4) {
-                    try {
-                        action.apply(me.apply(p1, p2, p3, p4));
-                        return true;
-                    } catch (NotAppliedException e) {
-                        return false;
-                    }
-                }
-            };
-        }
     }
 
     private static class DumbF4 extends F4<Object, Object, Object, Object, Object> implements Serializable {
@@ -1638,7 +1520,7 @@ public class _ {
         ) {
             try {
                 return apply(p1, p2, p3, p4, p5);
-            } catch (NotAppliedException e) {
+            } catch (RuntimeException e) {
                 return fallback.apply(p1, p2, p3, p4, p5);
             }
         }
@@ -1765,7 +1647,7 @@ public class _ {
                 public R apply(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
                     try {
                         return me.apply(p1, p2, p3, p4, p5);
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return fallback.apply(p1, p2, p3, p4, p5);
                     }
                 }
@@ -1784,36 +1666,13 @@ public class _ {
                 public Option<R> apply(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
                     try {
                         return _.some(me.apply(p1, p2, p3, p4, p5));
-                    } catch (NotAppliedException e) {
+                    } catch (RuntimeException e) {
                         return _.none();
                     }
                 }
             };
         }
 
-        /**
-         * Composes this partial function with an action function which gets applied to results
-         * of this partial function. The action function is invoked only for its side effects;
-         * its result is ignored.
-         *
-         * @param action the function that apply to the result of this function
-         * @return a function which maps arguments x to {@code true} if this function is applied and run
-         * the action function for the side effect, or {@code false} if this function is not applied.
-         */
-        public F5<P1, P2, P3, P4, P5, Boolean> runWith(final F1<? super R, ?> action) {
-            final F5<P1, P2, P3, P4, P5, R> me = this;
-            return new F5<P1, P2, P3, P4, P5, Boolean>() {
-                @Override
-                public Boolean apply(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
-                    try {
-                        action.apply(me.apply(p1, p2, p3, p4, p5));
-                        return true;
-                    } catch (NotAppliedException e) {
-                        return false;
-                    }
-                }
-            };
-        }
     }
 
     private static class DumbF5 extends F5<Object, Object, Object, Object, Object, Object> implements Serializable {
@@ -3839,7 +3698,7 @@ public class _ {
         for (Function<Object, Boolean> tester : conf.boolTesters) {
             try {
                 return !(tester.apply(v));
-            } catch (NotAppliedException e) {
+            } catch (RuntimeException e) {
                 // ignore
             }
         }
@@ -5761,6 +5620,11 @@ public class _ {
             @Override
             public Object apply(Object o) {
                 return o;
+            }
+
+            @Override
+            public Bijection inverse() {
+                return this;
             }
         };
 

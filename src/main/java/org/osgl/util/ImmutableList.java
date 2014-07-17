@@ -4,12 +4,15 @@ import org.osgl._;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.Algorithms;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
  * An immutable list implementation. This class is guaranteed to be NOT empty
  */
-class ImmutableList<T> extends ListBase<T> implements C.List<T>, RandomAccess {
+class ImmutableList<T> extends ListBase<T>
+implements C.List<T>, RandomAccess, Serializable {
 
     private final T[] data_;
 

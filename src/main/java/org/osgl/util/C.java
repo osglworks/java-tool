@@ -23,6 +23,8 @@ import org.osgl._;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.Algorithms;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -136,7 +138,7 @@ public enum C {
          * return this traversable directly without any state change
          *
          * @return this reference with parallel turned on if parallel
-         *         is supported
+         * is supported
          */
         Traversable<T> parallel();
 
@@ -284,7 +286,7 @@ public enum C {
          *                    result and the current element being
          *                    iterated
          * @return an option describing the accumulating result or {@link org.osgl._#none()} if
-         *         the structure is empty
+         * the structure is empty
          * @since 0.2
          */
         _.Option<T> reduce(_.Func2<T, T, T> accumulator);
@@ -330,7 +332,7 @@ public enum C {
          *
          * @param predicate the function map element to Boolean
          * @return an element in this traversal that matches the predicate or
-         *         {@link _#NONE} if no element matches
+         * {@link _#NONE} if no element matches
          * @since 0.2
          */
         _.Option<T> findOne(_.Function<? super T, Boolean> predicate);
@@ -562,7 +564,7 @@ public enum C {
          *
          * @param t the element to be appended to this sequence
          * @return a sequence consists of elements of this sequence
-         *         and the element {@code t}
+         * and the element {@code t}
          * @since 0.2
          */
         Sequence<T> append(T t);
@@ -605,7 +607,7 @@ public enum C {
          *
          * @param t the element to be appended to this sequence
          * @return the sequence consists of {@code t} followed
-         *         by all elements in this sequence
+         * by all elements in this sequence
          * @since 0.2
          */
         Sequence<T> prepend(T t);
@@ -723,7 +725,7 @@ public enum C {
          *
          * @param predicate the function map the element to Boolean
          * @return an option describe the first element matches the
-         *         predicate or {@link org.osgl._#none()}
+         * predicate or {@link org.osgl._#none()}
          * @since 0.2
          */
         _.Option<T> findFirst(_.Function<? super T, Boolean> predicate);
@@ -733,6 +735,7 @@ public enum C {
         Sequence<T> each(_.Function<? super T, ?> visitor);
 
         Sequence<T> forEach(_.Function<? super T, ?> visitor);
+
         /**
          * Iterate through this sequence from head to tail with
          * the visitor function specified
@@ -754,9 +757,9 @@ public enum C {
          * @param iterable the part B to be zipped with this sequence
          * @param <T2>     the type of the iterable
          * @return a new sequence containing pairs consisting of
-         *         corresponding elements of this sequence and that.
-         *         The length of the returned collection is the
-         *         minimum of the lengths of this sequence and that.
+         * corresponding elements of this sequence and that.
+         * The length of the returned collection is the
+         * minimum of the lengths of this sequence and that.
          */
         <T2> Sequence<_.T2<T, T2>> zip(Iterable<T2> iterable);
 
@@ -774,9 +777,9 @@ public enum C {
          * @param def2     the element to be used to fill up the result if
          *                 the iterable is shorter than this sequence
          * @return a new sequence containing pairs consisting of
-         *         corresponding elements of this sequence and that.
-         *         The length of the returned collection is the
-         *         maximum of the lengths of this sequence and that.
+         * corresponding elements of this sequence and that.
+         * The length of the returned collection is the
+         * maximum of the lengths of this sequence and that.
          */
         <T2> Sequence<_.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2);
 
@@ -784,8 +787,8 @@ public enum C {
          * Zip this sequence with its indices
          *
          * @return A new list containing pairs consisting of all
-         *         elements of this list paired with their index.
-         *         Indices start at 0.
+         * elements of this list paired with their index.
+         * Indices start at 0.
          */
         Sequence<_.T2<T, Integer>> zipWithIndex();
     }
@@ -831,7 +834,7 @@ public enum C {
          *
          * @param n {@inheritDoc}
          * @return an new reversible sequence contains the first
-         *         {@code n} elements in this sequence
+         * {@code n} elements in this sequence
          */
         @Override
         ReversibleSequence<T> head(int n);
@@ -840,7 +843,7 @@ public enum C {
          * {@inheritDoc}
          *
          * @return an new reversible sequence contains all elements
-         *         in this sequence except the first element
+         * in this sequence except the first element
          */
         @Override
         ReversibleSequence<T> tail();
@@ -850,7 +853,7 @@ public enum C {
          *
          * @param n {@inheritDoc}
          * @return an new reversible sequence contains the first
-         *         {@code n} elements in this sequence
+         * {@code n} elements in this sequence
          */
         @Override
         ReversibleSequence<T> take(int n);
@@ -860,7 +863,7 @@ public enum C {
          *
          * @param predicate {@inheritDoc}
          * @return an new reversible sequence contains the elements
-         *         in this sequence until predicate evaluate to false
+         * in this sequence until predicate evaluate to false
          */
         @Override
         ReversibleSequence<T> takeWhile(_.Function<? super T, Boolean> predicate);
@@ -887,7 +890,7 @@ public enum C {
          *
          * @param t {@inheritDoc}
          * @return a reversible sequence contains this seq's element
-         *         followed by {@code t}
+         * followed by {@code t}
          */
         @Override
         ReversibleSequence<T> append(T t);
@@ -907,7 +910,7 @@ public enum C {
          *
          * @param t {@inheritDoc}
          * @return a reversible sequence contains by {@code t}
-         *         followed this seq's element
+         * followed this seq's element
          */
         @Override
         ReversibleSequence<T> prepend(T t);
@@ -1035,7 +1038,7 @@ public enum C {
          *
          * @param predicate the function map the element to Boolean
          * @return an option describe the first element matches the
-         *         predicate or {@link org.osgl._#none()}
+         * predicate or {@link org.osgl._#none()}
          * @since 0.2
          */
         _.Option<T> findLast(_.Function<? super T, Boolean> predicate);
@@ -1276,9 +1279,8 @@ public enum C {
          *
          * @param r2 the range to be merged with this range
          * @return an new range contains all elements in this range and r2
-         * @throws org.osgl.exception.InvalidArgException
-         *          if the two ranges does not have
-         *          the same {@link #step()} operator or does not connect to each other
+         * @throws org.osgl.exception.InvalidArgException if the two ranges does not have
+         *                                                the same {@link #step()} operator or does not connect to each other
          * @since 0.2
          */
         Range<ELEMENT> merge(Range<ELEMENT> r2);
@@ -1377,7 +1379,7 @@ public enum C {
              * next element
              *
              * @return {@code true} if there are element after the cursor in the
-             *         underline list
+             * underline list
              */
             boolean hasNext();
 
@@ -1386,7 +1388,7 @@ public enum C {
              * element
              *
              * @return {@code true} if there are element before the cursor in the
-             *         underline list
+             * underline list
              */
             boolean hasPrevious();
 
@@ -1545,7 +1547,7 @@ public enum C {
 
         /**
          * Returns a sorted copy of this list.
-         *
+         * <p/>
          * <p>Note if the element type T is not a {@link java.lang.Comparable} then
          * this method returns a {@link #copy() copy} of this list without any order
          * changes</p>
@@ -1592,7 +1594,7 @@ public enum C {
          * {@inheritDoc}
          *
          * @return A list contains all elements in this list except
-         *         the first one
+         * the first one
          */
         @Override
         List<T> tail();
@@ -1615,7 +1617,7 @@ public enum C {
          *
          * @param n {@inheritDoc}
          * @return a List contains all elements of this list
-         *         except the first {@code n} number
+         * except the first {@code n} number
          */
         List<T> drop(int n);
 
@@ -1651,7 +1653,7 @@ public enum C {
          * @param predicate test whether an element should be removed frmo
          *                  return list
          * @return a list contains all element that does not match the
-         *         predicate specified
+         * predicate specified
          */
         List<T> remove(_.Function<? super T, Boolean> predicate);
 
@@ -1680,8 +1682,8 @@ public enum C {
          *
          * @param predicate test the element
          * @return the reference to the list itself or an new List without the
-         *         first element matches the predicate if this is a readonly
-         *         list
+         * first element matches the predicate if this is a readonly
+         * list
          */
         Cursor<T> locateFirst(_.Function<T, Boolean> predicate);
 
@@ -1694,8 +1696,8 @@ public enum C {
          *
          * @param predicate
          * @return the reference to the list itself or an new List without
-         *         and element matches the predicate if this is a readonly
-         *         list
+         * and element matches the predicate if this is a readonly
+         * list
          */
         Cursor<T> locate(_.Function<T, Boolean> predicate);
 
@@ -1707,8 +1709,8 @@ public enum C {
          *
          * @param predicate test the element
          * @return the reference to the list itself or an new List without the
-         *         first element matches the predicate if this is a readonly
-         *         list
+         * first element matches the predicate if this is a readonly
+         * list
          */
         Cursor<T> locateLast(_.Function<T, Boolean> predicate);
 
@@ -1731,7 +1733,7 @@ public enum C {
          *
          * @param t {@inheritDoc}
          * @return a list contains elements in this list followed
-         *         by {@code t}
+         * by {@code t}
          */
         @Override
         List<T> append(T t);
@@ -1741,7 +1743,7 @@ public enum C {
          *
          * @param iterable
          * @return a List contains all elements of this list followed
-         *         by all elements in the iterable
+         * by all elements in the iterable
          */
         List<T> append(Collection<? extends T> iterable);
 
@@ -1795,7 +1797,7 @@ public enum C {
          * Returns a list contains all elements in the list except the
          * ones specified
          *
-         * @param element the element that should not be in the resulting list
+         * @param element  the element that should not be in the resulting list
          * @param elements the array contains elements that should not be in the resulting list
          * @return a list without the element specified
          */
@@ -1826,9 +1828,9 @@ public enum C {
          * @param list the part B to be zipped with this list
          * @param <T2> the type of the iterable
          * @return an new list containing pairs consisting of
-         *         corresponding elements of this sequence and that.
-         *         The length of the returned collection is the
-         *         minimum of the lengths of this sequence and that.
+         * corresponding elements of this sequence and that.
+         * The length of the returned collection is the
+         * minimum of the lengths of this sequence and that.
          */
         <T2> List<_.T2<T, T2>> zip(java.util.List<T2> list);
 
@@ -1846,9 +1848,9 @@ public enum C {
          * @param def2 the element to be used to fill up the result if
          *             the iterable is shorter than this sequence
          * @return a new list containing pairs consisting of
-         *         corresponding elements of this list and that.
-         *         The length of the returned collection is the
-         *         maximum of the lengths of this list and that.
+         * corresponding elements of this list and that.
+         * The length of the returned collection is the
+         * maximum of the lengths of this list and that.
          */
         <T2> List<_.T2<T, T2>> zipAll(java.util.List<T2> list, T def1, T2 def2);
 
@@ -1856,8 +1858,8 @@ public enum C {
          * Zip this sequence with its indices
          *
          * @return A new list containing pairs consisting of all
-         *         elements of this list paired with their index.
-         *         Indices start at 0.
+         * elements of this list paired with their index.
+         * Indices start at 0.
          */
         Sequence<_.T2<T, Integer>> zipWithIndex();
     }
@@ -1881,7 +1883,7 @@ public enum C {
 //    }
 //
 
-    public static class Map<K, V> implements java.util.Map<K, V> {
+    public static class Map<K, V> implements java.util.Map<K, V>, Serializable {
         public static class Entry<K, V> extends _.T2<K, V> implements java.util.Map.Entry<K, V> {
             public Entry(K _1, V _2) {
                 super(_1, _2);    //To change body of overridden methods use File | Settings | File Templates.
@@ -1911,7 +1913,7 @@ public enum C {
 
         private boolean ro;
 
-        protected Map(boolean readOnly, Object ... args) {
+        protected Map(boolean readOnly, Object... args) {
             HashMap<K, V> map = new HashMap<K, V>();
             int len = args.length;
             for (int i = 0; i < len; i += 2) {
@@ -2011,6 +2013,37 @@ public enum C {
             return set;
         }
 
+        @Override
+        public int hashCode() {
+            return _m.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = S.builder(_m.toString());
+            if (ro) {
+                sb.append("[ro]");
+            }
+            return sb.toString();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+
+           	if (!(o instanceof java.util.Map)) {
+                return false;
+            }
+
+            if (o instanceof Map) {
+                return o.equals(_m) && ((Map)o).ro == ro;
+            }
+
+            return o.equals(_m);
+        }
+
         // --- extensions
         public boolean readOnly() {
             return ro;
@@ -2022,6 +2055,23 @@ public enum C {
             } else {
                 return this;
             }
+        }
+
+        private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+            s.defaultWriteObject();
+            s.writeObject(_m);
+            if (ro) s.writeInt(1);
+            else s.writeInt(0);
+        }
+
+        private static final long serialVersionUID = 262498820763181265L;
+
+        private void readObject(java.io.ObjectInputStream s)
+        throws IOException, ClassNotFoundException {
+            s.defaultReadObject();
+            _m = (java.util.Map)s.readObject();
+            int i = s.readInt();
+            ro = i != 0;
         }
     }
 
@@ -2099,8 +2149,7 @@ public enum C {
          * @param collection the collection whose elements are to be placed into this list
          * @param <ET>       the generic type of the list element
          * @return The List been created
-         * @throws <code>NullPointerException</code>
-         *          if the specified collection is null
+         * @throws <code>NullPointerException</code> if the specified collection is null
          */
         <ET> java.util.List<ET> create(Collection<? extends ET> collection);
 
@@ -2180,7 +2229,9 @@ public enum C {
      */
     public static final String CONF_RANDOM_ACCESS_LIST_FACTORY = "osgl.random_access_list.factory";
 
-    static ListFactory linkedListFact; static {
+    static ListFactory linkedListFact;
+
+    static {
         String factCls = System.getProperty(CONF_LINKED_LIST_FACTORY);
         if (null == factCls) {
             linkedListFact = ListFactory.Predefined.defLinked();
@@ -2194,7 +2245,9 @@ public enum C {
         }
     }
 
-    static ListFactory randomAccessListFact; static {
+    static ListFactory randomAccessListFact;
+
+    static {
         String factCls = System.getProperty(CONF_RANDOM_ACCESS_LIST_FACTORY);
         if (null == factCls) {
             randomAccessListFact = ListFactory.Predefined.defRandomAccess();
@@ -2655,10 +2708,10 @@ public enum C {
 
     public static <T> Set<T> set(Iterable<? extends T> itr) {
         if (itr instanceof Collection) {
-            return set((Collection<T>)itr);
+            return set((Collection<T>) itr);
         }
         java.util.Set<T> set = new HashSet<T>();
-        for (T t: itr) set.add(t);
+        for (T t : itr) set.add(t);
         return ImmutableSet.of(set);
     }
 
@@ -2727,7 +2780,7 @@ public enum C {
      *
      * @param t the structure to be checked
      * @return {@code true} if the structure is read only
-     *         or immutable
+     * or immutable
      */
     public static boolean isReadOnly(Traversable<?> t) {
         return t.is(Feature.READONLY) || t.is(Feature.IMMUTABLE);

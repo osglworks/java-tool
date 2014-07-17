@@ -146,6 +146,24 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return modified;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (o instanceof ListBase) {
+            return _.eq(features_, ((ListBase) o).features_) && super.equals(o);
+        }
+
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + _.hc(features_);
+    }
+
     // --- Featured methods
 
     volatile private EnumSet<C.Feature> features_;

@@ -881,6 +881,13 @@ public class S {
             return RANDOM_N.curry(n);
         }
 
+        public static _.F1<String, Integer> LENGTH = new _.F1<String, Integer>() {
+            @Override
+            public Integer apply(String s) throws NotAppliedException, _.Break {
+                return s.length();
+            }
+        };
+
     }
 
 }
