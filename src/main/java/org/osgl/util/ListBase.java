@@ -384,11 +384,13 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 return Nil.list();
             }
             ListBuilder<T> lb = new ListBuilder<T>(sz);
+            boolean found = false;
             for (T t : this) {
-                if (predicate.apply(t)) {
-                    lb.add(t);
+                if (!found && predicate.apply(t)) {
+                    continue;
                 } else {
-                    break;
+                    found = true;
+                    lb.add(t);
                 }
             }
             return lb.toList();
@@ -397,11 +399,13 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 return C.newList();
             }
             C.List<T> l = C.newSizedList(sz);
+            boolean found = false;
             for (T t : this) {
-                if (predicate.apply(t)) {
-                    l.add(t);
+                if (!found && predicate.apply(t)) {
+                    continue;
                 } else {
-                    break;
+                    found = true;
+                    l.add(t);
                 }
             }
             return l;

@@ -423,8 +423,20 @@ public class _ {
         }
 
         @Override
-        public MultiplicableFunction<P1, R> times(int n) {
-            throw new NotAppliedException();
+        public MultiplicableFunction<P1, R> times(final int n) {
+            E.illegalArgumentIf(n < 1);
+            if (n == 1) return this;
+            final F1<P1, R> me = this;
+            return new F1<P1, R>() {
+                @Override
+                public R apply(P1 p1) throws NotAppliedException, Break {
+                    R r = null;
+                    for (int i = 0; i < n; ++i) {
+                        r = me.apply(p1);
+                    }
+                    return r;
+                }
+            };
         }
 
         /**

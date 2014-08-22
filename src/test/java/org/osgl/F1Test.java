@@ -42,11 +42,6 @@ public class F1Test extends TestBase {
         toLowerCase.inverse();
     }
 
-    @Test(expected = NotAppliedException.class)
-    public void byDefaultTimeShallThrowOutNotAppliedException() {
-        toLowerCase.times(5);
-    }
-
     @Test
     public void elseShallNotBeCalledNormally() {
         eq("foo", toLowerCase.applyOrElse("Foo", inCaseFailed));

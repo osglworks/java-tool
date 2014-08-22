@@ -120,6 +120,12 @@ public abstract class SequenceTestBase extends TraversableTestBase {
     }
 
     @Test
+    public void testDropWhile() {
+        data = prepareData(1, 2, 3, 4, 5);
+        eq(seqOf(4, 5), data().dropWhile(_.F.lt(4)));
+    }
+
+    @Test
     public void testAppend() {
         data = prepareData(1, 2);
         eq(seqOf(1, 2, 3, 4), data().append(seqOf(3, 4)));

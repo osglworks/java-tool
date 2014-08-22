@@ -510,13 +510,13 @@ public enum C {
         Sequence<T> drop(int n) throws IllegalArgumentException;
 
         /**
-         * Returns a {@code Sequence} consisting of the elements from this traversal until the predicate returns
-         * {@code false}:
+         * Returns a {@code Sequence} consisting of the elements from this sequence with leading elements
+         * dropped until the predicate returns {@code true}
          * <p/>
          * <pre>
          *      Sequence seq = C.list(1, 2, 3, 4, 3, 2, 1);
          *      assertTrue(C.list(), seq.dropWhile(_.F.gt(100)));
-         *      assertTrue(C.list(1, 2, 3), seq.dropWhile(_.F.lt(3)));
+         *      assertTrue(C.list(4, 3, 2, 1), seq.dropWhile(_.F.lt(3)));
          * </pre>
          * <p>Note this method does NOT modify the current sequence, instead it returns an new sequence structure
          * containing the elements as required</p>
