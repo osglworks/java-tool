@@ -3998,6 +3998,21 @@ public class _ {
     }
 
     /**
+     * Check if any objects in the parameter list is null
+     */
+    public static boolean anyNull(Object o, Object... oa) {
+        if (!isNull(o)) return true;
+        for (int i = oa.length - 1; i >= 0; --i) {
+            if (!isNull(oa[i])) return true;
+        }
+        return false;
+    }
+
+    public static boolean noneNull(Object o, Object... oa) {
+        return !anyNull(o, oa);
+    }
+
+    /**
      * Returns String representation of an object instance. Predicate the object specified
      * is {@code null} or {@code _.NONE}, then an empty string is returned
      *
