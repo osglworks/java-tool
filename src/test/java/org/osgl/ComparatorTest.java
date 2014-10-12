@@ -15,8 +15,8 @@ public class ComparatorTest extends TestBase {
         }
     }
 
-    protected Foo a = new Foo(1, "abc");
-    protected Foo b = new Foo(1, "xyz");
+    protected Foo abc = new Foo(1, "abc");
+    protected Foo xyz = new Foo(1, "xyz");
 
     protected _.Comparator<Integer> c = new _.Comparator<Integer>() {
         @Override
@@ -40,7 +40,7 @@ public class ComparatorTest extends TestBase {
     };
 
     @Test
-    public void testReversedOrder() {
+    public void reversedShallCompareInReverseWay() {
         int a = 0, b = 1;
         eq(c.apply(a, b), c.reversed().apply(b, a));
     }
@@ -52,7 +52,7 @@ public class ComparatorTest extends TestBase {
             public int compare(Foo o1, Foo o2) {
                 return o1._2.compareTo(o2._2);
             }
-        }).apply(a, b) < 0);
+        }).apply(abc, xyz) < 0);
     }
 
     @Test
@@ -63,11 +63,36 @@ public class ComparatorTest extends TestBase {
                 return o1.compareTo(o2);
             }
         };
-        yes(cmp.thenComparing(keyExtractor, kcmp).apply(a, b) < 0);
+        yes(cmp.thenComparing(keyExtractor, kcmp).apply(abc, xyz) < 0);
     }
 
     @Test
     public void testThenComparing3() {
-        yes(cmp.thenComparing(keyExtractor).apply(a, b) < 0);
+        yes(cmp.thenComparing(keyExtractor).apply(abc, xyz) < 0);
+    }
+
+    int one = 1, two = 2;
+    String a = "a", b = "b";
+
+    @Test
+    public void naturalOrderShallCompareObjectInNaturalWay() {
+        yes(_.F.NATURAL_ORDER.compare(one, two) < 0);
+        yes(_.F.NATURAL_ORDER.compare(a, b) < 0);
+    }
+
+    @Test
+    public void reverseOrderShallCompareObjectInNaturalWay() {
+        no(_.F.REVERSE_ORDER.compare(one, two) < 0);
+        no(_.F.REVERSE_ORDER.compare(a, b) < 0);
+    }
+
+    @Test
+    public void reversedReverseOrderShallBeNaturalOrder() {
+        yes(_.F.REVERSE_ORDER.reversed() == _.F.NATURAL_ORDER);
+    }
+
+    @Test
+    public void reversedNaturalOrderShallBeReverseOrder() {
+        yes(_.F.NATURAL_ORDER.reversed() == _.F.REVERSE_ORDER);
     }
 }

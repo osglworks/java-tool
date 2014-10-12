@@ -94,7 +94,8 @@ import java.util.*;
 public class _ {
     public static final _ INSTANCE = new _();
 
-    protected _() {}
+    protected _() {
+    }
 
     // --- Functions and their default implementations
 
@@ -268,6 +269,7 @@ public class _ {
 
     /**
      * The class adapt traditional Factory to Function
+     *
      * @param <T> the type of the instance been created by the factory
      */
     public static abstract class Factory<T> extends F0<T> {
@@ -288,6 +290,7 @@ public class _ {
 
     private static class DumbF0 extends F0<Object> implements Serializable {
         private static final long serialVersionUID = 2856835860950L;
+
         @Override
         public Object apply() throws NotAppliedException, Break {
             return null;
@@ -309,7 +312,7 @@ public class _ {
      */
     @SuppressWarnings("unchecked")
     public static <T> F0<T> f0() {
-        return (F0<T>)F0;
+        return (F0<T>) F0;
     }
 
     /**
@@ -683,6 +686,7 @@ public class _ {
 
     private static class DumbF1 extends F1<Object, Object> implements Serializable {
         private static final long serialVersionUID = 2856835860951L;
+
         @Override
         public Object apply(Object o) throws NotAppliedException, Break {
             return null;
@@ -704,7 +708,7 @@ public class _ {
      */
     @SuppressWarnings("unchecked")
     public static <P1, R> F1<P1, R> f1() {
-        return (F1<P1, R>)F1;
+        return (F1<P1, R>) F1;
     }
 
 
@@ -958,7 +962,7 @@ public class _ {
      */
     @SuppressWarnings("unchecked")
     public static <P1, P2, R> F2<P1, P2, R> f2() {
-        return (F2<P1, P2, R>)F2;
+        return (F2<P1, P2, R>) F2;
     }
 
 
@@ -1749,24 +1753,6 @@ public class _ {
             extends F2<T, T, Integer>
             implements java.util.Comparator<T>, Serializable {
 
-        private static class NaturalOrderComparator extends Comparator<Comparable<Object>> implements Serializable {
-            static final NaturalOrderComparator INSTANCE = new NaturalOrderComparator();
-
-            @Override
-            public int compare(Comparable<Object> c1, Comparable<Object> c2) {
-                return c1.compareTo(c2);
-            }
-
-            private Object readResolve() {
-                return INSTANCE;
-            }
-
-            @Override
-            public Comparator<Comparable<Object>> reversed() {
-                return _.F.reverseOrder();
-            }
-        }
-
         @Override
         public Integer apply(T p1, T p2) throws NotAppliedException, Break {
             return compare(p1, p2);
@@ -1778,7 +1764,10 @@ public class _ {
          * @since 0.2
          */
         public Comparator<T> reversed() {
-            return comparator(Collections.reverseOrder(this));
+            if (this instanceof Reversed) {
+                return ((Reversed<T>) this).cmp;
+            }
+            return new Reversed<T>(this);
         }
 
         /**
@@ -1818,6 +1807,78 @@ public class _ {
                 Function<? super T, ? extends U> keyExtractor
         ) {
             return thenComparing(_.F.comparing(keyExtractor));
+        }
+
+
+        private static class NaturalOrder extends Comparator<Comparable<Object>> implements Serializable {
+
+            private static final long serialVersionUID = -2658673713566062292L;
+
+            static final NaturalOrder INSTANCE = new NaturalOrder();
+
+            @Override
+            public int compare(Comparable<Object> c1, Comparable<Object> c2) {
+                if (null == c1) return -1;
+                if (null == c2) return 1;
+                return c1.compareTo(c2);
+            }
+
+            private Object readResolve() {
+                return INSTANCE;
+            }
+
+            @Override
+            public Comparator<Comparable<Object>> reversed() {
+                return ReverseOrder.INSTANCE;
+            }
+        }
+
+        private static class ReverseOrder extends Comparator<Comparable<Object>> implements Serializable {
+
+            private static final long serialVersionUID = -8026361379173504545L;
+
+            static final ReverseOrder INSTANCE = new ReverseOrder();
+
+            @Override
+            public int compare(Comparable<Object> c1, Comparable<Object> c2) {
+                return c2.compareTo(c1);
+            }
+
+            private Object readResolve() {
+                return INSTANCE;
+            }
+
+            @Override
+            public Comparator<Comparable<Object>> reversed() {
+                return NaturalOrder.INSTANCE;
+            }
+        }
+
+        private static class Reversed<T> extends Comparator<T> {
+
+            private static final long serialVersionUID = -8555952576466749416L;
+            final Comparator<T> cmp;
+
+            Reversed(Comparator<T> cmp) {
+                E.NPE(cmp);
+                this.cmp = cmp;
+            }
+
+            @Override
+            public int compare(T t1, T t2) {
+                return cmp.compare(t2, t1);
+            }
+
+            public boolean equals(Object o) {
+                return (o == this) ||
+                        (o instanceof Reversed &&
+                                cmp.equals(((Reversed) o).cmp));
+            }
+
+            public int hashCode() {
+                return cmp.hashCode() ^ Integer.MIN_VALUE;
+            }
+
         }
 
     }
@@ -2130,9 +2191,9 @@ public class _ {
     /**
      * Return a composed visitor function that only applies when the guard predicate test returns <code>true</code>
      *
-     * @param predicate   the predicate to test the element been visited
-     * @param visitor the function that visit(accept) the element if the guard tested the element successfully
-     * @param <T>     the type of the element be tested and visited
+     * @param predicate the predicate to test the element been visited
+     * @param visitor   the function that visit(accept) the element if the guard tested the element successfully
+     * @param <T>       the type of the element be tested and visited
      * @return the composed function
      */
     public static <T> Visitor<T>
@@ -3194,6 +3255,7 @@ public class _ {
 
         private class Csr implements Cursor<T> {
             private int id = 0;
+
             @Override
             public boolean isDefined() {
                 return 0 == id;
@@ -3370,7 +3432,6 @@ public class _ {
         }
 
 
-
         @Override
         public T last() throws NoSuchElementException {
             return v;
@@ -3388,7 +3449,6 @@ public class _ {
             }
             throw new IndexOutOfBoundsException();
         }
-
 
 
         public T get() {
@@ -3459,7 +3519,7 @@ public class _ {
         @Override
         public <T> T[] toArray(T[] a) {
             T[] ta = newArray(a, 1);
-            ta[0] = (T)v;
+            ta[0] = (T) v;
             return ta;
         }
 
@@ -4200,9 +4260,9 @@ public class _ {
         }
         if (o.getClass().isArray()) {
             if (o instanceof int[]) {
-                return hc((int[])o);
+                return hc((int[]) o);
             } else if (o instanceof long[]) {
-                return hc((long[])o);
+                return hc((long[]) o);
             } else if (o instanceof char[]) {
                 return hc((char[]) o);
             } else if (o instanceof byte[]) {
@@ -4257,9 +4317,9 @@ public class _ {
     /**
      * Search an element in a array
      *
-     * @param element the element to be located
+     * @param element  the element to be located
      * @param elements the array of element to be searched
-     * @param <T> the type
+     * @param <T>      the type
      * @return the location of the element inside elements, or {@code -1} if not found
      */
     public static <T> int search(T element, T... elements) {
@@ -4646,8 +4706,9 @@ public class _ {
 
     /**
      * Create an new array with specified array type and length
+     *
      * @param model the model array
-     * @param <T> the array component type
+     * @param <T>   the array component type
      * @return an new array with the same component type of model and length of model
      */
     public static <T> T[] newArray(T[] model) {
@@ -4656,9 +4717,10 @@ public class _ {
 
     /**
      * Create an new array with specified type and length
+     *
      * @param model the model array
-     * @param size the new array length
-     * @param <T> the component type
+     * @param size  the new array length
+     * @param <T>   the component type
      * @return an new array with the same type of model and length equals to size
      */
     @SuppressWarnings("unchecked")
@@ -4762,7 +4824,7 @@ public class _ {
         return new boolean[size];
     }
 
-    public static <T> T[] concat(T[]a, T t) {
+    public static <T> T[] concat(T[] a, T t) {
         int l = a.length;
         T[] ret = Arrays.copyOf(a, l + 1);
         ret[l] = t;
@@ -4777,7 +4839,7 @@ public class _ {
 
     public static <T> T[] concat(T[] a1, T[] a2, T[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (T[] a: rest) {
+        for (T[] a : rest) {
             len += a.length;
         }
         T[] ret = Arrays.copyOf(a1, len);
@@ -4800,7 +4862,7 @@ public class _ {
 
     public static int[] concat(int[] a1, int[] a2, int[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (int[] a: rest) {
+        for (int[] a : rest) {
             len += a.length;
         }
         int[] ret = Arrays.copyOf(a1, len);
@@ -4823,7 +4885,7 @@ public class _ {
 
     public static boolean[] concat(boolean[] a1, boolean[] a2, boolean[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (boolean[] a: rest) {
+        for (boolean[] a : rest) {
             len += a.length;
         }
         boolean[] ret = Arrays.copyOf(a1, len);
@@ -4846,7 +4908,7 @@ public class _ {
 
     public static byte[] concat(byte[] a1, byte[] a2, byte[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (byte[] a: rest) {
+        for (byte[] a : rest) {
             len += a.length;
         }
         byte[] ret = Arrays.copyOf(a1, len);
@@ -4869,7 +4931,7 @@ public class _ {
 
     public static short[] concat(short[] a1, short[] a2, short[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (short[] a: rest) {
+        for (short[] a : rest) {
             len += a.length;
         }
         short[] ret = Arrays.copyOf(a1, len);
@@ -4892,7 +4954,7 @@ public class _ {
 
     public static char[] concat(char[] a1, char[] a2, char[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (char[] a: rest) {
+        for (char[] a : rest) {
             len += a.length;
         }
         char[] ret = Arrays.copyOf(a1, len);
@@ -4915,7 +4977,7 @@ public class _ {
 
     public static long[] concat(long[] a1, long[] a2, long[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (long[] a: rest) {
+        for (long[] a : rest) {
             len += a.length;
         }
         long[] ret = Arrays.copyOf(a1, len);
@@ -4938,7 +5000,7 @@ public class _ {
 
     public static float[] concat(float[] a1, float[] a2, float[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (float[] a: rest) {
+        for (float[] a : rest) {
             len += a.length;
         }
         float[] ret = Arrays.copyOf(a1, len);
@@ -4961,7 +5023,7 @@ public class _ {
 
     public static double[] concat(double[] a1, double[] a2, double[]... rest) {
         int l1 = a1.length, l2 = a2.length, l12 = l1 + l2, len = l12;
-        for (double[] a: rest) {
+        for (double[] a : rest) {
             len += a.length;
         }
         double[] ret = Arrays.copyOf(a1, len);
@@ -5030,7 +5092,7 @@ public class _ {
         return oa;
     }
 
-    public static <T> T random(T t1, T ... ta) {
+    public static <T> T random(T t1, T... ta) {
         int l = ta.length;
         if (l == 0) return t1;
         int i = new Random().nextInt(l + 1);
@@ -6138,6 +6200,15 @@ public class _ {
             return EQ;
         }
 
+        public static <P> Predicate<P> eq(final P element) {
+            return new Predicate<P>() {
+                @Override
+                public boolean test(P p) {
+                    return _.eq(p, element);
+                }
+            };
+        }
+
         /**
          * A predefined function that applies to two parameters and check if they are not equals to
          * each other. This is a negate function of {@link #EQ}
@@ -6173,9 +6244,9 @@ public class _ {
             return NE;
         }
 
-        public static final Comparator NATURAL_ORDER = Comparator.NaturalOrderComparator.INSTANCE;
+        public static final Comparator NATURAL_ORDER = Comparator.NaturalOrder.INSTANCE;
 
-        public static final Comparator REVERSE_ORDER = F.<Comparable>reverseOrder();
+        public static final Comparator REVERSE_ORDER = Comparator.ReverseOrder.INSTANCE;
 
         @SuppressWarnings("unchecked")
         public static <T extends Comparable<T>> Comparator<T> naturalOrder() {
@@ -6184,7 +6255,7 @@ public class _ {
 
         @SuppressWarnings("unchecked")
         public static <T extends Comparable<? super T>> Comparator<T> reverseOrder() {
-            return _.comparator(Collections.reverseOrder());
+            return (Comparator<T>) REVERSE_ORDER;
         }
 
         public static <T> Comparator<T> reverse(final java.util.Comparator<? super T> c) {
