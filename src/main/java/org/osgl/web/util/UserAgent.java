@@ -1,11 +1,15 @@
 package org.osgl.web.util;
 
+import org.osgl.util.S;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 
 public class UserAgent {
+
+    public final static UserAgent UNKNOWN = new UserAgent();
 
     public static enum OS {
         MAC_OS, IOS, WIN32, WIN64, LINUX, DROID, SYMBIAN, BLACKBERRY, J2ME, SUN_OS, BOT, UNKNOWN
@@ -144,6 +148,9 @@ public class UserAgent {
 
     private static Map<String, UserAgent> cache_ = new HashMap<String, UserAgent>();
     public static UserAgent parse(String userAgent) {
+        if (S.empty(userAgent)) {
+            return UserAgent.UNKNOWN;
+        }
         UserAgent ua = cache_.get(userAgent);
         if (null != ua) return ua;
         ua = new UserAgent(userAgent);
@@ -156,8 +163,16 @@ public class UserAgent {
      * @param userAgent
      */
     private UserAgent(String userAgent) {
+        this();
         parse_(userAgent);
         str_ = userAgent;
+    }
+
+    private UserAgent() {
+        os_ = OS.UNKNOWN;
+        device_ = Device.UNKNOWN;
+        browser_ = Browser.UNKNOWN;
+        str_ = "";
     }
 
     private static enum P {
