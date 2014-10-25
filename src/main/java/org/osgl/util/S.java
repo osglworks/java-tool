@@ -819,12 +819,14 @@ public class S {
             }
         };
 
-        public static _.F1<String, Boolean> IS_EMPTY = new _.F1<String, Boolean>() {
+        public static _.Predicate<String> IS_EMPTY = new _.Predicate<String>() {
             @Override
-            public Boolean apply(String s) throws NotAppliedException, _.Break {
+            public boolean test(String s) throws NotAppliedException, _.Break {
                 return S.isEmpty(s);
             }
         };
+
+        public static _.Predicate<String> NOT_EMPTY = IS_EMPTY.negate();
 
         public static _.F2<String, Integer, String> MAX_LENGTH = new _.F2<String, Integer, String>() {
             @Override
