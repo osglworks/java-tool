@@ -33,7 +33,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * IO utilities
  */
-// Most of the code come from Play!Framework IO.java, under Apache License 2.0
+// Some code come from Play!Framework IO.java, under Apache License 2.0
 public class IO {
 
     public static void close(Closeable closeable) {
@@ -77,7 +77,17 @@ public class IO {
             throw E.ioException(e);
         }
     }
-    
+
+    /**
+     * Returns a byte array output stream
+     */
+    public static OutputStream os() {
+        return new ByteArrayOutputStream();
+    }
+
+    /**
+     * Returns a file output stream
+     */
     public static OutputStream os(File file) {
         try {
             return new FileOutputStream(file);
@@ -86,6 +96,35 @@ public class IO {
         }
     }
 
+    /**
+     * Returns a string writer
+     */
+    public static Writer writer() {
+        return new StringWriter();
+    }
+
+    /**
+     * Returns a file writer
+     */
+    public static Writer writer(File file) {
+        try {
+            return new FileWriter(file);
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    /**
+     * Returns an empty input stream
+     */
+    public static InputStream is() {
+        byte[] ba = {};
+        return new ByteArrayInputStream(ba);
+    }
+
+    /**
+     * Returns a file input stream
+     */
     public static InputStream is(File file) {
         try {
             return new FileInputStream(file);
@@ -96,6 +135,43 @@ public class IO {
 
     public static InputStream is(byte[] ba) {
         return new ByteArrayInputStream(ba);
+    }
+
+    /**
+     * Returns an input stream from a string which will be encoded with
+     * CharSet.defaultCharset()
+     */
+    public static InputStream is(String content) {
+        return is(content.getBytes());
+    }
+
+    /**
+     * Returns an empty reader
+     */
+    public static Reader reader() {
+        return new StringReader("");
+    }
+
+    /**
+     * Returns a file reader
+     */
+    public static Reader reader(File file) {
+        try {
+            return new FileReader(file);
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    public static Reader reader(byte[] ba) {
+        return new StringReader(new String(ba));
+    }
+
+    /**
+     * Returns a string reader
+     */
+    public static Reader reader(String content) {
+        return new StringReader(content);
     }
 
     public static BufferedOutputStream buffered(OutputStream os) {
@@ -111,6 +187,22 @@ public class IO {
             return (BufferedInputStream)is;
         } else {
             return new BufferedInputStream(is);
+        }
+    }
+
+    public static BufferedWriter buffered(Writer w) {
+        if (w instanceof BufferedWriter) {
+            return (BufferedWriter)w;
+        } else {
+            return new BufferedWriter(w);
+        }
+    }
+
+    public static BufferedReader buffered(Reader r) {
+        if (r instanceof BufferedReader) {
+            return (BufferedReader)r;
+        } else {
+            return new BufferedReader(r);
         }
     }
 
