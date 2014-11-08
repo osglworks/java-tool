@@ -2261,6 +2261,18 @@ public enum C {
         }
     }
 
+    public static boolean empty(Collection<?> col) {
+        return null == col || col.isEmpty();
+    }
+
+    public static boolean notEmpty(Collection<?> col) {
+        return !empty(col);
+    }
+
+    public static boolean isEmpty(Collection<?> col) {
+        return empty(col);
+    }
+
     // --- factory methods ---
 
     /**
