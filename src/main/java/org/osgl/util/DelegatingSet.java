@@ -1,11 +1,9 @@
 package org.osgl.util;
 
+import java.io.Serializable;
 import java.util.*;
 
-/**
- * Created by luog on 4/02/14.
- */
-class DelegatingSet<T> extends SetBase<T> implements C.Set<T> {
+class DelegatingSet<T> extends SetBase<T> implements C.Set<T>, Serializable {
 
     protected Set<T> data;
 

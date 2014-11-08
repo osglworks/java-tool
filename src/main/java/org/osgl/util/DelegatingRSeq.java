@@ -1,17 +1,11 @@
 package org.osgl.util;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
 
-/**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 9/11/13
- * Time: 9:57 AM
- * To change this template use File | Settings | File Templates.
- */
-class DelegatingRSeq<T> extends ReversibleSeqBase<T> {
+class DelegatingRSeq<T> extends ReversibleSeqBase<T> implements Serializable {
     private C.ReversibleSequence<T> data;
 
     DelegatingRSeq(C.ReversibleSequence<T> rseq) {
