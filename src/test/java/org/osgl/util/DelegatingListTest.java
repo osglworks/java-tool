@@ -1,12 +1,5 @@
 package org.osgl.util;
 
-/**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 7/11/13
- * Time: 8:24 PM
- * To change this template use File | Settings | File Templates.
- */
 public class DelegatingListTest extends ListTestBase {
 
     @Override

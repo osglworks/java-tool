@@ -19,6 +19,7 @@
 */
 package org.osgl;
 
+import org.osgl.concurrent.ContextLocal;
 import org.osgl.exception.FastRuntimeException;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.exception.UnexpectedException;
@@ -2029,6 +2030,15 @@ public class _ {
 
         public <R> F1<T, Option<R>> elseThen(final Function<? super T, R> func) {
             return negate().ifThen(func);
+        }
+
+        public static <T> Predicate<T> negate(final _.Function<T, Boolean> predicate) {
+            return new _.Predicate<T>() {
+                @Override
+                public boolean test(T t) {
+                    return !predicate.apply(t);
+                }
+            };
         }
     }
 
@@ -4107,97 +4117,97 @@ public class _ {
     }
 
     public final static int hc(boolean o) {
-        return HC_INIT * HC_FACT + (o ? 1 : 0);
+        return o ? 1231 : 1237;
     }
 
     public final static int hc(boolean[] oa) {
         int ret = HC_INIT;
         for (boolean b : oa) {
-            ret = ret * HC_FACT + hc(oa);
+            ret = ret * HC_FACT + hc(b);
         }
         return ret;
     }
 
     public final static int hc(short o) {
-        return HC_INIT * HC_FACT + o;
+        return (int)o;
     }
 
     public final static int hc(short[] oa) {
         int ret = HC_INIT;
         for (short b : oa) {
-            ret = ret * HC_FACT + hc(oa);
+            ret = ret * HC_FACT + hc(b);
         }
         return ret;
     }
 
     public final static int hc(byte o) {
-        return HC_INIT * HC_FACT + o;
+        return (int)o;
     }
 
     public final static int hc(byte[] oa) {
         int ret = HC_INIT;
         for (byte b : oa) {
-            ret = ret * HC_FACT + hc(oa);
+            ret = ret * HC_FACT + hc(b);
         }
         return ret;
     }
 
     public final static int hc(char o) {
-        return HC_INIT * HC_FACT + o;
+        return (int)o;
     }
 
     public final static int hc(char[] oa) {
         int ret = HC_INIT;
         for (char b : oa) {
-            ret = ret * HC_FACT + hc(oa);
+            ret = ret * HC_FACT + hc(b);
         }
         return ret;
     }
 
     public final static int hc(int o) {
-        return HC_INIT * HC_FACT + o;
+        return o;
     }
 
     public final static int hc(int[] oa) {
         int ret = HC_INIT;
         for (int b : oa) {
-            ret = ret * HC_FACT + hc(oa);
+            ret = ret * HC_FACT + hc(b);
         }
         return ret;
     }
 
     public final static int hc(float o) {
-        return HC_INIT * HC_FACT + Float.floatToIntBits(o);
+        return Float.floatToIntBits(o);
     }
 
     public final static int hc(float[] oa) {
         int ret = HC_INIT;
         for (float b : oa) {
-            ret = ret * HC_FACT + hc(oa);
+            ret = ret * HC_FACT + hc(b);
         }
         return ret;
     }
 
     public final static int hc(long o) {
-        return HC_INIT * HC_FACT + (int) (o ^ (o >> 32));
+        return  (int) (o ^ (o >> 32));
     }
 
     public final static int hc(long[] oa) {
         int ret = HC_INIT;
         for (long b : oa) {
-            ret = ret * HC_FACT + hc(oa);
+            ret = ret * HC_FACT + hc(b);
         }
         return ret;
     }
 
     public final static int hc(double o) {
-        return HC_INIT * HC_FACT + hc(Double.doubleToLongBits(o));
+        return hc(Double.doubleToLongBits(o));
     }
 
     public final static int hc(double[] oa) {
         int ret = HC_INIT;
         for (double b : oa) {
-            ret = ret * HC_FACT + hc(oa);
+            ret = ret * HC_FACT + hc(b);
         }
         return ret;
     }
@@ -4689,6 +4699,10 @@ public class _ {
         }
     }
 
+    public static <T> T deserialize(byte[] ba, Class<T> c) {
+        return materialize(ba, c);
+    }
+
     public static <T> T materialize(byte[] ba) {
         E.NPE(ba);
         try {
@@ -4702,6 +4716,10 @@ public class _ {
         } catch (ClassNotFoundException e) {
             throw E.unexpected(e);
         }
+    }
+
+    public static <T> T deserialize(byte[] ba) {
+        return materialize(ba);
     }
 
     /**
@@ -5111,6 +5129,31 @@ public class _ {
         int n = new Random().nextInt(range.size()) + 1;
         return range.tail(n).head();
     }
+
+    private static ContextLocal.Factory clf;
+
+    static {
+        String clfCls = System.getProperty(ContextLocal.CONF_CONTEXT_LOCAL_FACTORY);
+        if (null == clfCls) {
+            clf = ContextLocal.Factory.Predefined.defaultFactory();
+        } else {
+            _.Option<ContextLocal.Factory> fact = _.safeNewInstance(clfCls);
+            if (fact.isDefined()) {
+                clf = fact.get();
+            } else {
+                clf = ContextLocal.Factory.Predefined.defaultFactory();
+            }
+        }
+
+    }
+
+    public static <T> ContextLocal<T> contextLocal() {
+        return clf.create();
+    }
+
+    public static <T> ContextLocal<T> contextLocal(ContextLocal.InitialValueProvider<T> ivp) {
+        return clf.create(ivp);
+    }
     // --- eof common utilities
 
     /**
@@ -5153,6 +5196,12 @@ public class _ {
     }
 
     public static final Conf conf = new Conf();
+
+    private static final int JAVA_VERSION; static {
+        String _JV = System.getProperty("java.specification.version");
+        int _pos = _JV.lastIndexOf('.');
+        JAVA_VERSION = Integer.parseInt(_JV.substring(_pos + 1));
+    }
 
     /**
      * The namespace to aggregate predefined core functions
@@ -6341,24 +6390,6 @@ public class _ {
         public static <T> F1<T, String> asString(Class<T> tClass) {
             return AS_STRING;
         }
-    }
-
-    public static void main(String[] args) {
-        None<String> none = none();
-        System.out.println(none);
-
-        F1<String, Integer> hc = _.F.hc();
-        System.out.println(hc.apply("ABC"));
-
-        F1<Integer, String> toString = _.F.asString();
-        System.out.println(toString.apply(33));
-
-        F0<String> f0 = _.F0;
-        System.out.println(f0.apply());
-
-        ListBuilder<String> lb = ListBuilder.create();
-        List<String> l = lb.toList();
-        System.out.println(l.size());
     }
 
 }

@@ -241,9 +241,10 @@ public class S {
 
     /**
      * Join a string by separator for n times
+     *
      * @param separator the separator
-     * @param s the string to be joined
-     * @param times the times the string to be joined
+     * @param s         the string to be joined
+     * @param times     the times the string to be joined
      * @return the result
      */
     public static String join(String separator, String s, int times) {
@@ -264,7 +265,8 @@ public class S {
 
     /**
      * Join a string for n times
-     * @param s the string to be joined
+     *
+     * @param s     the string to be joined
      * @param times the times the string to be joined
      * @return the result
      */
@@ -448,12 +450,94 @@ public class S {
         }
     }
 
-    public final static String capFirst(String s) {
+    public static String capFirst(String s) {
         if (null == s) {
             return "";
         }
         return ("" + s.charAt(0)).toUpperCase() + s.substring(1);
     }
+
+    public static String unsafeCapFirst(String s) {
+        if (null == s) {
+            return "";
+        }
+        try {
+            char[] buf = Unsafe.bufOf(s);
+            char[] newBuf = unsafeCapFirst(buf, 0, buf.length);
+            if (newBuf == buf) return s;
+            return Unsafe.sharedString(newBuf);
+        } catch (Exception e) {
+            return capFirst(s);
+        }
+    }
+
+    /**
+     * Convert the char at begin position in the buf to upper case.
+     *
+     * If char is already upper case, then it returns the buf directly, otherwise,
+     * it returns an new char array copy from begin to end
+     * @param buf
+     * @param begin start inclusive
+     * @param end stop exclusive
+     * @return
+     */
+    static char[] unsafeCapFirst(char[] buf, int begin, int end) {
+        int sz = end - begin;
+        if (begin == end) return buf;
+        char c = buf[begin];
+        if (Character.isUpperCase(c)) {
+            return buf;
+        }
+        char[] newBuf = new char[sz];
+        newBuf[begin] = Character.toUpperCase(c);
+        if (sz == begin + 1) return newBuf;
+        System.arraycopy(buf, begin + 1, newBuf, 1, sz - begin - 1);
+        return newBuf;
+    }
+
+    /**
+     * Returns the character (Unicode code point) at the specified
+     * index. The index refers to <code>char</code> values
+     * (Unicode code units) and ranges from <code>0</code> to
+     * length<code> - 1</code>.
+     * <p/>
+     * <p> If the <code>char</code> value specified at the given index
+     * is in the high-surrogate range, the following index is less
+     * than the length of this <code>String</code>, and the
+     * <code>char</code> value at the following index is in the
+     * low-surrogate range, then the supplementary code point
+     * corresponding to this surrogate pair is returned. Otherwise,
+     * the <code>char</code> value at the given index is returned.
+     *
+     * @param value the char buf
+     * @param index the index to the <code>char</code> values
+     * @return the code point value of the character at the
+     * <code>index</code>
+     * @throws IndexOutOfBoundsException if the <code>index</code>
+     *                                   argument is negative or not less than the length of this
+     *                                   string.
+     * @since 1.5
+     */
+    static final int codePointAt(char[] value, int index) {
+        if ((index < 0) || (index >= value.length)) {
+            throw new StringIndexOutOfBoundsException(index);
+        }
+        return codePointAtImpl(value, index, value.length);
+    }
+
+    private static int codePointAtImpl(char[] a, int index, int limit) {
+        char c1 = a[index++];
+        if (Character.isHighSurrogate(c1)) {
+            if (index < limit) {
+                char c2 = a[index];
+                if (Character.isLowSurrogate(c2)) {
+                    return Character.toCodePoint(c1, c2);
+                }
+            }
+        }
+        return c1;
+    }
+
 
     /**
      * equal modifier: specify {@link #equal(String, String, int) equal} comparison
@@ -706,14 +790,14 @@ public class S {
      */
     public static String random(int len) {
         final char[] chars = {'0', '1', '2', '3', '4',
-                '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
-                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-                'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                'u', 'v', 'w', 'x', 'y', 'z',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                'U', 'V', 'W', 'X', 'Y', 'Z',
-                '~', '!', '@'};
+                              '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
+                              'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                              'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                              'u', 'v', 'w', 'x', 'y', 'z',
+                              'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+                              'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                              'U', 'V', 'W', 'X', 'Y', 'Z',
+                              '~', '!', '@'};
 
         final int max = chars.length;
         Random r = new Random();
@@ -764,6 +848,74 @@ public class S {
 
     public static StringBuilder builder(int capacity) {
         return new StringBuilder(capacity);
+    }
+
+    /**
+     * Search for strings. Copied from jdk String.indexOf.
+     * The source is the character array being searched, and the target
+     * is the string being searched for.
+     *
+     * @param   source        the characters being searched.
+     * @param   sourceOffset  offset of the source string.
+     * @param   sourceCount   count of the source string.
+     * @param   target        the characters being searched for.
+     * @param   targetOffset  offset of the target string.
+     * @param   targetCount   count of the target string.
+     * @param   fromIndex     the index to begin searching from.
+     */
+    static int indexOf(char[] source, int sourceOffset, int sourceCount,
+            char[] target, int targetOffset, int targetCount,
+            int fromIndex) {
+        if (fromIndex >= sourceCount) {
+            return (targetCount == 0 ? sourceCount : -1);
+        }
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        if (targetCount == 0) {
+            return fromIndex;
+        }
+
+        char first = target[targetOffset];
+        int max = sourceOffset + (sourceCount - targetCount);
+
+        for (int i = sourceOffset + fromIndex; i <= max; i++) {
+            /* Look for first character. */
+            if (source[i] != first) {
+                while (++i <= max && source[i] != first);
+            }
+
+            /* Found first character, now look at the rest of v2 */
+            if (i <= max) {
+                int j = i + 1;
+                int end = j + targetCount - 1;
+                for (int k = targetOffset + 1; j < end && source[j]
+                        == target[k]; j++, k++);
+
+                if (j == end) {
+                    /* Found whole string. */
+                    return i - sourceOffset;
+                }
+            }
+        }
+        return -1;
+    }
+
+    static int count(char[] source, int sourceOffset, int sourceCount,
+                     char[] search, int searchOffset, int searchCount, boolean overlap) {
+        int n = 0;
+        while (true) {
+            int i = indexOf(source, sourceOffset, sourceCount, search, searchOffset, searchCount, 0);
+            if (i < 0) {
+                return n;
+            }
+            n++;
+            if (overlap) {
+                sourceOffset += 1;
+            } else {
+                sourceOffset += searchCount;
+            }
+        }
     }
 
     public static enum F {
