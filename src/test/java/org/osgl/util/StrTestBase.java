@@ -4,10 +4,6 @@ import org.junit.Test;
 
 public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
 
-    private void ceq(CharSequence c1, CharSequence c2) {
-        eq(c1.toString(), c2.toString());
-    }
-
     @Test
     public void subList() {
         ceq("ab", abc.subList(0, 2));
@@ -104,4 +100,5 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
         String s = "{abc{123}ii}";
         ceq("abc{123}ii", FastStr.of(s).afterFirst("{").beforeLast("}"));
     }
+
 }

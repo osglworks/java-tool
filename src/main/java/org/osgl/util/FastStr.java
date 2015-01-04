@@ -281,6 +281,9 @@ public class FastStr extends StrBase<FastStr>
         if (0 == sz) return of(list);
         int sz2 = list.size();
         if (0 == sz2) return this;
+        if (1 == sz2) {
+            return prepend(list.get(0));
+        }
         int newSz = sz + sz2;
         char[] newBuf = new char[newSz];
         for (int i = 0; i < sz2; ++i) {
@@ -292,6 +295,12 @@ public class FastStr extends StrBase<FastStr>
 
     @Override
     public FastStr prepend(Character character) {
+        // check if I can back begin pointer for one step
+        if (begin > 0) {
+            if (buf[begin - 1] == character) {
+                return FastStr.unsafeOf(buf, begin - 1, end);
+            }
+        }
         int sz = size();
         char[] newBuf = new char[++sz];
         newBuf[0] = character;
@@ -311,6 +320,9 @@ public class FastStr extends StrBase<FastStr>
         if (0 == sz) return of(s);
         int sz2 = s.length();
         if (0 == sz2) return this;
+        if (sz2 == 1) {
+            return prepend(s.charAt(0));
+        }
         int newSz = sz + sz2;
         char[] newBuf = new char[newSz];
         boolean done = false;

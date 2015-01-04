@@ -16,6 +16,10 @@ public abstract class StrTestUtil<T extends StrBase<T>> extends TestBase {
     private T _mid = copyOf(S.random(22));
     private T _long = copyOf(S.random(5000));
 
+    protected static void ceq(CharSequence c1, CharSequence c2) {
+        eq(c1.toString(), c2.toString());
+    }
+
     protected abstract T copyOf(String s);
 
     @Before
