@@ -5,6 +5,21 @@ import org.junit.Test;
 public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
 
     @Test
+    public void emptyToString() {
+        ceq("", empty.toString());
+    }
+
+    @Test
+    public void testEmptyAndBlank() {
+        T s = copyOf("");
+        yes(s.isEmpty());
+        s = copyOf("  ");
+        no(s.isEmpty());
+        yes(s.isBlank());
+        no(abc.isBlank());
+    }
+
+    @Test
     public void subList() {
         ceq("ab", abc.subList(0, 2));
         ceq("ab", abc2.subList(0, 2));
@@ -93,6 +108,11 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
         ceq("ab", abc2.beforeLast('c'));
         ceq("ab", abc2.beforeLast("c"));
         ceq("ab", abc2.beforeLast(abc2.substr(2, 3)));
+    }
+
+    @Test
+    public void testBeforeFirst() {
+        ceq("", abc.beforeFirst('d'));
     }
 
     @Test

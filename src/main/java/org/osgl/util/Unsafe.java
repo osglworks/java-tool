@@ -35,11 +35,17 @@ public enum Unsafe {
      */
     public static char[] bufOf(String s) {
         if (null == s) return EMPTY_CHAR_ARRAY;
+        if (s.length() < 256) return s.toCharArray();
         try {
             return (char[]) STRING_BUF.get(s);
         } catch (IllegalAccessException e) {
             throw E.unexpected(e);
         }
+    }
+
+    public static char[] bufOf(CharSequence chars) {
+        if (null == chars) return EMPTY_CHAR_ARRAY;
+        return FastStr.of(chars).unsafeChars();
     }
 
     /**
@@ -49,7 +55,10 @@ public enum Unsafe {
      * @param buf
      * @return
      */
-    public static String sharedString(char[] buf) {
+    public static String stringOf(char[] buf) {
+        if (buf.length < 256) {
+            return new String(buf);
+        }
         try {
             return SHARED_STR_CONSTRUCTOR.newInstance(buf, true);
         } catch (Exception e) {
@@ -110,7 +119,7 @@ public enum Unsafe {
         char[] buf = bufOf(s);
         char[] newBuf = toLowerCase(buf);
         if (buf == newBuf) return s; // not changed
-        return sharedString(newBuf);
+        return stringOf(newBuf);
     }
 
     /**
@@ -157,7 +166,7 @@ public enum Unsafe {
         char[] buf = bufOf(s);
         char[] newBuf = toUpperCase(buf);
         if (buf == newBuf) return s; // not changed
-        return sharedString(newBuf);
+        return stringOf(newBuf);
     }
 
 }

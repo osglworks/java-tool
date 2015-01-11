@@ -40,6 +40,11 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
+    public boolean isBlank() {
+        return isEmpty() || "".equals(s.trim());
+    }
+
+    @Override
     public Str subList(int fromIndex, int toIndex) {
         if (fromIndex == toIndex) {
             return EMPTY_STR;

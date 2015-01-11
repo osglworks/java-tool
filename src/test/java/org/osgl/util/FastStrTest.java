@@ -8,6 +8,11 @@ public class FastStrTest extends StrTestBase<FastStr> {
         return FastStr.of(s);
     }
 
+    @Override
+    protected FastStr empty() {
+        return FastStr.EMPTY_STR;
+    }
+
     @Test
     public void testRevertBeginPointer() {
         final String s = "http://abc.com:8038/xyz/123";
@@ -23,5 +28,14 @@ public class FastStrTest extends StrTestBase<FastStr> {
         fs0 = fs.prepend("/");
         assertSame(buf, Unsafe.bufOf(fs0));
         ceq(fs0, "/xyz/123");
+    }
+
+    @Test
+    public void testTrimOnBeginAndEndPointerSet() {
+        String s = "123 Hello world! 123";
+        int sz = s.length();
+        FastStr fs = FastStr.unsafeOf(s).substr(3, sz - 3);
+        ceq(" Hello world! ", fs);
+        ceq("Hello world!", fs.trim());
     }
 }

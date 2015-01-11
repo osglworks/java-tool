@@ -173,6 +173,10 @@ public class E {
     public static UnsupportedException tbd() {
         throw new UnsupportedException("to be implemented");
     }
+
+    public static UnsupportedException tbd(String info) {
+        return tbd();
+    }
     
     public static UnsupportedException unsupport() {
         throw new UnsupportedException();
@@ -230,7 +234,14 @@ public class E {
 
     public static void unsupportedIf(boolean test) {
         if (test) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedException();
+        }
+    }
+
+    public static void unsupportedIf(boolean test, String msg, Object ... args) {
+        if (test) {
+            msg = S.fmt(msg, args);
+            throw new UnsupportedException(msg);
         }
     }
 

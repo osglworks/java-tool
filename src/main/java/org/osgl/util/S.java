@@ -46,7 +46,17 @@ public class S {
      * @return
      */
     public static boolean isEmpty(String s) {
-        return (null == s || "".equals(s.trim()));
+        return empty(s);
+    }
+
+    /**
+     * Determine if a string is empty or null
+     *
+     * @param s
+     * @return true if the string is null or empty or all blanks
+     */
+    public static boolean empty(String s) {
+        return (null == s || "".equals(s));
     }
 
     /**
@@ -55,15 +65,25 @@ public class S {
      * @param s
      * @return true if the string is null or empty or all blanks
      */
-    public static boolean empty(String s) {
+    public static boolean blank(String s) {
         return (null == s || "".equals(s.trim()));
+    }
+
+    /**
+     * alias of {@link #blank(String)}
+     *
+     * @param s
+     * @return
+     */
+    public static boolean isBlank(String s) {
+        return blank(s);
     }
 
     /**
      * alias of {@link #notEmpty(String)}
      *
      * @param s
-     * @return true if <code>s</code> is <code>null</code> or empty or all in blank
+     * @return true if <code>s</code> is <code>null</code> or empty
      */
     public static boolean isNotEmpty(String s) {
         return notEmpty(s);
@@ -73,10 +93,30 @@ public class S {
      * Antonym of {@link #empty(String)}
      *
      * @param s
-     * @return true if <code>s</code> is not <code>null</code> or empty or all in blank
+     * @return true if <code>s</code> is not <code>null</code> or empty
      */
     public static boolean notEmpty(String s) {
         return !empty(s);
+    }
+
+    /**
+     * Antonym of {@link #blank(String)}
+     *
+     * @param s
+     * @return true if <code>s</code> is not <code>null</code> or empty or all in blank
+     */
+    public static boolean notBlank(String s) {
+        return !blank(s);
+    }
+
+    /**
+     * Antonym of {@link #blank(String)}
+     *
+     * @param s
+     * @return true if <code>s</code> is not <code>null</code> or empty or all in blank
+     */
+    public static boolean isNotBlank(String s) {
+        return !blank(s);
     }
 
     /**
@@ -98,6 +138,29 @@ public class S {
     public static boolean allEmpty(String... sa) {
         for (String s : sa) {
             if (!empty(s)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Alias of {@link #allBlank(String...)}
+     *
+     * @param sa
+     * @return true if all of the specified string is blank
+     */
+    public static boolean isAllBlank(String ... sa) {
+        return allBlank(sa);
+    }
+
+    /**
+     * Check if all of the specified string is {@link #blank(String) blank}
+     *
+     * @param sa
+     * @return true if all of the specified string is blank
+     */
+    public static boolean allBlank(String ... sa) {
+        for (String s : sa) {
+            if (!blank(s)) return false;
         }
         return true;
     }
@@ -126,6 +189,29 @@ public class S {
     }
 
     /**
+     * Alias of {@link #anyBlank(String...)}
+     *
+     * @param sa
+     * @return <code>true</code> if anyone of the specified string is blank
+     */
+    public static boolean isAnyBlank(String ... sa) {
+        return anyBlank(sa);
+    }
+
+    /**
+     * Check if anyone of the specified string is {@link #empty(String) blank}
+     *
+     * @param sa
+     * @return <code>true</code> if anyone of the specified string is blank
+     */
+    public static boolean anyBlank(String ... sa) {
+        for (String s : sa) {
+            if (blank(s)) return true;
+        }
+        return false;
+    }
+
+    /**
      * Antonym of {@link #anyEmpty(String...)}
      *
      * @param sa
@@ -133,6 +219,16 @@ public class S {
      */
     public static boolean noEmpty(String... sa) {
         return !anyEmpty(sa);
+    }
+
+    /**
+     * Antonym of {@link #anyBlank(String...)}
+     *
+     * @param sa
+     * @return <code>false</code> if anyone of the specified string is empty
+     */
+    public static boolean noBlank(String ... sa) {
+        return !anyBlank(sa);
     }
 
     /**
@@ -465,7 +561,7 @@ public class S {
             char[] buf = Unsafe.bufOf(s);
             char[] newBuf = unsafeCapFirst(buf, 0, buf.length);
             if (newBuf == buf) return s;
-            return Unsafe.sharedString(newBuf);
+            return Unsafe.stringOf(newBuf);
         } catch (Exception e) {
             return capFirst(s);
         }

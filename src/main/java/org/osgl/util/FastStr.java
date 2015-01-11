@@ -24,7 +24,12 @@ import java.util.regex.Pattern;
  */
 public class FastStr extends StrBase<FastStr>
         implements RandomAccess, CharSequence, java.io.Serializable, Comparable<FastStr> {
-    public static final FastStr EMPTY_STR = new FastStr();
+    public static final FastStr EMPTY_STR = new FastStr() {
+        @Override
+        public String toString() {
+            return "";
+        }
+    };
 
     @Override
     protected Class<FastStr> _impl() {
@@ -75,7 +80,20 @@ public class FastStr extends StrBase<FastStr>
 
     @Override
     public boolean isEmpty() {
-        return EMPTY_STR == this || length() == 0 || buf.length == 0;
+        return EMPTY_STR == this || buf.length == 0 || end <= begin ;
+    }
+
+    @Override
+    public boolean isBlank() {
+        if (isEmpty()) {
+            return true;
+        }
+        for (int i = begin; i < end; ++i) {
+            if (buf[i] != ' ') {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -414,7 +432,7 @@ public class FastStr extends StrBase<FastStr>
     public String toString() {
         char[] newBuf = chars();
         try {
-            return Unsafe.sharedString(newBuf);
+            return Unsafe.stringOf(newBuf);
         } catch (Exception e) {
             return new String(newBuf);
         }
@@ -519,7 +537,7 @@ public class FastStr extends StrBase<FastStr>
                 chars = new char[sz];
                 System.arraycopy(buf, 0, chars, 0, sz);
             }
-            return Unsafe.sharedString(chars).getBytes(Charset.forName("UTF-8"));
+            return Unsafe.stringOf(chars).getBytes(Charset.forName("UTF-8"));
         } catch (Exception e) {
             return toString().getBytes(Charset.forName("UTF-8"));
         }
@@ -1075,7 +1093,7 @@ public class FastStr extends StrBase<FastStr>
         while ((st < len) && (val[len - 1] <= ' ')) {
             len--;
         }
-        return ((st > begin) || (len < size())) ? substr(st, len) : this;
+        return ((st > begin) || (len < size())) ? new FastStr(value, st, len) : this;
     }
 
     /**
@@ -1196,7 +1214,7 @@ public class FastStr extends StrBase<FastStr>
     public FastStr urlEncode() {
         String s;
         try {
-            s = Unsafe.sharedString(buf);
+            s = Unsafe.stringOf(buf);
         } catch (Exception e) {
             s = toString();
         }
@@ -1206,7 +1224,7 @@ public class FastStr extends StrBase<FastStr>
     public FastStr decodeBASE64() {
         String s;
         try {
-            s = Unsafe.sharedString(buf);
+            s = Unsafe.stringOf(buf);
         } catch (Exception e) {
             s = toString();
         }
@@ -1216,7 +1234,7 @@ public class FastStr extends StrBase<FastStr>
     public FastStr encodeBASE64() {
         String s;
         try {
-            s = Unsafe.sharedString(buf);
+            s = Unsafe.stringOf(buf);
         } catch (Exception e) {
             s = toString();
         }
@@ -1440,6 +1458,10 @@ public class FastStr extends StrBase<FastStr>
         E.illegalArgumentIf(start < 0 || end > buf.length);
         if (end < start) return EMPTY_STR;
         return new FastStr(buf, start, end);
+    }
+
+    public static char[] bufOf(CharSequence chars) {
+        return FastStr.of(chars).chars();
     }
 
 }

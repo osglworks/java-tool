@@ -53,6 +53,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     public abstract FastStr toFastStr();
     public abstract boolean contentEquals(CharSequence chars);
     public abstract boolean contentEquals(T t);
+    public abstract boolean isBlank();
     public abstract int indexOf(int ch, int fromIndex);
     public abstract int indexOf(String s, int fromIndex);
     public abstract int indexOf(T s, int fromIndex);
