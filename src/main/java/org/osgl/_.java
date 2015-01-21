@@ -4567,6 +4567,14 @@ public class _ {
         }
     }
 
+    public final static <T> T newInstance(Class<T> c) {
+        try {
+            return c.newInstance();
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
     public final static <T, P1> T newInstance(Class<T> c, P1 p1) {
         try {
             Constructor[] ca = c.getConstructors();

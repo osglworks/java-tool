@@ -1,12 +1,5 @@
 package org.osgl.util;
 
-/**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 7/10/13
- * Time: 10:07 AM
- * To change this template use File | Settings | File Templates.
- */
 public class IntRange extends LazyRange<Integer> {
 
     public IntRange(int from, int to) {

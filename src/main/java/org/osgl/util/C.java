@@ -2608,8 +2608,12 @@ public enum C {
         return new ReadOnlyDelegatingList<T>(javaList);
     }
 
-    public static <T> C.List<T> singletonList(T t) {
+    public static <T> List<T> singletonList(T t) {
         return list(t);
+    }
+
+    public static <T> List<T> wrap(java.util.List<T> list) {
+        return DelegatingList.wrap(list);
     }
 
     public static <T> List<T> newSizedList(int size) {
