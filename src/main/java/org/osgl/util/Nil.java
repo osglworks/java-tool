@@ -642,7 +642,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         private static final long serialVersionUID = 2142813031316831861L;
 
         private EmptyList() {
-            super((T[])new Object[]{});
+            super((T[])new Object[0]);
         }
 
         private static final EmptyList<?> INSTANCE = new EmptyList();

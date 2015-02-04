@@ -2393,7 +2393,7 @@ public class _ {
      * @param <FROM> The type of the element the transformer function applied to
      * @param <TO>   The type of the result of transform of <code>&lt;FROM&gt;</code>
      */
-    public static abstract class Transformer<TO, FROM> extends _.F1<FROM, TO> {
+    public static abstract class Transformer<FROM, TO> extends _.F1<FROM, TO> {
         @Override
         public final TO apply(FROM from) {
             return transform(from);

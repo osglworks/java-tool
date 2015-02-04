@@ -34,4 +34,20 @@ public class FastStrTest extends StrTestBase<FastStr> {
         ceq(" Hello world! ", fs);
         ceq("Hello world!", fs.trim());
     }
+
+    @Test
+    public void testReplaceChar() {
+        String s = "C:\\Users\\luog.IKARI\\Google Drive\\XYZ Research\\Client Docs\\7. CRM templates.pdf";
+        FastStr fs = FastStr.unsafeOf(s);
+        fs = fs.replace('\\', '/');
+        eq(fs.toString(), "C:/Users/luog.IKARI/Google Drive/XYZ Research/Client Docs/7. CRM templates.pdf");
+    }
+
+    @Test
+    public void testReplaceCharInSubStr() {
+        String s = "C:\\Users\\luog.IKARI\\Google Drive\\XYZ Research\\Client Docs\\7. CRM templates.pdf";
+        FastStr fs = FastStr.unsafeOf(s).afterFirst("C:\\Users\\luog.IKARI\\Google Drive").beforeLast(".");
+        fs = fs.replace('\\', '/');
+        eq(fs.toString(), "/XYZ Research/Client Docs/7. CRM templates");
+    }
 }

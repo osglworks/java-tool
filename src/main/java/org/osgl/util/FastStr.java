@@ -946,25 +946,25 @@ public class FastStr extends StrBase<FastStr>
     public FastStr replace(char oldChar, char newChar) {
         if (oldChar != newChar) {
             char[] val = this.buf; /* avoid getfield opcode */
-            int len = val.length;
-            int i = -1;
+            int len = length();
+            int i = begin - 1;
 
-            while (++i < len) {
+            while (++i < end) {
                 if (val[i] == oldChar) {
                     break;
                 }
             }
-            if (i < len) {
+            if (i < end) {
                 char buf[] = new char[len];
-                for (int j = 0; j < i; j++) {
-                    buf[j] = val[j];
+                for (int j = begin; j < i; j++) {
+                    buf[j - begin] = val[j];
                 }
-                while (i < len) {
+                while (i < end) {
                     char c = val[i];
-                    buf[i] = (c == oldChar) ? newChar : c;
+                    buf[i - begin] = (c == oldChar) ? newChar : c;
                     i++;
                 }
-                return new FastStr(buf, begin, end);
+                return new FastStr(buf, 0, len);
             }
         }
         return this;

@@ -174,8 +174,8 @@ public class E {
         throw new UnsupportedException("to be implemented");
     }
 
-    public static UnsupportedException tbd(String info) {
-        return tbd();
+    public static UnsupportedException tbd(String feature) {
+        throw new UnsupportedException("%s to be implemented", feature);
     }
     
     public static UnsupportedException unsupport() {
