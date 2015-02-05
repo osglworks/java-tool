@@ -11,7 +11,7 @@ import java.util.Iterator;
  * Time: 6:13 PM
  * To change this template use File | Settings | File Templates.
  */
-enum Iterators {
+public enum Iterators {
     ;
     public static <T> Iterator<T> filterIndex(Iterator<? extends T> itr, _.Function<Integer, Boolean> predicate) {
         return new IndexFilteredIterator<T>(itr, predicate);
