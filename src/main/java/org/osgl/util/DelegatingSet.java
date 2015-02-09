@@ -8,11 +8,7 @@ class DelegatingSet<T> extends SetBase<T> implements C.Set<T>, Serializable {
     protected Set<T> data;
 
     DelegatingSet(Collection<? extends T> c) {
-        if (c instanceof Set) {
-            data = (Set)c;
-        } else {
-            data = new HashSet<T>(c);
-        }
+        data = new HashSet<T>(c);
     }
 
     DelegatingSet() {

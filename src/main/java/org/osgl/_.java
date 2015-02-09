@@ -3140,7 +3140,7 @@ public class _ {
         }
 
         @Override
-        public <R> C.List<R> map(Function<? super T, ? extends R> mapper) {
+        public <R> C.ListOrSet<R> map(Function<? super T, ? extends R> mapper) {
             return new Var<R>(mapper.apply(v));
         }
 
@@ -3386,27 +3386,43 @@ public class _ {
         }
 
         @Override
-        public C.List<T> without(Collection<? super T> col) {
+        public C.ListOrSet<T> without(Collection<? super T> col) {
             if (col.contains(v)) {
-                return C.list();
+                return C.empty();
             }
             return this;
         }
 
         @Override
-        public C.List<T> without(T element) {
-            if (_.eq(v, element)) return C.list();
+        public C.ListOrSet<T> without(T element) {
+            if (_.eq(v, element)) return C.empty();
             return this;
         }
 
         @Override
-        public C.List<T> without(T element, T... elements) {
-            if (_.eq(v, element)) return C.list();
+        public C.ListOrSet<T> without(T element, T... elements) {
+            if (_.eq(v, element)) return C.empty();
             int id = search(v, elements);
             if (-1 == id) return this;
-            return C.list();
+            return C.empty();
         }
 
+        @Override
+        public C.Set<T> onlyIn(Collection<? extends T> col) {
+            C.Set<T> set = C.newSet(col);
+            if (col.contains(v)) {
+                set.remove(v);
+            }
+            return set;
+        }
+
+        @Override
+        public C.Set<T> withIn(Collection<T> col) {
+            if (col.contains(v)) {
+                return this;
+            }
+            return C.empty();
+        }
 
         @Override
         public C.List<T> acceptRight(Function<? super T, ?> visitor) {
@@ -3467,6 +3483,11 @@ public class _ {
 
         public Var<T> set(T value) {
             v = value;
+            return this;
+        }
+
+        public Var<T> set(Var<T> var) {
+            v = var.v;
             return this;
         }
 
@@ -4495,6 +4516,11 @@ public class _ {
         return (T) o;
     }
 
+    public static <T> T notNull(T o) {
+        E.NPE(o);
+        return o;
+    }
+
     /**
      * Set an object field value using reflection.
      *
@@ -4530,9 +4556,25 @@ public class _ {
         }
     }
 
+    public static <T> Class<T> classForName(String className, ClassLoader classLoader) {
+        try {
+            return (Class<T>) Class.forName(className, true, classLoader);
+        } catch (Exception e) {
+            throw new UnexpectedException(e);
+        }
+    }
+
     public static <T> Option<Class<T>> safeClassForName(String className) {
         try {
             return _.some((Class<T>) Class.forName(className));
+        } catch (Exception e) {
+            return _.none();
+        }
+    }
+
+    public static <T> Option<Class<T>> safeClassForName(String className, ClassLoader classLoader) {
+        try {
+            return _.some((Class<T>) Class.forName(className, true, classLoader));
         } catch (Exception e) {
             return _.none();
         }
@@ -5205,7 +5247,7 @@ public class _ {
 
     public static final Conf conf = new Conf();
 
-    private static final int JAVA_VERSION; static {
+    public static final int JAVA_VERSION; static {
         String _JV = System.getProperty("java.specification.version");
         int _pos = _JV.lastIndexOf('.');
         JAVA_VERSION = Integer.parseInt(_JV.substring(_pos + 1));

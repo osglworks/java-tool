@@ -29,7 +29,7 @@ public enum Iterators {
         return new FilteredIterator<T>(itr, predicate, FilteredIterator.Type.UNTIL);
     }
 
-    public static <T> Iterator<T> composite(Iterator<? extends T> i1, Iterator<? extends  > i2) {
+    public static <T> Iterator<T> composite(Iterator<? extends T> i1, Iterator<? extends T> i2) {
         return new CompositeIterator<T>(i1, i2);
     }
 

@@ -1,5 +1,7 @@
 package org.osgl.util;
 
+import org.osgl._;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
@@ -9,7 +11,7 @@ public enum Unsafe {
     private static final char[] EMPTY_CHAR_ARRAY = new char[]{};
     private static Field STRING_BUF;
     private static Field FASTSTR_BUF;
-    private static Constructor<String> SHARED_STR_CONSTRUCTOR;
+    private static Constructor<String> SHARED_STR_CONSTRUCTOR = null;
 
     static {
         try {
@@ -18,8 +20,10 @@ public enum Unsafe {
             FASTSTR_BUF = FastStr.class.getDeclaredField("buf");
             FASTSTR_BUF.setAccessible(true);
             char[] ca = new char[0];
-            SHARED_STR_CONSTRUCTOR = String.class.getDeclaredConstructor(ca.getClass(), Boolean.TYPE);
-            SHARED_STR_CONSTRUCTOR.setAccessible(true);
+            if (_.JAVA_VERSION >= 7) {
+                SHARED_STR_CONSTRUCTOR = String.class.getDeclaredConstructor(ca.getClass(), Boolean.TYPE);
+                SHARED_STR_CONSTRUCTOR.setAccessible(true);
+            }
         } catch (NoSuchFieldException e) {
             throw E.unexpected(e);
         } catch (NoSuchMethodException e) {
@@ -56,7 +60,7 @@ public enum Unsafe {
      * @return
      */
     public static String stringOf(char[] buf) {
-        if (buf.length < 256) {
+        if (buf.length < 256 || null == SHARED_STR_CONSTRUCTOR) {
             return new String(buf);
         }
         try {

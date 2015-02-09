@@ -8,6 +8,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Character.*;
+
 /**
  * FastStr implements the same contract of Str with the a char array.
  * <p/>
@@ -1277,8 +1279,8 @@ public class FastStr extends StrBase<FastStr>
     private int indexOfSupplementary(int ch, int fromIndex) {
         if (Character.isValidCodePoint(ch)) {
             final char[] buf = this.buf;
-            final char hi = Character.highSurrogate(ch);
-            final char lo = Character.lowSurrogate(ch);
+            final char hi = highSurrogate(ch);
+            final char lo = lowSurrogate(ch);
             final int max = size() - 1;
             for (int i = fromIndex; i < max; i++) {
                 if (buf[toInternalId(i)] == hi && buf[toInternalId(i + 1)] == lo) {
@@ -1292,8 +1294,8 @@ public class FastStr extends StrBase<FastStr>
     private int lastIndexOfSupplementary(int ch, int fromIndex) {
         if (Character.isValidCodePoint(ch)) {
             final char[] buf = this.buf;
-            char hi = Character.highSurrogate(ch);
-            char lo = Character.lowSurrogate(ch);
+            char hi = highSurrogate(ch);
+            char lo = lowSurrogate(ch);
             int i = Math.min(fromIndex, buf.length - 2);
             for (; i >= 0; i--) {
                 if (buf[toInternalId(i)] == hi && buf[toInternalId(i + 1)] == lo) {
@@ -1462,6 +1464,16 @@ public class FastStr extends StrBase<FastStr>
 
     public static char[] bufOf(CharSequence chars) {
         return FastStr.of(chars).chars();
+    }
+
+    private static char highSurrogate(int codePoint) {
+        return (char) ((codePoint >>> 10)
+                + (MIN_HIGH_SURROGATE - (MIN_SUPPLEMENTARY_CODE_POINT >>> 10)));
+
+    }
+
+    private static char lowSurrogate(int codePoint) {
+        return (char) ((codePoint & 0x3ff) + MIN_LOW_SURROGATE);
     }
 
 }

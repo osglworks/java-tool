@@ -2099,6 +2099,57 @@ public enum C {
 
         @Override
         Set<T> forEach(_.Function<? super T, ?> visitor);
+
+        /**
+         * Returns a set contains all elements in the {@code col}
+         * collection specified but not in this set
+         *
+         * @param col the collection in which elements should
+         *            be included from the result set
+         * @return a set contains elements only in the col
+         */
+        Set<T> onlyIn(Collection<? extends T> col);
+
+        /**
+         * Returns a set contains only elements in both {@code col}
+         * collection specified and this set
+         *
+         * @param col the collection in which elements should
+         *            be included from the result set
+         * @return a set contains elements in both col and this set
+         */
+        Set<T> withIn(Collection<T> col);
+
+
+        /**
+         * Returns a set contains all elements in this set and not in
+         * the {@code col} collection specified
+         *
+         * @param col the collection in which elements should
+         *            be excluded from the result set
+         * @return a set contains elements only in this set
+         */
+        Set<T> without(Collection<? super T> col);
+
+        /**
+         * Returns a set contains all elements in the set except the
+         * one specified
+         *
+         * @param element the element that should not be in the resulting set
+         * @return a set without the element specified
+         */
+        Set<T> without(T element);
+
+        /**
+         * Returns a set contains all elements in the set except the
+         * ones specified
+         *
+         * @param element  the element that should not be in the resulting set
+         * @param elements the array contains elements that should not be in the resulting set
+         * @return a set without the element specified
+         */
+        Set<T> without(T element, T... elements);
+
     }
 
     public static interface ListOrSet<T> extends List<T>, Set<T> {
@@ -2125,6 +2176,19 @@ public enum C {
 
         @Override
         ListOrSet<T> filter(_.Function<? super T, Boolean> predicate);
+
+        @Override
+        ListOrSet<T> without(Collection<? super T> col);
+
+        @Override
+        ListOrSet<T> without(T element);
+
+        @Override
+        ListOrSet<T> without(T element, T... elements);
+
+        @Override
+        <R> ListOrSet<R> map(_.Function<? super T, ? extends R> mapper);
+
     }
 
     /**
@@ -2733,6 +2797,10 @@ public enum C {
 
     public static <T> Set<T> newSet() {
         return new DelegatingSet<T>();
+    }
+
+    public static <T> Set<T> newSet(Collection<? extends T> col) {
+        return new DelegatingSet<T>(col);
     }
 
     public static <K, V> java.util.Map<K, V> map(Object... args) {

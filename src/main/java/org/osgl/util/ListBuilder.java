@@ -443,4 +443,8 @@ implements RandomAccess, Serializable {
     public static <T> ListBuilder<T> create() {
         return new ListBuilder<T>();
     }
+
+    public static <T> ListBuilder<T> create(int initialCapacity) {
+        return new ListBuilder<T>(initialCapacity);
+    }
 }

@@ -25,6 +25,16 @@
 - S.empty(String) now do not trim the string being passed in,
 - Added S.blank(String) with the same semantic of previous S.empty(String)
 - Fixed FastStr trim issue when begin, end pointer is not at default position
+- FastStr now works with Java 6
+- Unsafe now works with Java 6
+- C enhancements:
+** Set: add withIn, without, onlyIn for set operations
+** added new set() method allows passing an collection to prepopulate the set
+- OSGL updates:
+** new classForName method allows passing class loader to load the class
+- Iterators now is public class
+- ListBuilder's new factor method allows passing initial capacity parameter
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 

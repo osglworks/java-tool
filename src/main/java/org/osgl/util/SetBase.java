@@ -4,11 +4,9 @@ import org.osgl._;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.AbstractSet;
+import java.util.Collection;
 import java.util.EnumSet;
 
-/**
- * Created by luog on 1/02/14.
- */
 public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
 
     @Override
@@ -63,26 +61,23 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     }
 
     @Override
-    public <R> C.Traversable<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.Set<R> map(_.Function<? super T, ? extends R> mapper) {
         boolean immutable = isImmutable();
         int sz = size();
-        if (isLazy()) {
-            return MappedTrav.of(this, mapper);
-        }
         if (immutable) {
             if (0 == sz) {
                 return Nil.set();
             }
             ListBuilder<R> lb = new ListBuilder<R>(sz);
             forEach(_.f1(mapper).andThen(C.F.addTo(lb)));
-            return lb.toList();
+            return C.set(lb.toList());
         } else {
             if (0 == sz) {
-                return C.newList();
+                return C.newSet();
             }
             C.List<R> l = C.newSizedList(sz);
             forEach(_.f1(mapper).andThen(C.F.addTo(l)));
-            return l;
+            return C.set(l);
         }
     }
 
@@ -163,6 +158,46 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     @Override
     public SetBase<T> each(_.Function<? super T, ?> visitor) {
         return forEach(visitor);
+    }
+
+    @Override
+    public C.Set<T> onlyIn(Collection<? extends T> col) {
+        C.Set<T> others = C.newSet(col);
+        others.removeAll(this);
+        if (isImmutable()) {
+            return ImmutableSet.of(others);
+        }
+        return others;
+    }
+
+    @Override
+    public C.Set<T> withIn(Collection<T> col) {
+        C.Set<T> others = C.newSet(col);
+        others.retainAll(this);
+        if (isImmutable()) {
+            return ImmutableSet.of(others);
+        }
+        return others;
+    }
+
+    @Override
+    public C.Set<T> without(Collection<? super T> col) {
+        C.Set<T> copy = C.newSet(this);
+        copy.removeAll(col);
+        if (isImmutable()) {
+            return ImmutableSet.of(copy);
+        }
+        return copy;
+    }
+
+    @Override
+    public C.Set<T> without(T element) {
+        return null;
+    }
+
+    @Override
+    public C.Set<T> without(T element, T... elements) {
+        return null;
     }
 
     // --- Featured methods

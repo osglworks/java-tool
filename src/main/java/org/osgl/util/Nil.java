@@ -30,51 +30,15 @@ import java.util.*;
  */
 abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Collection<T>, Serializable {
 
-    private static final long serialVersionUID = -5058901899659394002L;
-
     public static final EmptySequence SEQUENCE = EmptySequence.INSTANCE;
-
-    @SuppressWarnings("unchecked")
-    public static <T> EmptySequence<T> seq() {
-        return (EmptySequence<T>) SEQUENCE;
-    }
-
     public static final EmptyReversibleSequence REVERSIBLE_SEQUENCE = EmptyReversibleSequence.INSTANCE;
-
-    @SuppressWarnings("unchecked")
-    public static <T> EmptyReversibleSequence<T> rseq() {
-        return (EmptyReversibleSequence<T>) REVERSIBLE_SEQUENCE;
-    }
-
     public static final EmptyRange RANGE = EmptyRange.INSTANCE;
-
-    @SuppressWarnings("unchecked")
-    public static <T> EmptyRange<T> range() {
-        return (EmptyRange<T>) RANGE;
-    }
-
     public static final EmptyList LIST = EmptyList.INSTANCE;
-
-    @SuppressWarnings("unchecked")
-    public static <T> EmptyList<T> list() {
-        return (EmptyList<T>) EmptyList.INSTANCE;
-    }
-
+    public static final Empty EMPTY = Empty.INSTANCE;
+    private static final long serialVersionUID = -5058901899659394002L;
     public static EmptySet SET = EmptySet.INSTANCE;
 
-    @SuppressWarnings("unchecked")
-    public static <T> EmptySet<T> set() {
-        return (EmptySet<T>) EmptySet.INSTANCE;
-    }
-
-    public static final Empty EMPTY = Empty.INSTANCE;
-
-    @SuppressWarnings("unchecked")
-    public static <T> Empty<T> empty() {
-        return (Empty<T>) Empty.INSTANCE;
-    }
-
-//    public static final EmptySet SET = EmptySet.INSTANCE;
+    //    public static final EmptySet SET = EmptySet.INSTANCE;
 //
 //    @SuppressWarnings("unchecked")
 //    public static <T> EmptySet<T> set() {
@@ -89,6 +53,36 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 //    }
 //
     private Nil() {
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> EmptySequence<T> seq() {
+        return (EmptySequence<T>) SEQUENCE;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> EmptyReversibleSequence<T> rseq() {
+        return (EmptyReversibleSequence<T>) REVERSIBLE_SEQUENCE;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> EmptyRange<T> range() {
+        return (EmptyRange<T>) RANGE;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> EmptyList<T> list() {
+        return (EmptyList<T>) EmptyList.INSTANCE;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> EmptySet<T> set() {
+        return (EmptySet<T>) EmptySet.INSTANCE;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Empty<T> empty() {
+        return (Empty<T>) Empty.INSTANCE;
     }
 
     @Override
@@ -371,7 +365,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
     }
 
     static class EmptyReversibleSequence<T>
-    extends EmptySequence<T> implements C.ReversibleSequence<T> {
+            extends EmptySequence<T> implements C.ReversibleSequence<T> {
 
         private static final EmptyReversibleSequence INSTANCE = new EmptyReversibleSequence();
 
@@ -382,22 +376,22 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public C.ReversibleSequence<T> lazy() {
-            return (C.ReversibleSequence<T>)super.lazy();
+            return (C.ReversibleSequence<T>) super.lazy();
         }
 
         @Override
         public C.ReversibleSequence<T> eager() {
-            return (C.ReversibleSequence<T>)super.eager();
+            return (C.ReversibleSequence<T>) super.eager();
         }
 
         @Override
         public C.ReversibleSequence<T> parallel() {
-            return (C.ReversibleSequence<T>)super.parallel();
+            return (C.ReversibleSequence<T>) super.parallel();
         }
 
         @Override
         public C.ReversibleSequence<T> sequential() {
-            return (C.ReversibleSequence<T>)super.sequential();
+            return (C.ReversibleSequence<T>) super.sequential();
         }
 
         @Override
@@ -533,7 +527,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public <T2> C.ReversibleSequence<_.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, final T def1, final T2 def2) {
-            return rseq.map(new _.F1<T2, _.T2<T, T2>>(){
+            return rseq.map(new _.F1<T2, _.T2<T, T2>>() {
                 @Override
                 public _.T2<T, T2> apply(T2 t) throws NotAppliedException, _.Break {
                     return _.T2(def1, t);
@@ -568,7 +562,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         @Override
         @SuppressWarnings("unchecked")
         public Comparator<T> order() {
-            return (Comparator<T>)_.F.NATURAL_ORDER;
+            return (Comparator<T>) _.F.NATURAL_ORDER;
         }
 
         @Override
@@ -640,12 +634,11 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
     static class EmptyList<T> extends ImmutableList<T> implements C.List<T>, RandomAccess {
 
         private static final long serialVersionUID = 2142813031316831861L;
+        private static final EmptyList<?> INSTANCE = new EmptyList();
 
         private EmptyList() {
-            super((T[])new Object[0]);
+            super((T[]) new Object[0]);
         }
-
-        private static final EmptyList<?> INSTANCE = new EmptyList();
 
         @SuppressWarnings("unchecked")
         protected <T1> EmptyList<T1> singleton() {
@@ -666,12 +659,11 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
     static class EmptySet<T> extends ImmutableSet<T> implements C.Set<T>, Serializable {
 
         private static final long serialVersionUID = 4142843931316831861L;
+        private static final EmptySet<?> INSTANCE = new EmptySet();
 
         private EmptySet() {
             super(Collections.EMPTY_SET);
         }
-
-        private static final EmptySet<?> INSTANCE = new EmptySet();
 
         @SuppressWarnings("unchecked")
         protected EmptySet<T> singleton() {
@@ -701,6 +693,31 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         @Override
         public EmptySet<T> accept(_.Function<? super T, ?> visitor) {
             return this;
+        }
+
+        @Override
+        public C.Set<T> onlyIn(Collection<? extends T> col) {
+            return C.set(col);
+        }
+
+        @Override
+        public C.Set<T> withIn(Collection<T> col) {
+            return this;
+        }
+
+        @Override
+        public C.Set<T> without(Collection<? super T> col) {
+            return this;
+        }
+
+        @Override
+        public C.Set<T> without(T element) {
+            return null;
+        }
+
+        @Override
+        public C.Set<T> without(T element, T... elements) {
+            return null;
         }
 
         // Preserves singleton property
@@ -753,6 +770,40 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
             return this;
         }
 
+        @Override
+        public Empty<T> without(Collection<? super T> col) {
+            return this;
+        }
+
+        @Override
+        public Empty<T> without(T element) {
+            return this;
+        }
+
+        @Override
+        public Empty<T> without(T element, T... elements) {
+            return this;
+        }
+
+        @Override
+        public Empty<T> onlyIn(Collection<? extends T> col) {
+            return this;
+        }
+
+        @Override
+        public Empty<T> withIn(Collection<T> col) {
+            return this;
+        }
+
+        @Override
+        public <R> Empty<R> map(_.Function<? super T, ? extends R> mapper) {
+            return (Empty<R>) this;
+        }
+
+        @Override
+        public <R> Empty<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+            return (Empty<R>) this;
+        }
     }
 //
 //    static class EmptySortedSet<T> extends EmptyReversibleSequence<T> implements C.SortedSet<T>, Serializable {
