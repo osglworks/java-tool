@@ -21,6 +21,8 @@ package org.osgl.util;
 
 import org.osgl._;
 import org.osgl.exception.NotAppliedException;
+import org.osgl.storage.ISObject;
+import org.osgl.storage.impl.SObject;
 
 import java.io.*;
 import java.net.URL;
@@ -512,6 +514,25 @@ public class IO {
                 throw E.ioException(e);
             }
         }
+    }
+
+    public static ISObject zip(ISObject... objects) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        try {
+            for (ISObject obj: objects) {
+                ZipEntry entry = new ZipEntry(obj.getAttribute(SObject.ATTR_FILE_NAME));
+                InputStream is = obj.asInputStream();
+                zos.putNextEntry(entry);
+                copy(is, zos, false);
+                zos.closeEntry();
+            }
+        } catch (IOException e) {
+            throw E.ioException(e);
+        } finally {
+            close(zos);
+        }
+        return SObject.of(baos.toByteArray());
     }
 
     public static File zip(File... files) {

@@ -3549,8 +3549,11 @@ public class _ {
 
         @Override
         public <T> T[] toArray(T[] a) {
-            T[] ta = newArray(a, 1);
+            T[] ta = (a.length > 0) ? a : newArray(a, 1);
             ta[0] = (T) v;
+            if (ta.length > 1) {
+                ta[1] = null;
+            }
             return ta;
         }
 
