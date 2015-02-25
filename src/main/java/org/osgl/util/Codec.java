@@ -143,14 +143,4 @@ public class Codec {
         }
     }
 
-    public static void main(String[] args) {
-        String s = "�e�d঻!i\u00071��\u001A��";
-        byte[] ba = s.getBytes();
-
-        String hex = byteToHexString(ba);
-        String s1 = new String(hexStringToByte(hex));
-
-        System.out.println(String.format("%s\n%s\n%s", s, hex, s1));
-    }
-
 }

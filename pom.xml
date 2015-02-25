@@ -187,6 +187,7 @@
             <version>2.9</version>
             <configuration>
               <stylesheetfile>src/etc/javadoc.css</stylesheetfile>
+              <excludePackageNames>org.osgl:org.osgl.util</excludePackageNames>
             </configuration>
             <executions>
               <execution>
