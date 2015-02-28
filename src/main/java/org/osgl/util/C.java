@@ -1552,9 +1552,17 @@ public enum C {
          * this method returns a {@link #copy() copy} of this list without any order
          * changes</p>
          *
-         * @return an ordered copy of this list
+         * @return a sorted copy of this list
          */
         List<T> sort();
+
+        /**
+         * Return a list that contains unique set of this list and keep the orders. If
+         * this list doesn't have duplicated items, it could return this list directly
+         * or choose to return an new copy of this list depends on the sub class
+         * implementation
+         */
+        List<T> unique();
 
         /**
          * Returns a sorted copy of this list. The order is specified by the comparator
@@ -2665,8 +2673,12 @@ public enum C {
     public static <T> List<T> list(java.util.List<T> javaList) {
         if (javaList instanceof List) {
             List<T> list = _.cast(javaList);
+
             if (list.is(Feature.IMMUTABLE)) {
                 return list;
+            } else {
+                list = list.sort();
+                return new ReadOnlyDelegatingList<T>(list);
             }
         }
         return new ReadOnlyDelegatingList<T>(javaList);

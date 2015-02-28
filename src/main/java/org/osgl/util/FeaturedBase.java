@@ -40,12 +40,12 @@ public abstract class FeaturedBase implements C.Featured {
     }
 
     protected FeaturedBase setFeature(C.Feature feature) {
-        features_().add(feature);
+        features_.add(feature);
         return this;
     }
 
     protected FeaturedBase unsetFeature(C.Feature feature) {
-        features_().remove(feature);
+        features_.remove(feature);
         return this;
     }
 }

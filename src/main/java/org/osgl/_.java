@@ -289,6 +289,18 @@ public class _ {
         public abstract T create();
     }
 
+    public static <T> Factory<T> factory(final Func0<T> func) {
+        if (func instanceof Factory) {
+            return (Factory) func;
+        }
+        return new Factory<T>() {
+            @Override
+            public T create() {
+                return func.apply();
+            }
+        };
+    }
+
     private static class DumbF0 extends F0<Object> implements Serializable {
         private static final long serialVersionUID = 2856835860950L;
 
@@ -2166,27 +2178,6 @@ public class _ {
      */
     @SuppressWarnings("unchecked")
     public static <T> Visitor<T> visitor(final Function<? super T, ?> f) {
-        if (f instanceof Visitor) {
-            return (Visitor<T>) f;
-        }
-        return new Visitor<T>() {
-            @Override
-            public void visit(T t) throws Break {
-                f.apply(t);
-            }
-        };
-    }
-
-    /**
-     * Convert a general {@link Function} to {@link Visitor}, the return value of the function when applied
-     * to the param is ignored
-     *
-     * @param f   A {@link Function} function which return value is ignored
-     * @param <T> the type of the param the visitor function visit
-     * @return A {@link Visitor} type function
-     * @since 0.2
-     */
-    public static <T> Visitor<T> generalVisitor(final Function<? super T, ?> f) {
         if (f instanceof Visitor) {
             return (Visitor<T>) f;
         }

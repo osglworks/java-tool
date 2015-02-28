@@ -5,14 +5,11 @@ import org.osgl.exception.NotAppliedException;
 
 import java.util.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 30/10/13
- * Time: 8:53 PM
- * To change this template use File | Settings | File Templates.
- */
+import static org.osgl.util.C.Feature.SORTED;
+
 public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
+
+    private boolean sorted = false;
 
     // utilities
     protected final boolean isLazy() {
@@ -112,7 +109,8 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
        	    i.next();
        	    i.set((T)a[j]);
        	}
-        ((ListBase)l).setFeature(C.Feature.SORTED);
+        ((ListBase)l).setFeature(SORTED);
+        sorted = true;
         return l;
     }
 
@@ -120,8 +118,27 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     public C.List<T> sort(Comparator<? super T> comparator) {
         C.List<T> l = copy();
         Collections.sort(l, comparator);
-        ((ListBase)l).setFeature(C.Feature.SORTED);
+        ((ListBase)l).setFeature(SORTED);
         return l;
+    }
+
+    @Override
+    public C.List<T> unique() {
+        Set<String> set = C.newSet();
+        C.List<T> retList = null;
+        int i = 0;
+        for (T t: this) {
+            i++;
+            if (set.contains(t)) {
+                if (null == retList) {
+                    retList = C.newSizedList(size());
+                    retList.addAll(subList(0, i - 1));
+                }
+            } else if (null != retList) {
+                retList.add(t);
+            }
+        }
+        return null == retList ? this : retList;
     }
 
     @Override
@@ -136,6 +153,21 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
     }
 
+    @Override
+    public boolean add(T t) {
+        boolean b = super.add(t);
+        if (b) {
+            sorted = false;
+        }
+        return b;
+    }
+
+    @Override
+    public void add(int index, T element) {
+        super.add(index, element);
+        sorted = false;
+    }
+
     public boolean addAll(Iterable<? extends T> iterable) {
         boolean modified = false;
         Iterator<? extends T> e = iterable.iterator();
@@ -143,6 +175,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             if (add(e.next()))
                 modified = true;
         }
+        sorted = !modified;
         return modified;
     }
 
