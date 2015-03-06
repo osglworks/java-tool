@@ -56,7 +56,7 @@ public class S {
      * @return true if the string is null or empty (no spaces)
      */
     public static boolean empty(String s) {
-        return (null == s || "".equals(s.trim()));
+        return (null == s || "".equals(s));
     }
 
     /**
@@ -66,7 +66,7 @@ public class S {
      * @return true if the string is null or empty or all blanks
      */
     public static boolean blank(String s) {
-        return (null == s || "".equals(s));
+        return (null == s || "".equals(s.trim()));
     }
 
     /**

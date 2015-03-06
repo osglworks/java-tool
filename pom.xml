@@ -42,9 +42,6 @@
 - Add "unique" to "C.List"
 - remove "generalVisitor(final Function<? super T, ?> f)" from "_". 
   "_.visitor(final Function<? super T, ?> f)" should be used instead
-
-0.4.3-SNAPSHOT
-- switch the semantic of S.empty() and S.blank() to make it respect the method name
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -54,7 +51,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>0.4.3-SNAPSHOT</version>
+  <version>0.4.2-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
