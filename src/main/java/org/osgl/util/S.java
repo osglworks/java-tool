@@ -53,10 +53,10 @@ public class S {
      * Determine if a string is empty or null
      *
      * @param s
-     * @return true if the string is null or empty or all blanks
+     * @return true if the string is null or empty (no spaces)
      */
     public static boolean empty(String s) {
-        return (null == s || "".equals(s));
+        return (null == s || "".equals(s.trim()));
     }
 
     /**
@@ -66,7 +66,7 @@ public class S {
      * @return true if the string is null or empty or all blanks
      */
     public static boolean blank(String s) {
-        return (null == s || "".equals(s.trim()));
+        return (null == s || "".equals(s));
     }
 
     /**
