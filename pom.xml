@@ -49,6 +49,7 @@
 0.4.4-SNAPSHOT
 - C.list(List) shouldn't sort the list
 - Add S.F.IS_BLANK function
+- Add S.F.NULL_SAFE function
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">

@@ -1053,6 +1053,13 @@ public class S {
             }
         };
 
+        public static _.Transformer<String, String> NULL_SAFE = new _.Transformer<String, String>() {
+            @Override
+            public String transform(String s) {
+                return null == s ? "" : s;
+            }
+        };
+
         public static _.F1<String, String> TRIM = new _.F1<String, String>() {
             @Override
             public String apply(String s) throws NotAppliedException, _.Break {
