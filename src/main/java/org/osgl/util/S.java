@@ -1074,6 +1074,13 @@ public class S {
             }
         };
 
+        public static _.Predicate<String> IS_BLANK = new _.Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return S.isBlank(s);
+            }
+        };
+
         public static _.Predicate<String> NOT_EMPTY = IS_EMPTY.negate();
 
         public static _.F2<String, Integer, String> MAX_LENGTH = new _.F2<String, Integer, String>() {
