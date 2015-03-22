@@ -2677,7 +2677,6 @@ public enum C {
             if (list.is(Feature.IMMUTABLE)) {
                 return list;
             } else {
-                list = list.sort();
                 return new ReadOnlyDelegatingList<T>(list);
             }
         }
