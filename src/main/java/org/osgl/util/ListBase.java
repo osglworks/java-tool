@@ -124,7 +124,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     @Override
     public C.List<T> unique() {
-        Set<String> set = C.newSet();
+        Set<T> set = C.newSet();
         C.List<T> retList = null;
         int i = 0;
         for (T t: this) {
