@@ -168,6 +168,11 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
     	eq(seqOf(0, 1, 1, 2, 3, 4, 5), l().prepend(al));
     }
 
+    @Test
+    public void testUnique() {
+        data = prepareData(1, 2, 3, 2, 4);
+        eq(seqOf(1, 2, 3, 4), l().unique());
+    }
 
     @Test
     public void testZipList() {

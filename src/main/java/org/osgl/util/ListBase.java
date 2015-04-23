@@ -136,8 +136,8 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 }
             } else if (null != retList) {
                 retList.add(t);
-                set.add(t);
             }
+            set.add(t);
         }
         return null == retList ? this : retList;
     }
