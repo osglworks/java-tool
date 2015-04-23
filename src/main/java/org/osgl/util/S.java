@@ -1053,6 +1053,13 @@ public class S {
             }
         };
 
+        public static _.Transformer<String, String> NULL_SAFE = new _.Transformer<String, String>() {
+            @Override
+            public String transform(String s) {
+                return null == s ? "" : s;
+            }
+        };
+
         public static _.F1<String, String> TRIM = new _.F1<String, String>() {
             @Override
             public String apply(String s) throws NotAppliedException, _.Break {
@@ -1071,6 +1078,13 @@ public class S {
             @Override
             public boolean test(String s) throws NotAppliedException, _.Break {
                 return S.isEmpty(s);
+            }
+        };
+
+        public static _.Predicate<String> IS_BLANK = new _.Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return S.isBlank(s);
             }
         };
 
