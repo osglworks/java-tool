@@ -3023,12 +3023,17 @@ public class _ {
         }
     }
 
-    public static class Var<T> extends ListBase<T> implements C.ListOrSet<T> {
+    public static class Var<T> extends ListBase<T> implements C.ListOrSet<T>, Func0<T> {
 
         private T v;
 
         public Var(T value) {
             v = value;
+        }
+
+        @Override
+        public T apply() throws NotAppliedException, Break {
+            return v;
         }
 
         @Override
@@ -3664,7 +3669,7 @@ public class _ {
         }
     }
 
-    public static class Val<T> extends Var<T> {
+    public static class Val<T> extends Var<T>{
         public Val(T value) {
             super(value);
         }

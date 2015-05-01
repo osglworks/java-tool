@@ -172,6 +172,13 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
     public void testUnique() {
         data = prepareData(1, 2, 3, 2, 4);
         eq(seqOf(1, 2, 3, 4), l().unique());
+
+    }
+
+    @Test
+    public void testUnique2() {
+        data = prepareData(1, 1, 1);
+        eq(seqOf(1), l().unique());
     }
 
     @Test
