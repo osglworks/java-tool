@@ -1024,6 +1024,10 @@ public class S {
             }
         };
 
+        public static _.Predicate<String> startsWith(final String prefix) {
+            return _.predicate(STARTS_WITH.curry(prefix));
+        }
+
         public static _.F2<String, String, Boolean> ENDS_WITH = new _.F2<String, String, Boolean>() {
             @Override
             public Boolean apply(String s, String s2) throws NotAppliedException, _.Break {
@@ -1031,12 +1035,19 @@ public class S {
             }
         };
 
-        public static _.Predicate<String> startsWith(final String prefix) {
-            return _.predicate(STARTS_WITH.curry(prefix));
-        }
-
         public static _.Predicate<String> endsWith(final String suffix) {
             return _.predicate(ENDS_WITH.curry(suffix));
+        }
+
+        public static _.F2<String, String, Boolean> CONTAINS = new _.F2<String, String, Boolean>() {
+            @Override
+            public Boolean apply(String s, String s2) throws NotAppliedException, _.Break {
+                return s.contains(s2);
+            }
+        };
+
+        public static _.Predicate<String> contains(final String search) {
+            return _.predicate(CONTAINS.curry(search));
         }
 
         public static _.F1<String, String> TO_UPPERCASE = new _.F1<String, String>() {

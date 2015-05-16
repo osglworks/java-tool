@@ -19,17 +19,20 @@
 */
 package org.osgl.util;
 
+import org.apache.commons.codec.Charsets;
 import org.osgl._;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
@@ -40,6 +43,7 @@ public enum Crypto {
     ;
 
     private static CryptoService svc;
+    private static final String ALGO = "AES/CBC/PKCS5Padding";
 
     public static void setCryptoService(CryptoService service) {
         SecurityManager security = System.getSecurityManager();
@@ -172,10 +176,25 @@ public enum Crypto {
     public static String encryptAES(String value, String privateKey) {
         try {
             if (null != svc) return svc.encrypt(value, privateKey);
-            SecretKey key = secretKeyAES(privateKey, privateKey);
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            return Codec.byteToHexString(cipher.doFinal(value.getBytes()));
+            MessageDigest md = MessageDigest.getInstance("SHA-384");
+            md.update(privateKey.getBytes(Charsets.UTF_8));
+            byte[] ba = md.digest();
+            byte[] key = new byte[32], iv = new byte[16];
+            System.arraycopy(ba, 0, key, 0, 32);
+            SecureRandom sr = new SecureRandom();
+            sr.nextBytes(iv);
+
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            Cipher cipher = Cipher.getInstance(ALGO);
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
+            ba = cipher.doFinal(value.getBytes(Charsets.UTF_8));
+
+            byte[] ba2 = new byte[ba.length + 16];
+            System.arraycopy(ba, 0, ba2, 0, ba.length);
+            System.arraycopy(iv, 0, ba2, ba.length, 16);
+
+            return Codec.byteToHexString(ba2);
         } catch (Exception ex) {
             throw E.unexpected(ex);
         }
@@ -192,10 +211,20 @@ public enum Crypto {
     public static String encryptAES(String value, String privateKey, String salt) {
         try {
             if (null != svc) return svc.encrypt(value, privateKey, salt);
-            SecretKey key = secretKeyAES(privateKey, salt);
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            return Codec.byteToHexString(cipher.doFinal(value.getBytes()));
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(privateKey.getBytes("utf-8"));
+            byte[] key = md.digest();
+            md = MessageDigest.getInstance("SHA-1");
+            md.update(salt.getBytes("utf-8"));
+            byte[] tmp = md.digest();
+            byte[] iv = new byte[16];
+            System.arraycopy(tmp, 0, iv, 0, 16);
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            Cipher cipher = Cipher.getInstance(ALGO);
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
+            byte[] ba = cipher.doFinal(value.getBytes("utf-8"));
+            return Codec.byteToHexString(ba);
         } catch (Exception ex) {
             throw E.unexpected(ex);
         }
@@ -212,10 +241,21 @@ public enum Crypto {
     public static String decryptAES(String value, String privateKey) {
         try {
             if (null != svc) return svc.decrypt(value, privateKey);
-            SecretKey key = secretKeyAES(privateKey, privateKey);
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            return new String(cipher.doFinal(Codec.hexStringToByte(value)));
+            byte[] ba0 = Codec.hexStringToByte(value);
+            byte[] baVal = new byte[ba0.length - 16];
+            System.arraycopy(ba0, 0, baVal, 0, ba0.length - 16);
+            MessageDigest md = MessageDigest.getInstance("SHA-384");
+            md.update(privateKey.getBytes(Charsets.UTF_8));
+            byte[] ba = md.digest();
+            byte[] key = new byte[32], iv = new byte[16];
+            System.arraycopy(ba, 0, key, 0, 32);
+            System.arraycopy(ba0, ba0.length - 16, iv, 0, 16);
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            Cipher cipher = Cipher.getInstance(ALGO);
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
+            ba = cipher.doFinal(baVal);
+            return new String(ba);
         } catch (Exception ex) {
             throw E.unexpected(ex);
         }
@@ -232,17 +272,29 @@ public enum Crypto {
     public static String decryptAES(String value, String privateKey, String salt) {
         try {
             if (null != svc) return svc.decrypt(value, privateKey, salt);
-            SecretKey key = secretKeyAES(privateKey, salt);
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            return new String(cipher.doFinal(Codec.hexStringToByte(value)));
+            byte[] baVal = Codec.hexStringToByte(value);
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(privateKey.getBytes(Charsets.UTF_8));
+            byte[] key = md.digest();
+            md = MessageDigest.getInstance("SHA-1");
+            md.update(salt.getBytes(Charsets.UTF_8));
+            byte[] tmp = md.digest();
+            byte[] iv = new byte[16];
+            System.arraycopy(tmp, 0, iv, 0, 16);
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            Cipher cipher = Cipher.getInstance(ALGO);
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
+            byte[] ba = cipher.doFinal(baVal);
+            String s = new String(ba);
+            return s;
         } catch (Exception ex) {
             throw E.unexpected(ex);
         }
     }
 
     public static void main(String[] args) {
-        b();
+        a();
     }
 
     private static void b() {
@@ -264,8 +316,9 @@ public enum Crypto {
 //        String es = encryptBlowfish(s, key);
 //        String s1 = decryptBlowfish(es, key);
 
-        String es = encryptAES(s, key);
-        String s1 = decryptAES(es, key);
+        String salt = S.random();
+        String es = encryptAES(s, key, salt);
+        String s1 = decryptAES(es, key, salt);
 
         System.out.println(String.format("%s\n %s\n %s\n %s", key, s, es, s1));
     }

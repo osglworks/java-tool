@@ -5174,6 +5174,13 @@ public class _ {
         return ta[i];
     }
 
+    public static <T> T random(List<T> list) {
+        int l = list.size();
+        if (0 == l) return null;
+        int i = new Random().nextInt(l);
+        return list.get(i);
+    }
+
     public static <T> T random(C.Range<T> range) {
         int n = new Random().nextInt(range.size()) + 1;
         return range.tail(n).head();
