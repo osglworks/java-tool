@@ -66,6 +66,9 @@
 
 0.5.3-SNAPSHOT
 - add CONTAINS and contains to S.F
+
+0.5.4-SNAPSHOT
+- support primitives in _.forClassName and _.newInstace methods
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -75,7 +78,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>0.5.3-SNAPSHOT</version>
+  <version>0.5.4-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>

@@ -4547,7 +4547,31 @@ public class _ {
         return obj;
     }
 
+    private static Map<String, Class> __primitiveTypes = new HashMap<String, Class>();
+    static {
+        __primitiveTypes.put("int", int.class);
+        __primitiveTypes.put("boolean", boolean.class);
+        __primitiveTypes.put("byte", byte.class);
+        __primitiveTypes.put("short", short.class);
+        __primitiveTypes.put("char", char.class);
+        __primitiveTypes.put("long", long.class);
+        __primitiveTypes.put("float", float.class);
+        __primitiveTypes.put("double", double.class);
+    }
+    private static Map<String, Object> __primitiveInstances = new HashMap<String, Object>();
+    static {
+        __primitiveInstances.put("int", 0);
+        __primitiveInstances.put("boolean", false);
+        __primitiveInstances.put("byte", 0);
+        __primitiveInstances.put("short", 0);
+        __primitiveInstances.put("char", 0);
+        __primitiveInstances.put("long", 0l);
+        __primitiveInstances.put("float", 0f);
+        __primitiveInstances.put("double", 0d);
+    }
     public static <T> Class<T> classForName(String className) {
+        Class c = __primitiveTypes.get(className);
+        if (null != c) return c;
         try {
             return (Class<T>) Class.forName(className);
         } catch (Exception e) {
@@ -4556,6 +4580,8 @@ public class _ {
     }
 
     public static <T> Class<T> classForName(String className, ClassLoader classLoader) {
+        Class c = __primitiveTypes.get(className);
+        if (null != c) return c;
         try {
             return (Class<T>) Class.forName(className, true, classLoader);
         } catch (Exception e) {
@@ -4564,6 +4590,8 @@ public class _ {
     }
 
     public static <T> Option<Class<T>> safeClassForName(String className) {
+        Class c = __primitiveTypes.get(className);
+        if (null != c) return some((Class<T>)c);
         try {
             return _.some((Class<T>) Class.forName(className));
         } catch (Exception e) {
@@ -4572,6 +4600,8 @@ public class _ {
     }
 
     public static <T> Option<Class<T>> safeClassForName(String className, ClassLoader classLoader) {
+        Class c = __primitiveTypes.get(className);
+        if (null != c) return some((Class<T>)c);
         try {
             return _.some((Class<T>) Class.forName(className, true, classLoader));
         } catch (Exception e) {
@@ -4580,6 +4610,8 @@ public class _ {
     }
 
     public static <T> T newInstance(String className) {
+        Object o = __primitiveInstances.get(className);
+        if (null != o) return (T)o;
         try {
             Class<T> c = (Class<T>) Class.forName(className);
             return c.newInstance();
@@ -4589,6 +4621,8 @@ public class _ {
     }
 
     public static <T> Option<T> safeNewInstance(String className) {
+        Object o = __primitiveInstances.get(className);
+        if (null != o) return some((T)o);
         try {
             Class<T> c = (Class<T>) Class.forName(className);
             return _.some(c.newInstance());
