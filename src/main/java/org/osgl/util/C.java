@@ -1565,6 +1565,14 @@ public enum C {
         List<T> unique();
 
         /**
+         * Return a list that contains unique set as per the comparator specified of
+         * this list and keep the orders. If this list doesn't have duplicated items,
+         * it could return this list directly or choose to return an new copy of this list
+         * depends on the sub class implementation
+         */
+        List<T> unique(Comparator<T> comp);
+
+        /**
          * Returns a sorted copy of this list. The order is specified by the comparator
          * provided
          *

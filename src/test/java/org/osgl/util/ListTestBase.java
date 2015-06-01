@@ -182,6 +182,12 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
     }
 
     @Test
+    public void testUniqueByComparator() {
+        C.List<OddEvenElement> l = C.listOf(2, 2, 3, 4, 1, 5).map(OddEvenElement.F.OF_INT);
+        eq(2, l.unique(new OddEvenElement.Comp()).size());
+    }
+
+    @Test
     public void testZipList() {
         data = prepareData(1, 3);
         C.List<?> l = data().zip(arrayList(2, 4, 6));

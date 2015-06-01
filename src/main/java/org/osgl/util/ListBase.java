@@ -142,6 +142,25 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return null == retList ? this : retList;
     }
 
+    public C.List<T> unique(Comparator<T> comp) {
+        Set<T> set = new TreeSet<T>(comp);
+        C.List<T> retList = null;
+        int i = 0;
+        for (T t: this) {
+            i++;
+            if (set.contains(t)) {
+                if (null == retList) {
+                    retList = C.newSizedList(size());
+                    retList.addAll(subList(0, i - 1));
+                }
+            } else if (null != retList) {
+                retList.add(t);
+            }
+            set.add(t);
+        }
+        return null == retList ? this : retList;
+    }
+
     @Override
     public C.List<T> subList(int fromIndex, int toIndex) {
         if (fromIndex == toIndex) {
