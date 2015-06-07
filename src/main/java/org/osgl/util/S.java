@@ -8,6 +8,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -874,6 +875,10 @@ public class S {
      */
     public static String fileExtension(String fileName) {
         return S.after(fileName, ".");
+    }
+
+    public static String uuid() {
+        return UUID.randomUUID().toString();
     }
 
     /**
