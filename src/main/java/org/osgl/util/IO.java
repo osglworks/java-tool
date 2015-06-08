@@ -147,6 +147,14 @@ public class IO {
         return is(content.getBytes());
     }
 
+    public static InputStream is(URL url) {
+        try {
+            return url.openStream();
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
     /**
      * Returns an empty reader
      */
@@ -167,6 +175,18 @@ public class IO {
 
     public static Reader reader(byte[] ba) {
         return new StringReader(new String(ba));
+    }
+
+    public static Reader reader(InputStream is) {
+        return new InputStreamReader(is);
+    }
+
+    public static Reader reader(URL url) {
+        try {
+            return reader(url.openStream());
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
     }
 
     /**
