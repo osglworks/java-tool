@@ -3718,6 +3718,40 @@ public class _ {
     }
 
     /**
+     * Check if two objects are equals to each other. The comparison will do
+     * array equal matching if needed
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean eq2(Object a, Object b) {
+        if (eq(a, b)) return true;
+        Class<?> ca = a.getClass();
+        if (!ca.isArray()) return false;
+        Class<?> cb = b.getClass();
+        if (ca != cb) return false;
+        if (ca == boolean[].class) {
+            return Arrays.equals((boolean[])a, (boolean[])b);
+        } else if (ca == byte[].class) {
+            return Arrays.equals((byte[])a, (byte[])b);
+        } else if (ca == int[].class) {
+            return Arrays.equals((int[])a, (int[])b);
+        } else if (ca == char[].class) {
+            return Arrays.equals((char[])a, (char[])b);
+        } else if (ca == long[].class) {
+            return Arrays.equals((long[])a, (long[])b);
+        } else if (ca == float[].class) {
+            return Arrays.equals((float[])a, (float[])b);
+        } else if (ca == double[].class) {
+            return Arrays.equals((double[])a, (double[])b);
+        } else if (ca == short[].class) {
+            return Arrays.equals((short[])a, (short[])b);
+        } else {
+            return Arrays.equals((Object[])a, (Object[])b);
+        }
+    }
+
+    /**
      * Check if two object is equals to each other.
      *
      * @param a
