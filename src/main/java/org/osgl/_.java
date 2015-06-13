@@ -5173,6 +5173,35 @@ public class _ {
         return ret;
     }
 
+    public static boolean[] asPrimitive(Boolean[] oa) {
+        int len = oa.length;
+        boolean[] pa = new boolean[len];
+        for (int i = 0; i < len; ++i) {
+            Boolean O = oa[i];
+            pa[i] = null == O ? false : O;
+        }
+        return pa;
+    }
+
+    public static Boolean[] asObject(boolean[] pa) {
+        int len = pa.length;
+        Boolean[] oa = new Boolean[len];
+        for (int i = 0; i < len; ++i) {
+            oa[i] = pa[i];
+        }
+        return oa;
+    }
+
+    public static byte[] asPrimitive(Byte[] oa) {
+        int len = oa.length;
+        byte[] pa = new byte[len];
+        for (int i = 0; i < len; ++i) {
+            Byte O = oa[i];
+            pa[i] = null == O ? 0 : O;
+        }
+        return pa;
+    }
+
     public static Byte[] asObject(byte[] pa) {
         int len = pa.length;
         Byte[] oa = new Byte[len];
@@ -5180,6 +5209,35 @@ public class _ {
             oa[i] = pa[i];
         }
         return oa;
+    }
+
+    public static char[] asPrimitive(Character[] oa) {
+        int len = oa.length;
+        char[] pa = new char[len];
+        for (int i = 0; i < len; ++i) {
+            Character O = oa[i];
+            pa[i] = null == O ? 0 : O;
+        }
+        return pa;
+    }
+
+    public static Character[] asObject(char[] pa) {
+        int len = pa.length;
+        Character[] oa = new Character[len];
+        for (int i = 0; i < len; ++i) {
+            oa[i] = pa[i];
+        }
+        return oa;
+    }
+
+    public static short[] asPrimitive(Short[] oa) {
+        int len = oa.length;
+        short[] pa = new short[len];
+        for (int i = 0; i < len; ++i) {
+            Short O = oa[i];
+            pa[i] = null == O ? 0 : O;
+        }
+        return pa;
     }
 
     public static Short[] asObject(short[] pa) {
@@ -5191,6 +5249,16 @@ public class _ {
         return oa;
     }
 
+    public static int[] asPrimitive(Integer[] oa) {
+        int len = oa.length;
+        int[] pa = new int[len];
+        for (int i = 0; i < len; ++i) {
+            Integer O = oa[i];
+            pa[i] = null == O ? 0 : O;
+        }
+        return pa;
+    }
+
     public static Integer[] asObject(int[] pa) {
         int len = pa.length;
         Integer[] oa = new Integer[len];
@@ -5198,6 +5266,16 @@ public class _ {
             oa[i] = pa[i];
         }
         return oa;
+    }
+
+    public static long[] asPrimitive(Long[] oa) {
+        int len = oa.length;
+        long[] pa = new long[len];
+        for (int i = 0; i < len; ++i) {
+            Long O = oa[i];
+            pa[i] = null == O ? 0 : O;
+        }
+        return pa;
     }
 
     public static Long[] asObject(long[] pa) {
@@ -5209,6 +5287,16 @@ public class _ {
         return oa;
     }
 
+    public static float[] asPrimitive(Float[] oa) {
+        int len = oa.length;
+        float[] pa = new float[len];
+        for (int i = 0; i < len; ++i) {
+            Float O = oa[i];
+            pa[i] = null == O ? 0 : O;
+        }
+        return pa;
+    }
+
     public static Float[] asObject(float[] pa) {
         int len = pa.length;
         Float[] oa = new Float[len];
@@ -5216,6 +5304,16 @@ public class _ {
             oa[i] = pa[i];
         }
         return oa;
+    }
+
+    public static double[] asPrimitive(Double[] oa) {
+        int len = oa.length;
+        double[] pa = new double[len];
+        for (int i = 0; i < len; ++i) {
+            Double O = oa[i];
+            pa[i] = null == O ? 0 : O;
+        }
+        return pa;
     }
 
     public static Double[] asObject(double[] pa) {
