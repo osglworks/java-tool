@@ -4160,10 +4160,12 @@ public class _ {
             if (len == 0) {
                 return "[]";
             }
+            sb.append("[");
             sb.append(toString2(Array.get(o, 0)));
             for (int i = 1; i < len; ++i) {
                 sb.append(", ").append(toString2(Array.get(o, i)));
             }
+            sb.append("]");
             return sb.toString();
         }
         return o.toString();
