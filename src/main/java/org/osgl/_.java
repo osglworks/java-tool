@@ -4591,6 +4591,14 @@ public class _ {
         __primitiveTypes.put("long", long.class);
         __primitiveTypes.put("float", float.class);
         __primitiveTypes.put("double", double.class);
+        __primitiveTypes.put("int[]", int[].class);
+        __primitiveTypes.put("boolean[]", boolean[].class);
+        __primitiveTypes.put("byte[]", byte[].class);
+        __primitiveTypes.put("short[]", short[].class);
+        __primitiveTypes.put("char[]", char[].class);
+        __primitiveTypes.put("long[]", long[].class);
+        __primitiveTypes.put("float[]", float[].class);
+        __primitiveTypes.put("double[]", double[].class);
     }
     private static Map<String, Object> __primitiveInstances = new HashMap<String, Object>();
     static {
