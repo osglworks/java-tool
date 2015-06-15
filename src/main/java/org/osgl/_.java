@@ -4625,6 +4625,9 @@ public class _ {
         Class c = __primitiveTypes.get(className);
         if (null != c) return c;
         try {
+            if (className.contains("[")) {
+                className = S.builder().append("[L").append(S.before(className, "[")).append(";").toString();
+            }
             return (Class<T>) Class.forName(className, true, classLoader);
         } catch (Exception e) {
             throw new UnexpectedException(e);
