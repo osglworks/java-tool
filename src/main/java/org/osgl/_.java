@@ -4150,6 +4150,25 @@ public class _ {
         return o.toString();
     }
 
+    public static String toString2(Object o) {
+        if (isNull(o)) {
+            return "";
+        }
+        if (o.getClass().isArray()) {
+            StringBuilder sb = S.builder();
+            int len = Array.getLength(o);
+            if (len == 0) {
+                return "[]";
+            }
+            sb.append(toString2(Array.get(o, 0)));
+            for (int i = 1; i < len; ++i) {
+                sb.append(", ").append(toString2(Array.get(o, i)));
+            }
+            return sb.toString();
+        }
+        return o.toString();
+    }
+
     /**
      * Alias of {@link org.osgl.util.S#fmt(String, Object...)}
      *
@@ -6625,4 +6644,8 @@ public class _ {
         }
     }
 
+    public static void main(String[] args) {
+        int[] ia = {1, 2, 3};
+        System.out.println(_.toString2(ia));
+    }
 }

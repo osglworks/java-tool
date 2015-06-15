@@ -78,7 +78,7 @@
 - Add new reader() and is() method to IO class dealing with URL and InputStreamReader
 - Add eq2(Object, Object) to _, to allow do equal matching against two arrays
 - Add asPrimitive() method set to _, to allow convert Object array to primitive array
-
+- Add toString2() to _ to output array type object in a good format
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
