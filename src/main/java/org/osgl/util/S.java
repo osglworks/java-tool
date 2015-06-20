@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -23,6 +24,11 @@ public class S {
      * The invisible separator used by program: "\u0000"
      */
     public static final String HSEP = "\u0000";
+
+    /**
+     * A commonly used separator: [,;:\\s]+
+     */
+    public static final String COMMON_SEP = "[,;:\\s]";
 
     public final static String fmt(String tmpl) {
         return tmpl;
@@ -1112,6 +1118,20 @@ public class S {
                 return S.maxLength(s, n);
             }
         };
+
+        /**
+         * A split function that use the {@link #COMMON_SEP} to split Strings
+         */
+        public static _.F1<String, List<String>> SPLIT = split(COMMON_SEP);
+
+        public static _.F1<String, List<String>> split(final String sep) {
+            return new _.F1<String, List<String>>() {
+                @Override
+                public List<String> apply(String s) throws NotAppliedException, _.Break {
+                    return C.listOf(s.split(sep));
+                }
+            };
+        }
 
         public static _.F1<String, String> maxLength(int n) {
             return MAX_LENGTH.curry(n);
