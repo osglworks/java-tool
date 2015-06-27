@@ -945,6 +945,42 @@ public class S {
         return Str.of(o.toString());
     }
 
+    public static StringBuilder builder(boolean o) {
+        return new StringBuilder(String.valueOf(o));
+    }
+
+    public static StringBuilder builder(byte o) {
+        return new StringBuilder(String.valueOf(o));
+    }
+
+    public static StringBuilder builder(short o) {
+        return new StringBuilder(String.valueOf(o));
+    }
+
+    public static StringBuilder builder(char o) {
+        return new StringBuilder(String.valueOf(o));
+    }
+
+    public static StringBuilder builder(int o) {
+        return new StringBuilder(String.valueOf(o));
+    }
+
+    public static StringBuilder builder(float o) {
+        return new StringBuilder(String.valueOf(o));
+    }
+
+    public static StringBuilder builder(long o) {
+        return new StringBuilder(String.valueOf(o));
+    }
+
+    public static StringBuilder builder(double o) {
+        return new StringBuilder(String.valueOf(o));
+    }
+
+    public static StringBuilder builder(Object o) {
+        return new StringBuilder(string(o));
+    }
+
     public static StringBuilder builder(String s) {
         return new StringBuilder(s);
     }
@@ -953,7 +989,7 @@ public class S {
         return new StringBuilder();
     }
 
-    public static StringBuilder builder(int capacity) {
+    public static StringBuilder sizedBuilder(int capacity) {
         return new StringBuilder(capacity);
     }
 
