@@ -4602,7 +4602,7 @@ public class _ {
         return obj;
     }
 
-    private static Map<String, Class> __primitiveTypes = new HashMap<String, Class>();
+    private static Map<Object, Class> __primitiveTypes = new HashMap<Object, Class>();
     static {
         __primitiveTypes.put("int", int.class);
         __primitiveTypes.put("boolean", boolean.class);
@@ -4612,6 +4612,14 @@ public class _ {
         __primitiveTypes.put("long", long.class);
         __primitiveTypes.put("float", float.class);
         __primitiveTypes.put("double", double.class);
+        __primitiveTypes.put("int.class", int.class);
+        __primitiveTypes.put("boolean.class", boolean.class);
+        __primitiveTypes.put("byte.class", byte.class);
+        __primitiveTypes.put("short.class", short.class);
+        __primitiveTypes.put("char.class", char.class);
+        __primitiveTypes.put("long.class", long.class);
+        __primitiveTypes.put("float.class", float.class);
+        __primitiveTypes.put("double.class", double.class);
         __primitiveTypes.put("int[]", int[].class);
         __primitiveTypes.put("boolean[]", boolean[].class);
         __primitiveTypes.put("byte[]", byte[].class);
@@ -4621,7 +4629,7 @@ public class _ {
         __primitiveTypes.put("float[]", float[].class);
         __primitiveTypes.put("double[]", double[].class);
     }
-    private static Map<String, Object> __primitiveInstances = new HashMap<String, Object>();
+    private static Map<Object, Object> __primitiveInstances = new HashMap<Object, Object>();
     static {
         __primitiveInstances.put("int", 0);
         __primitiveInstances.put("boolean", false);
@@ -4631,6 +4639,22 @@ public class _ {
         __primitiveInstances.put("long", 0l);
         __primitiveInstances.put("float", 0f);
         __primitiveInstances.put("double", 0d);
+        __primitiveInstances.put("int.class", 0);
+        __primitiveInstances.put("boolean.class", false);
+        __primitiveInstances.put("byte.class", 0);
+        __primitiveInstances.put("short.class", 0);
+        __primitiveInstances.put("char.class", 0);
+        __primitiveInstances.put("long.class", 0l);
+        __primitiveInstances.put("float.class", 0f);
+        __primitiveInstances.put("double.class", 0d);
+        __primitiveInstances.put(int.class, 0);
+        __primitiveInstances.put(boolean.class, 0);
+        __primitiveInstances.put(byte.class, 0);
+        __primitiveInstances.put(short.class, 0);
+        __primitiveInstances.put(char.class, 0);
+        __primitiveInstances.put(long.class, 0l);
+        __primitiveInstances.put(float.class, 0f);
+        __primitiveInstances.put(double.class, 0d);
     }
     public static <T> Class<T> classForName(String className) {
         Class c = __primitiveTypes.get(className);
