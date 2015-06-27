@@ -82,6 +82,7 @@
 - Add COMMON_SEP to S; add SPLIT and split(String) to S.F
 - Better handling of primitive types in S.newInstance and S.classForName
 - S.builder now accept primitive types and object types as constructor; original S.builder(int) semantic is now expressed in S.sizedBuilder(int)
+- Add append(String) and prepend(String) functor to S.F
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">

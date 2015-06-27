@@ -1224,6 +1224,24 @@ public class S {
             }
         };
 
+        public static _.F1<String, String> append(final String appendix) {
+            return new _.F1<String, String>() {
+                @Override
+                public String apply(String s) throws NotAppliedException, _.Break {
+                    return S.builder(s).append(appendix).toString();
+                }
+            };
+        }
+
+        public static _.F1<String, String> prepend(final String prependix) {
+            return new _.F1<String, String>() {
+                @Override
+                public String apply(String s) throws NotAppliedException, _.Break {
+                    return S.builder(prependix).append(s).toString();
+                }
+            };
+        }
+
     }
 
 }
