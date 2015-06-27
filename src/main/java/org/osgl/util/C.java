@@ -2678,7 +2678,7 @@ public enum C {
         return ListBuilder.toList(col);
     }
 
-    public static <T> List<T> list(java.util.List<T> javaList) {
+    public static <T> List<T> list(java.util.List<? extends T> javaList) {
         if (javaList instanceof List) {
             List<T> list = _.cast(javaList);
 

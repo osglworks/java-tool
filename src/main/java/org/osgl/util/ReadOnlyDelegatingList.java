@@ -11,7 +11,7 @@ import java.util.EnumSet;
  * To change this template use File | Settings | File Templates.
  */
 class ReadOnlyDelegatingList<T> extends DelegatingList<T> {
-    ReadOnlyDelegatingList(Iterable<T> iterable) {
+    ReadOnlyDelegatingList(Iterable<? extends T> iterable) {
         super(iterable);
     }
 
