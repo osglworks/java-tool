@@ -5229,6 +5229,96 @@ public class _ {
         return ret;
     }
 
+    public static boolean[] reverse(boolean[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            boolean e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
+    public static byte[] reverse(byte[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            byte e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
+    public static char[] reverse(char[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            char e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
+    public static short[] reverse(short[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            short e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
+    public static int[] reverse(int[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            int e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
+    public static float[] reverse(float[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            float e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
+    public static long[] reverse(long[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            long e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
+    public static double[] reverse(double[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            double e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
+    public static Object[] reverse(Object[] a) {
+        int len = a.length;
+        for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {
+            Object e = a[i];
+            a[i] = a[j];
+            a[j] = e;
+        }
+        return a;
+    }
+
     public static boolean[] asPrimitive(Boolean[] oa) {
         int len = oa.length;
         boolean[] pa = new boolean[len];
