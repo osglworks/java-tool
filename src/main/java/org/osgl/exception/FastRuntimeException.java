@@ -57,4 +57,8 @@ public class FastRuntimeException extends RuntimeException {
     public Throwable fillInStackTrace() {
         return null;
     }
+
+    public Throwable doFillInStackTrace() {
+        return super.fillInStackTrace();
+    }
 }
