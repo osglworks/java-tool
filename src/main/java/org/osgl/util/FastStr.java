@@ -176,10 +176,13 @@ public class FastStr extends StrBase<FastStr>
     @Override
     public FastStr insert(int index, Character character) throws StringIndexOutOfBoundsException {
         E.NPE(character);
-        if (index < 0) {
+        int len = size();
+        if (len < Math.abs(index)) {
             throw new StringIndexOutOfBoundsException(index);
         }
-        int len = size();
+        if (index < 0) {
+            index = len + index;
+        }
         if (index > len) {
             throw new StringIndexOutOfBoundsException(index);
         }

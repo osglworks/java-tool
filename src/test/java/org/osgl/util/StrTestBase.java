@@ -121,4 +121,29 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
         ceq("abc{123}ii", FastStr.of(s).afterFirst("{").beforeLast("}"));
     }
 
+    @Test
+    public void testInsert() {
+        T t = abc.insert(0, 'x');
+        ceq(t, "xabc");
+        ceq(abc, "abc");
+        t = abc.insert(-3, 'x');
+        ceq(t, "xabc");
+        t = abc.insert(3, 'y');
+        ceq(t, "abcy");
+        t = abc.insert(-1, 'z');
+        ceq(t, "abzc");
+        try {
+            abc.insert(5, 'd');
+            fail("should throw out StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // pass
+        }
+        try {
+            abc.insert(-4, 'd');
+            fail("should throw out StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // pass
+        }
+    }
+
 }

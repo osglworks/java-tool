@@ -78,6 +78,13 @@ public class Str extends StrBase<Str> {
 
     @Override
     public Str insert(int index, Character character) throws IndexOutOfBoundsException {
+        int len = s.length();
+        if (len < Math.abs(index)) {
+            throw new StringIndexOutOfBoundsException(index);
+        }
+        if (index < 0) {
+            index = len + index;
+        }
         StringBuilder sb = new StringBuilder(s.substring(0, index));
         sb.append(character);
         sb.append(s.substring(index, size()));

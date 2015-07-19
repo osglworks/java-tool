@@ -1736,11 +1736,13 @@ public enum C {
          * list should be created with all elements in this list
          * and the new element inserted at the specified position.
          * The new list should be mutable and read write</p>
+         * <p>If index is less than zero then it will insert at
+         * {@code (size() + index)}</p>
          *
          * @param index specify the position where the element should be inserted
          * @param t     the element to be inserted
          * @return a reference to the List itself
-         * @throws IndexOutOfBoundsException if index &lt; 0 or index &gt; size()
+         * @throws IndexOutOfBoundsException Math.abs(index) &gt; size()
          */
         List<T> insert(int index, T t) throws IndexOutOfBoundsException;
 

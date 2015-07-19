@@ -554,7 +554,7 @@ public class S {
     }
 
     public static String capFirst(String s) {
-        if (null == s) {
+        if (null == s || "" == s) {
             return "";
         }
         return ("" + s.charAt(0)).toUpperCase() + s.substring(1);

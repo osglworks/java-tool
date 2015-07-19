@@ -115,13 +115,10 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
         setUp();
         l().insert(5, 0);
         eq(seqOf(1, 2, 3, 4, 5, 0), data);
+        setUp();
+        l().insert(-1, 0);
+        eq(seqOf(1, 2, 3, 4, 0, 5), data);
 
-        try {
-            l().insert(-1, 0);
-            fail("expected IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException e) {
-            // pass
-        }
         setUp();
         try {
             l().insert(6, 0);

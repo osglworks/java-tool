@@ -595,11 +595,17 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     @Override
     public C.List<T> insert(int index, T t) throws IndexOutOfBoundsException {
+        int sz = size();
+        if (sz < Math.abs(index)) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index < 0) {
+            index = sz + index;
+        }
         if (isMutable()) {
             add(index, t);
             return this;
         }
-        int sz = size();
         if (index < 0 || index > sz) {
             throw new IndexOutOfBoundsException();
         }
