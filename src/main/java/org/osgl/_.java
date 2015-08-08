@@ -4400,6 +4400,12 @@ public class _ {
     }
 
     /**
+     * An empty method.
+     */
+    public static void nil() {
+    }
+
+    /**
      * Search an element in a array
      *
      * @param element  the element to be located

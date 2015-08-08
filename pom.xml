@@ -87,6 +87,7 @@
 - add doFillInStackTrace to FastRuntimeException
 - Fix issue: S.capFirst() throw StringIndexOutfBoundsException when parameter is empty string
 - C.List.insert() now accept negative number to count the insert position from tail to head
+- Add _.nil() method
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
