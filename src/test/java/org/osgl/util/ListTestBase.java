@@ -154,6 +154,13 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
     }
 
     @Test
+    public void testDrop() {
+        data = prepareData(1, 2, 3, 4, 5);
+        eq(seqOf(3, 4, 5), l().drop(2));
+        eq(seqOf(1, 2, 3), l().drop(-2));
+    }
+
+    @Test
     public void testAppendList() {
         List<Integer> al = arrayList(0, 1);
         eq(seqOf(1, 2, 3, 4, 5, 0, 1), l().append(al));
