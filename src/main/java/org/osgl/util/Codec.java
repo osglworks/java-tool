@@ -19,6 +19,7 @@
 */
 package org.osgl.util;
 
+import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.osgl.exception.UnexpectedException;
@@ -32,7 +33,7 @@ import java.util.UUID;
 
 /**
  * Utility class for encoding and decoding
- * 
+ * <p/>
  * <p>Part of the code comes from play!framework under apache license</p>
  */
 public class Codec {
@@ -46,37 +47,102 @@ public class Codec {
 
     /**
      * Encode a String to base64
+     *
+     * @param value The plain String
+     * @return The base64 encoded String
+     * @deprecated Use {@link #encodeBase64(String)} instead
+     */
+    @Deprecated
+    public static String encodeBASE64(String value) {
+        return new String(Base64.encode(value.getBytes(Charsets.UTF_8)));
+    }
+
+    /**
+     * Encode a String to base64
+     *
      * @param value The plain String
      * @return The base64 encoded String
      */
-    public static String encodeBASE64(String value) {
-        try {
-            return new String(Base64.encode(value.getBytes("utf-8")));
-        } catch (UnsupportedEncodingException ex) {
-            throw new UnexpectedException(ex);
-        }
+    public static String encodeBase64(String value) {
+        return new String(Base64.encode(value.getBytes(Charsets.UTF_8)));
+    }
+
+    /**
+     * Encode a String to base64 using variant URL safe encode scheme
+     * @param value the plain string
+     * @return the base64 encoded String that is URL safe
+     */
+    public static String encodeUrlSafeBase64(String value) {
+        return new String(UrlSafeBase64.encode(value.getBytes(Charsets.UTF_8)));
     }
 
     /**
      * Encode binary data to base64
+     *
+     * @param value The binary data
+     * @return The base64 encoded String
+     * @deprecated  Use {@link #encodeBase64(byte[])} instead
+     */
+    @Deprecated
+    public static String encodeBASE64(byte[] value) {
+        return encodeBase64(value);
+    }
+
+    /**
+     * Encode binary data to base64
+     *
      * @param value The binary data
      * @return The base64 encoded String
      */
-    public static String encodeBASE64(byte[] value) {
+    public static String encodeBase64(byte[] value) {
         return new String(Base64.encode(value));
     }
 
     /**
+     * Encode binary data to base64 use Url safe variant
+     *
+     * @param value The binary data
+     * @return The base64 encoded String that is URL safe
+     */
+    public static String encodeUrlSafeBase64(byte[] value) {
+        return new String(UrlSafeBase64.encode(value));
+    }
+
+    /**
      * Decode a base64 value
+     *
      * @param value The base64 encoded String
      * @return decoded binary data
+     * @deprecated Use {@link #decodeBase64(String)} instead
      */
+    @Deprecated
     public static byte[] decodeBASE64(String value) {
         return Base64.decode(value);
     }
 
     /**
+     * Decode a base64 value
+     *
+     * @param value The base64 encoded String
+     * @return decoded binary data
+     */
+    public static byte[] decodeBase64(String value) {
+        return Base64.decode(value);
+    }
+
+    /**
+     * Decode a URL safe base64 value
+     *
+     * @param value The base64 encoded String that is encoded using {@link #encodeUrlSafeBase64(String)}
+     * @return decoded binary data
+     */
+    public static byte[] decodeUrlSafeBase64(String value) {
+        return UrlSafeBase64.decode(value);
+    }
+
+    /**
      * Build an hexadecimal MD5 hash for a String
+     *
      * @param value The String to hash
      * @return An hexadecimal Hash
      */
@@ -94,6 +160,7 @@ public class Codec {
 
     /**
      * Build an hexadecimal SHA1 hash for a String
+     *
      * @param value The String to hash
      * @return An hexadecimal Hash
      */
@@ -140,6 +207,17 @@ public class Codec {
             return URLDecoder.decode(s, enc.name());
         } catch (UnsupportedEncodingException e) {
             throw E.encodingException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 100; ++i) {
+            String s = S.random(i + 1);
+            String s0 = encodeUrlSafeBase64(s);
+            String s1 = new String(decodeUrlSafeBase64(s0));
+            if (!s.equals(s1)) {
+                System.out.printf("%s -> %s -> %s", s, s0, s1);
+            }
         }
     }
 
