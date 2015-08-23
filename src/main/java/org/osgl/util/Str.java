@@ -568,7 +568,7 @@ public class Str extends StrBase<Str> {
      * @return
      */
     @Override
-    public char[] chars() {
+    public char[] charArray() {
         return s.toCharArray();
     }
 

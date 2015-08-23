@@ -1554,7 +1554,7 @@ public enum C {
          *
          * @return a sorted copy of this list
          */
-        List<T> sort();
+        List<T> sorted();
 
         /**
          * Return a list that contains unique set of this list and keep the orders. If
@@ -1579,7 +1579,7 @@ public enum C {
          * @param comparator specify the order of elements in the result list
          * @return an ordered copy of this list
          */
-        List<T> sort(Comparator<? super T> comparator);
+        List<T> sorted(Comparator<? super T> comparator);
 
         @Override
         List<T> subList(int fromIndex, int toIndex);

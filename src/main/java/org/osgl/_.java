@@ -24,6 +24,8 @@ import org.osgl.exception.FastRuntimeException;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.exception.UnexpectedException;
 import org.osgl.util.*;
+import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
 
 import java.io.*;
 import java.lang.reflect.Array;
@@ -4705,11 +4707,29 @@ public class _ {
         }
     }
 
-    public static <T> T newInstance(String className) {
+    public static <T> T newInstance(final String className) {
+        Object o = __primitiveInstances.get(className);
+        if (null != o) return (T)o;
+        // see http://stackoverflow.com/questions/27719295/java-lang-internalerror-callersensitive-annotation-expected-at-frame-1
+        return new SecurityManager() {
+            private T t;
+            {
+                try {
+                    Class caller = getClassContext()[3];
+                    Class<T> c = (Class<T>) Class.forName(className, true, caller.getClassLoader());
+                    t = c.newInstance();
+                } catch (Exception e) {
+                    throw new UnexpectedException(e);
+                }
+            }
+        }.t;
+    }
+
+    public static <T> T newInstance(final String className, ClassLoader cl) {
         Object o = __primitiveInstances.get(className);
         if (null != o) return (T)o;
         try {
-            Class<T> c = (Class<T>) Class.forName(className);
+            Class<T> c = (Class<T>) Class.forName(className, true, cl);
             return c.newInstance();
         } catch (Exception e) {
             throw new UnexpectedException(e);
@@ -5502,6 +5522,11 @@ public class _ {
     public static <T> T random(C.Range<T> range) {
         int n = new Random().nextInt(range.size()) + 1;
         return range.tail(n).head();
+    }
+
+    public static <T> T NPE(T o) {
+        E.NPE(o);
+        return o;
     }
 
     private static ContextLocal.Factory clf;

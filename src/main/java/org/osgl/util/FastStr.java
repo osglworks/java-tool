@@ -383,7 +383,7 @@ public class FastStr extends StrBase<FastStr>
     @Override
     public FastStr copy() {
         if (EMPTY_STR == this) return this;
-        return unsafeOf(chars(), 0, size());
+        return unsafeOf(charArray(), 0, size());
     }
 
     /**
@@ -435,7 +435,7 @@ public class FastStr extends StrBase<FastStr>
 
     @Override
     public String toString() {
-        char[] newBuf = chars();
+        char[] newBuf = charArray();
         try {
             return Unsafe.stringOf(newBuf);
         } catch (Exception e) {
@@ -1106,7 +1106,7 @@ public class FastStr extends StrBase<FastStr>
      *
      * @return
      */
-    public char[] chars() {
+    public char[] charArray() {
         char[] newBuf = new char[size()];
         copyTo(newBuf, 0);
         return newBuf;
@@ -1466,7 +1466,7 @@ public class FastStr extends StrBase<FastStr>
     }
 
     public static char[] bufOf(CharSequence chars) {
-        return FastStr.of(chars).chars();
+        return FastStr.of(chars).charArray();
     }
 
     private static char highSurrogate(int codePoint) {

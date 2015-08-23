@@ -83,7 +83,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     public abstract T toLowerCase(Locale locale);
     public abstract T toUpperCase(Locale locale);
     public abstract T trim();
-    public abstract char[] chars();
+    public abstract char[] charArray();
     public abstract String intern();
     public abstract T afterFirst(String s);
     public abstract T afterFirst(T s);
@@ -725,7 +725,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      * @return
      */
     public final char[] toCharArray() {
-        return chars();
+        return charArray();
     }
 
     public static enum F {
