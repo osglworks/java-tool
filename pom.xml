@@ -95,6 +95,7 @@
 - rename StrBase.chars - StrBase.charArray to avoid conflict with Java 8 CharSequence.chars
 - Add static T NPE(T) to osgl (_) class
 - Add encodeUrlSafeBase64 and decodeUrlSafeBase64 method to Codec
+- Add genSecret, genRandomDigit, genRandomStr to Crypto
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">

@@ -293,6 +293,107 @@ public enum Crypto {
         }
     }
 
+
+    /**
+     * Generate a secret string from random byte array
+     * @param len the number of bytes used to generate the secret
+     * @return the secret
+     */
+    public static String genSecret(int len) {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[len];
+        random.nextBytes(bytes);
+        String s = Codec.encodeUrlSafeBase64(bytes);
+        if (s.endsWith(".")) {
+            s = S.beforeFirst(s, ".");
+        }
+        return s;
+    }
+
+    /**
+     * Generate secret string using 4 bytes
+     * @return the secret
+     */
+    public static String genSecret() {
+        return genSecret(4);
+    }
+
+    private static final char[] digits = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+    };
+
+    private static final int DIGITS_SIZE = digits.length;
+
+    /**
+     * Generate random digital string with the size specified. The
+     * method use the {@link SecureRandom}
+     * @param len the number of digits in the string generated
+     * @return a string contains random digits
+     */
+    public static String genRandomDigits(int len) {
+        E.illegalArgumentIf(len < 1);
+        SecureRandom random = new SecureRandom();
+        char[] ca = new char[len];
+        for (int i = 0; i < len; ++i) {
+            ca[i] = digits[random.nextInt(DIGITS_SIZE)];
+        }
+        return new String(ca);
+    }
+
+    /**
+     * Generate random digital string of random size range from 4 to 12 inclusive
+     * @return a random digital string
+     * @see #genRandomDigits(int)
+     */
+    public static String genRandomDigits() {
+        SecureRandom random = new SecureRandom();
+        int n = random.nextInt(8) + 4;
+        return genRandomDigits(n);
+    }
+
+    private final static char[] symbols = {
+            '0' , '1' , '2' , '3' , '4' , '5' ,
+            '6' , '7' , '8' , '9' , 'a' , 'b' ,
+            'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
+            'i' , 'j' , 'k' , 'm' , 'n' ,
+            'o' , 'p' , 'q' , 'r' , 's' , 't' ,
+            'u' , 'v' , 'w' , 'x' , 'y' , 'z' ,
+            'A' , 'B' , 'C' , 'D' , 'E' , 'F' ,
+            'G' , 'H' , 'J' , 'K' , 'L' ,
+            'M' , 'N' , 'P' , 'Q' , 'R' ,
+            'S' , 'T' , 'U' , 'V' , 'W' , 'X' ,
+            'Y' , 'Z' , '!' , '.' , '-' , '*' ,
+    };
+
+    private final static int SYMBOL_SIZE = symbols.length;
+
+    /**
+     * Generate random String with readable characters. This
+     * method will use the {@link SecureRandom}
+     * @param len the size of the string returned
+     * @return the string generated
+     */
+    public static String genRandomStr(int len) {
+        E.illegalArgumentIf(len < 1);
+        SecureRandom random = new SecureRandom();
+        char[] ca = new char[len];
+        for (int i = 0; i < len; ++i) {
+            ca[i] = symbols[random.nextInt(SYMBOL_SIZE)];
+        }
+        return new String(ca);
+    }
+
+    /**
+     * Generate random string with random length from 4 to 12 inclusive
+     * @return the string genrated
+     * @see #genRandomStr(int)
+     */
+    public static String genRandomStr() {
+        SecureRandom random = new SecureRandom();
+        int len = random.nextInt(12) + 4;
+        return genRandomStr(len);
+    }
+
     public static void main(String[] args) {
         a();
     }
