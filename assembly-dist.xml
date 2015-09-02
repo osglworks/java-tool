@@ -34,7 +34,6 @@ under the License.
             <directory>${basedir}</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>samples/**</include>
                 <include>src/**</include>
                 <include>assembly-dist.xml</include>
                 <include>pom.xml</include>
