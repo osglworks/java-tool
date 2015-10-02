@@ -96,6 +96,9 @@
 - Add static T NPE(T) to osgl (_) class
 - Add encodeUrlSafeBase64 and decodeUrlSafeBase64 method to Codec
 - Add genSecret, genRandomDigit, genRandomStr to Crypto
+
+0.7.1-SNAPSHOT
+- Fix issue _.newInstance(...) failure when there are overloaded constructor with first parameter type is the same
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -105,7 +108,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.7.1-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>

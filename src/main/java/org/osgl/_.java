@@ -4747,9 +4747,8 @@ public class _ {
         }
     }
 
-    private static boolean testConstructor(Constructor c, Object p, int pos) {
+    private static boolean testConstructor(Class[] pts, Object p, int pos) {
         E.invalidArgIf(pos < 0);
-        Class[] pts = c.getParameterTypes();
         if (pos < pts.length) {
             Class pt = pts[pos];
             return (pt.isAssignableFrom(p.getClass()));
@@ -4770,9 +4769,14 @@ public class _ {
         try {
             Constructor[] ca = c.getConstructors();
             for (Constructor<T> ct : ca) {
-                if (testConstructor(ct, p1, 0)) {
-                    return ct.newInstance(p1);
+                Class[] pts = ct.getParameterTypes();
+                if (pts.length != 1 && !ct.isVarArgs()) {
+                    continue;
                 }
+                if (!testConstructor(pts, p1, 0)) {
+                    continue;
+                }
+                return ct.newInstance(p1);
             }
             throw E.unexpected("constructor not found");
         } catch (Exception e) {
@@ -4784,10 +4788,14 @@ public class _ {
         try {
             Constructor[] ca = c.getConstructors();
             for (Constructor<T> ct : ca) {
-                if (!testConstructor(ct, p1, 0)) {
+                Class[] pts = ct.getParameterTypes();
+                if (pts.length != 2 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(ct, p2, 1)) {
+                if (!testConstructor(pts, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(pts, p2, 1)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2);
@@ -4802,13 +4810,17 @@ public class _ {
         try {
             Constructor[] ca = c.getConstructors();
             for (Constructor<T> ct : ca) {
-                if (!testConstructor(ct, p1, 0)) {
+                Class[] pts = ct.getParameterTypes();
+                if (pts.length != 3 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(ct, p2, 1)) {
+                if (!testConstructor(pts, p1, 0)) {
                     continue;
                 }
-                if (!testConstructor(ct, p3, 2)) {
+                if (!testConstructor(pts, p2, 1)) {
+                    continue;
+                }
+                if (!testConstructor(pts, p3, 2)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2, p3);
@@ -4823,16 +4835,20 @@ public class _ {
         try {
             Constructor[] ca = c.getConstructors();
             for (Constructor<T> ct : ca) {
-                if (!testConstructor(ct, p1, 0)) {
+                Class[] pts = ct.getParameterTypes();
+                if (pts.length != 4 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(ct, p2, 1)) {
+                if (!testConstructor(pts, p1, 0)) {
                     continue;
                 }
-                if (!testConstructor(ct, p3, 2)) {
+                if (!testConstructor(pts, p2, 1)) {
                     continue;
                 }
-                if (!testConstructor(ct, p4, 4)) {
+                if (!testConstructor(pts, p3, 2)) {
+                    continue;
+                }
+                if (!testConstructor(pts, p4, 4)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2, p3, p4);
@@ -4847,19 +4863,23 @@ public class _ {
         try {
             Constructor[] ca = c.getConstructors();
             for (Constructor<T> ct : ca) {
-                if (!testConstructor(ct, p1, 0)) {
+                Class[] pts = ct.getParameterTypes();
+                if (pts.length != 5 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(ct, p2, 1)) {
+                if (!testConstructor(pts, p1, 0)) {
                     continue;
                 }
-                if (!testConstructor(ct, p3, 2)) {
+                if (!testConstructor(pts, p2, 1)) {
                     continue;
                 }
-                if (!testConstructor(ct, p4, 4)) {
+                if (!testConstructor(pts, p3, 2)) {
                     continue;
                 }
-                if (!testConstructor(ct, p5, 5)) {
+                if (!testConstructor(pts, p4, 4)) {
+                    continue;
+                }
+                if (!testConstructor(pts, p5, 5)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2, p3, p4, p5);
