@@ -99,6 +99,8 @@
 
 0.7.1-SNAPSHOT
 - Fix issue _.newInstance(...) failure when there are overloaded constructor with first parameter type is the same
+- Add T _.async(_.F0<T>, long)
+- Add N.round(float, int) and N.round(double, int) method
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">

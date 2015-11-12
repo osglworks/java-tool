@@ -34,6 +34,8 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <code>_</code> is the umbrella namespace aggregates core utilities of OSGL toolkit:
@@ -5547,6 +5549,57 @@ public class _ {
     public static <T> T NPE(T o) {
         E.NPE(o);
         return o;
+    }
+
+    /**
+     * The default thread factory
+     */
+    private static class DefaultThreadFactory implements ThreadFactory {
+        private static final AtomicInteger poolNumber = new AtomicInteger(1);
+        private final ThreadGroup group;
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+        private final String namePrefix;
+
+        DefaultThreadFactory() {
+            SecurityManager s = System.getSecurityManager();
+            group = (s != null) ? s.getThreadGroup() :
+                    Thread.currentThread().getThreadGroup();
+            namePrefix = "pool-" +
+                    poolNumber.getAndIncrement() +
+                    "-thread-";
+        }
+
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(group, r,
+                    namePrefix + threadNumber.getAndIncrement(),
+                    0);
+            if (!t.isDaemon())
+                t.setDaemon(true);
+            if (t.getPriority() != Thread.NORM_PRIORITY)
+                t.setPriority(Thread.NORM_PRIORITY);
+            return t;
+        }
+    }
+
+    private static ExecutorService _exec = new ThreadPoolExecutor(2, 2,
+            0L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>(), new DefaultThreadFactory() {});
+
+    /**
+     * Execute callback asynchronously after delay specified
+     * @param callback the callback function to be executed
+     * @param milliseconds the delay
+     * @param <T> return type
+     * @return the result of the callback
+     */
+    public static <T> Future<T> async(final _.F0<T> callback, final int milliseconds) {
+        return _exec.submit(new Callable<T>() {
+            @Override
+            public T call() throws Exception {
+                Thread.sleep(milliseconds);
+                return callback.apply();
+            }
+        });
     }
 
     private static ContextLocal.Factory clf;
