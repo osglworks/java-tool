@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -13,12 +13,12 @@ import java.util.Iterator;
  */
 class IndexFilteredRSeq<T> extends DelegatingRSeq<T> {
 
-    private _.Predicate<Integer> filter;
+    private $.Predicate<Integer> filter;
 
-    IndexFilteredRSeq(C.ReversibleSequence<T> rseq, _.Function<Integer, Boolean> predicate) {
+    IndexFilteredRSeq(C.ReversibleSequence<T> rseq, $.Function<Integer, Boolean> predicate) {
         super(rseq);
         E.NPE(predicate);
-        filter = _.predicate(predicate);
+        filter = $.predicate(predicate);
     }
 
     @Override
@@ -26,7 +26,7 @@ class IndexFilteredRSeq<T> extends DelegatingRSeq<T> {
         return Iterators.filterIndex(super.iterator(), filter);
     }
 
-    static <T> C.ReversibleSequence<T> of(C.ReversibleSequence<T> rseq, _.Function<Integer, Boolean> predicate) {
+    static <T> C.ReversibleSequence<T> of(C.ReversibleSequence<T> rseq, $.Function<Integer, Boolean> predicate) {
         return new IndexFilteredRSeq<T>(rseq, predicate);
     }
 

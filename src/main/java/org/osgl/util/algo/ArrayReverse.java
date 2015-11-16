@@ -1,15 +1,15 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.E;
 
 /**
  * Return an new array contains elements specified by from and to in an array in reverse order
  */
-public class ArrayReverse<T> implements ArrayAlgorithm, _.Func3<T[], Integer, Integer,  T[]> {
+public class ArrayReverse<T> implements ArrayAlgorithm, $.Func3<T[], Integer, Integer,  T[]> {
     @Override
-    public T[] apply(T[] ts, Integer from, Integer to) throws NotAppliedException, _.Break {
+    public T[] apply(T[] ts, Integer from, Integer to) throws NotAppliedException, $.Break {
         return reverse(ts, from, to);
     }
 
@@ -20,7 +20,7 @@ public class ArrayReverse<T> implements ArrayAlgorithm, _.Func3<T[], Integer, In
             int t = to; to = from; from = t;
         }
         int len = to - from;
-        T[] newTs = _.newArray(ts, len);
+        T[] newTs = $.newArray(ts, len);
         if (0 == len) {
             return newTs;
         }

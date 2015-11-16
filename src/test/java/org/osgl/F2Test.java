@@ -10,11 +10,11 @@ import org.osgl.util.N;
  */
 public class F2Test extends FuncTestBase {
 
-    private _.F2<Number, Number, Number> divide = N.F.DIVIDE;
-    private _.F2<Number, Number, Number> multiply = N.F.MULTIPLY;
-    private _.F2<Number, Number, Number> inCaseFailed = new _.F2<Number, Number, Number>() {
+    private $.F2<Number, Number, Number> divide = N.F.DIVIDE;
+    private $.F2<Number, Number, Number> multiply = N.F.MULTIPLY;
+    private $.F2<Number, Number, Number> inCaseFailed = new $.F2<Number, Number, Number>() {
         @Override
-        public Number apply(Number number, Number number2) throws NotAppliedException, _.Break {
+        public Number apply(Number number, Number number2) throws NotAppliedException, $.Break {
             return ERROR_VAL;
         }
     };

@@ -7,17 +7,17 @@ import org.osgl.util.E;
 
 public class F5Test extends FuncTestBase {
 
-    private _.F5<String, String, String, String, String, Integer> calcHashCode = new _.F5<String, String, String, String, String, Integer>() {
+    private $.F5<String, String, String, String, String, Integer> calcHashCode = new $.F5<String, String, String, String, String, Integer>() {
         @Override
-        public Integer apply(String s1, String s2, String s3, String s4, String s5) throws NotAppliedException, _.Break {
+        public Integer apply(String s1, String s2, String s3, String s4, String s5) throws NotAppliedException, $.Break {
             E.NPE(s1, s2, s3, s4, s5);
             return (s1 + s2 + s3 + s4 + s5).hashCode();
         }
     };
 
-    private _.F5<String, String, String, String, String, Integer> calcStringSize = new _.F5<String, String, String, String, String, Integer>() {
+    private $.F5<String, String, String, String, String, Integer> calcStringSize = new $.F5<String, String, String, String, String, Integer>() {
         @Override
-        public Integer apply(String s, String s2, String s3, String s4, String s5) throws NotAppliedException, _.Break {
+        public Integer apply(String s, String s2, String s3, String s4, String s5) throws NotAppliedException, $.Break {
             return (s + s2 + s3 + s4 + s5).length();
         }
     };
@@ -89,22 +89,22 @@ public class F5Test extends FuncTestBase {
 
     @Test
     public void dumbF5AlwaysReturnNull() {
-        eq(null, _.F5.apply(rs1, rs2, rs3, rs4, rs5));
+        eq(null, $.F5.apply(rs1, rs2, rs3, rs4, rs5));
     }
 
     @Test
     public void f5ShallChangeFunc3ImplToF5Type() {
-        _.Func5<String, String, String, String, String, Integer> foo = new _.Func5<String, String, String, String, String, Integer>() {
+        $.Func5<String, String, String, String, String, Integer> foo = new $.Func5<String, String, String, String, String, Integer>() {
             @Override
-            public Integer apply(String s, String s2, String s3, String s4, String s5) throws NotAppliedException, _.Break {
+            public Integer apply(String s, String s2, String s3, String s4, String s5) throws NotAppliedException, $.Break {
                 return null;
             }
         };
-        yes(_.f5(foo) instanceof _.F5);
+        yes($.f5(foo) instanceof $.F5);
     }
 
     @Test
     public void f5ShallReturnTheSameInstanceIfAppliedToF5Type() {
-        yes(calcHashCode == _.f5(calcHashCode));
+        yes(calcHashCode == $.f5(calcHashCode));
     }
 }

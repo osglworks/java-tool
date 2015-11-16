@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -12,14 +12,12 @@ import static java.lang.Character.*;
 
 /**
  * FastStr implements the same contract of Str with the a char array.
- * <p/>
  * This class is marked as Fast because of the following points:
  * 1. When unsafeOf(String) is called, it share the internal value (the char array) of the
  * String been passed in
  * 2. when unsafeOf(char[]) is called, it use the char array passed in directly without
  * copy operation
  * 3. subList and substring works at O(1) because it will NOT copy the internal char array
- * <p/>
  * Note, this class shall be used with caution as it might prevent a very large char array
  * from been garbage collected when the char array is passed to a FastStr or substr of
  * the fast string
@@ -120,7 +118,7 @@ public class FastStr extends StrBase<FastStr>
     }
 
     @Override
-    public FastStr takeWhile(_.Function<? super Character, Boolean> predicate) {
+    public FastStr takeWhile($.Function<? super Character, Boolean> predicate) {
         if (isEmpty()) {
             return EMPTY_STR;
         }
@@ -134,7 +132,7 @@ public class FastStr extends StrBase<FastStr>
     }
 
     @Override
-    public FastStr dropWhile(_.Function<? super Character, Boolean> predicate) {
+    public FastStr dropWhile($.Function<? super Character, Boolean> predicate) {
         int sz = size();
         if (sz == 0) return EMPTY_STR;
         int b = -1, e = toInternalId(sz);
@@ -147,7 +145,7 @@ public class FastStr extends StrBase<FastStr>
     }
 
     @Override
-    public FastStr remove(_.Function<? super Character, Boolean> predicate) {
+    public FastStr remove($.Function<? super Character, Boolean> predicate) {
         final int sz = size();
         if (sz == 0) return EMPTY_STR;
         char[] newBuf = null;

@@ -13,7 +13,7 @@ public class OsglTest extends TestBase {
     public void testRandom() {
         C.Range<Integer> r = C.range(10, 100);
         for (int i = 0; i < 100; ++i) {
-            int n = _.random(r);
+            int n = $.random(r);
             yes(n >= 10);
             yes(n < 100);
         }

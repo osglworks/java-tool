@@ -7,23 +7,23 @@ import org.osgl.util.S;
 
 public class F1Test extends TestBase {
 
-    private _.F1<String, String> toLowerCase = new _.F1<String, String>() {
+    private $.F1<String, String> toLowerCase = new $.F1<String, String>() {
         @Override
-        public String apply(String s) throws NotAppliedException, _.Break {
+        public String apply(String s) throws NotAppliedException, $.Break {
             return s.toLowerCase();
         }
     };
 
-    private _.F1<String, String> toUpperCase = new _.F1<String, String>() {
+    private $.F1<String, String> toUpperCase = new $.F1<String, String>() {
         @Override
-        public String apply(String s) throws NotAppliedException, _.Break {
+        public String apply(String s) throws NotAppliedException, $.Break {
             return s.toUpperCase();
         }
     };
 
-    private _.F1<String, String> inCaseFailed = new _.F1<String, String>() {
+    private $.F1<String, String> inCaseFailed = new $.F1<String, String>() {
         @Override
-        public String apply(String s) throws NotAppliedException, _.Break {
+        public String apply(String s) throws NotAppliedException, $.Break {
             return "failed";
         }
     };
@@ -84,9 +84,9 @@ public class F1Test extends TestBase {
     @Test
     public void testComposeWithFunc2() {
         String randStr2 = newRandStr();
-        _.Func2<String, String, String> concat = new _.Func2<String, String, String>() {
+        $.Func2<String, String, String> concat = new $.Func2<String, String, String>() {
             @Override
-            public String apply(String s, String s2) throws NotAppliedException, _.Break {
+            public String apply(String s, String s2) throws NotAppliedException, $.Break {
                 return s + s2;
             }
         };
@@ -96,9 +96,9 @@ public class F1Test extends TestBase {
     @Test
     public void testComposeWithFunc3() {
         String randStr2 = newRandStr(), randStr3 = newRandStr();
-        _.Func3<String, String, String, String> concat = new _.Func3<String, String, String, String>() {
+        $.Func3<String, String, String, String> concat = new $.Func3<String, String, String, String>() {
             @Override
-            public String apply(String s, String s2, String s3) throws NotAppliedException, _.Break {
+            public String apply(String s, String s2, String s3) throws NotAppliedException, $.Break {
                 return s + s2 + s3;
             }
         };
@@ -109,9 +109,9 @@ public class F1Test extends TestBase {
     @Test
     public void testComposeWithFunc4() {
         String randStr2 = newRandStr(), randStr3 = newRandStr(), randStr4 = newRandStr();
-        _.Func4<String, String, String, String, String> concat = new _.Func4<String, String, String, String, String>() {
+        $.Func4<String, String, String, String, String> concat = new $.Func4<String, String, String, String, String>() {
             @Override
-            public String apply(String s, String s2, String s3, String s4) throws NotAppliedException, _.Break {
+            public String apply(String s, String s2, String s3, String s4) throws NotAppliedException, $.Break {
                 return s + s2 + s3 + s4;
             }
         };
@@ -123,11 +123,11 @@ public class F1Test extends TestBase {
     public void testComposeWithFunc5() {
         String randStr2 = newRandStr(), randStr3 = newRandStr(),
                randStr4 = newRandStr(), randStr5 = newRandStr();
-        _.Func5<String, String, String, String, String, String> concat;
-        concat = new _.Func5<String, String, String, String, String, String>() {
+        $.Func5<String, String, String, String, String, String> concat;
+        concat = new $.Func5<String, String, String, String, String, String>() {
             @Override
             public String apply(String s, String s2, String s3, String s4, String s5)
-            throws NotAppliedException, _.Break {
+            throws NotAppliedException, $.Break {
                 return s + s2 + s3 + s4 + s5;
             }
         };

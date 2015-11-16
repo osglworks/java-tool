@@ -1,11 +1,10 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.Algorithms;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -259,23 +258,23 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public <R> C.List<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.List<R> map($.Function<? super T, ? extends R> mapper) {
         if (isLazy()) {
             return MappedList.of(this, mapper);
         }
         int sz = size();
         ListBuilder<R> lb = new ListBuilder<R>(sz);
-        forEach(_.f1(mapper).andThen(C.F.addTo(lb)));
+        forEach($.f1(mapper).andThen(C.F.addTo(lb)));
         return lb.toList();
     }
 
     @Override
-    public <R> C.List<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
+    public <R> C.List<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper
     ) {
         // TODO: handle lazy operation
         int sz = size();
         ListBuilder<R> lb = new ListBuilder<R>(sz * 3);
-        forEach(_.f1(mapper).andThen(C.F.addAllTo(lb)));
+        forEach($.f1(mapper).andThen(C.F.addAllTo(lb)));
         return lb.toList();
     }
 
@@ -292,7 +291,7 @@ implements C.List<T>, RandomAccess, Serializable {
         int szA = size();
         T[] dataA = data_;
         Object[] dataB = collection.toArray();
-        T[] data = _.newArray(dataA, szA + szB);
+        T[] data = $.newArray(dataA, szA + szB);
         System.arraycopy(dataA, 0, data, 0, szA);
         System.arraycopy(dataB, 0, data, szA, szB);
         return of(data);
@@ -347,7 +346,7 @@ implements C.List<T>, RandomAccess, Serializable {
         int szA = size();
         int szB = l.size();
         T[] dataA = data_;
-        T[] data = _.newArray(dataA, szA + szB);
+        T[] data = $.newArray(dataA, szA + szB);
         System.arraycopy(dataA, 0, data, 0, szA);
         System.arraycopy(l.data_, 0, data, szA, szB);
         return of(data);
@@ -365,7 +364,7 @@ implements C.List<T>, RandomAccess, Serializable {
         int szA = size();
         T[] dataA = data_;
         Object[] dataB = collection.toArray();
-        T[] data = _.newArray(dataA, szA + szB);
+        T[] data = $.newArray(dataA, szA + szB);
         System.arraycopy(dataB, 0, data, 0, szB);
         System.arraycopy(dataA, 0, data, szB, szA);
         return of(data);
@@ -422,7 +421,7 @@ implements C.List<T>, RandomAccess, Serializable {
         int szA = size();
         int szB = l.size();
         T[] myData = data_;
-        T[] data = _.newArray(myData, szA + szB);
+        T[] data = $.newArray(myData, szA + szB);
         System.arraycopy(l.data_, 0, data, 0, szB);
         System.arraycopy(myData, 0, data, szB, szA);
         return of(data);
@@ -457,19 +456,19 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public _.Option<T> findLast(_.Function<? super T, Boolean> predicate) {
+    public $.Option<T> findLast($.Function<? super T, Boolean> predicate) {
         T[] ta = data_;
         for (int i = ta.length - 1; i >= 0; --i) {
             T t = ta[i];
             if (predicate.apply(t)) {
-                return _.some(t);
+                return $.some(t);
             }
         }
-        return _.none();
+        return $.none();
     }
 
     @Override
-    public C.List<T> takeWhile(_.Function<? super T, Boolean> predicate) {
+    public C.List<T> takeWhile($.Function<? super T, Boolean> predicate) {
         int sz = size();
         ListBuilder<T> lb = new ListBuilder<T>(sz);
         for (T t : this) {
@@ -503,7 +502,7 @@ implements C.List<T>, RandomAccess, Serializable {
         ListBuilder<T> lb = new ListBuilder<T>(sz);
         for (int i = 0; i < sz; ++i) {
             T t = data[i];
-            if (_.ne(t, element)) {
+            if ($.ne(t, element)) {
                 lb.add(t);
             }
         }
@@ -526,7 +525,7 @@ implements C.List<T>, RandomAccess, Serializable {
         if (c) {
             for (int i = 0; i < sz; ++i) {
                 T t = data[i];
-                if (_.eq(t, element)) {
+                if ($.eq(t, element)) {
                     continue;
                 }
                 int id = Arrays.binarySearch(elements, t);
@@ -536,12 +535,12 @@ implements C.List<T>, RandomAccess, Serializable {
         } else {
             for (int i = 0; i < sz; ++i) {
                 T t = data[i];
-                if (_.eq(t, element)) {
+                if ($.eq(t, element)) {
                     continue;
                 }
                 boolean found = false;
                 for (int j = 0; j < len; ++j) {
-                    if (_.eq(elements[j], t)) {
+                    if ($.eq(elements[j], t)) {
                         found = true;
                         break;
                     };
@@ -568,7 +567,7 @@ implements C.List<T>, RandomAccess, Serializable {
     public C.List<T> prepend(T t) {
         int sz = size();
         T[] myData = data_;
-        T[] data = _.newArray(myData, sz + 1);
+        T[] data = $.newArray(myData, sz + 1);
         data[0] = t;
         System.arraycopy(myData, 0, data, 1, sz);
         return of(data);
@@ -578,7 +577,7 @@ implements C.List<T>, RandomAccess, Serializable {
     public C.List<T> append(T t) {
         int sz = size();
         T[] myData = data_;
-        T[] data = _.newArray(myData, sz + 1);
+        T[] data = $.newArray(myData, sz + 1);
         data[sz] = t;
         System.arraycopy(myData, 0, data, 0, sz);
         return of(data);
@@ -588,7 +587,7 @@ implements C.List<T>, RandomAccess, Serializable {
     public C.List<T> insert(int index, T t) throws IndexOutOfBoundsException {
         T[] myData = data_;
         int sz = data_.length;
-        T[] data = _.newArray(myData, sz + 1);
+        T[] data = $.newArray(myData, sz + 1);
         System.arraycopy(myData, 0, data, 0, index);
         data[index] = t;
         System.arraycopy(myData, index, data, index + 1, sz - index);
@@ -693,7 +692,7 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public Cursor<T> locateLast(_.Function<T, Boolean> predicate) {
+    public Cursor<T> locateLast($.Function<T, Boolean> predicate) {
         int sz = size();
         T[] data = data_;
         for (int i = sz - 1; i >= 0; --i) {
@@ -706,12 +705,12 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public Cursor<T> locate(_.Function<T, Boolean> predicate) {
+    public Cursor<T> locate($.Function<T, Boolean> predicate) {
         return locateFirst(predicate);
     }
 
     @Override
-    public Cursor<T> locateFirst(_.Function<T, Boolean> predicate) {
+    public Cursor<T> locateFirst($.Function<T, Boolean> predicate) {
         int sz = size();
         T[] data = data_;
         for (int i = 0; i < sz; ++i) {
@@ -724,13 +723,13 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public C.List<T> filter(_.Function<? super T, Boolean> predicate) {
+    public C.List<T> filter($.Function<? super T, Boolean> predicate) {
         // TODO: handle lazy operation
         int sz = size();
         if (0 == sz) {
             return Nil.list();
         }
-        T[] data = _.newArray(data_);
+        T[] data = $.newArray(data_);
         int cursor = 0;
         for (int i = 0; i < sz; ++i) {
             T t = data_[i];
@@ -746,10 +745,10 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public C.List<T> dropWhile(_.Function<? super T, Boolean> predicate) {
+    public C.List<T> dropWhile($.Function<? super T, Boolean> predicate) {
         //TODO: handle lazy operation
         int sz = size();
-        _.Function<T, Boolean> f = _.F.negate(predicate);
+        $.Function<T, Boolean> f = $.F.negate(predicate);
         Cursor<T> cursor = locateFirst(f);
         if (!cursor.isDefined()) {
             return Nil.list();
@@ -809,7 +808,7 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    protected void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break {
+    protected void forEachLeft($.Function<? super T, ?> visitor) throws $.Break {
         int sz = size();
         T[] data = data_;
         for (int i = 0; i < sz; ++i) {
@@ -823,7 +822,7 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    protected void forEachRight(_.Function<? super T, ?> visitor) throws _.Break {
+    protected void forEachRight($.Function<? super T, ?> visitor) throws $.Break {
         int sz = size();
         T[] data = data_;
         for (int i = sz - 1; i >= 0; --i) {
@@ -837,17 +836,17 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public _.Option<T> findOne(_.Function<? super T, Boolean> predicate) {
+    public $.Option<T> findOne($.Function<? super T, Boolean> predicate) {
         //todo parallel finding
         int sz = size();
         T[] data = data_;
         for (int i = 0; i < sz; ++i) {
             T t = data[i];
             if (predicate.apply(t)) {
-                return _.some(t);
+                return $.some(t);
             }
         }
-        return _.none();
+        return $.none();
     }
 
     @Override
@@ -861,13 +860,13 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public <R> R reduce(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduce(R identity, $.Func2<R, T, R> accumulator) {
         // TODO: parallel
         return reduceLeft(identity, accumulator);
     }
 
     @Override
-    public <R> R reduceLeft(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduceLeft(R identity, $.Func2<R, T, R> accumulator) {
         int sz = size();
         R ret = identity;
         T[] data = data_;
@@ -878,7 +877,7 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduceRight(R identity, $.Func2<R, T, R> accumulator) {
         int sz = size();
         R ret = identity;
         T[] data = data_;
@@ -889,31 +888,31 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public _.Option<T> reduce(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduce($.Func2<T, T, T> accumulator) {
         // TODO parallel
         return reduceLeft(accumulator);
     }
 
     @Override
-    public _.Option<T> reduceLeft(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduceLeft($.Func2<T, T, T> accumulator) {
         int sz = size();
         T[] data = data_;
         T ret = data[0];
         for (int i = 1; i < sz; ++i) {
             ret = accumulator.apply(ret, data[i]);
         }
-        return _.some(ret);
+        return $.some(ret);
     }
 
     @Override
-    public _.Option<T> reduceRight(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduceRight($.Func2<T, T, T> accumulator) {
         int sz = size();
         T[] data = data_;
         T ret = data[sz - 1];
         for (int i = sz - 2; i >= 0; --i) {
             ret = accumulator.apply(ret, data[i]);
         }
-        return _.some(ret);
+        return $.some(ret);
     }
 
     @Override
@@ -932,7 +931,7 @@ implements C.List<T>, RandomAccess, Serializable {
         if (len == 0) {
             return Nil.list();
         } else if (len == 1) {
-            return _.val(data[0]);
+            return $.val(data[0]);
         } else {
             return new ImmutableList<T>(data);
         }

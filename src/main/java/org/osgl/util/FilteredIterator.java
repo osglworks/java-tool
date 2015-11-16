@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -17,31 +17,31 @@ class FilteredIterator<T> extends StatefulIterator<T> {
         ALL,
         WHILE,
         UNTIL;
-        <T> Iterator<T> filter(Iterator<T> raw, _.Function<? super T, Boolean> predicate) {
+        <T> Iterator<T> filter(Iterator<T> raw, $.Function<? super T, Boolean> predicate) {
             return new FilteredIterator<T>(raw, predicate, this);
         }
     }
 
     private final Iterator<? extends T> itr_;
-    private final _.Predicate<T> filter_;
+    private final $.Predicate<T> filter_;
     private final Type type_;
     private boolean start_;
 
-    FilteredIterator(Iterator<? extends T> iterator, _.Function<? super T, Boolean> filter) {
+    FilteredIterator(Iterator<? extends T> iterator, $.Function<? super T, Boolean> filter) {
         this(iterator, filter, Type.ALL);
     }
 
-    FilteredIterator(Iterator<? extends T> iterator, _.Function<? super T, Boolean> filter, Type type) {
+    FilteredIterator(Iterator<? extends T> iterator, $.Function<? super T, Boolean> filter, Type type) {
         E.NPE(iterator, filter);
         itr_ = iterator;
-        filter_ = _.predicate(filter);
+        filter_ = $.predicate(filter);
         type_ = type;
     }
 
     protected Iterator<? extends T> data() {return itr_;}
 
     @Override
-    protected _.Option<T> getCurrent() {
+    protected $.Option<T> getCurrent() {
         boolean ok;
         while (itr_.hasNext()) {
             T t = itr_.next();
@@ -49,31 +49,31 @@ class FilteredIterator<T> extends StatefulIterator<T> {
             case ALL:
                 ok = filter_.test(t);
                 if (ok) {
-                    return _.some(t);
+                    return $.some(t);
                 } else {
                     continue;
                 }
             case WHILE:
                 ok = filter_.test(t);
                 if (ok) {
-                    return _.some(t);
+                    return $.some(t);
                 } else {
-                    return _.none();
+                    return $.none();
                 }
             case UNTIL:
                 if (start_) {
-                    return _.some(t);
+                    return $.some(t);
                 }
                 ok = filter_.test(t);
                 if (ok) {
                     start_ = true;
-                    return _.some(t);
+                    return $.some(t);
                 } else {
                     continue;
                 }
             }
         }
-        return _.none();
+        return $.none();
     }
 
 }

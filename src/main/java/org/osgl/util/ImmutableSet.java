@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -57,7 +57,7 @@ class ImmutableSet<T> extends DelegatingSet<T> {
         if (len == 0) {
             return Nil.set();
         } else if (len == 1) {
-            return _.val(data[0]);
+            return $.val(data[0]);
         } else {
             return new ImmutableSet<T>(C.listOf(data));
         }

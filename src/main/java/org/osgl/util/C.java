@@ -19,7 +19,8 @@
 */
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
+import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.Algorithms;
 
@@ -187,13 +188,11 @@ public enum C {
         /**
          * Returns an new traversable with a mapper function specified. The element in the new traversal is the result of the
          * mapper function applied to this traversal element.
-         * <p/>
          * <pre>
          *     Traversable traversable = C.list(23, _.NONE, null);
          *     assertEquals(C.list(true, false, false), traversal.map(_.F.NOT_NULL));
          *     assertEquals(C.list("23", "", ""), traversal.map(_.F.AS_STRING));
          * </pre>
-         * <p/>
          * <p>For Lazy Traversable, it must use lazy evaluation for this method.
          * Otherwise it is up to implementation to decide whether use lazy
          * evaluation or not</p>
@@ -203,7 +202,7 @@ public enum C {
          * @return the new traversal contains results of the mapper function applied to this traversal
          * @since 0.2
          */
-        <R> Traversable<R> map(_.Function<? super T, ? extends R> mapper);
+        <R> Traversable<R> map($.Function<? super T, ? extends R> mapper);
 
         /**
          * Returns a traversable consisting of the results of replacing each element of this
@@ -216,12 +215,11 @@ public enum C {
          * @return the new traversable
          * @since 0.2
          */
-        <R> Traversable<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper);
+        <R> Traversable<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper);
 
         /**
          * Returns an new traversable that contains all elements in the current traversable
          * except that does not pass the test of the filter function specified.
-         * <p/>
          * <pre>
          *     Traversable traversable = C.list(-1, 0, 1, -3, 7);
          *     Traversable filtered = traversable.filter(_.F.gt(0));
@@ -236,7 +234,7 @@ public enum C {
          * @return the new traversable consists of elements passed the filter function test
          * @since 0.2
          */
-        Traversable<T> filter(_.Function<? super T, Boolean> predicate);
+        Traversable<T> filter($.Function<? super T, Boolean> predicate);
 
         /**
          * Performs a reduction on the elements in this traversable, using the provided
@@ -248,7 +246,6 @@ public enum C {
          *      }
          *      return result;
          * </pre>
-         * <p/>
          * <p>The above shows a typical left side reduce. However depending on the
          * implementation, it might choose another way to do the reduction, including
          * reduction in a parallel way</p>
@@ -259,7 +256,7 @@ public enum C {
          * @return the result of reduction
          * @since 0.2
          */
-        <R> R reduce(R identity, _.Func2<R, T, R> accumulator);
+        <R> R reduce(R identity, $.Func2<R, T, R> accumulator);
 
         /**
          * Performs a reduction on the elements in this traversable, using provided accumulating
@@ -277,7 +274,6 @@ public enum C {
          *      }
          *      return found ? _.some(result) : _.none();
          * </pre>
-         * <p/>
          * <p>The above shows a typical left side reduction. However depending on the
          * implementation, it might choose another way to do the reduction, including
          * reduction in a parallel way</p>
@@ -285,11 +281,11 @@ public enum C {
          * @param accumulator the function takes previous accumulating
          *                    result and the current element being
          *                    iterated
-         * @return an option describing the accumulating result or {@link org.osgl._#none()} if
+         * @return an option describing the accumulating result or {@link $#none()} if
          * the structure is empty
          * @since 0.2
          */
-        _.Option<T> reduce(_.Func2<T, T, T> accumulator);
+        $.Option<T> reduce($.Func2<T, T, T> accumulator);
 
         /**
          * Check if all elements match the predicate specified
@@ -298,7 +294,7 @@ public enum C {
          * @return {@code true} if all elements match the predicate
          * @since 0.2
          */
-        boolean allMatch(_.Function<? super T, Boolean> predicate);
+        boolean allMatch($.Function<? super T, Boolean> predicate);
 
         /**
          * Check if any elements matches the predicate specified
@@ -307,12 +303,11 @@ public enum C {
          * @return {@code true} if any element matches the predicate
          * @since 0.2
          */
-        boolean anyMatch(_.Function<? super T, Boolean> predicate);
+        boolean anyMatch($.Function<? super T, Boolean> predicate);
 
         /**
          * Check if no elements matches the predicate specified. This should be
          * equivalent to:
-         * <p/>
          * <pre>
          *      this.allMatch(_.F.negate(predicate));
          * </pre>
@@ -321,7 +316,7 @@ public enum C {
          * @return {@code true} if none element matches the predicate
          * @since 0.2
          */
-        boolean noneMatch(_.Function<? super T, Boolean> predicate);
+        boolean noneMatch($.Function<? super T, Boolean> predicate);
 
         /**
          * Returns an element that matches the predicate specified. The interface
@@ -332,10 +327,10 @@ public enum C {
          *
          * @param predicate the function map element to Boolean
          * @return an element in this traversal that matches the predicate or
-         * {@link _#NONE} if no element matches
+         * {@link $#NONE} if no element matches
          * @since 0.2
          */
-        _.Option<T> findOne(_.Function<? super T, Boolean> predicate);
+        $.Option<T> findOne($.Function<? super T, Boolean> predicate);
 
         /**
          * Iterate this {@code Traversable} with a visitor function. This method
@@ -350,17 +345,17 @@ public enum C {
          * @return this {@code Traversable} instance for chained call
          * @since 0.2
          */
-        Traversable<T> accept(_.Function<? super T, ?> visitor);
+        Traversable<T> accept($.Function<? super T, ?> visitor);
 
         /**
-         * Alias of {@link #accept(org.osgl._.Function)}
+         * Alias of {@link #accept($.Function)}
          */
-        Traversable<T> each(_.Function<? super T, ?> visitor);
+        Traversable<T> each($.Function<? super T, ?> visitor);
 
         /**
-         * Alias of {@link #accept(org.osgl._.Function)}
+         * Alias of {@link #accept($.Function)}
          */
-        Traversable<T> forEach(_.Function<? super T, ?> visitor);
+        Traversable<T> forEach($.Function<? super T, ?> visitor);
     }
 
     public static interface Sequence<T>
@@ -402,8 +397,8 @@ public enum C {
         T first() throws NoSuchElementException;
 
         /**
-         * Returns an {@link _.Option} of the first element in the
-         * {@code Sequence} or {@link _#NONE} if the {@code Sequence} is empty
+         * Returns an {@link $.Option} of the first element in the
+         * {@code Sequence} or {@link $#NONE} if the {@code Sequence} is empty
          *
          * @return the first element from the {@code Sequence}
          * @throws NoSuchElementException if the {@code Sequence} is empty
@@ -434,18 +429,14 @@ public enum C {
         /**
          * Returns a {@code Sequence} consisting the first {@code n} elements from this {@code Sequence} if
          * number {@code n} is positive and the {@code Sequence} contains more than {@code n} elements
-         * <p/>
          * <p>If this {@code Sequence} contains less than {@code n} elements, then a {@code Sequence} consisting
          * the whole elements of this {@code Sequence} is returned. Note it might return this {@code Sequence}
          * itself if the {@code Sequence} is immutable.</p>
-         * <p/>
          * <p>If the number {@code n} is zero, then an empty {@code Sequence} is returned in reverse
          * order</p>
-         * <p/>
          * <p>If the number {@code n} is negative, then the last {@code -n} elements from this
          * {@code Sequence} is returned in an new {@code Sequence}, or throw {@link UnsupportedOperationException}
          * if this operation is not supported</p>
-         * <p/>
          * <pre>
          *     Sequence seq = C.list(1, 2, 3, 4);
          *     assertEquals(C.list(1, 2), seq.take(2));
@@ -465,7 +456,6 @@ public enum C {
         /**
          * Returns an new {@code Sequence} that takes the head of this {@code Sequence} until the predicate
          * evaluate to {@code false}:
-         * <p/>
          * <pre>
          *     C.Sequence seq = C.list(1, 2, 3, 4, 5, 4, 3, 2, 1);
          *     assertEquals(C.list(C.list(1, 2, 3), seq.takeWhile(_.F.lt(4)));
@@ -477,22 +467,18 @@ public enum C {
          * @return the new {@code Sequence}
          * @since 0.2
          */
-        Sequence<T> takeWhile(_.Function<? super T, Boolean> predicate);
+        Sequence<T> takeWhile($.Function<? super T, Boolean> predicate);
 
         /**
          * Returns a {@code Sequence} consisting of the elements from this {@code Sequence} except the first {@code n}
          * if number {@code n} is positive and the {@code Sequence} contains more than {@code n} elements
-         * <p/>
          * <p>If this {@code Sequence} contains less than {@code n} elements, then an empty {@code Sequence}
          * is returned</p>
-         * <p/>
          * <p>If the number {@code n} is zero, then a copy of this {@code Sequence} or this {@code Sequence}
          * itself is returned depending on the implementation</p>
-         * <p/>
          * <p>If the number {@code n} is negative, then either {@link IllegalArgumentException} should
          * be thrown out if this sequence is not {@link org.osgl.util.C.Feature#LIMITED} or it drop
          * {@code -n} element starts from the tail side</p>
-         * <p/>
          * <pre>
          *     C.Sequence seq = C.list(1, 2, 3, 4, 5);
          *     assertEquals(C.list(3, 4, 5), seq.drop(2));
@@ -512,7 +498,6 @@ public enum C {
         /**
          * Returns a {@code Sequence} consisting of the elements from this sequence with leading elements
          * dropped until the predicate returns {@code true}
-         * <p/>
          * <pre>
          *      Sequence seq = C.list(1, 2, 3, 4, 3, 2, 1);
          *      assertTrue(C.list(), seq.dropWhile(_.F.gt(100)));
@@ -525,7 +510,7 @@ public enum C {
          * @return
          * @since 0.2
          */
-        Sequence<T> dropWhile(_.Function<? super T, Boolean> predicate);
+        Sequence<T> dropWhile($.Function<? super T, Boolean> predicate);
 
         /**
          * Returns a sequence consists of all elements of this sequence
@@ -622,7 +607,7 @@ public enum C {
          * @since 0.2
          */
         @Override
-        <R> Sequence<R> map(_.Function<? super T, ? extends R> mapper);
+        <R> Sequence<R> map($.Function<? super T, ? extends R> mapper);
 
         /**
          * {@inheritDoc}
@@ -633,7 +618,7 @@ public enum C {
          * @since 0.2
          */
         @Override
-        <R> Sequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper);
+        <R> Sequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper);
 
         /**
          * {@inheritDoc}
@@ -643,17 +628,16 @@ public enum C {
          * @since 0.2
          */
         @Override
-        Sequence<T> filter(final _.Function<? super T, Boolean> predicate);
+        Sequence<T> filter(final $.Function<? super T, Boolean> predicate);
 
         /**
          * {@inheritDoc}
-         * <p/>
          * This method does not specify how to run the accumulator. It might be
-         * {@link #reduceLeft(Object, org.osgl._.Func2)} or
-         * {@link ReversibleSequence#reduceRight(Object, org.osgl._.Func2)}, or
+         * {@link #reduceLeft(Object, $.Func2)} or
+         * {@link ReversibleSequence#reduceRight(Object, $.Func2)}, or
          * even run reduction in parallel, it all depending on the implementation.
          * <p>For a guaranteed reduce from left to right, use
-         * {@link #reduceLeft(Object, org.osgl._.Func2)} instead</p>
+         * {@link #reduceLeft(Object, $.Func2)} instead</p>
          *
          * @param identity    {@inheritDoc}
          * @param accumulator {@inheritDoc}
@@ -662,7 +646,7 @@ public enum C {
          * @since 0.2
          */
         @Override
-        <R> R reduce(R identity, _.Func2<R, T, R> accumulator);
+        <R> R reduce(R identity, $.Func2<R, T, R> accumulator);
 
         /**
          * Run reduction from header side. This is equivalent to:
@@ -677,28 +661,26 @@ public enum C {
          * @param identity    the identity value for the accumulating function
          * @param accumulator the function to accumulate two values
          * @return the reduced result
-         * @see #reduce(Object, org.osgl._.Func2)
+         * @see #reduce(Object, $.Func2)
          * @since 0.2
          */
-        <R> R reduceLeft(R identity, _.Func2<R, T, R> accumulator);
+        <R> R reduceLeft(R identity, $.Func2<R, T, R> accumulator);
 
         /**
          * {@inheritDoc}
-         * <p/>
          * This method does not specify the approach to run reduction.
          * For a guaranteed reduction from head to tail, use
-         * {@link #reduceLeft(org.osgl._.Func2)} instead
+         * {@link #reduceLeft($.Func2)} instead
          *
          * @param accumulator {@inheritDoc}
          * @return {@inheritDoc}
          * @since 0.2
          */
         @Override
-        _.Option<T> reduce(_.Func2<T, T, T> accumulator);
+        $.Option<T> reduce($.Func2<T, T, T> accumulator);
 
         /**
          * Run reduction from head to tail. This is equivalent to
-         * <p/>
          * <pre>
          *      if (isEmpty()) {
          *          return _.none();
@@ -711,30 +693,30 @@ public enum C {
          * </pre>
          *
          * @param accumulator
-         * @return an {@link _.Option} describing the accumulating result
+         * @return an {@link $.Option} describing the accumulating result
          * @since 0.2
          */
-        _.Option<T> reduceLeft(_.Func2<T, T, T> accumulator);
+        $.Option<T> reduceLeft($.Func2<T, T, T> accumulator);
 
         /**
          * Apply the predicate specified to the element of this sequence
          * from head to tail. Stop at the element that returns {@code true},
-         * and returns an {@link _.Option} describing the element. If none
+         * and returns an {@link $.Option} describing the element. If none
          * of the element applications in the sequence returns {@code true}
-         * then {@link org.osgl._#none()} is returned
+         * then {@link $#none()} is returned
          *
          * @param predicate the function map the element to Boolean
          * @return an option describe the first element matches the
-         * predicate or {@link org.osgl._#none()}
+         * predicate or {@link $#none()}
          * @since 0.2
          */
-        _.Option<T> findFirst(_.Function<? super T, Boolean> predicate);
+        $.Option<T> findFirst($.Function<? super T, Boolean> predicate);
 
-        Sequence<T> accept(_.Function<? super T, ?> visitor);
+        Sequence<T> accept($.Function<? super T, ?> visitor);
 
-        Sequence<T> each(_.Function<? super T, ?> visitor);
+        Sequence<T> each($.Function<? super T, ?> visitor);
 
-        Sequence<T> forEach(_.Function<? super T, ?> visitor);
+        Sequence<T> forEach($.Function<? super T, ?> visitor);
 
         /**
          * Iterate through this sequence from head to tail with
@@ -742,11 +724,11 @@ public enum C {
          *
          * @param visitor the function to visit elements in this sequence
          * @return this sequence
-         * @see Traversable#accept(org.osgl._.Function)
-         * @see ReversibleSequence#acceptRight(org.osgl._.Function)
+         * @see Traversable#accept($.Function)
+         * @see ReversibleSequence#acceptRight($.Function)
          * @since 0.2
          */
-        Sequence<T> acceptLeft(_.Function<? super T, ?> visitor);
+        Sequence<T> acceptLeft($.Function<? super T, ?> visitor);
 
         /**
          * Returns a sequence formed from this sequence and another iterable
@@ -761,7 +743,7 @@ public enum C {
          * The length of the returned collection is the
          * minimum of the lengths of this sequence and that.
          */
-        <T2> Sequence<_.T2<T, T2>> zip(Iterable<T2> iterable);
+        <T2> Sequence<$.T2<T, T2>> zip(Iterable<T2> iterable);
 
         /**
          * Returns a sequence formed from this sequence and another iterable
@@ -781,7 +763,7 @@ public enum C {
          * The length of the returned collection is the
          * maximum of the lengths of this sequence and that.
          */
-        <T2> Sequence<_.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2);
+        <T2> Sequence<$.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2);
 
         /**
          * Zip this sequence with its indices
@@ -790,7 +772,7 @@ public enum C {
          * elements of this list paired with their index.
          * Indices start at 0.
          */
-        Sequence<_.T2<T, Integer>> zipWithIndex();
+        Sequence<$.T2<T, Integer>> zipWithIndex();
     }
 
     /**
@@ -866,7 +848,7 @@ public enum C {
          * in this sequence until predicate evaluate to false
          */
         @Override
-        ReversibleSequence<T> takeWhile(_.Function<? super T, Boolean> predicate);
+        ReversibleSequence<T> takeWhile($.Function<? super T, Boolean> predicate);
 
         /**
          * {@inheritDoc}
@@ -880,10 +862,10 @@ public enum C {
         ReversibleSequence<T> drop(int n);
 
         @Override
-        ReversibleSequence<T> dropWhile(_.Function<? super T, Boolean> predicate);
+        ReversibleSequence<T> dropWhile($.Function<? super T, Boolean> predicate);
 
         @Override
-        ReversibleSequence<T> filter(_.Function<? super T, Boolean> predicate);
+        ReversibleSequence<T> filter($.Function<? super T, Boolean> predicate);
 
         /**
          * {@inheritDoc}
@@ -942,17 +924,13 @@ public enum C {
         /**
          * Returns a {@code Sequence} consisting the last {@code n} elements from this {@code Sequence}
          * if number {@code n} is positive and the {@code Sequence} contains more than {@code n} elements
-         * <p/>
          * <p>If this {@code Sequence} contains less than {@code n} elements, then a {@code Sequence} consisting
          * the whole elements of this {@code Sequence} is returned. Note it might return this {@code Sequence}
          * itself if the {@code Sequence} is immutable.</p>
-         * <p/>
          * <p>If the number {@code n} is zero, then an empty {@code Sequence} is returned in reverse
          * order</p>
-         * <p/>
          * <p>If the number {@code n} is negative, then the first {@code -n} elements from this
          * {@code Sequence} is returned in an new {@code Sequence}</p>
-         * <p/>
          * <pre>
          *     Sequence seq = C1.list(1, 2, 3, 4);
          *     assertEquals(C1.list(3, 4), seq.tail(2));
@@ -961,7 +939,6 @@ public enum C {
          *     assertEquals(C1.list(1, 2, 3), seq.tail(-3));
          *     assertEquals(C1.list(1, 2, 3, 4), seq.tail(-200));
          * </pre>
-         * <p/>
          * <p>This method does not mutate the underline container</p>
          *
          * @param n specify the number of elements to be taken from the tail of this {@code Sequence}
@@ -1003,14 +980,13 @@ public enum C {
          *      return result;
          * </pre>
          *
-         * @see #reduce(Object, org.osgl._.Func2)
+         * @see #reduce(Object, $.Func2)
          * @since 0.2
          */
-        <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator);
+        <R> R reduceRight(R identity, $.Func2<R, T, R> accumulator);
 
         /**
          * Run reduction from tail to head. This is equivalent to
-         * <p/>
          * <pre>
          *      if (isEmpty()) {
          *          return _.none();
@@ -1023,28 +999,28 @@ public enum C {
          * </pre>
          *
          * @param accumulator
-         * @return an {@link _.Option} describing the accumulating result
+         * @return an {@link $.Option} describing the accumulating result
          * @since 0.2
          */
-        _.Option<T> reduceRight(_.Func2<T, T, T> accumulator);
+        $.Option<T> reduceRight($.Func2<T, T, T> accumulator);
 
 
         /**
          * Apply the predicate specified to the element of this sequence
          * from tail to head. Stop at the element that returns {@code true},
-         * and returns an {@link _.Option} describing the element. If none
+         * and returns an {@link $.Option} describing the element. If none
          * of the element applications in the sequence returns {@code true}
-         * then {@link org.osgl._#none()} is returned
+         * then {@link $#none()} is returned
          *
          * @param predicate the function map the element to Boolean
          * @return an option describe the first element matches the
-         * predicate or {@link org.osgl._#none()}
+         * predicate or {@link $#none()}
          * @since 0.2
          */
-        _.Option<T> findLast(_.Function<? super T, Boolean> predicate);
+        $.Option<T> findLast($.Function<? super T, Boolean> predicate);
 
         @Override
-        <R> ReversibleSequence<R> map(_.Function<? super T, ? extends R> mapper);
+        <R> ReversibleSequence<R> map($.Function<? super T, ? extends R> mapper);
 
         /**
          * {@inheritDoc}
@@ -1055,16 +1031,16 @@ public enum C {
          * @since 0.2
          */
         @Override
-        <R> ReversibleSequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper);
+        <R> ReversibleSequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper);
 
-        ReversibleSequence<T> accept(_.Function<? super T, ?> visitor);
+        ReversibleSequence<T> accept($.Function<? super T, ?> visitor);
 
 
-        ReversibleSequence<T> each(_.Function<? super T, ?> visitor);
+        ReversibleSequence<T> each($.Function<? super T, ?> visitor);
 
-        ReversibleSequence<T> forEach(_.Function<? super T, ?> visitor);
+        ReversibleSequence<T> forEach($.Function<? super T, ?> visitor);
 
-        ReversibleSequence<T> acceptLeft(_.Function<? super T, ?> visitor);
+        ReversibleSequence<T> acceptLeft($.Function<? super T, ?> visitor);
 
         /**
          * Iterate through this sequence from tail to head with the visitor function
@@ -1072,15 +1048,15 @@ public enum C {
          *
          * @param visitor the function to visit elements in this sequence
          * @return this sequence
-         * @see Traversable#accept(org.osgl._.Function)
-         * @see Sequence#acceptLeft(org.osgl._.Function)
+         * @see Traversable#accept($.Function)
+         * @see Sequence#acceptLeft($.Function)
          * @since 0.2
          */
-        ReversibleSequence<T> acceptRight(_.Function<? super T, ?> visitor);
+        ReversibleSequence<T> acceptRight($.Function<? super T, ?> visitor);
 
-        <T2> C.ReversibleSequence<_.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq);
+        <T2> C.ReversibleSequence<$.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq);
 
-        <T2> C.ReversibleSequence<_.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2);
+        <T2> C.ReversibleSequence<$.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2);
 
     }
 
@@ -1182,7 +1158,7 @@ public enum C {
 
         public static <T> Array<T> copyOf(T[] data) {
             int len = data.length;
-            T[] newData = _.newArray(data, len);
+            T[] newData = $.newArray(data, len);
             System.arraycopy(data, 0, newData, 0, len);
             return new Array<T>(newData);
         }
@@ -1233,10 +1209,9 @@ public enum C {
         boolean containsAll(Range<ELEMENT> r2);
 
         /**
-         * Returns a {@link _.Func2} function that takes two elements in the range domain and returns an integer to
+         * Returns a {@link $.Func2} function that takes two elements in the range domain and returns an integer to
          * determine the order of the two elements. See {@link java.util.Comparator#compare(Object, Object)} for
          * semantic of the function.
-         * <p/>
          * <p>If any one of the element applied is {@code null} the function should throw out
          * {@link NullPointerException}</p>
          *
@@ -1246,10 +1221,9 @@ public enum C {
         Comparator<ELEMENT> order();
 
         /**
-         * Returns a {@link _.Func2} function that applied to an element in this {@code Range} and
+         * Returns a {@link $.Func2} function that applied to an element in this {@code Range} and
          * an integer {@code n} indicate the number of steps. The result of the function is an element in
          * the range or the range domain after moving {@code n} steps based on the element.
-         * <p/>
          * <p>If the element apply is {@code null}, the function should throw out
          * {@link NullPointerException}; if the resulting element is not defined in the range
          * domain, the function should throw out {@link NoSuchElementException}</p>
@@ -1257,14 +1231,12 @@ public enum C {
          * @return a function implement the stepping logic
          * @since 0.2
          */
-        _.Func2<ELEMENT, Integer, ELEMENT> step();
+        $.Func2<ELEMENT, Integer, ELEMENT> step();
 
         /**
          * Returns an new range this range and another range {@code r2} merged together. The two ranges must have
          * the equal {@link #step()} and {@link #order()} operator to be merged, otherwise,
          * {@link org.osgl.exception.InvalidArgException} will be thrown out
-         * <p/>
-         * <p/>
          * <p>The two ranges must be either overlapped or immediately connected to each other as per
          * {@link #step()} definition. Otherwise an {@link org.osgl.exception.InvalidArgException}
          * will be throw out:
@@ -1275,7 +1247,6 @@ public enum C {
          * <li>an {@link org.osgl.exception.InvalidArgException} will be thrown out if the two ranges does not connected
          * to each other</li>
          * </ul>
-         * </p>
          *
          * @param r2 the range to be merged with this range
          * @return an new range contains all elements in this range and r2
@@ -1293,27 +1264,11 @@ public enum C {
 
         Iterator<ELEMENT> reverseIterator();
 
-        <R> R reduceRight(R identity, _.Func2<R, ELEMENT, R> accumulator);
+        <R> R reduceRight(R identity, $.Func2<R, ELEMENT, R> accumulator);
 
-        _.Option<ELEMENT> reduceRight(_.Func2<ELEMENT, ELEMENT, ELEMENT> accumulator);
+        $.Option<ELEMENT> reduceRight($.Func2<ELEMENT, ELEMENT, ELEMENT> accumulator);
 
-        _.Option<ELEMENT> findLast(_.Function<? super ELEMENT, Boolean> predicate);
-
-        /**
-         * {@inheritDoc}
-         *
-         * @param visitor {@inheritDoc}
-         * @return this Range instance
-         * @since 0.2
-         */
-        @Override
-        Range<ELEMENT> accept(_.Function<? super ELEMENT, ?> visitor);
-
-        @Override
-        Range<ELEMENT> each(_.Function<? super ELEMENT, ?> visitor);
-
-        @Override
-        Range<ELEMENT> forEach(_.Function<? super ELEMENT, ?> visitor);
+        $.Option<ELEMENT> findLast($.Function<? super ELEMENT, Boolean> predicate);
 
         /**
          * {@inheritDoc}
@@ -1323,7 +1278,23 @@ public enum C {
          * @since 0.2
          */
         @Override
-        Range<ELEMENT> acceptLeft(_.Function<? super ELEMENT, ?> visitor);
+        Range<ELEMENT> accept($.Function<? super ELEMENT, ?> visitor);
+
+        @Override
+        Range<ELEMENT> each($.Function<? super ELEMENT, ?> visitor);
+
+        @Override
+        Range<ELEMENT> forEach($.Function<? super ELEMENT, ?> visitor);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param visitor {@inheritDoc}
+         * @return this Range instance
+         * @since 0.2
+         */
+        @Override
+        Range<ELEMENT> acceptLeft($.Function<? super ELEMENT, ?> visitor);
 
         /**
          * iterate through the range from tail to head
@@ -1332,7 +1303,7 @@ public enum C {
          * @return this Range instance
          * @since 0.2
          */
-        Range<ELEMENT> acceptRight(_.Function<? super ELEMENT, ?> visitor);
+        Range<ELEMENT> acceptRight($.Function<? super ELEMENT, ?> visitor);
     }
 
     /**
@@ -1346,7 +1317,6 @@ public enum C {
         /**
          * A cursor points to an element of a {@link List}. It performs like
          * {@link java.util.ListIterator} but differs in the following way:
-         * <p/>
          * <ul>
          * <li>Add insert, append method</li>
          * <li>Support method chain calling style for most methods</li>
@@ -1412,7 +1382,6 @@ public enum C {
 
             /**
              * Park the cursor at the position before the first element.
-             * <p/>
              * <p>After calling this method, {@link #isDefined()}
              * shall return {@code false}</p>
              *
@@ -1422,7 +1391,6 @@ public enum C {
 
             /**
              * Park the cursor at the position after the last element
-             * <p/>
              * <p>After calling this method, {@link #isDefined()}
              * shall return {@code false}</p>
              *
@@ -1547,7 +1515,6 @@ public enum C {
 
         /**
          * Returns a sorted copy of this list.
-         * <p/>
          * <p>Note if the element type T is not a {@link java.lang.Comparable} then
          * this method returns a {@link #copy() copy} of this list without any order
          * changes</p>
@@ -1597,7 +1564,6 @@ public enum C {
 
         /**
          * {@inheritDoc}
-         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param n {@inheritDoc}
@@ -1617,7 +1583,6 @@ public enum C {
 
         /**
          * {@inheritDoc}
-         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param n {@inheritDoc}
@@ -1628,7 +1593,6 @@ public enum C {
 
         /**
          * {@inheritDoc}
-         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param n {@inheritDoc}
@@ -1639,30 +1603,27 @@ public enum C {
 
         /**
          * {@inheritDoc}
-         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param predicate
          * @return {@inheritDoc}
          */
         @Override
-        List<T> dropWhile(_.Function<? super T, Boolean> predicate);
+        List<T> dropWhile($.Function<? super T, Boolean> predicate);
 
         /**
          * {@inheritDoc}
-         * <p/>
          * <p>This method does not alter the underline list</p>
          *
          * @param predicate {@inheritDoc}
          * @return {@inheritDoc}
          */
         @Override
-        List<T> takeWhile(_.Function<? super T, Boolean> predicate);
+        List<T> takeWhile($.Function<? super T, Boolean> predicate);
 
         /**
          * For mutable list, remove all element that matches the predicate
          * specified from this List and return this list once done.
-         * <p/>
          * <p>For immutable or readonly list, an new List contains all element from
          * this list that does not match the predicate specified is returned</p>
          *
@@ -1671,10 +1632,10 @@ public enum C {
          * @return a list contains all element that does not match the
          * predicate specified
          */
-        List<T> remove(_.Function<? super T, Boolean> predicate);
+        List<T> remove($.Function<? super T, Boolean> predicate);
 
         @Override
-        <R> C.List<R> map(_.Function<? super T, ? extends R> mapper);
+        <R> C.List<R> map($.Function<? super T, ? extends R> mapper);
 
         /**
          * {@inheritDoc}
@@ -1685,10 +1646,10 @@ public enum C {
          * @since 0.2
          */
         @Override
-        <R> List<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper);
+        <R> List<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper);
 
         @Override
-        List<T> filter(_.Function<? super T, Boolean> predicate);
+        List<T> filter($.Function<? super T, Boolean> predicate);
 
         /**
          * Find the first element in this list that matches the predicate.
@@ -1701,7 +1662,7 @@ public enum C {
          * first element matches the predicate if this is a readonly
          * list
          */
-        Cursor<T> locateFirst(_.Function<T, Boolean> predicate);
+        Cursor<T> locateFirst($.Function<T, Boolean> predicate);
 
         /**
          * Locate any one element in the list that matches the predicate.
@@ -1715,7 +1676,7 @@ public enum C {
          * and element matches the predicate if this is a readonly
          * list
          */
-        Cursor<T> locate(_.Function<T, Boolean> predicate);
+        Cursor<T> locate($.Function<T, Boolean> predicate);
 
         /**
          * Locate the first element in this list that matches the predicate.
@@ -1728,7 +1689,7 @@ public enum C {
          * first element matches the predicate if this is a readonly
          * list
          */
-        Cursor<T> locateLast(_.Function<T, Boolean> predicate);
+        Cursor<T> locateLast($.Function<T, Boolean> predicate);
 
         /**
          * Insert an element at the position specified by {@code index}.
@@ -1768,11 +1729,9 @@ public enum C {
         /**
          * Returns a List contains all elements in this List followed by
          * all elements in the specified List.
-         * <p/>
          * <p>A mutable List implementation might choose to add elements
          * from the specified list directly to this list and return this
          * list directly</p>
-         * <p/>
          * <p>For a read only or immutable list, it must create an new list
          * to avoid update this list</p>
          *
@@ -1822,20 +1781,57 @@ public enum C {
         List<T> without(T element, T... elements);
 
         @Override
-        List<T> accept(_.Function<? super T, ?> visitor);
+        List<T> accept($.Function<? super T, ?> visitor);
 
         @Override
-        List<T> each(_.Function<? super T, ?> visitor);
+        List<T> each($.Function<? super T, ?> visitor);
 
         @Override
-        List<T> forEach(_.Function<? super T, ?> visitor);
+        List<T> forEach($.Function<? super T, ?> visitor);
 
         @Override
-        List<T> acceptLeft(_.Function<? super T, ?> visitor);
+        List<T> acceptLeft($.Function<? super T, ?> visitor);
 
         @Override
-        List<T> acceptRight(_.Function<? super T, ?> visitor);
+        List<T> acceptRight($.Function<? super T, ?> visitor);
 
+        /**
+         * Loop through the list and for each element, call on the
+         * indexedVisitor function specified
+         * @param indexedVisitor the function to be called on each element along with the index
+         * @return this list
+         */
+        List<T> accept($.Func2<Integer, ? super T, ?> indexedVisitor);
+
+        /**
+         * Alias of {@link #accept(Osgl.Func2)}
+         * @param indexedVisitor the function to be called on each element along with the index
+         * @return this list
+         */
+        List<T> each($.Func2<Integer, ? super T, ?> indexedVisitor);
+
+        /**
+         * Alias of {@link #accept(Osgl.Func2)}
+         * @param indexedVisitor the function to be called on each element along with the index
+         * @return this list
+         */
+        List<T> forEach($.Func2<Integer, ? super T, ?> indexedVisitor);
+
+        /**
+         * Loop through the list from {@code 0} to {@code size - 1}. Call the indexedVisitor function
+         * on each element along with the index
+         * @param indexedVisitor the function to be called on each element along with the index
+         * @return this list
+         */
+        List<T> acceptLeft($.Func2<Integer, ? super T, ?> indexedVisitor);
+
+        /**
+         * Loop through the list from {@code size() - 1} to {@code 0}. Call the indexedVisitor function
+         * on each element along with the index
+         * @param indexedVisitor the function to be called on each element along with the index
+         * @return this list
+         */
+        List<T> acceptRight($.Func2<Integer, ? super T, ?> indexedVisitor);
 
         /**
          * Returns a list formed from this list and another iterable
@@ -1850,7 +1846,7 @@ public enum C {
          * The length of the returned collection is the
          * minimum of the lengths of this sequence and that.
          */
-        <T2> List<_.T2<T, T2>> zip(java.util.List<T2> list);
+        <T2> List<$.T2<T, T2>> zip(java.util.List<T2> list);
 
         /**
          * Returns a list formed from this list and another iterable
@@ -1870,7 +1866,7 @@ public enum C {
          * The length of the returned collection is the
          * maximum of the lengths of this list and that.
          */
-        <T2> List<_.T2<T, T2>> zipAll(java.util.List<T2> list, T def1, T2 def2);
+        <T2> List<$.T2<T, T2>> zipAll(java.util.List<T2> list, T def1, T2 def2);
 
         /**
          * Zip this sequence with its indices
@@ -1879,7 +1875,7 @@ public enum C {
          * elements of this list paired with their index.
          * Indices start at 0.
          */
-        Sequence<_.T2<T, Integer>> zipWithIndex();
+        Sequence<$.T2<T, Integer>> zipWithIndex();
     }
 
 //    /**
@@ -1902,7 +1898,7 @@ public enum C {
 //
 
     public static class Map<K, V> implements java.util.Map<K, V>, Serializable {
-        public static class Entry<K, V> extends _.T2<K, V> implements java.util.Map.Entry<K, V> {
+        public static class Entry<K, V> extends $.T2<K, V> implements java.util.Map.Entry<K, V> {
             public Entry(K _1, V _2) {
                 super(_1, _2);    //To change body of overridden methods use File | Settings | File Templates.
             }
@@ -2075,6 +2071,41 @@ public enum C {
             }
         }
 
+        /**
+         * Loop through this map on each key/value pair, apply them to the function specified
+         * @param indexedVisitor the function that takes argument of (key, value) pair
+         * @return this map
+         */
+        public Map<K, V> forEach($.Func2<? super K, ? super V, ?> indexedVisitor) {
+            for (java.util.Map.Entry<K, V> entry: entrySet()) {
+                try {
+                    indexedVisitor.apply(entry.getKey(), entry.getValue());
+                } catch (NotAppliedException e) {
+                    // ignore
+                }
+            }
+            return this;
+        }
+
+        /**
+         * Alias of {@link #forEach(Osgl.Func2)}
+         * @param indexedVisitor the visitor that can be applied on Key/Value pair stored in this Map
+         * @return this map
+         */
+        public Map<K, V> each($.Func2<? super K, ? super V, ?> indexedVisitor) {
+            return forEach(indexedVisitor);
+        }
+
+
+        /**
+         * Alias of {@link #forEach(Osgl.Func2)}
+         * @param indexedVisitor the visitor that can be applied on Key/Value pair stored in this Map
+         * @return this map
+         */
+        public Map<K, V> accept($.Func2<? super K, ? super V, ?> indexedVisitor) {
+            return forEach(indexedVisitor);
+        }
+
         private void writeObject(java.io.ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeObject(_m);
@@ -2107,16 +2138,16 @@ public enum C {
         Set<T> eager();
 
         @Override
-        Set<T> filter(_.Function<? super T, Boolean> predicate);
+        Set<T> filter($.Function<? super T, Boolean> predicate);
 
         @Override
-        Set<T> accept(_.Function<? super T, ?> visitor);
+        Set<T> accept($.Function<? super T, ?> visitor);
 
         @Override
-        Set<T> each(_.Function<? super T, ?> visitor);
+        Set<T> each($.Function<? super T, ?> visitor);
 
         @Override
-        Set<T> forEach(_.Function<? super T, ?> visitor);
+        Set<T> forEach($.Function<? super T, ?> visitor);
 
         /**
          * Returns a set contains all elements in the {@code col}
@@ -2184,16 +2215,16 @@ public enum C {
         ListOrSet<T> eager();
 
         @Override
-        ListOrSet<T> accept(_.Function<? super T, ?> visitor);
+        ListOrSet<T> accept($.Function<? super T, ?> visitor);
 
         @Override
-        ListOrSet<T> each(_.Function<? super T, ?> visitor);
+        ListOrSet<T> each($.Function<? super T, ?> visitor);
 
         @Override
-        ListOrSet<T> forEach(_.Function<? super T, ?> visitor);
+        ListOrSet<T> forEach($.Function<? super T, ?> visitor);
 
         @Override
-        ListOrSet<T> filter(_.Function<? super T, Boolean> predicate);
+        ListOrSet<T> filter($.Function<? super T, Boolean> predicate);
 
         @Override
         ListOrSet<T> without(Collection<? super T> col);
@@ -2205,7 +2236,7 @@ public enum C {
         ListOrSet<T> without(T element, T... elements);
 
         @Override
-        <R> ListOrSet<R> map(_.Function<? super T, ? extends R> mapper);
+        <R> ListOrSet<R> map($.Function<? super T, ? extends R> mapper);
 
     }
 
@@ -2231,14 +2262,14 @@ public enum C {
          * @param collection the collection whose elements are to be placed into this list
          * @param <ET>       the generic type of the list element
          * @return The List been created
-         * @throws <code>NullPointerException</code> if the specified collection is null
+         * @exception  NullPointerException if the specified collection is null
          */
-        <ET> java.util.List<ET> create(Collection<? extends ET> collection);
+        <ET> java.util.List<ET> create(Collection<? extends ET> collection) throws NullPointerException;
 
         /**
          * Create a <code>java.util.List</code> with initial capacity
          *
-         * @param initialCapacity
+         * @param initialCapacity the initial capacity of the new List
          * @param <ET>            the generic type of the list element
          * @return the list been created
          */
@@ -2292,7 +2323,6 @@ public enum C {
     /**
      * "osgl.list.factory", the property key to configure user defined
      * {@link ListFactory list factory}.
-     * <p/>
      * Upon loaded, osgl tried to get a class name string from system
      * properties use this configuration key. If osgl find the String
      * returned is not empty then it will initialize the list factory
@@ -2318,7 +2348,7 @@ public enum C {
         if (null == factCls) {
             linkedListFact = ListFactory.Predefined.defLinked();
         } else {
-            _.Option<ListFactory> fact = _.safeNewInstance(factCls);
+            $.Option<ListFactory> fact = $.safeNewInstance(factCls);
             if (fact.isDefined()) {
                 linkedListFact = fact.get();
             } else {
@@ -2334,7 +2364,7 @@ public enum C {
         if (null == factCls) {
             randomAccessListFact = ListFactory.Predefined.defRandomAccess();
         } else {
-            _.Option<ListFactory> fact = _.safeNewInstance(factCls);
+            $.Option<ListFactory> fact = $.safeNewInstance(factCls);
             if (fact.isDefined()) {
                 randomAccessListFact = fact.get();
             } else {
@@ -2459,12 +2489,11 @@ public enum C {
     }
 
     public static <T> List<T> list(T t) {
-        return _.val(t);
+        return $.val(t);
     }
 
     /**
      * Creates an immutable list of an array of elements.
-     * <p/>
      * <p>Note the array will not be copied, instead it will
      * be used directly as the backing data for the list.
      * To create an immutable list with a copy of the array
@@ -2488,7 +2517,7 @@ public enum C {
      */
     public static <T> List<T> list(T t, T... ta) {
         int len = ta.length;
-        T[] a = _.newArray(ta, len + 1);
+        T[] a = $.newArray(ta, len + 1);
         a[0] = t;
         System.arraycopy(ta, 0, a, 1, len);
         return ImmutableList.of(a);
@@ -2520,7 +2549,7 @@ public enum C {
         if (elements.length == 0) {
             return Nil.list();
         }
-        Byte[] ba = _.asObject(elements);
+        Byte[] ba = $.asObject(elements);
         return ImmutableList.of(ba);
     }
 
@@ -2551,7 +2580,7 @@ public enum C {
         if (0 == elements.length) {
             return Nil.list();
         }
-        Short[] a = _.asObject(elements);
+        Short[] a = $.asObject(elements);
         return ImmutableList.of(a);
     }
 
@@ -2581,7 +2610,7 @@ public enum C {
         if (elements.length == 0) {
             return Nil.list();
         }
-        Integer[] a = _.asObject(elements);
+        Integer[] a = $.asObject(elements);
         return ImmutableList.of(a);
     }
 
@@ -2611,7 +2640,7 @@ public enum C {
         if (0 == elements.length) {
             return list();
         }
-        return ImmutableList.of(_.asObject(elements));
+        return ImmutableList.of($.asObject(elements));
     }
 
     /**
@@ -2640,7 +2669,7 @@ public enum C {
         if (0 == elements.length) {
             return list();
         }
-        return ImmutableList.of(_.asObject(elements));
+        return ImmutableList.of($.asObject(elements));
     }
 
     /**
@@ -2669,7 +2698,7 @@ public enum C {
         if (0 == elements.length) {
             return list();
         }
-        return ImmutableList.of(_.asObject(elements));
+        return ImmutableList.of($.asObject(elements));
     }
 
     public static <T> List<T> list(Iterable<? extends T> iterable) {
@@ -2682,7 +2711,7 @@ public enum C {
 
     public static <T> List<T> list(java.util.List<? extends T> javaList) {
         if (javaList instanceof List) {
-            List<T> list = _.cast(javaList);
+            List<T> list = $.cast(javaList);
 
             if (list.is(Feature.IMMUTABLE)) {
                 return list;
@@ -2743,19 +2772,19 @@ public enum C {
         return IterableSeq.of(iterable);
     }
 
-    public static <T, R> Sequence<R> map(Sequence<T> seq, _.Function<? super T, ? extends R> mapper) {
+    public static <T, R> Sequence<R> map(Sequence<T> seq, $.Function<? super T, ? extends R> mapper) {
         if (seq instanceof ReversibleSequence) {
             return map((ReversibleSequence<T>) seq, mapper);
         }
         return new MappedSeq<T, R>(seq, mapper);
     }
 
-    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, _.Function<? super T, ? extends R> mapper
+    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, $.Function<? super T, ? extends R> mapper
     ) {
         return new ReversibleMappedSeq<T, R>(seq, mapper);
     }
 
-    public static <T> Sequence<T> filter(Sequence<T> seq, _.Function<? super T, Boolean> predicate) {
+    public static <T> Sequence<T> filter(Sequence<T> seq, $.Function<? super T, Boolean> predicate) {
         return new FilteredSeq<T>(seq, predicate);
     }
 
@@ -2902,24 +2931,18 @@ public enum C {
     }
 
     /**
-     * Iterate through an iterable, apply the visitor function
-     * to each element.
-     * <p/>
-     * <p>It is possible to stop the iteration by throwing out
-     * the {@link org.osgl._.Break} from within the visitor
-     * function</p>
-     * <p/>
-     * <p>This method support partial function by allowing the
-     * visitor throw out the {@link NotAppliedException} which
-     * will be simply ignored</p>
-     *
-     * @param iterable
-     * @param visitor
-     * @param <T>
-     * @throws _.Break
+     * Run visitor function on each element supplied by the iterable. The visitor function can throw out
+     * {@link org.osgl.Osgl.Break} if it need to break the loop.
+     * <p>Note if {@link NotAppliedException} thrown out by visitor function, it will be ignored
+     * and keep looping through the Map entry set. It is kind of {@code continue} mechanism in a funcitonal
+     * way</p>
+     * @param iterable supply the element to be applied to the visitor function
+     * @param visitor the function called on element provided by the iterable
+     * @param <T> the generic type of the iterable elements
+     * @throws $.Break break the loop
      */
     //TODO: implement forEach iteration in parallel
-    public static <T> void forEach(Iterable<? extends T> iterable, _.Function<? super T, ?> visitor) throws _.Break {
+    public static <T> void forEach(Iterable<? extends T> iterable, $.Function<? super T, ?> visitor) throws $.Break {
         for (T t : iterable) {
             try {
                 visitor.apply(t);
@@ -2929,98 +2952,166 @@ public enum C {
         }
     }
 
-    public static <T> void forEach(Iterator<? extends T> iterator, _.Function<? super T, ?> visitor) {
+    /**
+     * Run visitor function on each element supplied by the iterator. The visitor function can throw out
+     * {@link org.osgl.Osgl.Break} if it need to break the loop.
+     * <p>Note if {@link NotAppliedException} thrown out by visitor function, it will be ignored
+     * and keep looping through the Map entry set. It is kind of {@code continue} mechanism in a funcitonal
+     * way</p>
+     * @param iterator iterator provides elements to be applied to the visitor function
+     * @param visitor the function applied on the element
+     * @param <T> the generic type of the element
+     */
+    public static <T> void forEach(Iterator<? extends T> iterator, $.Function<? super T, ?> visitor) {
         while (iterator.hasNext()) {
             T t = iterator.next();
             visitor.apply(t);
         }
     }
+
+    /**
+     * Run indexedVisitor function on all key/value pair in a given map. The indexedVisitor function can
+     * throw out {@link org.osgl.Osgl.Break} if it need to break the loop.
+     * <p>Note if {@link NotAppliedException} thrown out by indexedVisitor function, it will be ignored
+     * and keep looping through the Map entry set. It is kind of {@code continue} mechanism in a funcitonal
+     * way</p>
+     * @param map the map in which enties will be applied to the indexedVisitor function
+     * @param indexedVisitor the function that takes (key,value) pair
+     * @param <K> the generic type of Key
+     * @param <V> the generic type of Value
+     * @throws $.Break the {@link org.osgl.Osgl.Break} with payload throwed out by indexedVisitor function to break to loop
+     */
+    public static <K, V> void forEach(java.util.Map<K, V> map, $.Func2<? super K, ? super V, ?> indexedVisitor) throws $.Break {
+        for (java.util.Map.Entry<K, V> entry : map.entrySet()) {
+            try {
+                indexedVisitor.apply(entry.getKey(), entry.getValue());
+            } catch (NotAppliedException e) {
+                // ignore
+            }
+        }
+    }
+
     // --- eof utility methods ---
 
-    public static enum F {
+    /**
+     * the namespace of function definitions relevant to Collection manipulation
+     */
+    public enum F {
         ;
 
-        public static <T> _.Predicate<T> containsIn(final Collection<? super T> c) {
-            return new _.Predicate<T>() {
+        /**
+         * Returns a predicate function that check if the argument is contained in
+         * the collection specified
+         *
+         * @param c the collection to be checked on against the argument when applying the prediate
+         * @param <T> the generic type of the element of the collection
+         * @return a predicate function
+         */
+        public static <T> $.Predicate<T> containsIn(final Collection<? super T> c) {
+            return new $.Predicate<T>() {
                 @Override
-                public boolean test(T t) throws NotAppliedException, _.Break {
+                public boolean test(T t) throws NotAppliedException, $.Break {
                     return c.contains(t);
                 }
             };
         }
 
-        public static <T> _.Predicate<T> addTo(final Collection<? super T> c) {
-            return new _.Predicate<T>() {
+        /**
+         * Returns a function that add the argument to a collection specified and returns
+         * {@code true} if added successfully or {@code false} otherwise
+         * @param c the collection into which the argument to be added
+         * @param <T> the generic type of the collection elements
+         * @return a function that do the add operation
+         */
+        public static <T> $.Predicate<T> addTo(final Collection<? super T> c) {
+            return new $.Predicate<T>() {
                 @Override
-                public boolean test(T t) throws NotAppliedException, _.Break {
+                public boolean test(T t) throws NotAppliedException, $.Break {
                     return c.add(t);
                 }
             };
         }
 
-        public static <C extends List<? super T>, T> _.F1<T, C> addTo(final C c, final int index) {
-            return new _.F1<T, C>() {
+        /**
+         * Returns a function that add the argument into the specified list at specified position.
+         * the function returns {@code true} if added successfully or {@code false} otherwise
+         * @param c a list into which the argument to be added
+         * @param index specify the position where the argument can be added
+         * @param <C> the generic type of the list
+         * @param <T> the generic type of the list element
+         * @return the function that do the add operation
+         */
+        @SuppressWarnings("unused")
+        public static <C extends List<? super T>, T> $.F1<T, C> addTo(final C c, final int index) {
+            return new $.F1<T, C>() {
                 @Override
-                public C apply(T t) throws NotAppliedException, _.Break {
+                public C apply(T t) throws NotAppliedException, $.Break {
                     c.add(index, t);
                     return c;
                 }
             };
         }
 
-        public static <T> _.F1<T, Deque<? super T>> prependToDeque(final Deque<? super T> c) {
-            return new _.F1<T, Deque<? super T>>() {
+        /**
+         * Returns a function that prepend the argument into a {@link Deque}
+         * @param c the deque to which the argument shall be prepended
+         * @param <T> the generic type of the element
+         * @return the function that do the prepend operation
+         */
+        @SuppressWarnings("unsed")
+        public static <T> $.F1<T, Deque<? super T>> prependToDeque(final Deque<? super T> c) {
+            return new $.F1<T, Deque<? super T>>() {
                 @Override
-                public Deque<? super T> apply(T t) throws NotAppliedException, _.Break {
+                public Deque<? super T> apply(T t) throws NotAppliedException, $.Break {
                     c.addFirst(t);
                     return c;
                 }
             };
         }
 
-        public static <T> _.F1<T, Deque<? super T>> appendToDeque(final Deque<? super T> c) {
-            return new _.F1<T, Deque<? super T>>() {
+        public static <T> $.F1<T, Deque<? super T>> appendToDeque(final Deque<? super T> c) {
+            return new $.F1<T, Deque<? super T>>() {
                 @Override
-                public Deque<? super T> apply(T t) throws NotAppliedException, _.Break {
+                public Deque<? super T> apply(T t) throws NotAppliedException, $.Break {
                     c.addLast(t);
                     return c;
                 }
             };
         }
 
-        public static <T> _.F1<T, Sequence<? super T>> prependTo(final Sequence<? super T> c) {
-            return new _.F1<T, Sequence<? super T>>() {
+        public static <T> $.F1<T, Sequence<? super T>> prependTo(final Sequence<? super T> c) {
+            return new $.F1<T, Sequence<? super T>>() {
                 @Override
-                public Sequence<? super T> apply(T t) throws NotAppliedException, _.Break {
+                public Sequence<? super T> apply(T t) throws NotAppliedException, $.Break {
                     c.prepend(t);
                     return c;
                 }
             };
         }
 
-        public static <T> _.F1<T, Sequence<? super T>> appendTo(final Sequence<? super T> c) {
-            return new _.F1<T, Sequence<? super T>>() {
+        public static <T> $.F1<T, Sequence<? super T>> appendTo(final Sequence<? super T> c) {
+            return new $.F1<T, Sequence<? super T>>() {
                 @Override
-                public Sequence<? super T> apply(T t) throws NotAppliedException, _.Break {
+                public Sequence<? super T> apply(T t) throws NotAppliedException, $.Break {
                     c.append(t);
                     return c;
                 }
             };
         }
 
-        public static _.F1<?, Boolean> removeFrom(final Collection<?> c) {
-            return new _.F1<Object, Boolean>() {
+        public static $.F1<?, Boolean> removeFrom(final Collection<?> c) {
+            return new $.F1<Object, Boolean>() {
                 @Override
-                public Boolean apply(Object t) throws NotAppliedException, _.Break {
+                public Boolean apply(Object t) throws NotAppliedException, $.Break {
                     return c.remove(t);
                 }
             };
         }
 
-        public static <T> _.F1<Iterable<? extends T>, Boolean> addAllTo(final Collection<? super T> c) {
-            return new _.F1<Iterable<? extends T>, Boolean>() {
+        public static <T> $.F1<Iterable<? extends T>, Boolean> addAllTo(final Collection<? super T> c) {
+            return new $.F1<Iterable<? extends T>, Boolean>() {
                 @Override
-                public Boolean apply(Iterable<? extends T> c1) throws NotAppliedException, _.Break {
+                public Boolean apply(Iterable<? extends T> c1) throws NotAppliedException, $.Break {
                     if (c1 instanceof Collection) {
                         return c.addAll((Collection<? extends T>) c1);
                     }
@@ -3034,13 +3125,13 @@ public enum C {
             };
         }
 
-        public static <T> _.Predicate<Iterable<? extends T>> addAllTo(final List<? super T> l, final int index) {
+        public static <T> $.Predicate<Iterable<? extends T>> addAllTo(final List<? super T> l, final int index) {
             if (0 > index || l.size() < index) {
                 throw new IndexOutOfBoundsException();
             }
-            return new _.Predicate<Iterable<? extends T>>() {
+            return new $.Predicate<Iterable<? extends T>>() {
                 @Override
-                public boolean test(Iterable<? extends T> itr) throws NotAppliedException, _.Break {
+                public boolean test(Iterable<? extends T> itr) throws NotAppliedException, $.Break {
                     if (itr instanceof Collection) {
                         return l.addAll(index, ((Collection<? extends T>) itr));
                     }
@@ -3054,10 +3145,10 @@ public enum C {
             };
         }
 
-        public static <T> _.Predicate<Collection<? super T>> removeAllFrom(final Iterable<? extends T> c) {
-            return new _.Predicate<Collection<? super T>>() {
+        public static <T> $.Predicate<Collection<? super T>> removeAllFrom(final Iterable<? extends T> c) {
+            return new $.Predicate<Collection<? super T>>() {
                 @Override
-                public boolean test(Collection<? super T> c1) throws NotAppliedException, _.Break {
+                public boolean test(Collection<? super T> c1) throws NotAppliedException, $.Break {
                     if (c instanceof Collection) {
                         return c1.removeAll((Collection<?>) c);
                     }
@@ -3070,10 +3161,10 @@ public enum C {
             };
         }
 
-        public static <T> _.Predicate<? extends Collection<? super T>> retainAllIn(final Iterable<? extends T> c) {
-            return new _.Predicate<Collection<? super T>>() {
+        public static <T> $.Predicate<? extends Collection<? super T>> retainAllIn(final Iterable<? extends T> c) {
+            return new $.Predicate<Collection<? super T>>() {
                 @Override
-                public boolean test(Collection<? super T> c1) throws NotAppliedException, _.Break {
+                public boolean test(Collection<? super T> c1) throws NotAppliedException, $.Break {
                     if (c instanceof Collection) {
                         return c1.retainAll((Collection) c);
                     }
@@ -3086,10 +3177,10 @@ public enum C {
             };
         }
 
-        public static <T> _.F1<Iterable<? extends T>, Void> forEach(final _.Function<? super T, ?> visitor) {
-            return new _.F1<Iterable<? extends T>, Void>() {
+        public static <T> $.F1<Iterable<? extends T>, Void> forEach(final $.Function<? super T, ?> visitor) {
+            return new $.F1<Iterable<? extends T>, Void>() {
                 @Override
-                public Void apply(Iterable<? extends T> iterable) throws NotAppliedException, _.Break {
+                public Void apply(Iterable<? extends T> iterable) throws NotAppliedException, $.Break {
                     C.forEach(iterable, visitor);
                     return null;
                 }

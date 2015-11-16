@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -24,7 +24,7 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
      *
      * @param visitor
      */
-    public TraversableBase<T> forEach(_.Function<? super T, ?> visitor) {
+    public TraversableBase<T> forEach($.Function<? super T, ?> visitor) {
         C.forEach(this, visitor);
         return this;
     }
@@ -32,12 +32,12 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
     /**
      * Sub class can override this method to provide more efficient algorithm to
      * generate hash code. The default implementation use
-     * {@link _#iterableHashCode(Iterable)} to generate the hash code
+     * {@link $#iterableHashCode(Iterable)} to generate the hash code
      *
      * @return hash code of this traversal
      */
     protected int generateHashCode() {
-        return _.iterableHashCode(this);
+        return $.iterableHashCode(this);
     }
 
 
@@ -106,7 +106,7 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
      * @return the reduce result
      */
     @Override
-    public <R> R reduce(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduce(R identity, $.Func2<R, T, R> accumulator) {
         R ret = identity;
         for (T t : this) {
             ret = accumulator.apply(ret, t);
@@ -117,8 +117,8 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
     /**
      * Iterate through the traversal to apply the accumulator to
      * the result of previous application and the element being iterated.
-     * If the traversal is empty then return {@link _.Option#NONE},
-     * otherwise an {@link _.Option} wrapping the accumulated result
+     * If the traversal is empty then return {@link $.Option#NONE},
+     * otherwise an {@link $.Option} wrapping the accumulated result
      * is returned
      *
      * @param accumulator the function the combine two values
@@ -126,76 +126,76 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
      *         the final accumulated value
      */
     @Override
-    public _.Option<T> reduce(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduce($.Func2<T, T, T> accumulator) {
         Iterator<T> itr = iterator();
         if (!itr.hasNext()) {
-            return _.none();
+            return $.none();
         }
         T ret = itr.next();
         while (itr.hasNext()) {
             ret = accumulator.apply(ret, itr.next());
         }
-        return _.some(ret);
+        return $.some(ret);
     }
 
     /**
      * Iterate the traversal to check if any element applied to the predicate
      * the iteration process stop when the element is found and return
      * an option describing the element. If no element applied to the predicate
-     * then {@link _.Option#NONE} is returned
+     * then {@link $.Option#NONE} is returned
      *
      * @param predicate the function map element to Boolean
      * @return an option describing the element match the predicate or none
      *         if no such element found in the traversal
      */
     @Override
-    public _.Option<T> findOne(_.Function<? super T, Boolean> predicate) {
+    public $.Option<T> findOne($.Function<? super T, Boolean> predicate) {
         for (T t : this) {
             if (predicate.apply(t)) {
-                return _.some(t);
+                return $.some(t);
             }
         }
-        return _.none();
+        return $.none();
     }
 
     @Override
-    public boolean anyMatch(_.Function<? super T, Boolean> predicate) {
+    public boolean anyMatch($.Function<? super T, Boolean> predicate) {
         return findOne(predicate).isDefined();
     }
 
     @Override
-    public boolean noneMatch(_.Function<? super T, Boolean> predicate) {
+    public boolean noneMatch($.Function<? super T, Boolean> predicate) {
         return !anyMatch(predicate);
     }
 
     @Override
-    public boolean allMatch(_.Function<? super T, Boolean> predicate) {
-        return noneMatch(_.F.negate(predicate));
+    public boolean allMatch($.Function<? super T, Boolean> predicate) {
+        return noneMatch($.F.negate(predicate));
     }
 
     @Override
-    public C.Traversable<T> accept(_.Function<? super T, ?> visitor) {
+    public C.Traversable<T> accept($.Function<? super T, ?> visitor) {
         return forEach(visitor);
     }
 
     @Override
-    public C.Traversable<T> each(_.Function<? super T, ?> visitor) {
+    public C.Traversable<T> each($.Function<? super T, ?> visitor) {
         return forEach(visitor);
     }
 
     @Override
-    public <R> C.Traversable<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.Traversable<R> map($.Function<? super T, ? extends R> mapper) {
         return MappedTrav.of(this, mapper);
     }
 
     @Override
-    public <R> C.Traversable<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
+    public <R> C.Traversable<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper
     ) {
         return FlatMappedTrav.of(this, mapper);
     }
 
     @Override
-    public C.Traversable<T> filter(_.Function<? super T, Boolean> predicate) {
+    public C.Traversable<T> filter($.Function<? super T, Boolean> predicate) {
         return FilteredTrav.of(this, predicate);
     }
 }

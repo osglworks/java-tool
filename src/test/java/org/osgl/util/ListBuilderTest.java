@@ -2,7 +2,7 @@ package org.osgl.util;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.*;
 
@@ -137,14 +137,14 @@ public class ListBuilderTest extends UtilTestBase {
 //
 
             ListBuilder<Integer> lb = new ListBuilder<Integer>();
-            ts = _.ns();
+            ts = $.ns();
             lb.addAll(il);
-            long t1 = _.ns() - ts;
+            long t1 = $.ns() - ts;
 
             ArrayList<Integer> arrayList = new ArrayList<Integer>();
-            ts = _.ns();
+            ts = $.ns();
             arrayList.addAll(il);
-            long t3 = _.ns() - ts;
+            long t3 = $.ns() - ts;
 
             //if (!(t3 > t1)) fails++;
             boolean fail = ((t1 > t3) && (t1 - t3) * 100 / t1 > 5);
@@ -170,16 +170,16 @@ public class ListBuilderTest extends UtilTestBase {
         int fails = 0;
         for (int cnt = 0; cnt < times; ++cnt) {
             ArrayList<Integer> al = new ArrayList<Integer>();
-            ts = _.ns();
+            ts = $.ns();
             al.addAll(c1);
             al.addAll(c2);
             al.addAll(c3);
-            long t3 = _.ns() - ts;
+            long t3 = $.ns() - ts;
 
             ListBuilder<Integer> lb = new ListBuilder<Integer>();
-            ts = _.ns();
+            ts = $.ns();
             lb.append(c1, c2, c3);
-            long t1 = _.ns() - ts;
+            long t1 = $.ns() - ts;
 
             boolean fail = ((t1 > t3) && (t1 - t3) * 100 / t1 > 5);
             //_.echo("%s > %s vs %s [%s]", cnt, t1, t3, (fail ? "fail" : "ok"));

@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -43,32 +43,32 @@ class ReverseList<T> extends DelegatingList<T> implements C.List<T> {
     }
 
     @Override
-    protected void forEachLeft(_.Function<? super T, ?> visitor) throws _.Break {
+    protected void forEachLeft($.Function<? super T, ?> visitor) throws $.Break {
         data().acceptRight(visitor);
     }
 
     @Override
-    protected void forEachRight(_.Function<? super T, ?> visitor) throws _.Break {
+    protected void forEachRight($.Function<? super T, ?> visitor) throws $.Break {
         data().acceptLeft(visitor);
     }
 
     @Override
-    public <R> R reduceLeft(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduceLeft(R identity, $.Func2<R, T, R> accumulator) {
         return data().reduceRight(identity, accumulator);
     }
 
     @Override
-    public _.Option<T> reduceLeft(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduceLeft($.Func2<T, T, T> accumulator) {
         return data().reduceRight(accumulator);
     }
 
     @Override
-    public <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduceRight(R identity, $.Func2<R, T, R> accumulator) {
         return data().reduceLeft(identity, accumulator);
     }
 
     @Override
-    public _.Option<T> reduceRight(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduceRight($.Func2<T, T, T> accumulator) {
         return data().reduceLeft(accumulator);
     }
 

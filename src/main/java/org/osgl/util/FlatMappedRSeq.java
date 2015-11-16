@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -13,12 +13,12 @@ import java.util.Iterator;
  */
 class FlatMappedRSeq<T, R> extends ReversibleSeqBase<R> {
     private C.ReversibleSequence<? extends T> data;
-    private _.F1<? super T, ? extends Iterable<? extends R>> mapper;
+    private $.F1<? super T, ? extends Iterable<? extends R>> mapper;
 
-    FlatMappedRSeq(C.ReversibleSequence<? extends T> rseq, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    FlatMappedRSeq(C.ReversibleSequence<? extends T> rseq, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         E.NPE(rseq, mapper);
         this.data = rseq;
-        this.mapper = _.f1(mapper);
+        this.mapper = $.f1(mapper);
     }
 
     @Override
@@ -37,7 +37,7 @@ class FlatMappedRSeq<T, R> extends ReversibleSeqBase<R> {
     }
 
     static <T, R> C.ReversibleSequence<R>
-    of(C.ReversibleSequence<? extends T> data, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    of(C.ReversibleSequence<? extends T> data, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         return new FlatMappedRSeq<T, R>(data, mapper);
     }
 }

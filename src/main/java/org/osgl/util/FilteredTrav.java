@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -12,12 +12,12 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 class FilteredTrav<T> extends IterableTrav<T> {
-    private _.Predicate<? super T> filter;
+    private $.Predicate<? super T> filter;
 
-    FilteredTrav(Iterable<? extends T> iterable, _.Function<? super T, Boolean> predicate) {
+    FilteredTrav(Iterable<? extends T> iterable, $.Function<? super T, Boolean> predicate) {
         super(iterable);
         E.NPE(predicate);
-        filter = _.predicate(predicate);
+        filter = $.predicate(predicate);
     }
 
     @Override
@@ -25,7 +25,7 @@ class FilteredTrav<T> extends IterableTrav<T> {
         return Iterators.filter(super.iterator(), filter);
     }
 
-    public static <T> C.Traversable<T> of(Iterable<? extends T> iterable, _.Function<? super T, Boolean> predicate) {
+    public static <T> C.Traversable<T> of(Iterable<? extends T> iterable, $.Function<? super T, Boolean> predicate) {
         return new FilteredTrav<T>(iterable, predicate);
     }
 }

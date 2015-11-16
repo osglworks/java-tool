@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.EnumSet;
 import java.util.ListIterator;
@@ -15,9 +15,9 @@ import java.util.ListIterator;
 class MappedList<T, R> extends ReadOnlyListBase<R> implements C.List<R> {
 
     private final C.List<? extends T> l_;
-    private final _.Function<? super T, ? extends R> m_;
+    private final $.Function<? super T, ? extends R> m_;
 
-    MappedList(C.List<? extends T> list, _.Function<? super T, ? extends R> mapper) {
+    MappedList(C.List<? extends T> list, $.Function<? super T, ? extends R> mapper) {
         E.NPE(list, mapper);
         l_ = list;
         m_ = mapper;
@@ -45,7 +45,7 @@ class MappedList<T, R> extends ReadOnlyListBase<R> implements C.List<R> {
     }
 
     public static <T, R> MappedList<T, R>
-    of(C.List<? extends T> data, _.Function<? super T, ? extends R> mapper) {
+    of(C.List<? extends T> data, $.Function<? super T, ? extends R> mapper) {
         return new MappedList<T, R>(data, mapper);
     }
 

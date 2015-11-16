@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,12 +14,12 @@ import java.util.Iterator;
  */
 class FlatMappedTrav<T, R> extends TraversableBase<R> {
     private Iterable<? extends T> data;
-    private _.F1<? super T, ? extends Iterable<? extends R>> mapper;
+    private $.F1<? super T, ? extends Iterable<? extends R>> mapper;
 
-    FlatMappedTrav(Iterable<? extends T> itr, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    FlatMappedTrav(Iterable<? extends T> itr, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         E.NPE(itr, mapper);
         this.data = itr;
-        this.mapper = _.f1(mapper);
+        this.mapper = $.f1(mapper);
     }
 
     @Override
@@ -35,7 +35,7 @@ class FlatMappedTrav<T, R> extends TraversableBase<R> {
         return Iterators.flatMap(data.iterator(), mapper);
     }
 
-    public static <T, R> C.Traversable<R> of(Iterable<? extends T> itr, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    public static <T, R> C.Traversable<R> of(Iterable<? extends T> itr, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         return new FlatMappedTrav<T, R>(itr, mapper);
     }
 }

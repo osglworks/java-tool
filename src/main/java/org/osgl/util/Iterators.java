@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -13,19 +13,19 @@ import java.util.Iterator;
  */
 public enum Iterators {
     ;
-    public static <T> Iterator<T> filterIndex(Iterator<? extends T> itr, _.Function<Integer, Boolean> predicate) {
+    public static <T> Iterator<T> filterIndex(Iterator<? extends T> itr, $.Function<Integer, Boolean> predicate) {
         return new IndexFilteredIterator<T>(itr, predicate);
     }
 
-    public static <T> Iterator<T> filter(Iterator<? extends T> itr, _.Function<? super T, Boolean> predicate) {
+    public static <T> Iterator<T> filter(Iterator<? extends T> itr, $.Function<? super T, Boolean> predicate) {
         return new FilteredIterator<T>(itr, predicate);
     }
 
-    public static <T> Iterator<T> filterWhile(Iterator<? extends T> itr, _.Function<? super T, Boolean> predicate) {
+    public static <T> Iterator<T> filterWhile(Iterator<? extends T> itr, $.Function<? super T, Boolean> predicate) {
         return new FilteredIterator<T>(itr, predicate, FilteredIterator.Type.WHILE);
     }
 
-    public static <T> Iterator<T> filterUntil(Iterator<? extends T> itr, _.Function<? super T, Boolean> predicate) {
+    public static <T> Iterator<T> filterUntil(Iterator<? extends T> itr, $.Function<? super T, Boolean> predicate) {
         return new FilteredIterator<T>(itr, predicate, FilteredIterator.Type.UNTIL);
     }
 
@@ -37,11 +37,11 @@ public enum Iterators {
         return new SingletonIterator<T>(t);
     }
 
-    public static <T, R> Iterator<R> map(Iterator<? extends T> itr, _.Function<? super T, ? extends R> mapper) {
+    public static <T, R> Iterator<R> map(Iterator<? extends T> itr, $.Function<? super T, ? extends R> mapper) {
         return new MappedIterator<T, R>(itr, mapper);
     }
 
-    public static <T, R> Iterator<R> flatMap(Iterator<? extends T> itr, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    public static <T, R> Iterator<R> flatMap(Iterator<? extends T> itr, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         return new FlatMappedIterator<T, R>(itr, mapper);
     }
 

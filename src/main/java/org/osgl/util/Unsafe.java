@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -20,7 +20,7 @@ public enum Unsafe {
             FASTSTR_BUF = FastStr.class.getDeclaredField("buf");
             FASTSTR_BUF.setAccessible(true);
             char[] ca = new char[0];
-            if (_.JAVA_VERSION >= 7) {
+            if ($.JAVA_VERSION >= 7) {
                 SHARED_STR_CONSTRUCTOR = String.class.getDeclaredConstructor(ca.getClass(), Boolean.TYPE);
                 SHARED_STR_CONSTRUCTOR.setAccessible(true);
             }

@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -10,7 +10,7 @@ import java.util.Iterator;
  */
 class LazySeq<T> extends SequenceBase<T> implements C.Sequence<T> {
     protected T head;
-    protected _.F0<C.Sequence<T>> tail;
+    protected $.F0<C.Sequence<T>> tail;
     private volatile C.Sequence<T> tail_;
 
 
@@ -20,10 +20,10 @@ class LazySeq<T> extends SequenceBase<T> implements C.Sequence<T> {
     protected LazySeq() {
     }
 
-    LazySeq(T head, _.Func0<? extends C.Sequence<T>> tail) {
+    LazySeq(T head, $.Func0<? extends C.Sequence<T>> tail) {
         E.NPE(head, tail);
         this.head = head;
-        this.tail = _.f0(tail);
+        this.tail = $.f0(tail);
     }
 
     @Override

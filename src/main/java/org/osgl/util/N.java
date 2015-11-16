@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.io.Serializable;
@@ -207,7 +207,7 @@ public class N {
         }
     }
 
-    public static enum Op implements _.Func2<Number, Number, Number> {
+    public static enum Op implements $.Func2<Number, Number, Number> {
         ADD {
             @Override
             public Number apply(Number a, Number b) {
@@ -248,7 +248,7 @@ public class N {
             return apply(o, o2);
         }
 
-        public _.F0<Number> curry(final Number a, final Number b) {
+        public $.F0<Number> curry(final Number a, final Number b) {
             return curry(a, b);
         }
 
@@ -380,7 +380,7 @@ public class N {
 
     }
 
-    public static class RangeStep<T extends Number> extends _.F2<T, Integer, T> implements Serializable {
+    public static class RangeStep<T extends Number> extends $.F2<T, Integer, T> implements Serializable {
         protected int times = 1;
 
         public RangeStep() {
@@ -396,7 +396,7 @@ public class N {
         }
 
         @Override
-        public T apply(T t, Integer steps) throws NotAppliedException, _.Break {
+        public T apply(T t, Integer steps) throws NotAppliedException, $.Break {
             return (T) num(t).add(steps * times).get();
         }
 
@@ -430,7 +430,7 @@ public class N {
         }
 
         @Override
-        public Integer apply(Integer from, Integer steps) throws NotAppliedException, _.Break {
+        public Integer apply(Integer from, Integer steps) throws NotAppliedException, $.Break {
             return from + step(steps);
         }
 
@@ -465,7 +465,7 @@ public class N {
         }
 
         @Override
-        public Long apply(Long from, Integer steps) throws NotAppliedException, _.Break {
+        public Long apply(Long from, Integer steps) throws NotAppliedException, $.Break {
             return from + step(steps);
         }
 
@@ -499,7 +499,7 @@ public class N {
         }
 
         @Override
-        public Short apply(Short from, Integer steps) throws NotAppliedException, _.Break {
+        public Short apply(Short from, Integer steps) throws NotAppliedException, $.Break {
             steps = step(steps);
             short limit = (steps < 0) ? Short.MIN_VALUE : Short.MAX_VALUE;
             if ((limit - from) < steps) {
@@ -539,7 +539,7 @@ public class N {
         }
 
         @Override
-        public Byte apply(Byte from, Integer steps) throws NotAppliedException, _.Break {
+        public Byte apply(Byte from, Integer steps) throws NotAppliedException, $.Break {
             steps = step(steps);
             byte limit = (steps < 0) ? Byte.MIN_VALUE : Byte.MAX_VALUE;
             if ((limit - from) < steps) {
@@ -816,17 +816,17 @@ public class N {
 
     public final static class F {
 
-        public static final _.F1<Number, Number> NEGATIVE = new _.F1<Number, Number>() {
+        public static final $.F1<Number, Number> NEGATIVE = new $.F1<Number, Number>() {
             @Override
-            public Number apply(Number number) throws NotAppliedException, _.Break {
+            public Number apply(Number number) throws NotAppliedException, $.Break {
                 return num(number).mul(-1);
             }
         };
 
-        public static final _.F1 DBL = multiplyBy(2);
+        public static final $.F1 DBL = multiplyBy(2);
 
-        public static _.Predicate<Integer> gt(final int n) {
-            return new _.Predicate<Integer>() {
+        public static $.Predicate<Integer> gt(final int n) {
+            return new $.Predicate<Integer>() {
                 @Override
                 public boolean test(Integer integer) {
                     return integer > n;
@@ -834,54 +834,54 @@ public class N {
             };
         }
 
-        public static _.Predicate<Integer> greaterThan(int n) {
+        public static $.Predicate<Integer> greaterThan(int n) {
             return gt(n);
         }
 
-        public static _.Predicate<Integer> gte(int n) {
+        public static $.Predicate<Integer> gte(int n) {
             return gt(n - 1);
         }
 
-        public static _.Predicate<Integer> greaterThanOrEqualsTo(int n) {
+        public static $.Predicate<Integer> greaterThanOrEqualsTo(int n) {
             return gte(n);
         }
 
-        public static _.Predicate<Integer> lt(int n) {
-            return _.F.negate(gte(n));
+        public static $.Predicate<Integer> lt(int n) {
+            return $.F.negate(gte(n));
         }
 
-        public static _.Predicate<Integer> lessThan(int n) {
+        public static $.Predicate<Integer> lessThan(int n) {
             return lt(n);
         }
 
-        public static _.Predicate<Integer> lte(int n) {
-            return _.F.negate(gt(n));
+        public static $.Predicate<Integer> lte(int n) {
+            return $.F.negate(gt(n));
         }
 
-        public static _.Predicate<Integer> lessThanOrEqualsTo(int n) {
+        public static $.Predicate<Integer> lessThanOrEqualsTo(int n) {
             return lte(n);
         }
 
-        public static <T extends Number> _.F1<T, Number> dbl() {
+        public static <T extends Number> $.F1<T, Number> dbl() {
             return DBL;
         }
 
-        public static <T extends Number> _.F1<T, Number> dbl(Class<T> clz) {
+        public static <T extends Number> $.F1<T, Number> dbl(Class<T> clz) {
             return mul(2, clz);
         }
 
-        public static final _.F1 HALF = div(2);
+        public static final $.F1 HALF = div(2);
 
-        public static <T extends Number> _.F1<T, Number> half() {
+        public static <T extends Number> $.F1<T, Number> half() {
             return HALF;
         }
 
-        public static <T extends Number> _.F1<T, Number> half(Class<T> clz) {
+        public static <T extends Number> $.F1<T, Number> half(Class<T> clz) {
             return div(2, clz);
         }
 
-        public static <T extends Number> _.F1<T, Number> add(final Number n) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> add(final Number n) {
+            return new $.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
                     return num(t).add(n).get();
@@ -889,8 +889,8 @@ public class N {
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> add(final Number n, final Class<T> clz) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> add(final Number n, final Class<T> clz) {
+            return new $.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
                     return num(t).add(n).as(clz);
@@ -898,61 +898,61 @@ public class N {
             };
         }
 
-        public static <T extends Number> _.F2<T, T, Number> addTwo() {
-            return new _.F2<T, T, Number>() {
+        public static <T extends Number> $.F2<T, T, Number> addTwo() {
+            return new $.F2<T, T, Number>() {
                 @Override
-                public Number apply(T t1, T t2) throws NotAppliedException, _.Break {
+                public Number apply(T t1, T t2) throws NotAppliedException, $.Break {
                     return num(t1).add(t2);
                 }
             };
         }
 
-        public static <T extends Number> _.F2<T, T, T> addTwo(final Class<T> c) {
-            return new _.F2<T, T, T>() {
+        public static <T extends Number> $.F2<T, T, T> addTwo(final Class<T> c) {
+            return new $.F2<T, T, T>() {
                 @Override
-                public T apply(T t1, T t2) throws NotAppliedException, _.Break {
+                public T apply(T t1, T t2) throws NotAppliedException, $.Break {
                     return (T) num(t1).add(t2).as(c);
                 }
             };
         }
 
-        public static <T extends Number, X> _.F2<T, X, Number> adder(final _.Function<X, T> func) {
-            return new _.F2<T, X, Number>() {
+        public static <T extends Number, X> $.F2<T, X, Number> adder(final $.Function<X, T> func) {
+            return new $.F2<T, X, Number>() {
                 @Override
-                public Number apply(T t, X x) throws NotAppliedException, _.Break {
+                public Number apply(T t, X x) throws NotAppliedException, $.Break {
                     return num(t).add(func.apply(x));
                 }
             };
         }
 
-        public static <T extends Number, X> _.F2<T, X, T> adder(final _.Function<X, T> func, final Class<T> clz) {
-            return new _.F2<T, X, T>() {
+        public static <T extends Number, X> $.F2<T, X, T> adder(final $.Function<X, T> func, final Class<T> clz) {
+            return new $.F2<T, X, T>() {
                 @Override
-                public T apply(T t, X x) throws NotAppliedException, _.Break {
+                public T apply(T t, X x) throws NotAppliedException, $.Break {
                     return (T) num(t).add(func.apply(x)).as(clz);
                 }
             };
         }
 
-        public static _.F2<Number, Number, Number> MULTIPLY = new _.F2<Number, Number, Number>() {
+        public static $.F2<Number, Number, Number> MULTIPLY = new $.F2<Number, Number, Number>() {
             @Override
-            public Number apply(Number n1, Number n2) throws NotAppliedException, _.Break {
+            public Number apply(Number n1, Number n2) throws NotAppliedException, $.Break {
                 return num(n1).mul(n2);
             }
         };
 
         public static <P1 extends Number, P2 extends Number, R extends Number>
-        _.F2<P1, P2, R> multiply(final Class<R> type) {
-            return new _.F2<P1, P2, R>() {
+        $.F2<P1, P2, R> multiply(final Class<R> type) {
+            return new $.F2<P1, P2, R>() {
                 @Override
-                public R apply(P1 n1, P2 n2) throws NotAppliedException, _.Break {
+                public R apply(P1 n1, P2 n2) throws NotAppliedException, $.Break {
                     return (R) num(n1).mul(n2).as(type);
                 }
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> multiplyBy(final Number n) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> multiplyBy(final Number n) {
+            return new $.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
                     return num(t).mul(n).get();
@@ -960,8 +960,8 @@ public class N {
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> multiplyBy(final Number n, final Class<T> clz) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> multiplyBy(final Number n, final Class<T> clz) {
+            return new $.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
                     return num(t).mul(n).as(clz);
@@ -973,7 +973,7 @@ public class N {
          * Use {@link #multiplyBy(Number)}
          */
         @Deprecated
-        public static <T extends Number> _.F1<T, Number> mul(final Number n) {
+        public static <T extends Number> $.F1<T, Number> mul(final Number n) {
             return multiplyBy(n);
         }
 
@@ -981,8 +981,8 @@ public class N {
          * Use {@link #multiplyBy(Number, Class)}
          */
         @Deprecated
-        public static <T extends Number> _.F1<T, Number> mul(final Number n, final Class<T> clz) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> mul(final Number n, final Class<T> clz) {
+            return new $.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
                     return num(t).mul(n).as(clz);
@@ -990,26 +990,26 @@ public class N {
             };
         }
 
-        public static <P1 extends Number, P2 extends Number, R extends Number> _.F2<P1, P2, R> divide(
+        public static <P1 extends Number, P2 extends Number, R extends Number> $.F2<P1, P2, R> divide(
                 final Class<R> type
         ) {
-            return new _.F2<P1, P2, R>() {
+            return new $.F2<P1, P2, R>() {
                 @Override
-                public R apply(P1 n1, P2 n2) throws NotAppliedException, _.Break {
+                public R apply(P1 n1, P2 n2) throws NotAppliedException, $.Break {
                     return (R) num(n1).div(n2).as(type);
                 }
             };
         }
 
-        public static _.F2<Number, Number, Number> DIVIDE = new _.F2<Number, Number, Number>() {
+        public static $.F2<Number, Number, Number> DIVIDE = new $.F2<Number, Number, Number>() {
             @Override
-            public Number apply(Number n1, Number n2) throws NotAppliedException, _.Break {
+            public Number apply(Number n1, Number n2) throws NotAppliedException, $.Break {
                 return num(n1).div(n2);
             }
         };
 
-        public static <T extends Number> _.F1<T, Number> divideBy(final Number n) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> divideBy(final Number n) {
+            return new $.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
                     return num(t).div(n).get();
@@ -1017,8 +1017,8 @@ public class N {
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> divideBy(final Number n, final Class<T> type) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> divideBy(final Number n, final Class<T> type) {
+            return new $.F1<T, Number>() {
                 @Override
                 public Number apply(T t) {
                     return num(t).div(n).as(type);
@@ -1030,7 +1030,7 @@ public class N {
          * Use {@link #divideBy(Number)} instead
          */
         @Deprecated
-        public static <T extends Number> _.F1<T, Number> div(final Number n) {
+        public static <T extends Number> $.F1<T, Number> div(final Number n) {
             return divideBy(n);
         }
 
@@ -1038,34 +1038,34 @@ public class N {
          * Use {@link #divideBy(Number, Class)} instead
          */
         @Deprecated
-        public static <T extends Number> _.F1<T, Number> div(final Number n, final Class<T> clz) {
+        public static <T extends Number> $.F1<T, Number> div(final Number n, final Class<T> clz) {
             return divideBy(n, clz);
         }
 
-        public static <T extends Number> _.F1<T, Number> sqr() {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> sqr() {
+            return new $.F1<T, Number>() {
                 @Override
-                public Number apply(T t) throws NotAppliedException, _.Break {
+                public Number apply(T t) throws NotAppliedException, $.Break {
                     Num<T> nm = num(t);
                     return nm.mul(nm).get();
                 }
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> sqr(final Class<T> clz) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> sqr(final Class<T> clz) {
+            return new $.F1<T, Number>() {
                 @Override
-                public Number apply(T t) throws NotAppliedException, _.Break {
+                public Number apply(T t) throws NotAppliedException, $.Break {
                     Num<T> nm = num(t);
                     return nm.mul(nm).as(clz);
                 }
             };
         }
 
-        public static <T extends Number> _.F1<T, Double> sqrt() {
-            return new _.F1<T, Double>() {
+        public static <T extends Number> $.F1<T, Double> sqrt() {
+            return new $.F1<T, Double>() {
                 @Override
-                public Double apply(T t) throws NotAppliedException, _.Break {
+                public Double apply(T t) throws NotAppliedException, $.Break {
                     Num<T> nm = num(t);
                     return nm.sqrt();
                 }
@@ -1073,46 +1073,46 @@ public class N {
         }
 
 
-        public static <T extends Number> _.F1<T, Number> cubic() {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> cubic() {
+            return new $.F1<T, Number>() {
                 @Override
-                public Number apply(T t) throws NotAppliedException, _.Break {
+                public Number apply(T t) throws NotAppliedException, $.Break {
                     Num<T> nm = num(t);
                     return nm.mul(nm).mul(nm).get();
                 }
             };
         }
 
-        public static <T extends Number> _.F1<T, Number> cubic(final Class<T> clz) {
-            return new _.F1<T, Number>() {
+        public static <T extends Number> $.F1<T, Number> cubic(final Class<T> clz) {
+            return new $.F1<T, Number>() {
                 @Override
-                public Number apply(T t) throws NotAppliedException, _.Break {
+                public Number apply(T t) throws NotAppliedException, $.Break {
                     N.Num<T> nm = N.num(t);
                     return nm.mul(nm).mul(nm).as(clz);
                 }
             };
         }
 
-        public static <T extends Number> _.F1<T, Double> cbrt() {
-            return new _.F1<T, Double>() {
+        public static <T extends Number> $.F1<T, Double> cbrt() {
+            return new $.F1<T, Double>() {
                 @Override
-                public Double apply(T t) throws NotAppliedException, _.Break {
+                public Double apply(T t) throws NotAppliedException, $.Break {
                     return num(t).cbrt();
                 }
             };
         }
 
-        public static <T extends Number> _.F1<T, Integer> sign() {
-            return new _.F1<T, Integer>() {
+        public static <T extends Number> $.F1<T, Integer> sign() {
+            return new $.F1<T, Integer>() {
                 @Override
-                public Integer apply(T t) throws NotAppliedException, _.Break {
+                public Integer apply(T t) throws NotAppliedException, $.Break {
                     return N.sign(t);
                 }
             };
         }
 
-        public static <T extends Number> _.F2<T, T, T> aggregate(final Class<T> clz) {
-            return new _.F2<T, T, T>() {
+        public static <T extends Number> $.F2<T, T, T> aggregate(final Class<T> clz) {
+            return new $.F2<T, T, T>() {
                 @Override
                 public T apply(T e, T v) {
                     return (T) N.num(e).add(v).as(clz);
@@ -1120,10 +1120,10 @@ public class N {
             };
         }
 
-        public static <T extends Number> _.F2<T, T, T> subtract(final Class<T> clz) {
-            return new _.F2<T, T, T>() {
+        public static <T extends Number> $.F2<T, T, T> subtract(final Class<T> clz) {
+            return new $.F2<T, T, T>() {
                 @Override
-                public T apply(T minuend, T subtraend) throws NotAppliedException, _.Break {
+                public T apply(T minuend, T subtraend) throws NotAppliedException, $.Break {
                     return (T) N.num(minuend).sub(subtraend).as(clz);
                 }
             };
@@ -1153,25 +1153,25 @@ public class N {
             return new LongRangeStep(times);
         }
 
-        public static final _.F2 COUNTER = new _.F2<Integer, Object, Integer>() {
+        public static final $.F2 COUNTER = new $.F2<Integer, Object, Integer>() {
             @Override
-            public Integer apply(Integer integer, Object o) throws NotAppliedException, _.Break {
+            public Integer apply(Integer integer, Object o) throws NotAppliedException, $.Break {
                 return integer + 1;
             }
         };
 
-        public static <T> _.F2<Integer, T, Integer> counter() {
-            return _.cast(COUNTER);
+        public static <T> $.F2<Integer, T, Integer> counter() {
+            return $.cast(COUNTER);
         }
 
-        public static _.Predicate<Integer> IS_EVEN = new _.Predicate<Integer>() {
+        public static $.Predicate<Integer> IS_EVEN = new $.Predicate<Integer>() {
             @Override
             public boolean test(Integer integer) {
                 return integer % 2 == 0;
             }
         };
 
-        public static _.Predicate<Integer> IS_ODD = _.F.negate(IS_EVEN);
+        public static $.Predicate<Integer> IS_ODD = $.F.negate(IS_EVEN);
     }
 
     private static int randSymbol() {

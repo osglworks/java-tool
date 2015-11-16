@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.ListIterator;
 
@@ -10,7 +10,7 @@ import java.util.ListIterator;
 class MappedListIterator<T, R> extends MappedIterator<T, R> implements ListIterator<R> {
 
     MappedListIterator
-    (ListIterator<? extends T> itr, _.Function<? super T, ? extends R> mapper) {
+    (ListIterator<? extends T> itr, $.Function<? super T, ? extends R> mapper) {
         super(itr, mapper);
     }
 

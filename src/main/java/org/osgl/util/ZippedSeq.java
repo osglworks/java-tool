@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,13 +12,13 @@ import java.util.Iterator;
  * Time: 8:03 PM
  * To change this template use File | Settings | File Templates.
  */
-class ZippedSeq<A, B> extends SequenceBase<_.T2<A, B>> {
+class ZippedSeq<A, B> extends SequenceBase<$.T2<A, B>> {
 
     private Iterable<A> a;
     private Iterable<B> b;
 
-    private _.Option<A> defA = _.none();
-    private _.Option<B> defB = _.none();
+    private $.Option<A> defA = $.none();
+    private $.Option<B> defB = $.none();
 
 
     ZippedSeq(Iterable<A> a, Iterable<B> b) {
@@ -29,8 +29,8 @@ class ZippedSeq<A, B> extends SequenceBase<_.T2<A, B>> {
 
     ZippedSeq(Iterable<A> a, Iterable<B> b, A defA, B defB) {
         this(a, b);
-        this.defA = _.some(defA);
-        this.defB = _.some(defB);
+        this.defA = $.some(defA);
+        this.defB = $.some(defB);
     }
 
     @Override
@@ -48,7 +48,7 @@ class ZippedSeq<A, B> extends SequenceBase<_.T2<A, B>> {
     }
 
     @Override
-    public Iterator<_.T2<A, B>> iterator() {
+    public Iterator<$.T2<A, B>> iterator() {
         final Iterator<A> ia = a.iterator();
         final Iterator<B> ib = b.iterator();
         if (defA.isDefined()) {

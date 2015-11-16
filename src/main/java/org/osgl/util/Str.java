@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -53,7 +53,7 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
-    public Str takeWhile(_.Function<? super Character, Boolean> predicate) {
+    public Str takeWhile($.Function<? super Character, Boolean> predicate) {
         if ("".equals(s)) {
             return EMPTY_STR;
         }
@@ -61,19 +61,19 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
-    public Str dropWhile(_.Function<? super Character, Boolean> predicate) {
+    public Str dropWhile($.Function<? super Character, Boolean> predicate) {
         if ("".equals(s)) {
             return EMPTY_STR;
         }
-        return of(new FilteredIterator<Character>(iterator(), _.F.negate(predicate), FilteredIterator.Type.UNTIL));
+        return of(new FilteredIterator<Character>(iterator(), $.F.negate(predicate), FilteredIterator.Type.UNTIL));
     }
 
     @Override
-    public Str remove(_.Function<? super Character, Boolean> predicate) {
+    public Str remove($.Function<? super Character, Boolean> predicate) {
         if ("".equals(s)) {
             return EMPTY_STR;
         }
-        return of(new FilteredIterator<Character>(iterator(), _.F.negate(predicate), FilteredIterator.Type.ALL));
+        return of(new FilteredIterator<Character>(iterator(), $.F.negate(predicate), FilteredIterator.Type.ALL));
     }
 
     @Override

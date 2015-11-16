@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.NoSuchElementException;
 
@@ -13,15 +13,15 @@ import java.util.NoSuchElementException;
  */
 abstract class StatefulIterator<T> extends ReadOnlyIterator<T> {
 
-    private _.Option<T> current = _.none();
+    private $.Option<T> current = $.none();
 
     /**
      * If there are still elements, then return the an option describing the next element,
-     * otherwise return {@link _.Option#NONE}
+     * otherwise return {@link $.Option#NONE}
      *
      * @return either next element or none if no element in the iterator
      */
-    protected abstract _.Option<T> getCurrent();
+    protected abstract $.Option<T> getCurrent();
 
     public boolean hasNext() {
         if (current.isDefined()) {
@@ -37,7 +37,7 @@ abstract class StatefulIterator<T> extends ReadOnlyIterator<T> {
             throw new NoSuchElementException();
         }
         T ret = current.get();
-        current = _.none();
+        current = $.none();
         return ret;
     }
 

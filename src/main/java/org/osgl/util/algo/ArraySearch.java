@@ -1,6 +1,6 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Comparator;
 
@@ -11,7 +11,7 @@ import java.util.Comparator;
  * Time: 10:10 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface ArraySearch<T> extends ArrayAlgorithm, _.Func5<T[], Integer, Integer, T, Comparator<T>, Integer> {
+public interface ArraySearch<T> extends ArrayAlgorithm, $.Func5<T[], Integer, Integer, T, Comparator<T>, Integer> {
     /**
      * Search array region specified by {@code from} and {@code to} using
      * the predicate specified

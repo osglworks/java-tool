@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.io.Serializable;
 import java.util.*;
@@ -426,7 +426,7 @@ implements RandomAccess, Serializable {
             return Nil.list();
         }
         if (col instanceof C.List) {
-            C.List<T> list = _.cast(col);
+            C.List<T> list = $.cast(col);
             if (list.is(C.Feature.IMMUTABLE)) {
                 return list;
             }

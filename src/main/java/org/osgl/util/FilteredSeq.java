@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -13,14 +13,14 @@ import java.util.Iterator;
  */
 class FilteredSeq<T> extends IterableSeq<T> implements C.Sequence<T> {
 
-    private _.Function<? super T, Boolean> filter;
+    private $.Function<? super T, Boolean> filter;
     private FilteredIterator.Type type;
 
-    FilteredSeq(Iterable<? extends T> iterable, _.Function<? super T, Boolean> predicate) {
+    FilteredSeq(Iterable<? extends T> iterable, $.Function<? super T, Boolean> predicate) {
         this(iterable, predicate, FilteredIterator.Type.ALL);
     }
 
-    FilteredSeq(Iterable<? extends T> iterable, _.Function<? super T, Boolean> predicate, FilteredIterator.Type type) {
+    FilteredSeq(Iterable<? extends T> iterable, $.Function<? super T, Boolean> predicate, FilteredIterator.Type type) {
         super(iterable);
         E.NPE(predicate, type);
         filter = predicate;
@@ -33,11 +33,11 @@ class FilteredSeq<T> extends IterableSeq<T> implements C.Sequence<T> {
         return type.filter(itr, filter);
     }
 
-    public static <T> FilteredSeq<T> of(Iterable<? extends T> iterable, _.Function<? super T, Boolean> predicate) {
+    public static <T> FilteredSeq<T> of(Iterable<? extends T> iterable, $.Function<? super T, Boolean> predicate) {
         return new FilteredSeq<T>(iterable, predicate);
     }
 
-    public static <T> FilteredSeq<T> of(Iterable<? extends T> iterable, _.Function<? super T, Boolean> predicate, FilteredIterator.Type type) {
+    public static <T> FilteredSeq<T> of(Iterable<? extends T> iterable, $.Function<? super T, Boolean> predicate, FilteredIterator.Type type) {
         return new FilteredSeq<T>(iterable, predicate, type);
     }
 }

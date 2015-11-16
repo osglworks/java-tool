@@ -2,7 +2,7 @@ package org.osgl.util;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.Iterator;
@@ -85,16 +85,16 @@ public abstract class TraversableTestBase extends UtilTestBase {
     @Test
     public void testMap() {
         data = prepareData(1);
-        C.Traversable<String> newData = data.map(_.F.asString());
+        C.Traversable<String> newData = data.map($.F.asString());
         eq(seqOf("1"), newData);
     }
 
     @Test
     public void testFlatMap() {
         data = prepareData(1, 4);
-        C.Traversable<Integer> newData = data.flatMap(new _.F1<Integer, C.Traversable<Integer>>(){
+        C.Traversable<Integer> newData = data.flatMap(new $.F1<Integer, C.Traversable<Integer>>(){
             @Override
-            public C.Traversable<Integer> apply(Integer integer) throws NotAppliedException, _.Break {
+            public C.Traversable<Integer> apply(Integer integer) throws NotAppliedException, $.Break {
                 return C.range(0, integer);
             }
         });
@@ -121,23 +121,23 @@ public abstract class TraversableTestBase extends UtilTestBase {
     @Test
     public void testMatches() {
         data = prepareData(1, 2, 3);
-        yes(data.allMatch(_.F.greaterThan(0)));
-        no(data.allMatch(_.F.greaterThan(1)));
+        yes(data.allMatch($.F.greaterThan(0)));
+        no(data.allMatch($.F.greaterThan(1)));
 
-        yes(data.anyMatch(_.F.greaterThan(1)));
-        no(data.anyMatch(_.F.lessThan(0)));
+        yes(data.anyMatch($.F.greaterThan(1)));
+        no(data.anyMatch($.F.lessThan(0)));
 
-        yes(data.noneMatch(_.F.lessThan(0)));
-        no(data.noneMatch(_.F.lessThan(2)));
+        yes(data.noneMatch($.F.lessThan(0)));
+        no(data.noneMatch($.F.lessThan(2)));
     }
 
     @Test
     public void testAccept() {
         data = prepareData(1, 2, 3);
         final Integer[] bot = {1};
-        data.accept(new _.Visitor<Integer>() {
+        data.accept(new $.Visitor<Integer>() {
             @Override
-            public void visit(Integer integer) throws _.Break {
+            public void visit(Integer integer) throws $.Break {
                 bot[0] = bot[0] * integer;
             }
         });

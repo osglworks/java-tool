@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,12 +14,12 @@ import java.util.Iterator;
  */
 class FlatMappedSeq<T, R> extends SequenceBase<R> {
     private Iterable<? extends T> itr;
-    private _.F1<? super T, ? extends Iterable<? extends R>> mapper;
+    private $.F1<? super T, ? extends Iterable<? extends R>> mapper;
 
-    FlatMappedSeq(Iterable<? extends T> itr, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    FlatMappedSeq(Iterable<? extends T> itr, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         E.NPE(itr, mapper);
         this.itr = itr;
-        this.mapper = _.f1(mapper);
+        this.mapper = $.f1(mapper);
     }
 
     @Override
@@ -36,7 +36,7 @@ class FlatMappedSeq<T, R> extends SequenceBase<R> {
     }
 
     static <T, R> C.Sequence<R>
-    of(Iterable<? extends T> itr, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    of(Iterable<? extends T> itr, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         return new FlatMappedSeq(itr, mapper);
     }
 }

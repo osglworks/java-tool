@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.EnumSet;
 import java.util.NoSuchElementException;
@@ -62,22 +62,22 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public SequenceBase<T> accept(_.Function<? super T, ?> visitor) {
+    public SequenceBase<T> accept($.Function<? super T, ?> visitor) {
         C.forEach(this, visitor);
         return this;
     }
 
     @Override
-    public SequenceBase<T> forEach(_.Function<? super T, ?> visitor) {
+    public SequenceBase<T> forEach($.Function<? super T, ?> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public C.Sequence<T> each(_.Function<? super T, ?> visitor) {
+    public C.Sequence<T> each($.Function<? super T, ?> visitor) {
         return accept(visitor);
     }
 
-    protected void forEachLeft(_.Function<? super T, ?> visitor) {
+    protected void forEachLeft($.Function<? super T, ?> visitor) {
         forEach(visitor);
     }
 
@@ -93,40 +93,40 @@ extends TraversableBase<T> implements C.Sequence<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public C.Sequence<T> acceptLeft(_.Function<? super T, ?> visitor) {
+    public C.Sequence<T> acceptLeft($.Function<? super T, ?> visitor) {
         forEachLeft(visitor);
         return this;
     }
 
     /**
-     * Delegate to {@link TraversableBase#reduce(Object, org.osgl._.Func2)}
+     * Delegate to {@link TraversableBase#reduce(Object, $.Func2)}
      * @param identity {@inheritDoc}
      * @param accumulator {@inheritDoc}
      * @param <R> {@inheritDoc}
      * @return {@inheritDoc}
      */
     @Override
-    public <R> R reduceLeft(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduceLeft(R identity, $.Func2<R, T, R> accumulator) {
         return reduce(identity, accumulator);
     }
 
     /**
-     * Delegate to {@link TraversableBase#reduce(org.osgl._.Func2)}
+     * Delegate to {@link TraversableBase#reduce($.Func2)}
      * @param accumulator {@inheritDoc}
      * @return {@inheritDoc}
      */
     @Override
-    public _.Option<T> reduceLeft(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduceLeft($.Func2<T, T, T> accumulator) {
         return reduce(accumulator);
     }
 
     /**
-     * Delegate to {@link TraversableBase#findOne(org.osgl._.Function)}
+     * Delegate to {@link TraversableBase#findOne($.Function)}
      * @param predicate the function map the element to Boolean
      * @return {@inheritDoc}
      */
     @Override
-    public _.Option<T> findFirst(_.Function<? super T, Boolean> predicate) {
+    public $.Option<T> findFirst($.Function<? super T, Boolean> predicate) {
         return findOne(predicate);
     }
 
@@ -144,13 +144,13 @@ extends TraversableBase<T> implements C.Sequence<T> {
             if (isLimited() && n >= size()) {
                 return this;
             }
-            return IndexFilteredSeq.of(this, _.F.lessThan(n));
+            return IndexFilteredSeq.of(this, $.F.lessThan(n));
         }
     }
 
     @Override
     public C.Sequence<T> tail() throws UnsupportedOperationException {
-        return IndexFilteredSeq.of(this, _.F.greaterThan(0));
+        return IndexFilteredSeq.of(this, $.F.greaterThan(0));
     }
 
     @Override
@@ -159,7 +159,7 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public C.Sequence<T> takeWhile(_.Function<? super T, Boolean> predicate) {
+    public C.Sequence<T> takeWhile($.Function<? super T, Boolean> predicate) {
         return FilteredSeq.of(this, predicate, FilteredIterator.Type.WHILE);
     }
 
@@ -171,12 +171,12 @@ extends TraversableBase<T> implements C.Sequence<T> {
         if (n == 0) {
             return this;
         }
-        return IndexFilteredSeq.of(this, _.F.gte(n));
+        return IndexFilteredSeq.of(this, $.F.gte(n));
     }
 
     @Override
-    public C.Sequence<T> dropWhile(_.Function<? super T, Boolean> predicate) {
-        return FilteredSeq.of(this, _.F.negate(predicate), FilteredIterator.Type.UNTIL);
+    public C.Sequence<T> dropWhile($.Function<? super T, Boolean> predicate) {
+        return FilteredSeq.of(this, $.F.negate(predicate), FilteredIterator.Type.UNTIL);
     }
 
     @Override
@@ -194,7 +194,7 @@ extends TraversableBase<T> implements C.Sequence<T> {
 
     @Override
     public C.Sequence<T> append(T t) {
-        return CompositeSeq.of(this, _.val(t));
+        return CompositeSeq.of(this, $.val(t));
     }
 
     @Override
@@ -219,33 +219,33 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public C.Sequence<T> filter(_.Function<? super T, Boolean> predicate) {
+    public C.Sequence<T> filter($.Function<? super T, Boolean> predicate) {
         return FilteredSeq.of(this, predicate);
     }
 
     @Override
-    public <R> C.Sequence<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.Sequence<R> map($.Function<? super T, ? extends R> mapper) {
         return MappedSeq.of(this, mapper);
     }
 
     @Override
-    public <R> C.Sequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
+    public <R> C.Sequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper
     ) {
         return FlatMappedSeq.of(this, mapper);
     }
 
     @Override
-    public <T2> C.Sequence<_.T2<T, T2>> zip(Iterable<T2> iterable) {
+    public <T2> C.Sequence<$.T2<T, T2>> zip(Iterable<T2> iterable) {
         return new ZippedSeq<T, T2>(this, iterable);
     }
 
     @Override
-    public <T2> C.Sequence<_.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2) {
+    public <T2> C.Sequence<$.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2) {
         return new ZippedSeq<T, T2>(this, iterable, def1, def2);
     }
 
     @Override
-    public C.Sequence<_.T2<T, Integer>> zipWithIndex() {
+    public C.Sequence<$.T2<T, Integer>> zipWithIndex() {
         return new ZippedSeq<T, Integer>(this, new IndexIterable(this));
     }
 }

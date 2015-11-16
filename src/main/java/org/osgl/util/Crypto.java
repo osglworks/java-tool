@@ -20,7 +20,7 @@
 package org.osgl.util;
 
 import org.apache.commons.codec.Charsets;
-import org.osgl._;
+import org.osgl.$;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -86,7 +86,6 @@ public enum Crypto {
      * @param message The message to sign
      * @param key     The key to use
      * @return The signed message (in hexadecimal)
-     * @throws java.lang.Exception
      */
     public static String sign(String message, byte[] key) {
 
@@ -408,7 +407,7 @@ public enum Crypto {
         String s2 = "Qtr~QkbxxLX15IQAFN8AyqnftVQ$4fA8VDxB7i3m@zzJdYoUG06fI4_HncSnJJDorEr~kmHnc1gw&#0G5ecnRDLanbvkooZ51VzL47AsM^8169wwHBPm4zVx~JEAmna&WcaZuPerSeh1pj8hf3BAhEm1nO5fTDFs3oInaNE@@&4KV!q@N&~d3n0Vizwu9PVXtPT$B3m7";
         String k2 = passwordHash(s2);
 
-        _.echo("s0: %s\nk0: %s\ns1: %s\nk1: %s\ns2: %s\nk2: %s", s0, k0, s1, k1, s2, k2);
+        $.echo("s0: %s\nk0: %s\ns1: %s\nk1: %s\ns2: %s\nk2: %s", s0, k0, s1, k1, s2, k2);
     }
 
     private static void a() {

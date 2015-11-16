@@ -1,6 +1,6 @@
 package org.osgl.concurrent;
 
-import org.osgl._;
+import org.osgl.$;
 
 /**
  * Provide access to context local bag. E.g JDKThreadLocal
@@ -53,7 +53,7 @@ public interface ContextLocal<T> {
      */
     T initialValue();
 
-    public abstract static class InitialValueProvider<T> extends _.F0<T> {
+    public abstract static class InitialValueProvider<T> extends $.F0<T> {
         @Override
         public T apply() {
             return initialValue();

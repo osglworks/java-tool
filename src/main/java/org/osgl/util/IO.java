@@ -19,7 +19,7 @@
 */
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.storage.ISObject;
 import org.osgl.storage.impl.SObject;
@@ -589,24 +589,24 @@ public class IO {
     }
 
     public static final class F {
-        public static <T> _.Function<?, T> println() {
+        public static <T> $.Function<?, T> println() {
             return PRINTLN;
         }
         
-        public static _.Function PRINTLN = print("", "\n", System.out);
+        public static $.Function PRINTLN = print("", "\n", System.out);
 
-        public static <T> _.Function<?, T> print() {
+        public static <T> $.Function<?, T> print() {
             return PRINT;
         }
         
-        public static _.Function PRINT = print("", "", System.out);
+        public static $.Function PRINT = print("", "", System.out);
         
-        public static <T> _.Function<T, ?> print(String prefix, String suffix) {
+        public static <T> $.Function<T, ?> print(String prefix, String suffix) {
             return print(prefix, suffix, System.out);
         }
         
-        public static <T> _.Function<T, ?> print(String prefix, String suffix, PrintStream ps) {
-            return new _.F4<T, String, String, PrintStream, Void>() {
+        public static <T> $.Function<T, ?> print(String prefix, String suffix, PrintStream ps) {
+            return new $.F4<T, String, String, PrintStream, Void>() {
                 @Override
                 public Void apply(T t, String prefix, String suffix, PrintStream ps) {
                     StringBuilder sb = new StringBuilder(prefix).append(t).append(suffix);
@@ -616,9 +616,9 @@ public class IO {
             }.curry(prefix, suffix, ps);
         }
 
-        public static final _.Function<File, InputStream> FILE_TO_IS = new _.F1<File, InputStream>() {
+        public static final $.Function<File, InputStream> FILE_TO_IS = new $.F1<File, InputStream>() {
             @Override
-            public InputStream apply(File file) throws NotAppliedException, _.Break {
+            public InputStream apply(File file) throws NotAppliedException, $.Break {
                 try {
                     return new BufferedInputStream(new FileInputStream(file));
                 } catch (IOException e) {

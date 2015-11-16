@@ -9,31 +9,31 @@ import org.osgl.util.S;
  */
 public class F0Test extends TestBase {
 
-    protected _.F0<String> notApplied = new _.F0<String>() {
+    protected $.F0<String> notApplied = new $.F0<String>() {
         @Override
-        public String apply() throws NotAppliedException, _.Break {
+        public String apply() throws NotAppliedException, $.Break {
             throw new NotAppliedException();
         }
     };
 
-    protected _.F0<String> illegalState = new _.F0<String>() {
+    protected $.F0<String> illegalState = new $.F0<String>() {
         @Override
-        public String apply() throws NotAppliedException, _.Break {
+        public String apply() throws NotAppliedException, $.Break {
             throw new IllegalStateException();
         }
     };
 
-    protected _.F0<String> foo = new _.F0<String>() {
+    protected $.F0<String> foo = new $.F0<String>() {
         @Override
-        public String apply() throws NotAppliedException, _.Break {
+        public String apply() throws NotAppliedException, $.Break {
             return "foo";
         }
     };
 
-    protected _.F0<String> createFoo(final String s) {
-        return new _.F0<String>() {
+    protected $.F0<String> createFoo(final String s) {
+        return new $.F0<String>() {
             @Override
-            public String apply() throws NotAppliedException, _.Break {
+            public String apply() throws NotAppliedException, $.Break {
                 return s;
             }
         };

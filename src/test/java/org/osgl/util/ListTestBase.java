@@ -1,7 +1,7 @@
 package org.osgl.util;
 
 import org.junit.Test;
-import org.osgl._;
+import org.osgl.$;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -195,18 +195,18 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
     public void testZipList() {
         data = prepareData(1, 3);
         C.List<?> l = data().zip(arrayList(2, 4, 6));
-        eq(seqOf(_.T2(1, 2), _.T2(3, 4)), l);
+        eq(seqOf($.T2(1, 2), $.T2(3, 4)), l);
         l = data().zip(arrayList(2));
-        eq(seqOf(_.T2(1, 2)), l);
+        eq(seqOf($.T2(1, 2)), l);
     }
 
     @Test
     public void testZipAllList() {
         data = prepareData(1, 3);
         C.List<?> l = data().zipAll(arrayList(2, 4, 6), -1, -2);
-        eq(seqOf(_.T2(1, 2), _.T2(3, 4), _.T2(-1, 6)), l);
+        eq(seqOf($.T2(1, 2), $.T2(3, 4), $.T2(-1, 6)), l);
         l = data().zipAll(arrayList(2), -1, -2);
-        eq(seqOf(_.T2(1, 2), _.T2(3, -2)), l);
+        eq(seqOf($.T2(1, 2), $.T2(3, -2)), l);
     }
 
     @Test
@@ -225,17 +225,17 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
 
     @Test
     public void testLocateFirst() {
-        eq(1, data().locateFirst(_.F.lessThan(3)).get());
+        eq(1, data().locateFirst($.F.lessThan(3)).get());
     }
 
     @Test
     public void testLocateLast() {
-        eq(2, data().locateLast(_.F.lessThan(3)).get());
+        eq(2, data().locateLast($.F.lessThan(3)).get());
     }
 
     @Test
     public void testLocate() {
-        yes(data().locate(_.F.lessThan(3)).get() < 3);
+        yes(data().locate($.F.lessThan(3)).get() < 3);
     }
 
     @Test

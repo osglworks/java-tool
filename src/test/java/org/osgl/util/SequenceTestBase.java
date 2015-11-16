@@ -1,7 +1,7 @@
 package org.osgl.util;
 
 import org.junit.Test;
-import org.osgl._;
+import org.osgl.$;
 
 /**
  * Created with IntelliJ IDEA.
@@ -95,9 +95,9 @@ public abstract class SequenceTestBase extends TraversableTestBase {
     @Test
     public void testTakeWhile() {
         data = prepareData(1, 2, 3, 4, 5);
-        eq(seqOf(1, 2, 3), data().takeWhile(_.F.lessThan(4)));
-        eq(Nil.seq(), data().takeWhile(_.F.lessThan(0)));
-        eq(data, data().takeWhile(_.F.lessThan(6)));
+        eq(seqOf(1, 2, 3), data().takeWhile($.F.lessThan(4)));
+        eq(Nil.seq(), data().takeWhile($.F.lessThan(0)));
+        eq(data, data().takeWhile($.F.lessThan(6)));
     }
 
     @Test
@@ -122,7 +122,7 @@ public abstract class SequenceTestBase extends TraversableTestBase {
     @Test
     public void testDropWhile() {
         data = prepareData(1, 2, 3, 4, 5);
-        eq(seqOf(4, 5), data().dropWhile(_.F.lt(4)));
+        eq(seqOf(4, 5), data().dropWhile($.F.lt(4)));
     }
 
     @Test
@@ -156,10 +156,10 @@ public abstract class SequenceTestBase extends TraversableTestBase {
 
     @Test
     public void testFindFirst() {
-        C.Sequence<_.T2<Integer, Integer>> data = prepareTypedData(_.T2(1, 5), _.T2(2, 6), _.T2(2, 8), _.T2(3, 4));
-        _.Option<_.T2<Integer, Integer>> found = data.findFirst(new _.Predicate<_.T2<Integer, Integer>>() {
+        C.Sequence<$.T2<Integer, Integer>> data = prepareTypedData($.T2(1, 5), $.T2(2, 6), $.T2(2, 8), $.T2(3, 4));
+        $.Option<$.T2<Integer, Integer>> found = data.findFirst(new $.Predicate<$.T2<Integer, Integer>>() {
             @Override
-            public boolean test(_.T2<Integer, Integer> x) {
+            public boolean test($.T2<Integer, Integer> x) {
                 return x._1 == 2;
             }
         });
@@ -169,7 +169,7 @@ public abstract class SequenceTestBase extends TraversableTestBase {
     @Test
     public void testAcceptLeft() {
         data = prepareData(1, 2, 3, 4, 5);
-        _.Var<Integer> var = _.var(0);
+        $.Var<Integer> var = $.var(0);
 //        data().acceptLeft(new _.Visitor<Integer>() {
 //            @Override
 //            public void visit(Integer integer) throws _.Break {
@@ -183,15 +183,15 @@ public abstract class SequenceTestBase extends TraversableTestBase {
     @Test
     public void testZip() {
         data = prepareData(1, 3);
-        eq(seqOf(_.T2(1, 2), _.T2(3, 4)), data().zip(seqOf(2, 4, 6)));
-        eq(seqOf(_.T2(1, 2)), data().zip(seqOf(2)));
+        eq(seqOf($.T2(1, 2), $.T2(3, 4)), data().zip(seqOf(2, 4, 6)));
+        eq(seqOf($.T2(1, 2)), data().zip(seqOf(2)));
     }
 
     @Test
     public void testZipAll() {
         data = prepareData(1, 3);
-        eq(seqOf(_.T2(1, 2), _.T2(3, 4), _.T2(-1, 6)), data().zipAll(seqOf(2, 4, 6), -1, -2));
-        eq(seqOf(_.T2(1, 2), _.T2(3, -2)), data().zipAll(seqOf(2), -1, -2));
+        eq(seqOf($.T2(1, 2), $.T2(3, 4), $.T2(-1, 6)), data().zipAll(seqOf(2, 4, 6), -1, -2));
+        eq(seqOf($.T2(1, 2), $.T2(3, -2)), data().zipAll(seqOf(2), -1, -2));
     }
 
 

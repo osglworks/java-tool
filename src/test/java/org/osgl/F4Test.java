@@ -7,17 +7,17 @@ import org.osgl.util.E;
 
 public class F4Test extends FuncTestBase {
 
-    private _.F4<String, String, String, String, Integer> calcHashCode = new _.F4<String, String, String, String, Integer>() {
+    private $.F4<String, String, String, String, Integer> calcHashCode = new $.F4<String, String, String, String, Integer>() {
         @Override
-        public Integer apply(String s1, String s2, String s3, String s4) throws NotAppliedException, _.Break {
+        public Integer apply(String s1, String s2, String s3, String s4) throws NotAppliedException, $.Break {
             E.NPE(s1, s2, s3, s4);
             return (s1 + s2 + s3 + s4).hashCode();
         }
     };
 
-    private _.F4<String, String, String, String, Integer> calcStringSize = new _.F4<String, String, String, String, Integer>() {
+    private $.F4<String, String, String, String, Integer> calcStringSize = new $.F4<String, String, String, String, Integer>() {
         @Override
-        public Integer apply(String s, String s2, String s3, String s4) throws NotAppliedException, _.Break {
+        public Integer apply(String s, String s2, String s3, String s4) throws NotAppliedException, $.Break {
             return (s + s2 + s3 + s4).length();
         }
     };
@@ -83,22 +83,22 @@ public class F4Test extends FuncTestBase {
 
     @Test
     public void dumbF4AlwaysReturnNull() {
-        eq(null, _.F4.apply(rs1, rs2, rs3, rs4));
+        eq(null, $.F4.apply(rs1, rs2, rs3, rs4));
     }
 
     @Test
     public void f4ShallChangeFunc3ImplToF4Type() {
-        _.Func4<String, String, String, String, Integer> foo = new _.Func4<String, String, String, String, Integer>() {
+        $.Func4<String, String, String, String, Integer> foo = new $.Func4<String, String, String, String, Integer>() {
             @Override
-            public Integer apply(String s, String s2, String s3, String s4) throws NotAppliedException, _.Break {
+            public Integer apply(String s, String s2, String s3, String s4) throws NotAppliedException, $.Break {
                 return null;
             }
         };
-        yes(_.f4(foo) instanceof _.F4);
+        yes($.f4(foo) instanceof $.F4);
     }
 
     @Test
     public void f4ShallReturnTheSameInstanceIfAppliedToF4Type() {
-        yes(calcHashCode == _.f4(calcHashCode));
+        yes(calcHashCode == $.f4(calcHashCode));
     }
 }

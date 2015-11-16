@@ -1,6 +1,6 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -32,7 +32,7 @@ public class ArrayInsertionSort<T> extends ArraySortBase<T> implements ArraySort
     public static void main(String[] args) {
         Integer[] ia = {5, 4, 3, 2, 1};
         ArrayInsertionSort<Integer> s = new ArrayInsertionSort<Integer>();
-        Integer[] a = s.apply(ia, 2, 4, _.F.NATURAL_ORDER);
+        Integer[] a = s.apply(ia, 2, 4, $.F.NATURAL_ORDER);
         System.out.println(Arrays.toString(a));
     }
 

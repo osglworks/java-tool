@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -13,10 +13,10 @@ import java.util.Iterator;
  */
 class FlatMappedIterator<T, R> extends StatefulIterator<R> {
     private final Iterator<? extends T> data;
-    private final _.Function<? super T, ? extends Iterable<? extends R>> mapper;
+    private final $.Function<? super T, ? extends Iterable<? extends R>> mapper;
     private Iterator<? extends R> curMapped = null;
 
-    FlatMappedIterator(Iterator<? extends T> itr, _.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    FlatMappedIterator(Iterator<? extends T> itr, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         E.NPE(itr, mapper);
         this.data = itr;
         this.mapper = mapper;
@@ -24,16 +24,16 @@ class FlatMappedIterator<T, R> extends StatefulIterator<R> {
 
     protected Iterator<? extends T> data() {return data;}
 
-    protected _.Function<? super T, ? extends Iterable<? extends R>> mapper() {return mapper;}
+    protected $.Function<? super T, ? extends Iterable<? extends R>> mapper() {return mapper;}
 
     @Override
-    protected _.Option<R> getCurrent() {
+    protected $.Option<R> getCurrent() {
         while (null == curMapped || !curMapped.hasNext()) {
             if (!data.hasNext()) {
-                return _.none();
+                return $.none();
             }
             curMapped = mapper.apply(data.next()).iterator();
         }
-        return _.some((R)curMapped.next());
+        return $.some((R)curMapped.next());
     }
 }

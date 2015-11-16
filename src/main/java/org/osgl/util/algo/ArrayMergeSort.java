@@ -1,6 +1,6 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -61,7 +61,7 @@ public class ArrayMergeSort<T> extends ArraySortBase<T> implements ArraySort<T> 
     public static void main(String[] args) {
         Integer[] ia = {5, 4, 3, 2, 1};
         ArrayMergeSort<Integer> s = new ArrayMergeSort<Integer>();
-        Integer[] a = s.apply(ia, 0, 5, _.F.NATURAL_ORDER);
+        Integer[] a = s.apply(ia, 0, 5, $.F.NATURAL_ORDER);
         System.out.println(Arrays.toString(a));
     }
 

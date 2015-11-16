@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
@@ -12,11 +12,11 @@ import java.util.NoSuchElementException;
  * Time: 9:55 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ZippedListIterator<A, B> implements ListIterator<_.T2<A, B>> {
+public class ZippedListIterator<A, B> implements ListIterator<$.T2<A, B>> {
     private ListIterator<A> a;
     private ListIterator<B> b;
-    private _.Option<A> defA = _.none();
-    private _.Option<B> defB = _.none();
+    private $.Option<A> defA = $.none();
+    private $.Option<B> defB = $.none();
 
     ZippedListIterator(ListIterator<A> a, ListIterator<B> b) {
         E.NPE(a, b);
@@ -26,8 +26,8 @@ public class ZippedListIterator<A, B> implements ListIterator<_.T2<A, B>> {
 
     ZippedListIterator(ListIterator<A> a, ListIterator<B> b, A defA, B defB) {
         this(a, b);
-        this.defA = _.some(defA);
-        this.defB = _.some(defB);
+        this.defA = $.some(defA);
+        this.defB = $.some(defB);
     }
 
     @Override
@@ -57,16 +57,16 @@ public class ZippedListIterator<A, B> implements ListIterator<_.T2<A, B>> {
     }
 
     @Override
-    public _.T2<A, B> next() {
+    public $.T2<A, B> next() {
         boolean hasA = a.hasNext(), hasB = b.hasNext();
         if (hasA && hasB) {
-            return _.T2(a.next(), b.next());
+            return $.T2(a.next(), b.next());
         }
         if (defA.isDefined()) {
             if (hasA) {
-                return _.T2(a.next(), defB.get());
+                return $.T2(a.next(), defB.get());
             } else if (hasB) {
-                return _.T2(defA.get(), b.next());
+                return $.T2(defA.get(), b.next());
             } else {
                 throw new NoSuchElementException();
             }
@@ -76,16 +76,16 @@ public class ZippedListIterator<A, B> implements ListIterator<_.T2<A, B>> {
     }
 
     @Override
-    public _.T2<A, B> previous() {
+    public $.T2<A, B> previous() {
         boolean hasA = a.hasPrevious(), hasB = b.hasPrevious();
         if (hasA && hasB) {
-            return _.T2(a.previous(), b.previous());
+            return $.T2(a.previous(), b.previous());
         }
         if (defA.isDefined()) {
             if (hasA) {
-                return _.T2(a.previous(), defB.get());
+                return $.T2(a.previous(), defB.get());
             } else if (hasB) {
-                return _.T2(defA.get(), b.previous());
+                return $.T2(defA.get(), b.previous());
             } else {
                 throw new NoSuchElementException();
             }
@@ -115,12 +115,12 @@ public class ZippedListIterator<A, B> implements ListIterator<_.T2<A, B>> {
     }
 
     @Override
-    public void set(_.T2<A, B> abt2) {
+    public void set($.T2<A, B> abt2) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void add(_.T2<A, B> abt2) {
+    public void add($.T2<A, B> abt2) {
         throw new UnsupportedOperationException();
     }
 

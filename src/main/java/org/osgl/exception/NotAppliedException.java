@@ -6,15 +6,15 @@ package org.osgl.exception;
  * thus performs much better than normal RuntimeExceptions. Here is one
  * example of using {@code NotAppliedException}:
  *
- * <code><pre>
+ * <pre>
  * _.F2&lt;Integer, Integer, Integer&gt; divide1 = new _.F1&lt;Integer, Integer, Integer&gt;() {
- *     @Override
+ *     {@literal @}Override
  *     public int apply(int n, int d) {
  *         if (d == 0) return NotAppliedException();
  *         return n/d;
  *     }
  * }
- * </pre></code>
+ * </pre>
  *
  * In the above example thrown out {@code NotAppliedException} when divider is zero is
  * faster than do the calculation directly and let Java thrown out

@@ -7,17 +7,17 @@ import org.osgl.util.E;
 
 public class F3Test extends FuncTestBase {
 
-    private _.F3<String, String, String, Integer> calcHashCode = new _.F3<String, String, String, Integer>() {
+    private $.F3<String, String, String, Integer> calcHashCode = new $.F3<String, String, String, Integer>() {
         @Override
-        public Integer apply(String s, String s2, String s3) throws NotAppliedException, _.Break {
+        public Integer apply(String s, String s2, String s3) throws NotAppliedException, $.Break {
             E.NPE(s, s2, s3);
             return (s + s2 + s3).hashCode();
         }
     };
 
-    private _.F3<String, String, String, Integer> calcStringSize = new _.F3<String, String, String, Integer>() {
+    private $.F3<String, String, String, Integer> calcStringSize = new $.F3<String, String, String, Integer>() {
         @Override
-        public Integer apply(String s, String s2, String s3) throws NotAppliedException, _.Break {
+        public Integer apply(String s, String s2, String s3) throws NotAppliedException, $.Break {
             return (s + s2 + s3).length();
         }
     };
@@ -77,22 +77,22 @@ public class F3Test extends FuncTestBase {
 
     @Test
     public void dumbF3AlwaysReturnNull() {
-        eq(null, _.F3.apply(rs1, rs2, rs3));
+        eq(null, $.F3.apply(rs1, rs2, rs3));
     }
 
     @Test
     public void f3ShallChangeFunc3ImplToF3Type() {
-        _.Func3<String, String, String, Integer> foo = new _.Func3<String, String, String, Integer>() {
+        $.Func3<String, String, String, Integer> foo = new $.Func3<String, String, String, Integer>() {
             @Override
-            public Integer apply(String s, String s2, String s3) throws NotAppliedException, _.Break {
+            public Integer apply(String s, String s2, String s3) throws NotAppliedException, $.Break {
                 return null;
             }
         };
-        yes(_.f3(foo) instanceof _.F3);
+        yes($.f3(foo) instanceof $.F3);
     }
 
     @Test
     public void f3ShallReturnTheSameInstanceIfAppliedToF3Type() {
-        yes(calcHashCode == _.f3(calcHashCode));
+        yes(calcHashCode == $.f3(calcHashCode));
     }
 }

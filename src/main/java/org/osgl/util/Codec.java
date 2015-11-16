@@ -33,7 +33,6 @@ import java.util.UUID;
 
 /**
  * Utility class for encoding and decoding
- * <p/>
  * <p>Part of the code comes from play!framework under apache license</p>
  */
 public class Codec {

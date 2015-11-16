@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -14,20 +14,20 @@ import java.util.Iterator;
 class MappedIterator<T, R> implements Iterator<R> {
 
     private Iterator<? extends T> data;
-    private _.F1<? super T, ? extends R> mapper;
+    private $.F1<? super T, ? extends R> mapper;
 
     MappedIterator
-    (Iterator<? extends T> itr, _.Function<? super T, ? extends R> mapper) {
+    (Iterator<? extends T> itr, $.Function<? super T, ? extends R> mapper) {
         E.NPE(itr, mapper);
         this.data = itr;
-        this.mapper = _.f1(mapper);
+        this.mapper = $.f1(mapper);
     }
 
     protected Iterator<? extends T> data() {
         return data;
     }
 
-    protected _.F1<? super T, ? extends R> mapper() {
+    protected $.F1<? super T, ? extends R> mapper() {
         return mapper;
     }
 
@@ -48,7 +48,7 @@ class MappedIterator<T, R> implements Iterator<R> {
 
     @Override
     public int hashCode() {
-        return _.hc(data, mapper);
+        return $.hc(data, mapper);
     }
 
     @Override
@@ -58,7 +58,7 @@ class MappedIterator<T, R> implements Iterator<R> {
         }
         if (obj instanceof MappedIterator) {
             MappedIterator that = (MappedIterator)obj;
-            return _.eq(that.data, data) && _.eq(that.mapper, mapper);
+            return $.eq(that.data, data) && $.eq(that.mapper, mapper);
         }
         return false;
     }

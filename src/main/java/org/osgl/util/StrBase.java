@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.*;
 
@@ -17,11 +17,11 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     @Override
     public abstract T insert(int index, Character character) throws StringIndexOutOfBoundsException;
     @Override
-    public abstract T remove(_.Function<? super Character, Boolean> predicate);
+    public abstract T remove($.Function<? super Character, Boolean> predicate);
     @Override
-    public abstract T takeWhile(_.Function<? super Character, Boolean> predicate);
+    public abstract T takeWhile($.Function<? super Character, Boolean> predicate);
     @Override
-    public abstract T dropWhile(_.Function<? super Character, Boolean> predicate);
+    public abstract T dropWhile($.Function<? super Character, Boolean> predicate);
     @Override
     public abstract T reverse();
     @Override
@@ -56,6 +56,13 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     public abstract boolean isBlank();
     public abstract int indexOf(int ch, int fromIndex);
     public abstract int indexOf(String s, int fromIndex);
+
+    /**
+     * Locate another strbase inside this strbase
+     * @param s the search string
+     * @param fromIndex from where the search should begin
+     * @return the location found or {@code -1} if not found
+     */
     public abstract int indexOf(T s, int fromIndex);
     public abstract int lastIndexOf(int ch, int fromIndex);
     public abstract int lastIndexOf(String s, int fromIndex);
@@ -326,18 +333,18 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     }
 
     @Override
-    public <R> C.List<R> map(_.Function<? super Character, ? extends R> mapper) {
+    public <R> C.List<R> map($.Function<? super Character, ? extends R> mapper) {
         int sz = size();
         if (0 == sz) {
             return Nil.list();
         }
         ListBuilder<R> lb = new ListBuilder<R>(sz);
-        forEach(_.f1(mapper).andThen(C.F.addTo(lb)));
+        forEach($.f1(mapper).andThen(C.F.addTo(lb)));
         return lb.toList();
     }
 
     @Override
-    public <R> C.List<R> flatMap(_.Function<? super Character, ? extends Iterable<? extends R>> mapper
+    public <R> C.List<R> flatMap($.Function<? super Character, ? extends Iterable<? extends R>> mapper
     ) {
         if (isEmpty()) {
             return Nil.list();
@@ -346,25 +353,25 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     }
 
     @Override
-    public T filter(_.Function<? super Character, Boolean> predicate) {
+    public T filter($.Function<? super Character, Boolean> predicate) {
         if (isEmpty()) return _empty();
-        return remove(_.Predicate.negate(predicate));
+        return remove($.Predicate.negate(predicate));
     }
 
     @Override
-    public T accept(_.Function<? super Character, ?> visitor) {
+    public T accept($.Function<? super Character, ?> visitor) {
         super.accept(visitor);
         return me();
     }
 
     @Override
-    public T acceptLeft(_.Function<? super Character, ?> visitor) {
+    public T acceptLeft($.Function<? super Character, ?> visitor) {
         super.acceptLeft(visitor);
         return me();
     }
 
     @Override
-    public T acceptRight(_.Function<? super Character, ?> visitor) {
+    public T acceptRight($.Function<? super Character, ?> visitor) {
         super.acceptRight(visitor);
         return me();
     }
@@ -416,7 +423,6 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
 
     /**
      * <p>Return a string no longer than specified max length.
-     * <p/>
      * <p>If the string supplied is longer than the specified max length
      * then only it's part that is less than the max length returned, appended
      * with "..."
@@ -432,7 +438,6 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
 
     /**
      * <p>Return a string no longer than specified max length.
-     * <p/>
      * <p>If the string supplied is longer than the specified max length
      * then only it's part that is less than the max length returned, appended
      * with "..."
@@ -461,18 +466,18 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     /**
      * Alias of {@link #contentEquals(CharSequence)}
      *
-     * @param x
-     * @return
+     * @param x an instance of {@link CharSequence} type
+     * @return {@code true} if chars inside this instance equals to the chars inside x
      */
     public final boolean eq(CharSequence x) {
         return contentEquals(x);
     }
 
     /**
-     * Alias of {@link #contentEquals(T)}
+     * Alias of {@link #contentEquals(StrBase)}
      *
-     * @param x
-     * @return
+     * @param x another instance
+     * @return {@code true} if this instance equals to the x
      */
     public final boolean eq(T x) {
         return contentEquals(x);
@@ -544,11 +549,11 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
 
 
     /**
-     * Alias of {@link #indexOf(T, int)}
+     * Alias of {@link #indexOf(StrBase, int)}
      *
-     * @param x
-     * @param fromIndex
-     * @return
+     * @param x a StrBase to search
+     * @param fromIndex the index from where the search should begins
+     * @return the found position or {@code -1} if not found
      */
     public final int pos(T x, int fromIndex) {
         return indexOf(x, fromIndex);
@@ -730,13 +735,13 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
 
     public static enum F {
         ;
-        public _.Comparator<StrBase> NATURAL_ORDER = new _.Comparator<StrBase>() {
+        public $.Comparator<StrBase> NATURAL_ORDER = new $.Comparator<StrBase>() {
             @Override
             public int compare(StrBase o1, StrBase o2) {
                 return o1.toFastStr().compareTo(o2.toFastStr());
             }
         };
 
-        public _.Comparator<StrBase> REVERSE_ORDER = _.F.reverse(NATURAL_ORDER);
+        public $.Comparator<StrBase> REVERSE_ORDER = $.F.reverse(NATURAL_ORDER);
     }
 }

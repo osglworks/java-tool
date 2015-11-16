@@ -1,6 +1,6 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.Comparator;
@@ -15,7 +15,7 @@ import java.util.Comparator;
 public abstract class ArraySortInplaceBase<T> implements ArraySort<T> {
 
     @Override
-    public final T[] apply(T[] ts, Integer from, Integer to, Comparator<T> comp) throws NotAppliedException, _.Break {
+    public final T[] apply(T[] ts, Integer from, Integer to, Comparator<T> comp) throws NotAppliedException, $.Break {
         return sort(ts, from, to, comp);
     }
 
@@ -24,7 +24,7 @@ public abstract class ArraySortInplaceBase<T> implements ArraySort<T> {
     public final T[] sort(T[] ts, int from, int to, Comparator<T> comp) {
         Util.checkIndex(ts, from, to);
         if (null == comp) {
-            comp = _.F.NATURAL_ORDER;
+            comp = $.F.NATURAL_ORDER;
         }
         if (to == from) {
             return ts;

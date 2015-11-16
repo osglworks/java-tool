@@ -1,6 +1,6 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.E;
 
@@ -11,10 +11,10 @@ import org.osgl.util.E;
  * Time: 11:55 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ArrayReverseInplace<T> implements ArrayAlgorithm, _.Func3<T[], Integer, Integer,  T[]> {
+public class ArrayReverseInplace<T> implements ArrayAlgorithm, $.Func3<T[], Integer, Integer,  T[]> {
 
     @Override
-    public T[] apply(T[] ts, Integer from, Integer to) throws NotAppliedException, _.Break {
+    public T[] apply(T[] ts, Integer from, Integer to) throws NotAppliedException, $.Break {
         return reverse(ts, from, to);
     }
 

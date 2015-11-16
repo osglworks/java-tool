@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.AbstractSet;
@@ -34,7 +34,7 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     }
 
     @Override
-    public C.Set<T> filter(_.Function<? super T, Boolean> predicate) {
+    public C.Set<T> filter($.Function<? super T, Boolean> predicate) {
         boolean immutable = isImmutable();
         int sz = size();
         // TODO: handle lazy filter
@@ -43,25 +43,25 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
                 return Nil.set();
             }
             ListBuilder<T> lb = new ListBuilder<T>(sz);
-            forEach(_.predicate(predicate).ifThen(C.F.addTo(lb)));
+            forEach($.predicate(predicate).ifThen(C.F.addTo(lb)));
             return lb.toSet();
         } else {
             if (0 == sz) {
                 return C.newSet();
             }
             C.Set<T> set = C.newSet();
-            forEach(_.predicate(predicate).ifThen(C.F.addTo(set)));
+            forEach($.predicate(predicate).ifThen(C.F.addTo(set)));
             return set;
         }
     }
 
     @Override
-    public SetBase<T> accept(_.Function<? super T, ?> visitor) {
+    public SetBase<T> accept($.Function<? super T, ?> visitor) {
         return forEach(visitor);
     }
 
     @Override
-    public <R> C.Set<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.Set<R> map($.Function<? super T, ? extends R> mapper) {
         boolean immutable = isImmutable();
         int sz = size();
         if (immutable) {
@@ -69,50 +69,50 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
                 return Nil.set();
             }
             ListBuilder<R> lb = new ListBuilder<R>(sz);
-            forEach(_.f1(mapper).andThen(C.F.addTo(lb)));
+            forEach($.f1(mapper).andThen(C.F.addTo(lb)));
             return C.set(lb.toList());
         } else {
             if (0 == sz) {
                 return C.newSet();
             }
             C.List<R> l = C.newSizedList(sz);
-            forEach(_.f1(mapper).andThen(C.F.addTo(l)));
+            forEach($.f1(mapper).andThen(C.F.addTo(l)));
             return C.set(l);
         }
     }
 
     @Override
-    public <R> C.Traversable<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    public <R> C.Traversable<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         return null;
     }
 
     @Override
-    public <R> R reduce(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduce(R identity, $.Func2<R, T, R> accumulator) {
         return null;
     }
 
     @Override
-    public _.Option<T> reduce(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduce($.Func2<T, T, T> accumulator) {
         return null;
     }
 
     @Override
-    public boolean allMatch(_.Function<? super T, Boolean> predicate) {
+    public boolean allMatch($.Function<? super T, Boolean> predicate) {
         return false;
     }
 
     @Override
-    public boolean anyMatch(_.Function<? super T, Boolean> predicate) {
+    public boolean anyMatch($.Function<? super T, Boolean> predicate) {
         return false;
     }
 
     @Override
-    public boolean noneMatch(_.Function<? super T, Boolean> predicate) {
+    public boolean noneMatch($.Function<? super T, Boolean> predicate) {
         return false;
     }
 
     @Override
-    public _.Option<T> findOne(_.Function<? super T, Boolean> predicate) {
+    public $.Option<T> findOne($.Function<? super T, Boolean> predicate) {
         return null;
     }
 
@@ -142,9 +142,9 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
      * method call</p>
      *
      * @param visitor
-     * @throws org.osgl._.Break if visitor needs to terminate the iteration
+     * @throws $.Break if visitor needs to terminate the iteration
      */
-    public SetBase<T> forEach(_.Function<? super T, ?> visitor) throws _.Break {
+    public SetBase<T> forEach($.Function<? super T, ?> visitor) throws $.Break {
         for (T t : this) {
             try {
                 visitor.apply(t);
@@ -156,7 +156,7 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     }
 
     @Override
-    public SetBase<T> each(_.Function<? super T, ?> visitor) {
+    public SetBase<T> each($.Function<? super T, ?> visitor) {
         return forEach(visitor);
     }
 

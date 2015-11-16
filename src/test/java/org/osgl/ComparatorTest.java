@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 public class ComparatorTest extends TestBase {
 
-    protected static class Foo extends _.T2<Integer, String> {
+    protected static class Foo extends $.T2<Integer, String> {
         public Foo(int _1, String _2) {
             super(_1, _2);
             E.NPE(_2);
@@ -18,23 +18,23 @@ public class ComparatorTest extends TestBase {
     protected Foo abc = new Foo(1, "abc");
     protected Foo xyz = new Foo(1, "xyz");
 
-    protected _.Comparator<Integer> c = new _.Comparator<Integer>() {
+    protected $.Comparator<Integer> c = new $.Comparator<Integer>() {
         @Override
         public int compare(Integer o1, Integer o2) {
             return o1 - o2;
         }
     };
 
-    protected _.Comparator<Foo> cmp = new _.Comparator<Foo>() {
+    protected $.Comparator<Foo> cmp = new $.Comparator<Foo>() {
         @Override
         public int compare(Foo o1, Foo o2) {
             return o1._1 - o2._1;
         }
     };
 
-    protected _.F1<Foo, String> keyExtractor = new _.F1<Foo, String>() {
+    protected $.F1<Foo, String> keyExtractor = new $.F1<Foo, String>() {
         @Override
-        public String apply(Foo foo) throws NotAppliedException, _.Break {
+        public String apply(Foo foo) throws NotAppliedException, $.Break {
             return foo._2;
         }
     };
@@ -47,7 +47,7 @@ public class ComparatorTest extends TestBase {
 
     @Test
     public void testThenComparing() {
-        yes(cmp.thenComparing(new _.Comparator<Foo>() {
+        yes(cmp.thenComparing(new $.Comparator<Foo>() {
             @Override
             public int compare(Foo o1, Foo o2) {
                 return o1._2.compareTo(o2._2);
@@ -76,23 +76,23 @@ public class ComparatorTest extends TestBase {
 
     @Test
     public void naturalOrderShallCompareObjectInNaturalWay() {
-        yes(_.F.NATURAL_ORDER.compare(one, two) < 0);
-        yes(_.F.NATURAL_ORDER.compare(a, b) < 0);
+        yes($.F.NATURAL_ORDER.compare(one, two) < 0);
+        yes($.F.NATURAL_ORDER.compare(a, b) < 0);
     }
 
     @Test
     public void reverseOrderShallCompareObjectInNaturalWay() {
-        no(_.F.REVERSE_ORDER.compare(one, two) < 0);
-        no(_.F.REVERSE_ORDER.compare(a, b) < 0);
+        no($.F.REVERSE_ORDER.compare(one, two) < 0);
+        no($.F.REVERSE_ORDER.compare(a, b) < 0);
     }
 
     @Test
     public void reversedReverseOrderShallBeNaturalOrder() {
-        yes(_.F.REVERSE_ORDER.reversed() == _.F.NATURAL_ORDER);
+        yes($.F.REVERSE_ORDER.reversed() == $.F.NATURAL_ORDER);
     }
 
     @Test
     public void reversedNaturalOrderShallBeReverseOrder() {
-        yes(_.F.NATURAL_ORDER.reversed() == _.F.REVERSE_ORDER);
+        yes($.F.NATURAL_ORDER.reversed() == $.F.REVERSE_ORDER);
     }
 }

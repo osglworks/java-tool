@@ -1,6 +1,6 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -47,18 +47,18 @@ public class ArrayBinarySearch<T> implements ArraySearch<T> {
         return -(from + 1);
     }
 
-    private static _.T2<Long, Integer> osgl(Integer[] a, int k, ArrayBinarySearch<Integer> s) {
+    private static $.T2<Long, Integer> osgl(Integer[] a, int k, ArrayBinarySearch<Integer> s) {
         long start = System.nanoTime();
-        int loc = s.apply(a, 0, a.length, k, _.F.NATURAL_ORDER);
+        int loc = s.apply(a, 0, a.length, k, $.F.NATURAL_ORDER);
         long time = System.nanoTime() - start;
-        return _.T2(time, loc);
+        return $.T2(time, loc);
     }
 
-    private static _.T2<Long, Integer> jdk(Integer[] a, int k) {
+    private static $.T2<Long, Integer> jdk(Integer[] a, int k) {
         long start = System.nanoTime();
-        int loc = Arrays.binarySearch(a, k, _.F.NATURAL_ORDER);
+        int loc = Arrays.binarySearch(a, k, $.F.NATURAL_ORDER);
         long time = System.nanoTime() - start;
-        return _.T2(time, loc);
+        return $.T2(time, loc);
     }
 
     public static void main(String[] args) {
@@ -69,8 +69,8 @@ public class ArrayBinarySearch<T> implements ArraySearch<T> {
     private static void test() {
         ArrayBinarySearch<Integer> s = new ArrayBinarySearch<Integer>();
         Integer[] ia = {1, 20, 300, 4000, 50000};
-        _.T2<Long, Integer> o = osgl(ia, -1, s);
-        _.T2<Long, Integer> j = jdk(ia, -1);
+        $.T2<Long, Integer> o = osgl(ia, -1, s);
+        $.T2<Long, Integer> j = jdk(ia, -1);
         System.out.println(o._2 + ":" + j._2);
 
         o = osgl(ia, 1000000, s);
@@ -93,15 +93,15 @@ public class ArrayBinarySearch<T> implements ArraySearch<T> {
         for (int i = 0; i < MAX; ++i) {
             ia[i] = i;
         }
-        new ArrayBinarySearch<Integer>().apply(ia, 0, ia.length, 48, _.F.NATURAL_ORDER);
-        _.Var<Long> osgl = _.var(0L);
-        _.Var<Long> jdk = _.var(0L);
+        new ArrayBinarySearch<Integer>().apply(ia, 0, ia.length, 48, $.F.NATURAL_ORDER);
+        $.Var<Long> osgl = $.var(0L);
+        $.Var<Long> jdk = $.var(0L);
         ArrayBinarySearch<Integer> s = new ArrayBinarySearch<Integer>();
         for (int time = 0; time < TIMES; ++time) {
             Random r = new Random();
             int k = r.nextInt(MAX);
-            _.T2<Long, Integer> jdkRet = jdk(ia, k);
-            _.T2<Long, Integer> osglRet = osgl(ia, k, s);
+            $.T2<Long, Integer> jdkRet = jdk(ia, k);
+            $.T2<Long, Integer> osglRet = osgl(ia, k, s);
             if (!jdkRet._2.equals(osglRet._2)) {
                 throw new RuntimeException(String.format("jdk: %s; osgl: %s; k: %s", jdkRet._2, osglRet._2, k));
             }

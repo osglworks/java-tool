@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -13,13 +13,13 @@ import java.util.Iterator;
  */
 class IndexFilteredIterator<T> extends StatefulIterator<T> {
     private final Iterator<? extends T> itr_;
-    private final _.Predicate<Integer> filter_;
+    private final $.Predicate<Integer> filter_;
     private int cursor;
 
-    public IndexFilteredIterator(Iterator<? extends T> iterator, _.Function<Integer, Boolean> filter) {
+    public IndexFilteredIterator(Iterator<? extends T> iterator, $.Function<Integer, Boolean> filter) {
         E.NPE(iterator, filter);
         itr_ = iterator;
-        filter_ = _.predicate(filter);
+        filter_ = $.predicate(filter);
     }
 
     private boolean rawHasNext() {
@@ -32,14 +32,14 @@ class IndexFilteredIterator<T> extends StatefulIterator<T> {
     }
 
     @Override
-    protected _.Option<T> getCurrent() {
+    protected $.Option<T> getCurrent() {
         while (rawHasNext()) {
             int curCursor = cursor;
             T t = rawNext();
             if (filter_.test(curCursor)) {
-                return _.some(t);
+                return $.some(t);
             }
         }
-        return _.none();
+        return $.none();
     }
 }

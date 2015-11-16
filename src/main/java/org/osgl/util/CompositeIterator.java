@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -23,16 +23,16 @@ class CompositeIterator<T> extends StatefulIterator<T> {
     }
 
     @Override
-    protected _.Option<T> getCurrent() {
+    protected $.Option<T> getCurrent() {
         if (leftOver_) {
             if (right_.hasNext()) {
-                return _.some(right_.next());
+                return $.some(right_.next());
             } else {
-                return _.none();
+                return $.none();
             }
         } else {
             if (left_.hasNext()) {
-                return _.some(left_.next());
+                return $.some(left_.next());
             } else {
                 leftOver_ = true;
                 return getCurrent();

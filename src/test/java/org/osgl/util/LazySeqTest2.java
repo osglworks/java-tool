@@ -2,7 +2,7 @@ package org.osgl.util;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class LazySeqTest2 extends UtilTestBase {
 
     @Test
     public void takeWhile() {
-        eq(seqOf(1, 2, 3), seq.takeWhile(_.F.lt(4)));
+        eq(seqOf(1, 2, 3), seq.takeWhile($.F.lt(4)));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class LazySeqTest2 extends UtilTestBase {
 
     @Test
     public void dropWhile() {
-        eq(seqOf(4, 5, 6, 7), seq.dropWhile(_.F.lt(4)));
+        eq(seqOf(4, 5, 6, 7), seq.dropWhile($.F.lt(4)));
     }
 
     @Test
@@ -87,14 +87,14 @@ public class LazySeqTest2 extends UtilTestBase {
 
     @Test
     public void map() {
-        eq(seqOf("1", "2"), seq.take(2).map(_.F.asString()));
+        eq(seqOf("1", "2"), seq.take(2).map($.F.asString()));
     }
 
     @Test
     public void flatMap() {
-        eq(seqOf(0, 0, 1, 0, 1, 2), seq.take(3).flatMap(new _.F1<Integer, Iterable<Integer>>() {
+        eq(seqOf(0, 0, 1, 0, 1, 2), seq.take(3).flatMap(new $.F1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer integer) throws NotAppliedException, _.Break {
+            public Iterable<Integer> apply(Integer integer) throws NotAppliedException, $.Break {
                 List<Integer> l = new ArrayList<Integer>();
                 for (int i = 0; i < integer; ++i) {
                     l.add(i);
@@ -106,7 +106,7 @@ public class LazySeqTest2 extends UtilTestBase {
 
     @Test
     public void filter() {
-        _.Predicate<Integer> even = new _.Predicate<Integer>() {
+        $.Predicate<Integer> even = new $.Predicate<Integer>() {
             @Override
             public boolean test(Integer integer) {
                 return (integer % 2) != 0;
@@ -114,12 +114,12 @@ public class LazySeqTest2 extends UtilTestBase {
         };
         eq(seqOf(1, 3, 5, 7), seq.filter(even));
         setup();
-        eq(seqOf(2, 4, 6), seq.filter(_.F.negate(even)));
+        eq(seqOf(2, 4, 6), seq.filter($.F.negate(even)));
     }
 
-    private _.F2<Integer, Integer, Integer> aggregate = new _.F2<Integer, Integer, Integer>() {
+    private $.F2<Integer, Integer, Integer> aggregate = new $.F2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer i1, Integer i2) throws NotAppliedException, _.Break {
+        public Integer apply(Integer i1, Integer i2) throws NotAppliedException, $.Break {
             return i1 + i2;
         }
     };
@@ -136,24 +136,24 @@ public class LazySeqTest2 extends UtilTestBase {
 
     @Test
     public void allMatch() {
-        yes(seq.allMatch(_.F.lt(10)));
+        yes(seq.allMatch($.F.lt(10)));
     }
 
     @Test
     public void anyMatch() {
-        yes(seq.anyMatch(_.F.lt(3)));
+        yes(seq.anyMatch($.F.lt(3)));
     }
 
     @Test
     public void noneMatch() {
-        yes(seq.noneMatch(_.F.lt(0)));
+        yes(seq.noneMatch($.F.lt(0)));
     }
 
     @Test
     public void findOne() {
-        eq(_.none(), seq.findOne(_.F.lt(0)));
+        eq($.none(), seq.findOne($.F.lt(0)));
         setup();
-        yes(seq.findOne(_.F.gt(0)).isDefined());
+        yes(seq.findOne($.F.gt(0)).isDefined());
     }
 
 

@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -47,7 +47,7 @@ class IteratorSeq<T> extends SequenceBase<T> {
     }
 
     @Override
-    public C.Sequence<T> takeWhile(_.Function<? super T, Boolean> predicate) {
+    public C.Sequence<T> takeWhile($.Function<? super T, Boolean> predicate) {
         return of(Iterators.filterWhile(itr_, predicate));
     }
 
@@ -57,8 +57,8 @@ class IteratorSeq<T> extends SequenceBase<T> {
     }
 
     @Override
-    public C.Sequence<T> dropWhile(_.Function<? super T, Boolean> predicate) {
-        return of(Iterators.filterUntil(itr_, _.F.negate(predicate)));
+    public C.Sequence<T> dropWhile($.Function<? super T, Boolean> predicate) {
+        return of(Iterators.filterUntil(itr_, $.F.negate(predicate)));
     }
 
     @Override
@@ -82,7 +82,7 @@ class IteratorSeq<T> extends SequenceBase<T> {
     }
 
     @Override
-    public C.Sequence<T> filter(_.Function<? super T, Boolean> predicate) {
+    public C.Sequence<T> filter($.Function<? super T, Boolean> predicate) {
         return of(Iterators.filter(itr_, predicate));
     }
 
@@ -92,12 +92,12 @@ class IteratorSeq<T> extends SequenceBase<T> {
     }
 
     @Override
-    public <R> C.Sequence<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.Sequence<R> map($.Function<? super T, ? extends R> mapper) {
         return new IteratorSeq<R>(Iterators.map(itr_, mapper));
     }
 
     @Override
-    public <R> C.Sequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
+    public <R> C.Sequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper
     ) {
         return new IteratorSeq<R>(Iterators.flatMap(itr_, mapper));
     }

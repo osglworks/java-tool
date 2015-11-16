@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -12,11 +12,11 @@ import java.util.NoSuchElementException;
  * Time: 8:07 PM
  * To change this template use File | Settings | File Templates.
  */
-class ZippedIterator<A, B> implements Iterator<_.T2<A, B>> {
+class ZippedIterator<A, B> implements Iterator<$.T2<A, B>> {
     private Iterator<A> a;
     private Iterator<B> b;
-    private _.Option<A> defA = _.none();
-    private _.Option<B> defB = _.none();
+    private $.Option<A> defA = $.none();
+    private $.Option<B> defB = $.none();
 
     ZippedIterator(Iterator<A> a, Iterator<B> b) {
         E.NPE(a, b);
@@ -26,8 +26,8 @@ class ZippedIterator<A, B> implements Iterator<_.T2<A, B>> {
 
     ZippedIterator(Iterator<A> a, Iterator<B> b, A defA, B defB) {
         this(a, b);
-        this.defA = _.some(defA);
-        this.defB = _.some(defB);
+        this.defA = $.some(defA);
+        this.defB = $.some(defB);
     }
 
     @Override
@@ -44,16 +44,16 @@ class ZippedIterator<A, B> implements Iterator<_.T2<A, B>> {
     }
 
     @Override
-    public _.T2<A, B> next() {
+    public $.T2<A, B> next() {
         boolean hasA = a.hasNext(), hasB = b.hasNext();
         if (hasA && hasB) {
-            return _.T2(a.next(), b.next());
+            return $.T2(a.next(), b.next());
         }
         if (defA.isDefined()) {
             if (hasA) {
-                return _.T2(a.next(), defB.get());
+                return $.T2(a.next(), defB.get());
             } else if (hasB) {
-                return _.T2(defA.get(), b.next());
+                return $.T2(defA.get(), b.next());
             } else {
                 throw new NoSuchElementException();
             }

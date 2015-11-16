@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,12 +14,12 @@ import java.util.Iterator;
  */
 class MappedSeq<T, R> extends SequenceBase<R> implements C.Sequence<R> {
     private final Iterable<? extends T> data;
-    protected final _.F1<? super T, ? extends R> mapper;
+    protected final $.F1<? super T, ? extends R> mapper;
 
-    MappedSeq(Iterable<? extends T> seq, _.Function<? super T, ? extends R> mapper) {
+    MappedSeq(Iterable<? extends T> seq, $.Function<? super T, ? extends R> mapper) {
         E.NPE(seq, mapper);
         this.data = seq;
-        this.mapper = _.f1(mapper);
+        this.mapper = $.f1(mapper);
     }
 
     @Override
@@ -36,7 +36,7 @@ class MappedSeq<T, R> extends SequenceBase<R> implements C.Sequence<R> {
     }
 
     public static <T, R> MappedSeq<T, R>
-    of(C.Sequence<? extends T> data, _.Function<? super T, ? extends R> mapper) {
+    of(C.Sequence<? extends T> data, $.Function<? super T, ? extends R> mapper) {
         return new MappedSeq<T, R>(data, mapper);
     }
 

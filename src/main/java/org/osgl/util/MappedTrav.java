@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,12 +14,12 @@ import java.util.Iterator;
  */
 class MappedTrav<T, R> extends TraversableBase<R> {
     private final Iterable<? extends T> data;
-    private final _.F1<T, R> mapper_;
+    private final $.F1<T, R> mapper_;
 
-    MappedTrav(Iterable<? extends T> iterable, _.Function<? super T, ? extends R> mapper) {
+    MappedTrav(Iterable<? extends T> iterable, $.Function<? super T, ? extends R> mapper) {
         E.NPE(iterable, mapper);
         data = iterable;
-        mapper_ = _.f1(mapper);
+        mapper_ = $.f1(mapper);
     }
 
     @Override
@@ -35,7 +35,7 @@ class MappedTrav<T, R> extends TraversableBase<R> {
         throw new UnsupportedOperationException();
     }
 
-    public static <T, R> C.Traversable<R> of(Iterable<? extends T> iterable, _.Function<? super T, ? extends R> mapper) {
+    public static <T, R> C.Traversable<R> of(Iterable<? extends T> iterable, $.Function<? super T, ? extends R> mapper) {
         return new MappedTrav<T, R>(iterable, mapper);
     }
 }

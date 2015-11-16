@@ -5,7 +5,7 @@ import org.osgl.util.N;
 
 public class PredicateTest extends TestBase {
 
-    private class ReturnPreSetBool extends _.Predicate {
+    private class ReturnPreSetBool extends $.Predicate {
 
         private boolean preset;
 
@@ -21,23 +21,23 @@ public class PredicateTest extends TestBase {
 
     @Test
     public void testNegative() {
-        int i = _.random(0, 1);
-        _.Predicate p = new ReturnPreSetBool(i == 0);
+        int i = $.random(0, 1);
+        $.Predicate p = new ReturnPreSetBool(i == 0);
         yes(p.apply(new Object()) != p.negate().apply(new Object()));
     }
 
     @Test
     public void testAnd() {
-        no(N.F.greaterThan(5).and(N.F.lessThan(10), _.F.eq(8)).apply(7));
-        no(N.F.greaterThan(5).and(N.F.lessThan(10), _.F.eq(8)).apply(4));
-        yes(N.F.greaterThan(5).and(N.F.lessThan(10), _.F.eq(8)).apply(8));
+        no(N.F.greaterThan(5).and(N.F.lessThan(10), $.F.eq(8)).apply(7));
+        no(N.F.greaterThan(5).and(N.F.lessThan(10), $.F.eq(8)).apply(4));
+        yes(N.F.greaterThan(5).and(N.F.lessThan(10), $.F.eq(8)).apply(8));
     }
 
     @Test
     public void testOr() {
-        yes(N.F.greaterThan(5).or(N.F.lessThan(10), _.F.eq(8)).apply(7));
-        yes(N.F.greaterThan(5).or(N.F.lessThan(10), _.F.eq(8)).apply(4));
-        no(N.F.greaterThan(5).or(_.F.eq(10), _.F.eq(8)).apply(4));
+        yes(N.F.greaterThan(5).or(N.F.lessThan(10), $.F.eq(8)).apply(7));
+        yes(N.F.greaterThan(5).or(N.F.lessThan(10), $.F.eq(8)).apply(4));
+        no(N.F.greaterThan(5).or($.F.eq(10), $.F.eq(8)).apply(4));
     }
 
     @Test
@@ -54,8 +54,8 @@ public class PredicateTest extends TestBase {
 
     @Test
     public void testOsglPredicate() {
-        _.Predicate p = N.F.greaterThan(4);
-        assertSame(p, _.predicate(p));
+        $.Predicate p = N.F.greaterThan(4);
+        assertSame(p, $.predicate(p));
     }
 
 }

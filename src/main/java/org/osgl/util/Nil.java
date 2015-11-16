@@ -19,7 +19,7 @@
 */
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.io.Serializable;
@@ -168,52 +168,52 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
     }
 
     @Override
-    public <R> C.Sequence<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.Sequence<R> map($.Function<? super T, ? extends R> mapper) {
         return singleton();
     }
 
     @Override
-    public <R> C.Sequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    public <R> C.Sequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         return singleton();
     }
 
     @Override
-    public Nil<T> filter(_.Function<? super T, Boolean> predicate) {
+    public Nil<T> filter($.Function<? super T, Boolean> predicate) {
         return this;
     }
 
     @Override
-    public final <R> R reduce(R identity, _.Func2<R, T, R> accumulator) {
+    public final <R> R reduce(R identity, $.Func2<R, T, R> accumulator) {
         return identity;
     }
 
     @Override
-    public final _.Option<T> reduce(_.Func2<T, T, T> accumulator) {
-        return _.none();
+    public final $.Option<T> reduce($.Func2<T, T, T> accumulator) {
+        return $.none();
     }
 
     @Override
-    public final boolean allMatch(_.Function<? super T, Boolean> predicate) {
+    public final boolean allMatch($.Function<? super T, Boolean> predicate) {
         return false;
     }
 
     @Override
-    public final boolean anyMatch(_.Function<? super T, Boolean> predicate) {
+    public final boolean anyMatch($.Function<? super T, Boolean> predicate) {
         return false;
     }
 
     @Override
-    public final boolean noneMatch(_.Function<? super T, Boolean> predicate) {
+    public final boolean noneMatch($.Function<? super T, Boolean> predicate) {
         return true;
     }
 
     @Override
-    public final _.Option<T> findOne(_.Function<? super T, Boolean> predicate) {
-        return _.none();
+    public final $.Option<T> findOne($.Function<? super T, Boolean> predicate) {
+        return $.none();
     }
 
     @Override
-    public Nil<T> accept(_.Function<? super T, ?> visitor) {
+    public Nil<T> accept($.Function<? super T, ?> visitor) {
         return this;
     }
 
@@ -274,27 +274,27 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
          * @return {@inheritDoc}
          */
         @Override
-        public <R> R reduceLeft(R identity, _.Func2<R, T, R> accumulator) {
+        public <R> R reduceLeft(R identity, $.Func2<R, T, R> accumulator) {
             return identity;
         }
 
         @Override
-        public _.Option<T> reduceLeft(_.Func2<T, T, T> accumulator) {
-            return _.none();
+        public $.Option<T> reduceLeft($.Func2<T, T, T> accumulator) {
+            return $.none();
         }
 
         @Override
-        public _.Option<T> findFirst(_.Function<? super T, Boolean> predicate) {
-            return _.none();
+        public $.Option<T> findFirst($.Function<? super T, Boolean> predicate) {
+            return $.none();
         }
 
         @Override
-        public EmptySequence<T> acceptLeft(_.Function<? super T, ?> visitor) {
+        public EmptySequence<T> acceptLeft($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public EmptySequence<T> accept(_.Function<? super T, ?> visitor) {
+        public EmptySequence<T> accept($.Function<? super T, ?> visitor) {
             return this;
         }
 
@@ -319,7 +319,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptySequence<T> takeWhile(_.Function<? super T, Boolean> predicate) {
+        public EmptySequence<T> takeWhile($.Function<? super T, Boolean> predicate) {
             return this;
         }
 
@@ -329,22 +329,22 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptySequence<T> dropWhile(_.Function<? super T, Boolean> predicate) {
+        public EmptySequence<T> dropWhile($.Function<? super T, Boolean> predicate) {
             return this;
         }
 
         @Override
-        public <R> EmptySequence<R> map(_.Function<? super T, ? extends R> mapper) {
+        public <R> EmptySequence<R> map($.Function<? super T, ? extends R> mapper) {
             return singleton();
         }
 
         @Override
-        public <R> EmptySequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+        public <R> EmptySequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
             return singleton();
         }
 
         @Override
-        public EmptySequence<T> filter(_.Function<? super T, Boolean> predicate) {
+        public EmptySequence<T> filter($.Function<? super T, Boolean> predicate) {
             return this;
         }
 
@@ -435,68 +435,68 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptyReversibleSequence<T> accept(_.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> accept($.Function<? super T, ?> visitor) {
             return this;
         }
 
 
         @Override
-        public EmptyReversibleSequence<T> each(_.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> each($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public EmptyReversibleSequence<T> forEach(_.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> forEach($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public EmptyReversibleSequence<T> takeWhile(_.Function<? super T, Boolean> predicate) {
+        public EmptyReversibleSequence<T> takeWhile($.Function<? super T, Boolean> predicate) {
             return this;
         }
 
         @Override
-        public EmptyReversibleSequence<T> dropWhile(_.Function<? super T, Boolean> predicate) {
+        public EmptyReversibleSequence<T> dropWhile($.Function<? super T, Boolean> predicate) {
             return this;
         }
 
         @Override
-        public <R> EmptyReversibleSequence<R> map(_.Function<? super T, ? extends R> mapper) {
+        public <R> EmptyReversibleSequence<R> map($.Function<? super T, ? extends R> mapper) {
             return singleton();
         }
 
         @Override
-        public <R> EmptyReversibleSequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+        public <R> EmptyReversibleSequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
             return singleton();
         }
 
         @Override
-        public EmptyReversibleSequence<T> filter(_.Function<? super T, Boolean> predicate) {
+        public EmptyReversibleSequence<T> filter($.Function<? super T, Boolean> predicate) {
             return this;
         }
 
         @Override
-        public EmptyReversibleSequence<T> acceptLeft(_.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> acceptLeft($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator) {
+        public <R> R reduceRight(R identity, $.Func2<R, T, R> accumulator) {
             return identity;
         }
 
         @Override
-        public _.Option<T> reduceRight(_.Func2<T, T, T> accumulator) {
-            return _.none();
+        public $.Option<T> reduceRight($.Func2<T, T, T> accumulator) {
+            return $.none();
         }
 
         @Override
-        public _.Option<T> findLast(_.Function<? super T, Boolean> predicate) {
-            return _.none();
+        public $.Option<T> findLast($.Function<? super T, Boolean> predicate) {
+            return $.none();
         }
 
         @Override
-        public EmptyReversibleSequence<T> acceptRight(_.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> acceptRight($.Function<? super T, ?> visitor) {
             return this;
         }
 
@@ -521,16 +521,16 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public <T2> C.ReversibleSequence<_.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
+        public <T2> C.ReversibleSequence<$.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
             return rseq();
         }
 
         @Override
-        public <T2> C.ReversibleSequence<_.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, final T def1, final T2 def2) {
-            return rseq.map(new _.F1<T2, _.T2<T, T2>>() {
+        public <T2> C.ReversibleSequence<$.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, final T def1, final T2 def2) {
+            return rseq.map(new $.F1<T2, $.T2<T, T2>>() {
                 @Override
-                public _.T2<T, T2> apply(T2 t) throws NotAppliedException, _.Break {
-                    return _.T2(def1, t);
+                public $.T2<T, T2> apply(T2 t) throws NotAppliedException, $.Break {
+                    return $.T2(def1, t);
                 }
             });
         }
@@ -562,12 +562,12 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         @Override
         @SuppressWarnings("unchecked")
         public Comparator<T> order() {
-            return (Comparator<T>) _.F.NATURAL_ORDER;
+            return (Comparator<T>) $.F.NATURAL_ORDER;
         }
 
         @Override
-        public _.Func2<T, Integer, T> step() {
-            return _.f2();
+        public $.Func2<T, Integer, T> step() {
+            return $.f2();
         }
 
         @Override
@@ -576,27 +576,27 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptyRange<T> accept(_.Function<? super T, ?> visitor) {
+        public EmptyRange<T> accept($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public EmptyRange<T> forEach(_.Function<? super T, ?> visitor) {
+        public EmptyRange<T> forEach($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public EmptyRange<T> each(_.Function<? super T, ?> visitor) {
+        public EmptyRange<T> each($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public EmptyRange<T> acceptLeft(_.Function<? super T, ?> visitor) {
+        public EmptyRange<T> acceptLeft($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public C.Range<T> acceptRight(_.Function<? super T, ?> visitor) {
+        public C.Range<T> acceptRight($.Function<? super T, ?> visitor) {
             return this;
         }
 
@@ -616,18 +616,18 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator) {
+        public <R> R reduceRight(R identity, $.Func2<R, T, R> accumulator) {
             return identity;
         }
 
         @Override
-        public _.Option<T> reduceRight(_.Func2<T, T, T> accumulator) {
-            return _.none();
+        public $.Option<T> reduceRight($.Func2<T, T, T> accumulator) {
+            return $.none();
         }
 
         @Override
-        public _.Option<T> findLast(_.Function<? super T, Boolean> predicate) {
-            return _.none();
+        public $.Option<T> findLast($.Function<? super T, Boolean> predicate) {
+            return $.none();
         }
     }
 
@@ -691,7 +691,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptySet<T> accept(_.Function<? super T, ?> visitor) {
+        public EmptySet<T> accept($.Function<? super T, ?> visitor) {
             return this;
         }
 
@@ -741,7 +741,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public Empty<T> filter(_.Function<? super T, Boolean> predicate) {
+        public Empty<T> filter($.Function<? super T, Boolean> predicate) {
             return this;
         }
 
@@ -756,17 +756,17 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public Empty<T> accept(_.Function<? super T, ?> visitor) {
+        public Empty<T> accept($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public Empty<T> each(_.Function<? super T, ?> visitor) {
+        public Empty<T> each($.Function<? super T, ?> visitor) {
             return this;
         }
 
         @Override
-        public Empty<T> forEach(_.Function<? super T, ?> visitor) {
+        public Empty<T> forEach($.Function<? super T, ?> visitor) {
             return this;
         }
 
@@ -796,12 +796,12 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public <R> Empty<R> map(_.Function<? super T, ? extends R> mapper) {
+        public <R> Empty<R> map($.Function<? super T, ? extends R> mapper) {
             return (Empty<R>) this;
         }
 
         @Override
-        public <R> Empty<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+        public <R> Empty<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
             return (Empty<R>) this;
         }
     }

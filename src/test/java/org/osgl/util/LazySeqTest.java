@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.Arrays;
@@ -17,9 +17,9 @@ public class LazySeqTest extends SequenceTestBase {
 
     private static class MyLazySeq<T> extends LazySeq<T> {
         MyLazySeq(final List<T> data,  final int cursor) {
-            super(data.get(cursor), new _.F0<C.Sequence<T>>() {
+            super(data.get(cursor), new $.F0<C.Sequence<T>>() {
                 @Override
-                public C.Sequence<T> apply() throws NotAppliedException, _.Break {
+                public C.Sequence<T> apply() throws NotAppliedException, $.Break {
                     if (cursor < data.size() - 1) {
                         return new MyLazySeq<T>(data, cursor + 1);
                     }
@@ -31,7 +31,7 @@ public class LazySeqTest extends SequenceTestBase {
 
     @Override
     protected C.Sequence<Integer> prepareData(final int... ia) {
-        return new MyLazySeq<Integer>(Arrays.asList(_.asObject(ia)), 0);
+        return new MyLazySeq<Integer>(Arrays.asList($.asObject(ia)), 0);
     }
 
     @Override

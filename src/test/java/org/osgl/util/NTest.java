@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.osgl.TestBase;
-import org.osgl._;
+import org.osgl.$;
 
 /**
  * Created by luog on 8/06/2014.
@@ -54,7 +54,7 @@ public class NTest extends TestBase {
     }
 
     public static class DivideTest extends FuncTestBase {
-        private _.F2<Number, Number, Number> func = N.F.DIVIDE;
+        private $.F2<Number, Number, Number> func = N.F.DIVIDE;
 
         @Test
         public void testIntByInt() {
@@ -159,7 +159,7 @@ public class NTest extends TestBase {
     }
 
     public static class MultiplyTest extends FuncTestBase {
-        private _.F2<Number, Number, Number> func = N.F.MULTIPLY;
+        private $.F2<Number, Number, Number> func = N.F.MULTIPLY;
 
         @Test
         public void testIntByInt() {

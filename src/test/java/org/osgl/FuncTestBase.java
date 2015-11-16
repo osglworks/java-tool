@@ -11,7 +11,7 @@ public class FuncTestBase extends TestBase {
     protected final double RAND_1 = N.randDouble();
     protected final double RAND_2 = N.randDouble();
     protected final double ERROR_VAL = Double.MIN_VALUE;
-    protected final _.F1<Number, Number> NEGATIVE = N.F.NEGATIVE;
+    protected final $.F1<Number, Number> NEGATIVE = N.F.NEGATIVE;
     protected String rs1, rs2, rs3, rs4, rs5;
 
     @Before

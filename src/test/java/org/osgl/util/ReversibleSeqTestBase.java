@@ -1,7 +1,7 @@
 package org.osgl.util;
 
 import org.junit.Test;
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -70,7 +70,7 @@ public abstract class ReversibleSeqTestBase extends SequenceTestBase {
     @Test
     public void testAcceptRight() {
         data = prepareData(1, 2, 3, 4, 5);
-        final _.Var<Integer> bag = _.var(0);
+        final $.Var<Integer> bag = $.var(0);
         data().acceptRight(bag.f.updater(N.F.addTwo(Integer.class)));
 //        data().acceptRight(new _.Visitor<Integer>() {
 //            @Override
@@ -83,10 +83,10 @@ public abstract class ReversibleSeqTestBase extends SequenceTestBase {
 
     @Test
     public void testFindLast() {
-        C.ReversibleSequence<_.T2<Integer, Integer>> data = prepareTypedData(_.T2(1, 5), _.T2(2, 6), _.T2(2, 8), _.T2(3, 4));
-        _.Option<_.T2<Integer, Integer>> found = data.findLast(new _.Predicate<_.T2<Integer, Integer>>() {
+        C.ReversibleSequence<$.T2<Integer, Integer>> data = prepareTypedData($.T2(1, 5), $.T2(2, 6), $.T2(2, 8), $.T2(3, 4));
+        $.Option<$.T2<Integer, Integer>> found = data.findLast(new $.Predicate<$.T2<Integer, Integer>>() {
             @Override
-            public boolean test(_.T2<Integer, Integer> x) {
+            public boolean test($.T2<Integer, Integer> x) {
                 return x._1 == 2;
             }
         });

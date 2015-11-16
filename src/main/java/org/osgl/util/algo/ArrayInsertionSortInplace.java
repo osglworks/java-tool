@@ -1,6 +1,6 @@
 package org.osgl.util.algo;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -33,7 +33,7 @@ public class ArrayInsertionSortInplace<T> extends ArraySortInplaceBase<T> implem
     public static void test() {
         Integer[] ia = {5, 4, 3, 1, 3, 2, 1, 2};
         ArrayInsertionSortInplace<Integer> s = new ArrayInsertionSortInplace<Integer>();
-        Integer[] a = s.apply(ia, 1, 7, _.F.NATURAL_ORDER);
+        Integer[] a = s.apply(ia, 1, 7, $.F.NATURAL_ORDER);
         System.out.println(Arrays.toString(a));
     }
 
@@ -45,13 +45,13 @@ public class ArrayInsertionSortInplace<T> extends ArraySortInplaceBase<T> implem
         long l = System.nanoTime();
         //s.sort(a, 0, a.length, _.F.NATURAL_ORDER);
         //x.sort(a, 0, a.length, _.F.NATURAL_ORDER);
-        m.sort(a, 0, a.length, _.F.NATURAL_ORDER);
+        m.sort(a, 0, a.length, $.F.NATURAL_ORDER);
         return System.nanoTime() - l;
     }
 
     private static long jdk(Integer[] a) {
         long l = System.nanoTime();
-        Arrays.sort(a, _.F.NATURAL_ORDER);
+        Arrays.sort(a, $.F.NATURAL_ORDER);
         //m.sort(a, 0, a.length, _.F.NATURAL_ORDER);
         //s.sort(a, 0, a.length, _.F.NATURAL_ORDER);
         return System.nanoTime() - l;
@@ -61,8 +61,8 @@ public class ArrayInsertionSortInplace<T> extends ArraySortInplaceBase<T> implem
         final int ARRAY_LEN = 5000;
         final int FACT = ARRAY_LEN  == 0 ? 1 : ARRAY_LEN;
         final int TIMES = 12800000 / FACT;
-        _.Var< Long > osgl = _.var(0L);
-        _.Var<Long> jdk = _.var(0L);
+        $.Var< Long > osgl = $.var(0L);
+        $.Var<Long> jdk = $.var(0L);
         for (int i = 0; i < TIMES; ++i) {
             Random r = new Random();
             Integer[] a = new Integer[ARRAY_LEN];

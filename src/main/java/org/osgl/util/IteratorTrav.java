@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -35,18 +35,18 @@ class IteratorTrav<T> extends TraversableBase<T> {
     }
 
     @Override
-    public <R> C.Traversable<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.Traversable<R> map($.Function<? super T, ? extends R> mapper) {
         return new IteratorTrav<R>(new MappedIterator<T, R>(itr_, mapper));
     }
 
     @Override
-    public <R> C.Traversable<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper
+    public <R> C.Traversable<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper
     ) {
         return new IteratorTrav<R>(new FlatMappedIterator<T, R>(itr_, mapper));
     }
 
     @Override
-    public C.Traversable<T> filter(_.Function<? super T, Boolean> predicate) {
+    public C.Traversable<T> filter($.Function<? super T, Boolean> predicate) {
         return new IteratorTrav<T>(new FilteredIterator<T>(itr_, predicate));
     }
 

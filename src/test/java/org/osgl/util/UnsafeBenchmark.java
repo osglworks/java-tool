@@ -3,7 +3,7 @@ package org.osgl.util;
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import org.junit.Test;
 import org.osgl.BenchmarkBase;
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.Random;
@@ -18,23 +18,23 @@ public class UnsafeBenchmark extends BenchmarkBase {
 
     private static final char[] LOWER_CASE_LETTERS = Unsafe.bufOf("abcdefghijklmnopqrstuvwxyz");
 
-    private static final _.F1<String, String> JDK_TO_LOWER_CASE = new _.F1<String, String>() {
+    private static final $.F1<String, String> JDK_TO_LOWER_CASE = new $.F1<String, String>() {
         @Override
-        public String apply(String s) throws NotAppliedException, _.Break {
+        public String apply(String s) throws NotAppliedException, $.Break {
             return s.toLowerCase();
         }
     };
 
-    private static final _.F1<String, String> UNSAFE_TO_LOWER_CASE = new _.F1<String, String>() {
+    private static final $.F1<String, String> UNSAFE_TO_LOWER_CASE = new $.F1<String, String>() {
         @Override
-        public String apply(String s) throws NotAppliedException, _.Break {
+        public String apply(String s) throws NotAppliedException, $.Break {
             return Unsafe.toLowerCase(s);
         }
     };
 
-    private static final _.F1<String, String> JDK_ITERATION = new _.F1<String, String>() {
+    private static final $.F1<String, String> JDK_ITERATION = new $.F1<String, String>() {
         @Override
-        public String apply(String s) throws NotAppliedException, _.Break {
+        public String apply(String s) throws NotAppliedException, $.Break {
             int sz = s.length();
             char[] buf = new char[sz];
             for (int i = 0; i < sz; ++i) {
@@ -44,9 +44,9 @@ public class UnsafeBenchmark extends BenchmarkBase {
         }
     };
 
-    private static final _.F1<String, String> UNSAFE_ITERATION = new _.F1<String, String>() {
+    private static final $.F1<String, String> UNSAFE_ITERATION = new $.F1<String, String>() {
         @Override
-        public String apply(String s) throws NotAppliedException, _.Break {
+        public String apply(String s) throws NotAppliedException, $.Break {
             char[] buf = Unsafe.bufOf(s);
             int sz = buf.length;
             char[] newBuf = new char[sz];
@@ -134,7 +134,7 @@ public class UnsafeBenchmark extends BenchmarkBase {
         runTest(_long, UNSAFE_ITERATION);
     }
 
-    private void runTest(String s, _.F1<String, String> func) {
+    private void runTest(String s, $.F1<String, String> func) {
         int fact = 1000;
         if (s == _mid) {
             if (func == JDK_ITERATION || func == UNSAFE_ITERATION) {

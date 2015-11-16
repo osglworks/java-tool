@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.InvalidArgException;
 import org.osgl.exception.NotAppliedException;
 
@@ -21,27 +21,27 @@ implements C.Range<ELEMENT>, Serializable {
 
     private final Comparator<ELEMENT> order;
 
-    private final _.Func2<ELEMENT, Integer, ELEMENT> step;
+    private final $.Func2<ELEMENT, Integer, ELEMENT> step;
 
     protected final int ordering;
 
     private final int size;
 
-    protected final _.F1<ELEMENT, ELEMENT> next;
+    protected final $.F1<ELEMENT, ELEMENT> next;
 
-    protected final _.F1<ELEMENT, ELEMENT> prev;
+    protected final $.F1<ELEMENT, ELEMENT> prev;
 
-    public LazyRange(final ELEMENT from, final ELEMENT to, final _.Func2<ELEMENT, Integer, ELEMENT> step) {
-        this(from, to, _.F.NATURAL_ORDER, step);
+    public LazyRange(final ELEMENT from, final ELEMENT to, final $.Func2<ELEMENT, Integer, ELEMENT> step) {
+        this(from, to, $.F.NATURAL_ORDER, step);
     }
 
     public LazyRange(final ELEMENT from, final ELEMENT to, final Comparator<ELEMENT> order,
-                     final _.Func2<ELEMENT, Integer, ELEMENT> step
+                     final $.Func2<ELEMENT, Integer, ELEMENT> step
     ) {
         E.NPE(from, to, order, step);
 
         ordering = N.sign(order.compare(from, to));
-        boolean eq = _.eq(from, to);
+        boolean eq = $.eq(from, to);
         E.invalidArgIf(eq, "[from] shall not be equals to [to]");
 
         // check if step align with order
@@ -74,13 +74,13 @@ implements C.Range<ELEMENT>, Serializable {
         this.order = order;
         this.step = step;
 
-        _.F2<ELEMENT, Integer, ELEMENT> f2 = _.f2(step());
+        $.F2<ELEMENT, Integer, ELEMENT> f2 = $.f2(step());
         this.next = f2.curry(-ordering);
         this.prev = f2.curry(ordering);
-        this.tail = new _.F0<C.Sequence<ELEMENT>>() {
+        this.tail = new $.F0<C.Sequence<ELEMENT>>() {
             @Override
-            public C.Sequence<ELEMENT> apply() throws NotAppliedException, _.Break {
-                if (_.eq(from, to)) {
+            public C.Sequence<ELEMENT> apply() throws NotAppliedException, $.Break {
+                if ($.eq(from, to)) {
                     return Nil.seq();
                 } else {
                     return of(LazyRange.this.next.apply(from), to);
@@ -99,7 +99,7 @@ implements C.Range<ELEMENT>, Serializable {
 
         if (obj instanceof C.Range) {
             C.Range<ELEMENT> that = (C.Range<ELEMENT>) obj;
-            return _.eq(that.from(), from()) && _.eq(that.to(), to()) && _.eq(that.order(), order()) && _.eq(that.step(), step());
+            return $.eq(that.from(), from()) && $.eq(that.to(), to()) && $.eq(that.order(), order()) && $.eq(that.step(), step());
         }
 
         return false;
@@ -107,7 +107,7 @@ implements C.Range<ELEMENT>, Serializable {
 
     @Override
     public int hashCode() {
-        return _.hc(from(), to(), order(), step());
+        return $.hc(from(), to(), order(), step());
     }
 
     @Override
@@ -143,13 +143,13 @@ implements C.Range<ELEMENT>, Serializable {
     }
 
     @Override
-    public _.Func2<ELEMENT, Integer, ELEMENT> step() {
+    public $.Func2<ELEMENT, Integer, ELEMENT> step() {
         return step;
     }
 
     @Override
     public C.Range<ELEMENT> merge(C.Range<ELEMENT> r2) throws InvalidArgException {
-        if (_.ne(step(), r2.step()) || _.ne(order(), r2.order())) {
+        if ($.ne(step(), r2.step()) || $.ne(order(), r2.order())) {
             throw E.invalidArg("r2 and this range does not have the same step or order operator");
         }
         int ordering2 = N.sign(order.compare(r2.from(), r2.to()));
@@ -165,10 +165,10 @@ implements C.Range<ELEMENT>, Serializable {
         if (fromInThat && toInThat) {
             return r2;
         }
-        if ((fromInThis && toInThat) || (_.eq(to(), from2))) {
+        if ((fromInThis && toInThat) || ($.eq(to(), from2))) {
             return of(from1, r2.to());
         }
-        if ((toInThis && fromInThat) || (_.eq(from1, r2.to()))) {
+        if ((toInThis && fromInThat) || ($.eq(from1, r2.to()))) {
             return of(from2, to);
         }
         throw E.invalidArg("r2 and this range cannot be merged together");
@@ -182,7 +182,7 @@ implements C.Range<ELEMENT>, Serializable {
     @Override
     public C.Range<ELEMENT> tail() throws UnsupportedOperationException {
         ELEMENT from = next.apply(from());
-        if (_.eq(from, to)) {
+        if ($.eq(from, to)) {
             return Nil.range();
         }
         return of(next.apply(from()), to);
@@ -224,45 +224,45 @@ implements C.Range<ELEMENT>, Serializable {
     }
 
     @Override
-    public <R> R reduceRight(R identity, _.Func2<R, ELEMENT, R> accumulator) {
+    public <R> R reduceRight(R identity, $.Func2<R, ELEMENT, R> accumulator) {
         return reverse().reduceLeft(identity, accumulator);
     }
 
     @Override
-    public LazyRange<ELEMENT> accept(_.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> accept($.Function<? super ELEMENT, ?> visitor) {
         super.accept(visitor);
         return this;
     }
 
     @Override
-    public LazyRange<ELEMENT> forEach(_.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> forEach($.Function<? super ELEMENT, ?> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public LazyRange<ELEMENT> each(_.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> each($.Function<? super ELEMENT, ?> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public LazyRange<ELEMENT> acceptLeft(_.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> acceptLeft($.Function<? super ELEMENT, ?> visitor) {
         super.acceptLeft(visitor);
         return this;
     }
 
     @Override
-    public LazyRange<ELEMENT> acceptRight(_.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> acceptRight($.Function<? super ELEMENT, ?> visitor) {
         reverse().acceptLeft(visitor);
         return this;
     }
 
     @Override
-    public _.Option<ELEMENT> reduceRight(_.Func2<ELEMENT, ELEMENT, ELEMENT> accumulator) {
+    public $.Option<ELEMENT> reduceRight($.Func2<ELEMENT, ELEMENT, ELEMENT> accumulator) {
         return reverse().reduceLeft(accumulator);
     }
 
     @Override
-    public _.Option<ELEMENT> findLast(_.Function<? super ELEMENT, Boolean> predicate) {
+    public $.Option<ELEMENT> findLast($.Function<? super ELEMENT, Boolean> predicate) {
         return reverse().findFirst(predicate);
     }
 
@@ -271,12 +271,12 @@ implements C.Range<ELEMENT>, Serializable {
         E.NPE(t);
 
         if (0 == ordering) {
-            return _.eq(to, t);
+            return $.eq(to, t);
         }
 
         ELEMENT from = from();
 
-        if (_.eq(from, t)) {
+        if ($.eq(from, t)) {
             return true;
         }
 
@@ -302,7 +302,7 @@ implements C.Range<ELEMENT>, Serializable {
         ELEMENT from;
         ELEMENT to;
         Comparator<ELEMENT> order;
-        _.Func2<ELEMENT, Integer, ELEMENT> step;
+        $.Func2<ELEMENT, Integer, ELEMENT> step;
 
         SerializationProxy(LazyRange<ELEMENT> r) {
             from = r.from();

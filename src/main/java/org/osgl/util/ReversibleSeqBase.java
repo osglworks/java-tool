@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.NoSuchElementException;
 
@@ -37,23 +37,23 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
     }
 
     @Override
-    public ReversibleSeqBase<T> accept(_.Function<? super T, ?> visitor) {
+    public ReversibleSeqBase<T> accept($.Function<? super T, ?> visitor) {
         super.accept(visitor);
         return this;
     }
 
     @Override
-    public ReversibleSeqBase<T> each(_.Function<? super T, ?> visitor) {
+    public ReversibleSeqBase<T> each($.Function<? super T, ?> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public ReversibleSeqBase<T> forEach(_.Function<? super T, ?> visitor) {
+    public ReversibleSeqBase<T> forEach($.Function<? super T, ?> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public C.ReversibleSequence<T> acceptLeft(_.Function<? super T, ?> visitor) {
+    public C.ReversibleSequence<T> acceptLeft($.Function<? super T, ?> visitor) {
         super.acceptLeft(visitor);
         return this;
     }
@@ -72,13 +72,13 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
             if (isLimited() && n >= size()) {
                 return this;
             }
-            return IndexFilteredRSeq.of(this, _.F.lessThan(n));
+            return IndexFilteredRSeq.of(this, $.F.lessThan(n));
         }
     }
 
     @Override
     public C.ReversibleSequence<T> tail() throws UnsupportedOperationException {
-        return IndexFilteredRSeq.of(this, _.F.greaterThan(0));
+        return IndexFilteredRSeq.of(this, $.F.greaterThan(0));
     }
 
     @Override
@@ -87,7 +87,7 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
     }
 
     @Override
-    public C.ReversibleSequence<T> takeWhile(_.Function<? super T, Boolean> predicate) {
+    public C.ReversibleSequence<T> takeWhile($.Function<? super T, Boolean> predicate) {
         return FilteredRSeq.of(this, predicate, FilteredIterator.Type.WHILE);
     }
 
@@ -102,36 +102,36 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
         if (n == 0) {
             return this;
         }
-        return IndexFilteredRSeq.of(this, _.F.gte(n));
+        return IndexFilteredRSeq.of(this, $.F.gte(n));
     }
 
     @Override
-    public C.ReversibleSequence<T> dropWhile(_.Function<? super T, Boolean> predicate) {
-        return FilteredRSeq.of(this, _.F.negate(predicate), FilteredIterator.Type.UNTIL);
+    public C.ReversibleSequence<T> dropWhile($.Function<? super T, Boolean> predicate) {
+        return FilteredRSeq.of(this, $.F.negate(predicate), FilteredIterator.Type.UNTIL);
     }
 
     @Override
     public C.ReversibleSequence<T> append(T t) {
-        return CompositeRSeq.of(this, _.val(t));
+        return CompositeRSeq.of(this, $.val(t));
     }
 
     @Override
     public C.ReversibleSequence<T> prepend(T t) {
-        return CompositeRSeq.of(_.val(t), this);
+        return CompositeRSeq.of($.val(t), this);
     }
 
     @Override
-    public C.ReversibleSequence<T> filter(_.Function<? super T, Boolean> predicate) {
+    public C.ReversibleSequence<T> filter($.Function<? super T, Boolean> predicate) {
         return FilteredRSeq.of(this, predicate);
     }
 
     @Override
-    public <R> C.ReversibleSequence<R> map(_.Function<? super T, ? extends R> mapper) {
+    public <R> C.ReversibleSequence<R> map($.Function<? super T, ? extends R> mapper) {
         return MappedRSeq.of(this, mapper);
     }
 
     @Override
-    public <R> C.ReversibleSequence<R> flatMap(_.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+    public <R> C.ReversibleSequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
         return FlatMappedRSeq.of(this, mapper);
     }
 
@@ -179,32 +179,32 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
     }
 
     @Override
-    public <R> R reduceRight(R identity, _.Func2<R, T, R> accumulator) {
+    public <R> R reduceRight(R identity, $.Func2<R, T, R> accumulator) {
         return reverse().reduceLeft(identity, accumulator);
     }
 
     @Override
-    public _.Option<T> reduceRight(_.Func2<T, T, T> accumulator) {
+    public $.Option<T> reduceRight($.Func2<T, T, T> accumulator) {
         return reverse().reduceLeft(accumulator);
     }
 
     @Override
-    public _.Option<T> findLast(_.Function<? super T, Boolean> predicate) {
+    public $.Option<T> findLast($.Function<? super T, Boolean> predicate) {
         return reverse().findFirst(predicate);
     }
 
     @Override
-    public C.ReversibleSequence<T> acceptRight(_.Function<? super T, ?> visitor) {
+    public C.ReversibleSequence<T> acceptRight($.Function<? super T, ?> visitor) {
         return reverse().acceptLeft(visitor);
     }
 
     @Override
-    public <T2> C.ReversibleSequence<_.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
+    public <T2> C.ReversibleSequence<$.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
         return new ZippedRSeq<T, T2>(this, rseq);
     }
 
     @Override
-    public <T2> C.ReversibleSequence<_.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2) {
+    public <T2> C.ReversibleSequence<$.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2) {
         return new ZippedRSeq<T, T2>(this, rseq, def1, def2);
     }
 }

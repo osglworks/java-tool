@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -13,14 +13,14 @@ import java.util.Iterator;
  */
 class FilteredRSeq<T> extends DelegatingRSeq<T> implements C.ReversibleSequence<T> {
 
-    private _.Function<? super T, Boolean> filter;
+    private $.Function<? super T, Boolean> filter;
     private FilteredIterator.Type type;
 
-    FilteredRSeq(C.ReversibleSequence<T> rseq, _.Function<? super T, Boolean> predicate) {
+    FilteredRSeq(C.ReversibleSequence<T> rseq, $.Function<? super T, Boolean> predicate) {
         this(rseq, predicate, FilteredIterator.Type.ALL);
     }
 
-    FilteredRSeq(C.ReversibleSequence<T> rseq, _.Function<? super T, Boolean> predicate, FilteredIterator.Type type) {
+    FilteredRSeq(C.ReversibleSequence<T> rseq, $.Function<? super T, Boolean> predicate, FilteredIterator.Type type) {
         super(rseq);
         E.NPE(predicate, type);
         filter = predicate;
@@ -33,11 +33,11 @@ class FilteredRSeq<T> extends DelegatingRSeq<T> implements C.ReversibleSequence<
         return type.filter(itr, filter);
     }
 
-    public static <T> FilteredRSeq<T> of(C.ReversibleSequence<T> rseq, _.Function<? super T, Boolean> predicate) {
+    public static <T> FilteredRSeq<T> of(C.ReversibleSequence<T> rseq, $.Function<? super T, Boolean> predicate) {
         return new FilteredRSeq<T>(rseq, predicate);
     }
 
-    public static <T> FilteredRSeq<T> of(C.ReversibleSequence<T> rseq, _.Function<? super T, Boolean> predicate, FilteredIterator.Type type) {
+    public static <T> FilteredRSeq<T> of(C.ReversibleSequence<T> rseq, $.Function<? super T, Boolean> predicate, FilteredIterator.Type type) {
         return new FilteredRSeq<T>(rseq, predicate, type);
     }
 }

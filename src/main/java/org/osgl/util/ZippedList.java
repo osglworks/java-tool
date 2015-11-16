@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -13,11 +13,11 @@ import java.util.ListIterator;
  * Time: 8:40 PM
  * To change this template use File | Settings | File Templates.
  */
-class ZippedList<A, B> extends ListBase<_.T2<A, B>> {
+class ZippedList<A, B> extends ListBase<$.T2<A, B>> {
     private List<A> a;
     private List<B> b;
-    private _.Option<A> defA = _.none();
-    private _.Option<B> defB = _.none();
+    private $.Option<A> defA = $.none();
+    private $.Option<B> defB = $.none();
 
     ZippedList(List<A> a, List<B> b) {
         E.NPE(a, b);
@@ -29,8 +29,8 @@ class ZippedList<A, B> extends ListBase<_.T2<A, B>> {
         E.NPE(a, b);
         this.a = a;
         this.b = b;
-        this.defA = _.some(defA);
-        this.defB = _.some(defB);
+        this.defA = $.some(defA);
+        this.defB = $.some(defB);
     }
 
     @Override
@@ -48,12 +48,12 @@ class ZippedList<A, B> extends ListBase<_.T2<A, B>> {
     }
 
     @Override
-    public _.T2<A, B> get(int index) {
-        return _.T2(a.get(index), b.get(index));
+    public $.T2<A, B> get(int index) {
+        return $.T2(a.get(index), b.get(index));
     }
 
     @Override
-    public ListIterator<_.T2<A, B>> listIterator(int index) {
+    public ListIterator<$.T2<A, B>> listIterator(int index) {
         if (defA.isDefined()) {
             return new ZippedListIterator<A, B>(a.listIterator(), b.listIterator(), defA.get(), defB.get());
         }

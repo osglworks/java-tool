@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Iterator;
 
@@ -13,12 +13,12 @@ import java.util.Iterator;
  */
 class IndexFilteredSeq<T> extends IterableSeq<T> {
 
-    private _.Predicate<Integer> filter;
+    private $.Predicate<Integer> filter;
 
-    IndexFilteredSeq(Iterable<? extends T> iterable, _.Function<Integer, Boolean> predicate) {
+    IndexFilteredSeq(Iterable<? extends T> iterable, $.Function<Integer, Boolean> predicate) {
         super(iterable);
         E.NPE(predicate);
-        filter = _.predicate(predicate);
+        filter = $.predicate(predicate);
     }
 
     @Override
@@ -26,7 +26,7 @@ class IndexFilteredSeq<T> extends IterableSeq<T> {
         return Iterators.filterIndex(super.iterator(), filter);
     }
 
-    static <T> C.Sequence<T> of(Iterable<? extends T> iterable, _.Function<Integer, Boolean> predicate) {
+    static <T> C.Sequence<T> of(Iterable<? extends T> iterable, $.Function<Integer, Boolean> predicate) {
         return new IndexFilteredSeq<T>(iterable, predicate);
     }
 

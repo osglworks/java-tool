@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 
 import java.util.Comparator;
 
@@ -54,7 +54,7 @@ class OddEvenElement {
 
     static enum F {
         ;
-        static final _.Transformer<Integer, OddEvenElement> OF_INT = new _.Transformer<Integer, OddEvenElement>() {
+        static final $.Transformer<Integer, OddEvenElement> OF_INT = new $.Transformer<Integer, OddEvenElement>() {
             @Override
             public OddEvenElement transform(Integer integer) {
                 return new OddEvenElement(integer);

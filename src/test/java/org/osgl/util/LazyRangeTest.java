@@ -2,7 +2,7 @@ package org.osgl.util;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.InvalidArgException;
 
 import java.io.IOException;
@@ -91,7 +91,7 @@ public class LazyRangeTest extends UtilTestBase {
 
     @Test
     public void serialize() throws IOException {
-        C.Range<Integer> newRange = _.materialize(_.serialize(range));
+        C.Range<Integer> newRange = $.materialize($.serialize(range));
         eq(newRange, range);
     }
 

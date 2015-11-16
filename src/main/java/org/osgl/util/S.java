@@ -1,6 +1,6 @@
 package org.osgl.util;
 
-import org.osgl._;
+import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.io.UnsupportedEncodingException;
@@ -398,7 +398,6 @@ public class S {
 
     /**
      * <p>Return a string no longer than specified max length.
-     * <p/>
      * <p>If the string supplied is longer than the specified max length
      * then only it's part that is less than the max length returned, appended
      * with "..."
@@ -413,7 +412,6 @@ public class S {
 
     /**
      * <p>Return a string no longer than specified max length.
-     * <p/>
      * <p>If the string supplied is longer than the specified max length
      * then only it's part that is less than the max length returned, appended
      * with "..."
@@ -603,7 +601,6 @@ public class S {
      * index. The index refers to <code>char</code> values
      * (Unicode code units) and ranges from <code>0</code> to
      * length<code> - 1</code>.
-     * <p/>
      * <p> If the <code>char</code> value specified at the given index
      * is in the high-surrogate range, the following index is less
      * than the length of this <code>String</code>, and the
@@ -797,12 +794,9 @@ public class S {
     /**
      * Strip the prefix and suffix from an object's String representation and
      * return the result
-     * <p/>
      * <p>For example: </p>
-     * <p/>
      * <pre><code>Object o = "xxBByy";
      * String s = S.strip(o, "xx", "yy")</code></pre>
-     * <p/>
      * <p>At the end above code, <code>s</code> should be "BB"</p>
      *
      * @param o
@@ -889,7 +883,6 @@ public class S {
 
     /**
      * Generate random string.
-     * <p/>
      * The generated string is safe to be used as filename
      *
      * @param len
@@ -1064,93 +1057,93 @@ public class S {
     public static enum F {
         ;
 
-        public static _.F2<String, String, Boolean> STARTS_WITH = new _.F2<String, String, Boolean>() {
+        public static $.F2<String, String, Boolean> STARTS_WITH = new $.F2<String, String, Boolean>() {
             @Override
-            public Boolean apply(String s, String s2) throws NotAppliedException, _.Break {
+            public Boolean apply(String s, String s2) throws NotAppliedException, $.Break {
                 return s.startsWith(s2);
             }
         };
 
-        public static _.Predicate<String> startsWith(final String prefix) {
-            return _.predicate(STARTS_WITH.curry(prefix));
+        public static $.Predicate<String> startsWith(final String prefix) {
+            return $.predicate(STARTS_WITH.curry(prefix));
         }
 
-        public static _.F2<String, String, Boolean> ENDS_WITH = new _.F2<String, String, Boolean>() {
+        public static $.F2<String, String, Boolean> ENDS_WITH = new $.F2<String, String, Boolean>() {
             @Override
-            public Boolean apply(String s, String s2) throws NotAppliedException, _.Break {
+            public Boolean apply(String s, String s2) throws NotAppliedException, $.Break {
                 return s.endsWith(s2);
             }
         };
 
-        public static _.Predicate<String> endsWith(final String suffix) {
-            return _.predicate(ENDS_WITH.curry(suffix));
+        public static $.Predicate<String> endsWith(final String suffix) {
+            return $.predicate(ENDS_WITH.curry(suffix));
         }
 
-        public static _.F2<String, String, Boolean> CONTAINS = new _.F2<String, String, Boolean>() {
+        public static $.F2<String, String, Boolean> CONTAINS = new $.F2<String, String, Boolean>() {
             @Override
-            public Boolean apply(String s, String s2) throws NotAppliedException, _.Break {
+            public Boolean apply(String s, String s2) throws NotAppliedException, $.Break {
                 return s.contains(s2);
             }
         };
 
-        public static _.Predicate<String> contains(final String search) {
-            return _.predicate(CONTAINS.curry(search));
+        public static $.Predicate<String> contains(final String search) {
+            return $.predicate(CONTAINS.curry(search));
         }
 
-        public static _.F1<String, String> TO_UPPERCASE = new _.F1<String, String>() {
+        public static $.F1<String, String> TO_UPPERCASE = new $.F1<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, _.Break {
+            public String apply(String s) throws NotAppliedException, $.Break {
                 return s.toUpperCase();
             }
         };
 
-        public static _.F1<String, String> TO_LOWERCASE = new _.F1<String, String>() {
+        public static $.F1<String, String> TO_LOWERCASE = new $.F1<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, _.Break {
+            public String apply(String s) throws NotAppliedException, $.Break {
                 return s.toLowerCase();
             }
         };
 
-        public static _.Transformer<String, String> NULL_SAFE = new _.Transformer<String, String>() {
+        public static $.Transformer<String, String> NULL_SAFE = new $.Transformer<String, String>() {
             @Override
             public String transform(String s) {
                 return null == s ? "" : s;
             }
         };
 
-        public static _.F1<String, String> TRIM = new _.F1<String, String>() {
+        public static $.F1<String, String> TRIM = new $.F1<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, _.Break {
+            public String apply(String s) throws NotAppliedException, $.Break {
                 return s.trim();
             }
         };
 
-        public static _.F1<String, String> CAP_FIRST = new _.F1<String, String>() {
+        public static $.F1<String, String> CAP_FIRST = new $.F1<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, _.Break {
+            public String apply(String s) throws NotAppliedException, $.Break {
                 return S.capFirst(s);
             }
         };
 
-        public static _.Predicate<String> IS_EMPTY = new _.Predicate<String>() {
+        public static $.Predicate<String> IS_EMPTY = new $.Predicate<String>() {
             @Override
-            public boolean test(String s) throws NotAppliedException, _.Break {
+            public boolean test(String s) throws NotAppliedException, $.Break {
                 return S.isEmpty(s);
             }
         };
 
-        public static _.Predicate<String> IS_BLANK = new _.Predicate<String>() {
+        public static $.Predicate<String> IS_BLANK = new $.Predicate<String>() {
             @Override
             public boolean test(String s) {
                 return S.isBlank(s);
             }
         };
 
-        public static _.Predicate<String> NOT_EMPTY = IS_EMPTY.negate();
+        public static $.Predicate<String> NOT_EMPTY = IS_EMPTY.negate();
 
-        public static _.F2<String, Integer, String> MAX_LENGTH = new _.F2<String, Integer, String>() {
+        public static $.F2<String, Integer, String> MAX_LENGTH = new $.F2<String, Integer, String>() {
             @Override
-            public String apply(String s, Integer n) throws NotAppliedException, _.Break {
+            public String apply(String s, Integer n) throws NotAppliedException, $.Break {
                 return S.maxLength(s, n);
             }
         };
@@ -1158,85 +1151,85 @@ public class S {
         /**
          * A split function that use the {@link #COMMON_SEP} to split Strings
          */
-        public static _.F1<String, List<String>> SPLIT = split(COMMON_SEP);
+        public static $.F1<String, List<String>> SPLIT = split(COMMON_SEP);
 
-        public static _.F1<String, List<String>> split(final String sep) {
-            return new _.F1<String, List<String>>() {
+        public static $.F1<String, List<String>> split(final String sep) {
+            return new $.F1<String, List<String>>() {
                 @Override
-                public List<String> apply(String s) throws NotAppliedException, _.Break {
+                public List<String> apply(String s) throws NotAppliedException, $.Break {
                     return C.listOf(s.split(sep));
                 }
             };
         }
 
-        public static _.F1<String, String> maxLength(int n) {
+        public static $.F1<String, String> maxLength(int n) {
             return MAX_LENGTH.curry(n);
         }
 
-        public static _.F2<String, Integer, String> LAST = new _.F2<String, Integer, String>() {
+        public static $.F2<String, Integer, String> LAST = new $.F2<String, Integer, String>() {
             @Override
-            public String apply(String s, Integer n) throws NotAppliedException, _.Break {
+            public String apply(String s, Integer n) throws NotAppliedException, $.Break {
                 return S.last(s, n);
             }
         };
 
-        public static _.F1<String, String> last(int n) {
+        public static $.F1<String, String> last(int n) {
             return LAST.curry(n);
         }
 
-        public static _.F2<String, Integer, String> FIRST = new _.F2<String, Integer, String>() {
+        public static $.F2<String, Integer, String> FIRST = new $.F2<String, Integer, String>() {
             @Override
-            public String apply(String s, Integer n) throws NotAppliedException, _.Break {
+            public String apply(String s, Integer n) throws NotAppliedException, $.Break {
                 return S.first(s, n);
             }
         };
 
-        public static _.F1<String, String> first(final int n) {
+        public static $.F1<String, String> first(final int n) {
             return FIRST.curry(n);
         }
 
-        public static _.F0<String> RANDOM = new _.F0<String>() {
+        public static $.F0<String> RANDOM = new $.F0<String>() {
             @Override
-            public String apply() throws NotAppliedException, _.Break {
+            public String apply() throws NotAppliedException, $.Break {
                 return S.random();
             }
         };
 
-        public static _.F1<Integer, String> RANDOM_N = new _.F1<Integer, String>() {
+        public static $.F1<Integer, String> RANDOM_N = new $.F1<Integer, String>() {
             @Override
-            public String apply(Integer n) throws NotAppliedException, _.Break {
+            public String apply(Integer n) throws NotAppliedException, $.Break {
                 return S.random(n);
             }
         };
 
-        public static _.F0<String> random() {
+        public static $.F0<String> random() {
             return RANDOM;
         }
 
-        public static _.F0<String> random(int n) {
+        public static $.F0<String> random(int n) {
             return RANDOM_N.curry(n);
         }
 
-        public static _.F1<String, Integer> LENGTH = new _.F1<String, Integer>() {
+        public static $.F1<String, Integer> LENGTH = new $.F1<String, Integer>() {
             @Override
-            public Integer apply(String s) throws NotAppliedException, _.Break {
+            public Integer apply(String s) throws NotAppliedException, $.Break {
                 return s.length();
             }
         };
 
-        public static _.F1<String, String> append(final String appendix) {
-            return new _.F1<String, String>() {
+        public static $.F1<String, String> append(final String appendix) {
+            return new $.F1<String, String>() {
                 @Override
-                public String apply(String s) throws NotAppliedException, _.Break {
+                public String apply(String s) throws NotAppliedException, $.Break {
                     return S.builder(s).append(appendix).toString();
                 }
             };
         }
 
-        public static _.F1<String, String> prepend(final String prependix) {
-            return new _.F1<String, String>() {
+        public static $.F1<String, String> prepend(final String prependix) {
+            return new $.F1<String, String>() {
                 @Override
-                public String apply(String s) throws NotAppliedException, _.Break {
+                public String apply(String s) throws NotAppliedException, $.Break {
                     return S.builder(prependix).append(s).toString();
                 }
             };
