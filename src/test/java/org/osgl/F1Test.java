@@ -39,7 +39,7 @@ public class F1Test extends TestBase {
 
     @Test(expected = NotAppliedException.class)
     public void byDefaultInverseShallThrowOutNotAppliedException() {
-        toLowerCase.inverse();
+        toLowerCase.invert();
     }
 
     @Test

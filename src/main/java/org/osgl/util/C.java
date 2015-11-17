@@ -3003,15 +3003,16 @@ public enum C {
          * Returns a predicate function that check if the argument is contained in
          * the collection specified
          *
-         * @param c the collection to be checked on against the argument when applying the prediate
+         * @param collection the collection to be checked on against the argument when applying the prediate
          * @param <T> the generic type of the element of the collection
          * @return a predicate function
+         * @see {@link Collection#contains(Object)}
          */
-        public static <T> $.Predicate<T> containsIn(final Collection<? super T> c) {
+        public static <T> $.Predicate<T> containsIn(final Collection<? super T> collection) {
             return new $.Predicate<T>() {
                 @Override
                 public boolean test(T t) throws NotAppliedException, $.Break {
-                    return c.contains(t);
+                    return collection.contains(t);
                 }
             };
         }
@@ -3019,15 +3020,16 @@ public enum C {
         /**
          * Returns a function that add the argument to a collection specified and returns
          * {@code true} if added successfully or {@code false} otherwise
-         * @param c the collection into which the argument to be added
+         * @param collection the collection into which the argument to be added
          * @param <T> the generic type of the collection elements
          * @return a function that do the add operation
+         * @see {@link Collection#add(Object)}
          */
-        public static <T> $.Predicate<T> addTo(final Collection<? super T> c) {
+        public static <T> $.Predicate<T> addTo(final Collection<? super T> collection) {
             return new $.Predicate<T>() {
                 @Override
                 public boolean test(T t) throws NotAppliedException, $.Break {
-                    return c.add(t);
+                    return collection.add(t);
                 }
             };
         }
@@ -3035,89 +3037,45 @@ public enum C {
         /**
          * Returns a function that add the argument into the specified list at specified position.
          * the function returns {@code true} if added successfully or {@code false} otherwise
-         * @param c a list into which the argument to be added
+         * @param list a list into which the argument to be added
          * @param index specify the position where the argument can be added
-         * @param <C> the generic type of the list
+         * @param <L> the generic type of the list
          * @param <T> the generic type of the list element
          * @return the function that do the add operation
+         * @see {@link java.util.List#add(int, Object)}
          */
         @SuppressWarnings("unused")
-        public static <C extends List<? super T>, T> $.F1<T, C> addTo(final C c, final int index) {
-            return new $.F1<T, C>() {
+        public static <L extends List<? super T>, T> $.F1<T, L> addTo(final L list, final int index) {
+            return new $.F1<T, L>() {
                 @Override
-                public C apply(T t) throws NotAppliedException, $.Break {
-                    c.add(index, t);
-                    return c;
+                public L apply(T t) throws NotAppliedException, $.Break {
+                    list.add(index, t);
+                    return list;
                 }
             };
         }
 
         /**
-         * Returns a function that prepend the argument into a {@link Deque}
-         * @param c the deque to which the argument shall be prepended
-         * @param <T> the generic type of the element
-         * @return the function that do the prepend operation
+         * Returns a function that takes argument of type {@link Iterable} and add all elements inside
+         * into the specified collection. The function returns {@code true} if the collection specified
+         * has been changed as a result of adding elements
+         * @param collection the collection into which all elements in the iterable argument will be added
+         *                   when applying the function
+         * @param <T> the generic type of the collection element and the iterable argument element
+         * @return the function that add all elements from iterable argument into the collection specified
+         * @see {@link Collection#addAll(Collection)}
          */
-        @SuppressWarnings("unsed")
-        public static <T> $.F1<T, Deque<? super T>> prependToDeque(final Deque<? super T> c) {
-            return new $.F1<T, Deque<? super T>>() {
+        @SuppressWarnings({"unused", "unchecked"})
+        public static <T> $.Predicate<Iterable<? extends T>> addAllTo(final Collection<? super T> collection) {
+            return new $.Predicate<Iterable<? extends T>>() {
                 @Override
-                public Deque<? super T> apply(T t) throws NotAppliedException, $.Break {
-                    c.addFirst(t);
-                    return c;
-                }
-            };
-        }
-
-        public static <T> $.F1<T, Deque<? super T>> appendToDeque(final Deque<? super T> c) {
-            return new $.F1<T, Deque<? super T>>() {
-                @Override
-                public Deque<? super T> apply(T t) throws NotAppliedException, $.Break {
-                    c.addLast(t);
-                    return c;
-                }
-            };
-        }
-
-        public static <T> $.F1<T, Sequence<? super T>> prependTo(final Sequence<? super T> c) {
-            return new $.F1<T, Sequence<? super T>>() {
-                @Override
-                public Sequence<? super T> apply(T t) throws NotAppliedException, $.Break {
-                    c.prepend(t);
-                    return c;
-                }
-            };
-        }
-
-        public static <T> $.F1<T, Sequence<? super T>> appendTo(final Sequence<? super T> c) {
-            return new $.F1<T, Sequence<? super T>>() {
-                @Override
-                public Sequence<? super T> apply(T t) throws NotAppliedException, $.Break {
-                    c.append(t);
-                    return c;
-                }
-            };
-        }
-
-        public static $.F1<?, Boolean> removeFrom(final Collection<?> c) {
-            return new $.F1<Object, Boolean>() {
-                @Override
-                public Boolean apply(Object t) throws NotAppliedException, $.Break {
-                    return c.remove(t);
-                }
-            };
-        }
-
-        public static <T> $.F1<Iterable<? extends T>, Boolean> addAllTo(final Collection<? super T> c) {
-            return new $.F1<Iterable<? extends T>, Boolean>() {
-                @Override
-                public Boolean apply(Iterable<? extends T> c1) throws NotAppliedException, $.Break {
+                public boolean test(Iterable<? extends T> c1) throws NotAppliedException, $.Break {
                     if (c1 instanceof Collection) {
-                        return c.addAll((Collection<? extends T>) c1);
+                        return collection.addAll((Collection<? extends T>) c1);
                     }
                     boolean modified = false;
                     for (T t : c1) {
-                        c.add(t);
+                        collection.add(t);
                         modified = true;
                     }
                     return modified;
@@ -3125,19 +3083,31 @@ public enum C {
             };
         }
 
-        public static <T> $.Predicate<Iterable<? extends T>> addAllTo(final List<? super T> l, final int index) {
-            if (0 > index || l.size() < index) {
+        /**
+         * Returns a function that takes argument of type {@link Iterable} and add all elements inside
+         * into the specified list at specified position. The function returns {@code true} if the
+         * collection specified has been changed as a result of adding elements
+         * @param list the list into which all elements in the iterable argument will be added
+         *             when applying the function
+         * @param <T> the generic type of the list element and the iterable argument element
+         * @return the function that add all elements from iterable argument into the list specified
+         *         at specified position
+         * @see {@link java.util.List#addAll(int, Collection)}
+         */
+        @SuppressWarnings({"unused", "unchecked"})
+        public static <T> $.Predicate<Iterable<? extends T>> addAllTo(final List<? super T> list, final int index) {
+            if (0 > index || list.size() < index) {
                 throw new IndexOutOfBoundsException();
             }
             return new $.Predicate<Iterable<? extends T>>() {
                 @Override
                 public boolean test(Iterable<? extends T> itr) throws NotAppliedException, $.Break {
                     if (itr instanceof Collection) {
-                        return l.addAll(index, ((Collection<? extends T>) itr));
+                        return list.addAll(index, ((Collection<? extends T>) itr));
                     }
                     boolean modified = false;
                     for (T t : itr) {
-                        l.add(index, t);
+                        list.add(index, t);
                         modified = true;
                     }
                     return modified;
@@ -3145,38 +3115,141 @@ public enum C {
             };
         }
 
-        public static <T> $.Predicate<Collection<? super T>> removeAllFrom(final Iterable<? extends T> c) {
-            return new $.Predicate<Collection<? super T>>() {
+
+        /**
+         * Returns a function that remove the argument from a collection specified.
+         * <p>The function returns {@code true} if argument removed successfully or
+         * {@code false} otherwise</p>
+         * @param collection the collection from which the argument to be removed
+         *                   when applying the function returned
+         * @return the function that remove element from the collection
+         * @see Collection#remove(Object)
+         */
+        @SuppressWarnings("unused")
+        public static $.Predicate<?> removeFrom(final Collection<?> collection) {
+            return new $.Predicate<Object>() {
                 @Override
-                public boolean test(Collection<? super T> c1) throws NotAppliedException, $.Break {
-                    if (c instanceof Collection) {
-                        return c1.removeAll((Collection<?>) c);
-                    }
-                    HashSet<T> s = new HashSet<T>();
-                    for (T t : c) {
-                        s.add(t);
-                    }
-                    return c1.removeAll(s);
+                public boolean test(Object t) throws NotAppliedException, $.Break {
+                    return collection.remove(t);
                 }
             };
         }
 
-        public static <T> $.Predicate<? extends Collection<? super T>> retainAllIn(final Iterable<? extends T> c) {
-            return new $.Predicate<Collection<? super T>>() {
+        /**
+         * Returns a function that takes a argument of Iterable, and remove all elements inside
+         * it from the collection specified. The function returns {@code true} if the specified
+         * collection has been changed as a result of the removing operation, or {@code false}
+         * otherwise
+         * @param collection the collection from which the elements will be removed when
+         *                   applying the function
+         * @param <T> the generic type of the collection elements
+         * @return a function that do remove all operation on the collection
+         * @see Collection#removeAll(Collection)
+         */
+        @SuppressWarnings({"unused", "unchecked"})
+        public static <T> $.Predicate<Iterable<T>> removeAllFrom(final Collection<? super T> collection) {
+            return new $.Predicate<Iterable<T>>() {
                 @Override
-                public boolean test(Collection<? super T> c1) throws NotAppliedException, $.Break {
-                    if (c instanceof Collection) {
-                        return c1.retainAll((Collection) c);
+                public boolean test(Iterable<T> iterable) {
+                    if (iterable instanceof Collection) {
+                        return collection.removeAll((Collection) iterable);
                     }
-                    HashSet<T> s = new HashSet<T>();
-                    for (T t : c) {
-                        s.add(t);
+                    boolean modified = false;
+                    for (T t : iterable) {
+                        boolean b = collection.remove(t);
+                        modified = modified || b;
                     }
-                    return c1.retainAll(s);
+                    return modified;
                 }
             };
         }
 
+        /**
+         * Returns a function that takes a argument of Iterable, and remove all elements that are
+         * <b>NOT</b> inside the iterable from the collection specified. The function returns {@code true}
+         * if the specified collection has been changed as a result of call, or {@code false} otherwise
+         *
+         * @param collection the collection from which the elements will be removed when
+         *                   applying the function
+         * @param <T> the generic type of the collection elements
+         * @return a function that do remove operations on the collection
+         * @see Collection#retainAll(Collection)
+         */
+        @SuppressWarnings({"unused", "unchecked"})
+        public static <T> $.Predicate<Iterable<T>> retainAllIn(final Collection<? super T> collection) {
+            return new $.Predicate<Iterable<T>>() {
+                @Override
+                public boolean test(Iterable<T> iterable) {
+                    if (iterable instanceof Collection) {
+                        return collection.retainAll((Collection) iterable);
+                    }
+                    List<T> list = C.list(iterable);
+                    return collection.retainAll(list);
+                }
+            };
+        }
+
+        public static <T> $.F1<T, Deque<? super T>> prependTo(final Deque<? super T> deque) {
+            return new $.F1<T, Deque<? super T>>() {
+                @Override
+                public Deque<? super T> apply(T t) throws NotAppliedException, $.Break {
+                    deque.addFirst(t);
+                    return deque;
+                }
+            };
+        }
+
+        /**
+         * Returns a function that append the argument to a {@link Deque} specified
+         * @param deque the deque to which the argument shall be append when applying the function returned
+         * @param <T> the generic type of the argument/deque element
+         * @return the function that do the append operation
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.F1<T, Deque<? super T>> appendTo(final Deque<? super T> deque) {
+            return new $.F1<T, Deque<? super T>>() {
+                @Override
+                public Deque<? super T> apply(T t) throws NotAppliedException, $.Break {
+                    deque.addLast(t);
+                    return deque;
+                }
+            };
+        }
+
+        /**
+         * Returns a function that prepend the argument to a {@link Sequence} specified
+         * @param sequence the sequence to which the argument shall be prepend whene applying the function
+         * @param <T> the generic type of the argument/sequence element
+         * @return the function that do the prepend operation
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.F1<T, Sequence<? super T>> prependTo(final Sequence<? super T> sequence) {
+            return new $.F1<T, Sequence<? super T>>() {
+                @Override
+                public Sequence<? super T> apply(T t) throws NotAppliedException, $.Break {
+                    sequence.prepend(t);
+                    return sequence;
+                }
+            };
+        }
+
+        /**
+         * Returns a function that append the argument to a {@link Sequence} specified
+         * <p><b>Note</b> the function returns the sequence with the argument been removed</p>
+         * @param sequence the sequence to which the argument shall be append when applying the function
+         * @param <T> the generic type of the argument/sequence element
+         * @return the function that do the append operation
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.F1<T, Sequence<? super T>> appendTo(final Sequence<? super T> sequence) {
+            return new $.F1<T, Sequence<? super T>>() {
+                @Override
+                public Sequence<? super T> apply(T t) throws NotAppliedException, $.Break {
+                    sequence.append(t);
+                    return sequence;
+                }
+            };
+        }
         public static <T> $.F1<Iterable<? extends T>, Void> forEach(final $.Function<? super T, ?> visitor) {
             return new $.F1<Iterable<? extends T>, Void>() {
                 @Override
