@@ -49,8 +49,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * easy way to convert user's implementation to corresponding base class implementation, here is one
  * example of how to do it:</p>
  * <pre>
- *     void foo(Osgl.Func2<Integer, String> f) {
- *         F2<Integer, String> newF = Osgl.f2(f);
+ *     void foo(Osgl.Func2&lt;Integer, String&gt; f) {
+ *         F2&lt;Integer, String&gt; newF = Osgl.f2(f);
  *         newF.chain(...);
  *         ...
  *     }
@@ -64,13 +64,32 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>Utility methods</p>
  *
  * @author Gelin Luo
- * @version 0.3
+ * @version 0.8
  */
-public class Osgl {
+public class Osgl implements Serializable {
 
     public static final Osgl INSTANCE = new Osgl();
 
     protected Osgl() {
+    }
+
+    private Object readResolve() throws ObjectStreamException {
+        return INSTANCE;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        return obj == this || obj instanceof Osgl;
+    }
+
+    @Override
+    public final int hashCode() {
+        return Osgl.class.hashCode();
+    }
+
+    @Override
+    public final String toString() {
+        return "OSGL";
     }
 
     // --- Functions and their default implementations
@@ -136,7 +155,7 @@ public class Osgl {
          * Applies fallback function where this partial function is not defined, i.e. any
          * {@link java.lang.RuntimeException} is captured
          *
-         * @param fallback　if {@link RuntimeException} captured then apply this fallback function
+         * @param fallback 　if {@link RuntimeException} captured then apply this fallback function
          * @return the result of this function or the fallback function application
          */
         public R applyOrElse(F0<? extends R> fallback) {
@@ -305,7 +324,8 @@ public class Osgl {
 
     /**
      * Convert a general {@link Osgl.Func0} typed function to {@link F0} type
-     * @param f0 a function of type {@link Func0} that returns type R value
+     *
+     * @param f0  a function of type {@link Func0} that returns type R value
      * @param <R> the generic type of the return value when applying function f0
      * @return a {@link F0} type that is equaivlent to function f0
      * @since 0.2
@@ -347,6 +367,7 @@ public class Osgl {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
+         * @param t the argument
          * @return {@code U} type result
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
          * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
@@ -358,8 +379,8 @@ public class Osgl {
     /**
      * Alias of {@link Function}
      *
-     * @param <P1>
-     * @param <R>
+     * @param <P1> the argument type
+     * @param <R>  the return value type
      * @since 0.2
      */
     public interface Func1<P1, R> extends Function<P1, R> {
@@ -389,11 +410,13 @@ public class Osgl {
      * inverse function by itself also a {@code Bijection} mapping from {@code Y} to {@code X}
      *
      * @param <X> the type of parameter
-     * @param <Y>
+     * @param <Y> the type of return value
      */
     public interface Bijection<X, Y> extends Function<X, Y> {
         /**
          * Returns the inverse function mapping from {@code Y} back to {@code X}
+         *
+         * @return a function that map {@code Y} type element to {@code X} type element
          */
         Bijection<Y, X> invert();
     }
@@ -435,7 +458,7 @@ public class Osgl {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1 the argument this function to be applied
+         * @param p1       the argument this function to be applied
          * @param fallback the function to be applied to the argument p1 when this function failed with any runtime exception
          * @return the result of this function or the fallback function application
          */
@@ -551,6 +574,7 @@ public class Osgl {
          * {@code Function&ltX1, P1&gt;} function with this function applied last
          *
          * @param before the function to be applied first when applying the return function
+         * @param <X1>   type of argument takes by the {@code before} function
          * @return an new function such that f(a) == apply(f1(a))
          */
         public <X1> F1<X1, R>
@@ -691,6 +715,9 @@ public class Osgl {
     /**
      * The type-safe version of {@link #F1}
      *
+     * @param <P1> the argument type
+     * @param <R>  the return value type
+     * @return a dumb function {@link #F1}
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
@@ -703,6 +730,10 @@ public class Osgl {
      * Convert a general {@link Osgl.Function} function into a {@link F1} typed
      * function
      *
+     * @param f1   the function that consumes {@code P1} and produce {@code R}
+     * @param <P1> the argument type
+     * @param <R>  the return value type
+     * @return whatever of type {@code R}
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
@@ -801,8 +832,8 @@ public class Osgl {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1 the first param with type P1
-         * @param p2 the second param with type P2
+         * @param p1       the first param with type P1
+         * @param p2       the second param with type P2
          * @param fallback the function to be called when an {@link RuntimeException} caught
          * @return the result of this function or the fallback function application
          */
@@ -840,8 +871,9 @@ public class Osgl {
          * first to given parameter and then the specified function is applied to the result of
          * this function.
          *
-         * @param f the function takes the <code>R</code> type parameter and return <code>T</code>
-         *          type result
+         * @param f   the function takes the <code>R</code> type parameter and return <code>T</code>
+         *            type result
+         * @param <T> the return type of function {@code f}
          * @return the composed function
          * @throws NullPointerException if <code>f</code> is null
          */
@@ -947,6 +979,10 @@ public class Osgl {
     /**
      * The type-safe version of {@link #F2}
      *
+     * @param <P1> the type of the first param the new function applied to
+     * @param <P2> the type of the second param the new function applied to
+     * @param <R>  the type of new function application result
+     * @return the dumb function {@link #F2}
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
@@ -959,6 +995,7 @@ public class Osgl {
      * Convert a general {@link Osgl.Func2} function into a {@link F2} typed
      * function
      *
+     * @param f2   the function that takes two arguments and return type {@code R}
      * @param <P1> the type of the first param the new function applied to
      * @param <P2> the type of the second param the new function applied to
      * @param <R>  the type of new function application result
@@ -1001,11 +1038,14 @@ public class Osgl {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
+         * @param p1 argument 1
+         * @param p2 argument 2
+         * @param p3 argument 3
+         * @return the result of function applied
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
          * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2, P3 p3) throws NotAppliedException, Break;
-
     }
 
     /**
@@ -1023,9 +1063,9 @@ public class Osgl {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1 the first argument
-         * @param p2 the second argument
-         * @param p3 the third argument
+         * @param p1       the first argument
+         * @param p2       the second argument
+         * @param p3       the third argument
          * @param fallback the function to be called of application of this function failed with any runtime exception
          * @return the result of this function or the fallback function application
          */
@@ -1073,8 +1113,9 @@ public class Osgl {
          * first to given parameter and then the specified function is applied to the result of
          * this function.
          *
-         * @param f the function takes the <code>R</code> type parameter and return <code>T</code>
-         *          type result
+         * @param f   the function takes the <code>R</code> type parameter and return <code>T</code>
+         *            type result
+         * @param <T> the return type of function {@code f}
          * @return the composed function
          * @throws NullPointerException if <code>f</code> is null
          */
@@ -1184,6 +1225,11 @@ public class Osgl {
     /**
      * The type-safe version of {@link #F3}
      *
+     * @param <P1> the type of first parameter this function applied to
+     * @param <P2> the type of second parameter this function applied to
+     * @param <P3> the type of thrid parameter this function applied to
+     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @return the dumb function {@link #F3}
      * @since 0.2
      */
     @SuppressWarnings({"unchecked", "unused"})
@@ -1196,7 +1242,11 @@ public class Osgl {
      * Convert a general {@link Osgl.Func3} function into a {@link F3} typed
      * function
      *
-     * @param f3 the general function with three params
+     * @param f3   the general function with three params
+     * @param <P1> type of argument 1
+     * @param <P2> type of argument 2
+     * @param <P3> type of argument 3
+     * @param <R>  return type
      * @return the {@link #F3} typed instance which is equivalent to f3
      * @since 0.2
      */
@@ -1237,6 +1287,11 @@ public class Osgl {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
+         * @param p1 the first argument
+         * @param p2 the second argument
+         * @param p3 the third argument
+         * @param p4 the fourth argument
+         * @return whatever value of type {@code R}
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
          * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
@@ -1259,10 +1314,10 @@ public class Osgl {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1 the first argument
-         * @param p2 the second argument
-         * @param p3 the third argument
-         * @param p4 the fourth argument
+         * @param p1       the first argument
+         * @param p2       the second argument
+         * @param p3       the third argument
+         * @param p4       the fourth argument
          * @param fallback the failover function to be called if application of this function failed with any
          *                 runtime exception
          * @return a composite function that apply to this function first and if failed apply to the callback function
@@ -1323,8 +1378,9 @@ public class Osgl {
          * first to given parameter and then the specified function is applied to the result of
          * this function.
          *
-         * @param f the function takes the <code>R</code> type parameter and return <code>T</code>
-         *          type result
+         * @param f   the function takes the <code>R</code> type parameter and return <code>T</code>
+         *            type result
+         * @param <T> the return type of function {@code f}
          * @return the composed function
          * @throws NullPointerException if <code>f</code> is null
          */
@@ -1436,6 +1492,12 @@ public class Osgl {
     /**
      * The type-safe version of {@link #F4}
      *
+     * @param <P1> type of first argument
+     * @param <P2> type of second argument
+     * @param <P3> type of third argument
+     * @param <P4> type of fourth argument
+     * @param <R>  type of return value
+     * @return the dumb {@link #F4} function
      * @since 0.2
      */
     @SuppressWarnings({"unchecked", "unused"})
@@ -1448,6 +1510,13 @@ public class Osgl {
      * Convert a general {@link Osgl.Func4} function into a {@link F4} typed
      * function
      *
+     * @param f4   the function to be converted
+     * @param <P1> type of first argument
+     * @param <P2> type of second argument
+     * @param <P3> type of third argument
+     * @param <P4> type of fourth argument
+     * @param <R>  type of return value
+     * @return the function of {@link F4} type that is equivalent to function {@code f4}
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
@@ -1489,6 +1558,12 @@ public class Osgl {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
+         * @param p1 first argument
+         * @param p2 second argument
+         * @param p3 third argument
+         * @param p4 fourth argument
+         * @param p5 fifth argument
+         * @return whatever with type {@code R}
          * @throws NotAppliedException if the function doesn't apply to the parameter(s)
          * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
@@ -1510,11 +1585,11 @@ public class Osgl {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1 the first argument
-         * @param p2 the second argument
-         * @param p3 the third argument
-         * @param p4 the fourth argument
-         * @param p5 the fifth argument
+         * @param p1       the first argument
+         * @param p2       the second argument
+         * @param p3       the third argument
+         * @param p4       the fourth argument
+         * @param p5       the fifth argument
          * @param fallback the function to be called if application of this function failed with any runtime exception
          * @return a composite function apply to this function and then the callback function if this function failed
          */
@@ -1584,8 +1659,9 @@ public class Osgl {
          * first to given parameter and then the specified function is applied to the result of
          * this function.
          *
-         * @param f the function takes the <code>R</code> type parameter and return <code>T</code>
-         *          type result
+         * @param f   the function takes the <code>R</code> type parameter and return <code>T</code>
+         *            type result
+         * @param <T> the return type of function {@code f}
          * @return the composed function
          * @throws NullPointerException if <code>f</code> is null
          */
@@ -1697,6 +1773,13 @@ public class Osgl {
     /**
      * The type-safe version of {@link #F5}
      *
+     * @param <P1> type of first argument
+     * @param <P2> type of second argument
+     * @param <P3> type of third argument
+     * @param <P4> type of fourth argument
+     * @param <P5> type of fifth argument
+     * @param <R>  type of return value
+     * @return a dumb {@link #F5} function
      * @since 0.2
      */
     @SuppressWarnings({"unchecked", "unused"})
@@ -1709,6 +1792,14 @@ public class Osgl {
      * Convert a general {@link Osgl.Func5} function into a {@link F5} typed
      * function
      *
+     * @param f5   the function to be converted
+     * @param <P1> type of first argument
+     * @param <P2> type of second argument
+     * @param <P3> type of third argument
+     * @param <P4> type of fourth argument
+     * @param <P5> type of fifth argument
+     * @param <R>  type of return value
+     * @return the function of {@link F5} type that is equivalent to function {@code f5}
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
@@ -1773,10 +1864,13 @@ public class Osgl {
         }
 
         /**
-         * See <a href="http://download.java.net/jdk8/docs/api/java/util/Comparator.html#thenComparing(java.util.function.Function, java.util.Comparator)">Java 8 doc</a>
+         * See <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html#thenComparing-java.util.function.Function-java.util.Comparator-">Java 8 doc</a>
          *
-         * @param keyExtractor The function to extract the key for comparison
+         * @param keyExtractor  The function to extract the key for comparison
          * @param keyComparator The function to compare the extracted key
+         * @param <U>           the generic type of the key
+         * @return a function that extract key of type {@code U} from element of type {@code T}
+         * and run {@code keyComparator} to compare the two keys
          * @since 0.2
          */
         public <U extends Comparable<? super U>> Comparator<T> thenComparing(
@@ -1790,7 +1884,7 @@ public class Osgl {
          * See <a href="http://download.java.net/jdk8/docs/api/java/util/Comparator.html#thenComparing(java.util.function.Function)">Java 8 doc</a>
          *
          * @param keyExtractor the function that extract key of type U from instance of type T
-         * @param <U> the key type
+         * @param <U>          the key type
          * @return a comparator that applied if the result of this comparator is even
          */
         public <U extends Comparable<? super U>> Comparator<T> thenComparing(
@@ -1943,6 +2037,9 @@ public class Osgl {
 
         /**
          * Sub class to implement this method to test on the supplied elements
+         *
+         * @param t the element to be test
+         * @return {@code true} or {@code false} depends on the implementation
          */
         public abstract boolean test(T t);
 
@@ -1960,6 +2057,9 @@ public class Osgl {
          * with AND operation. For any <code>T t</code> to be tested, if any specified predicates
          * must returns <code>false</code> on it, the resulting predicate will return <code>false</code>.
          *
+         * @param predicates the predicate function array
+         * @return a function that returns {@code true} only when all functions in {@code predicates} returns
+         * {@code true} on a given argument
          * @since 0.2
          */
         public Predicate<T> and(final Function<? super T, Boolean>... predicates) {
@@ -1985,6 +2085,9 @@ public class Osgl {
          * with OR operation. For any <code>T t</code> to be tested, if any specified predicates
          * must returns <code>true</code> on it, the resulting predicate will return <code>true</code>.
          *
+         * @param predicates the predicate functions
+         * @return a function returns {@code true} if any one of the predicate functions returns
+         * {@code true} on a given argument
          * @since 0.2
          */
         public Predicate<T> or(final Function<? super T, Boolean>... predicates) {
@@ -2037,17 +2140,20 @@ public class Osgl {
      * <p>If the function specified is already a {@link Predicate}, then
      * the function itself is returned</p>
      *
+     * @param f   the function to be converted
+     * @param <T> the argument type
+     * @return a function of {@link Predicate} type that is equivalent to function {@code f}
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
-    public static <T> Predicate<T> predicate(final Function<? super T, Boolean> f1) {
-        if (f1 instanceof Predicate) {
-            return (Predicate<T>) f1;
+    public static <T> Predicate<T> predicate(final Function<? super T, Boolean> f) {
+        if (f instanceof Predicate) {
+            return (Predicate<T>) f;
         }
         return new Predicate<T>() {
             @Override
             public boolean test(T t) {
-                return f1.apply(t);
+                return f.apply(t);
             }
         };
     }
@@ -2061,19 +2167,47 @@ public class Osgl {
      * <p>If the function specified is already a {@link Predicate}, then
      * the function itself is returned</p>
      *
+     * @param f   the function
+     * @param <T> the argument type
+     * @return the function of {@link Predicate} type that is equivalent to the function {@code f}
      * @since 0.2
      */
     @SuppressWarnings({"unused", "unchecked"})
-    public static <T> Predicate<T> generalPredicate(final Function<? super T, ?> f1) {
-        if (f1 instanceof Predicate) {
-            return (Predicate<T>) f1;
+    public static <T> Predicate<T> generalPredicate(final Function<? super T, ?> f) {
+        if (f instanceof Predicate) {
+            return (Predicate<T>) f;
         }
         return new Predicate<T>() {
             @Override
             public boolean test(T t) {
-                return bool(f1.apply(t));
+                return bool(f.apply(t));
             }
         };
+    }
+
+    /**
+     * Define a processor function which applied to one parameter and return the parameter instance after
+     * processing on the parameter
+     *
+     * @param <T> the paramete type
+     */
+    public abstract static class Processor<T> extends Osgl.F1<T, T> {
+
+        @Override
+        public T apply(T t) throws NotAppliedException, Break {
+            process(t);
+            return t;
+        }
+
+        /**
+         * Subclass must override thie method to process the parameter
+         *
+         * @param t the object to be processed
+         * @throws Break               if logic decide it shall break external loop
+         * @throws NotAppliedException if logic decide to skip further processing
+         *                             on the object passed in
+         */
+        public abstract void process(T t) throws Break, NotAppliedException;
     }
 
     /**
@@ -2152,8 +2286,14 @@ public class Osgl {
     }
 
     /**
+     *
+     */
+    /**
      * Convert a {@code Function&lt;? super T, Void&gt;} function into a {@link Visitor}
      *
+     * @param f   the function to be cast
+     * @param <T> the argument type
+     * @return a {@link Visitor} type function that is equal with the function {@code f}
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
@@ -2255,6 +2395,7 @@ public class Osgl {
      *     })
      * </pre>
      * <p>Use {@code IndexedVisitor} to iterate through a {@code Map}</p>
+     *
      * @param <K> the generic type of the key
      * @param <T> the generic type of the value
      */
@@ -2361,8 +2502,8 @@ public class Osgl {
         }
 
         @SuppressWarnings("unchecked")
-        public <E> E get(String key) {
-            return (E) attr.get(key);
+        public <T> T get(String key) {
+            return (T) attr.get(key);
         }
 
         @Override
@@ -2374,6 +2515,7 @@ public class Osgl {
         public abstract void visit(K id, T t);
     }
 
+    @SuppressWarnings("unused")
     public static <K, T> IndexedVisitor<K, T>
     indexGuardedVisitor(final Function<? super K, Boolean> guard,
                         final Visitor<? super T> visitor
@@ -2402,10 +2544,14 @@ public class Osgl {
 
         /**
          * The place sub class to implement the transform logic
+         *
+         * @param from the element to be transformed
+         * @return the transformed object
          */
         public abstract TO transform(FROM from);
     }
 
+    @SuppressWarnings("unused")
     public static abstract class Operator<T> extends Osgl.F1<T, T> {
         @Override
         public abstract Operator<T> invert();
@@ -2446,8 +2592,9 @@ public class Osgl {
         }
     }
 
-    public static <A, B> Tuple<A, B> Tuple(A a, B b) {
-        return new Tuple(a, b);
+    @SuppressWarnings("unused")
+    public static <P1, P2> Tuple<P1, P2> Tuple(P1 a, P2 b) {
+        return new Tuple<P1, P2>(a, b);
     }
 
     public static class T2<A, B> extends Tuple<A, B> {
@@ -2456,6 +2603,7 @@ public class Osgl {
             super(_1, _2);
         }
 
+        @SuppressWarnings("unused")
         public Map<A, B> asMap() {
             Map<A, B> m = new HashMap<A, B>();
             m.put(_1, _2);
@@ -2464,7 +2612,7 @@ public class Osgl {
     }
 
     public static <A, B> T2<A, B> T2(A a, B b) {
-        return new T2(a, b);
+        return new T2<A, B>(a, b);
     }
 
     public static class T3<A, B, C> {
@@ -2513,7 +2661,7 @@ public class Osgl {
     }
 
     public static <A, B, C> T3<A, B, C> T3(A a, B b, C c) {
-        return new T3(a, b, c);
+        return new T3<A, B, C>(a, b, c);
     }
 
     public static class T4<A, B, C, D> {
@@ -2551,6 +2699,7 @@ public class Osgl {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <A, B, C, D> T4<A, B, C, D> T4(A a, B b, C c, D d) {
         return new T4<A, B, C, D>(a, b, c, d);
     }
@@ -2592,10 +2741,18 @@ public class Osgl {
         }
     }
 
+    @SuppressWarnings("unused")
     public static <A, B, C, D, E> T5<A, B, C, D, E> T5(A a, B b, C c, D d, E e) {
         return new T5<A, B, C, D, E>(a, b, c, d, e);
     }
 
+    /**
+     * Defines an option of element {@code T}. This class can be used to implement
+     * the {@code else-if} semantic in functional programming and eliminate the
+     * {@code null} value
+     *
+     * @param <T> the element type
+     */
     public static abstract class Option<T> implements Iterable<T>, Serializable {
 
         private Option() {
@@ -2614,6 +2771,7 @@ public class Osgl {
         /**
          * Negate of {@link #isDefined()}
          *
+         * @return {@code true} if this option is not defined
          * @since 0.2
          */
         public boolean notDefined() {
@@ -2799,6 +2957,7 @@ public class Osgl {
             /**
              * Negate of {@link #IS_DEFINED}
              */
+            @SuppressWarnings("unused")
             public final F0<Boolean> NOT_DEFINED = Osgl.F.negate(IS_DEFINED);
 
             /**
@@ -2814,6 +2973,10 @@ public class Osgl {
             /**
              * Returns a function that when applied, run {@link Osgl.Option#filter(Osgl.Function)} on this
              * {@code Option}
+             *
+             * @param predicate the predicate function
+             * @return the function that returns either this option or {@link #NONE} if predicate failed
+             * to test on the element in this option
              */
             public final F0<Option<T>> filter(final Function<? super T, Boolean> predicate) {
                 return new F0<Option<T>>() {
@@ -2827,6 +2990,11 @@ public class Osgl {
             /**
              * Returns a function that when applied, run {@link Osgl.Option#map(Osgl.Function)} on this
              * {@code Option}
+             *
+             * @param mapper the function that map {@code T} element to {@code B} object
+             * @param <B>    the type of returning option element type
+             * @return the function returns either a {@code B} type option if this option
+             * is defined or {@link #NONE} if this option is not defined
              */
             public final <B> F0<Option<B>> map(final Function<? super T, ? extends B> mapper) {
                 return new F0<Option<B>>() {
@@ -2840,6 +3008,10 @@ public class Osgl {
             /**
              * Returns a function that when applied, run {@link Osgl.Option#flatMap(Osgl.Function)} on this
              * {@code Option}
+             *
+             * @param mapper the function that map an elemnet of type T to a {@code Option} of type B
+             * @param <B>    the element type of the {@code Option}
+             * @return the function that flat map all {@code T} element to {@code B} Options
              */
             public final <B> F0<Option<B>> flatMap(final Function<? super T, Option<B>> mapper) {
                 return new F0<Option<B>>() {
@@ -2853,8 +3025,12 @@ public class Osgl {
             /**
              * Returns a function that when applied, run {@link Osgl.Option#orElse(Object)} on this
              * {@code Option}
+             *
+             * @param other the other value to be returned if this option is empty
+             * @return the function implement {@code else if} semantic
              */
-            public final <B> F0<T> orElse(final T other) {
+            @SuppressWarnings("unused")
+            public final F0<T> orElse(final T other) {
                 return new F0<T>() {
                     @Override
                     public T apply() throws NotAppliedException, Break {
@@ -2866,8 +3042,13 @@ public class Osgl {
             /**
              * Returns a function that when applied, run {@link Osgl.Option#orElse(Osgl.Func0)}
              * on this {@code Option}
+             *
+             * @param other the function that generates another {@code T} element when this
+             *              option is empty
+             * @return the function that implement the {@code else if} semantic on this Option
              */
-            public final <B> F0<T> orElse(final Func0<? extends T> other) {
+            @SuppressWarnings("unused")
+            public final F0<T> orElse(final Func0<? extends T> other) {
                 return new F0<T>() {
                     @Override
                     public T apply() throws NotAppliedException, Break {
@@ -2879,7 +3060,11 @@ public class Osgl {
             /**
              * Returns a function that when applied, run {@link Osgl.Option#runWith(Osgl.Function)}
              * on this {@code Option}
+             *
+             * @param consumer the function that consumes the element in this Option
+             * @return a function that apply to {@code consumer} function if this Option is defined
              */
+            @SuppressWarnings("unused")
             public final F0<Void> runWith(final Function<? super T, ?> consumer) {
                 return new F0<Void>() {
                     @Override
@@ -2891,6 +3076,9 @@ public class Osgl {
             }
         }
 
+        /**
+         * A reference to this runtime function namesapce
+         */
         public final f f = new f();
     }
 
@@ -3159,10 +3347,10 @@ public class Osgl {
         }
 
         @Override
-        public <T2> C.List<Osgl.T2<T, T2>> zip(Iterable<T2> iterable) {
-            Iterator<T2> itr = iterable.iterator();
+        public <E> C.List<Osgl.T2<T, E>> zip(Iterable<E> iterable) {
+            Iterator<E> itr = iterable.iterator();
             if (itr.hasNext()) {
-                return new Var<Osgl.T2<T, T2>>(Osgl.T2(v, itr.next()));
+                return new Var<Osgl.T2<T, E>>(Osgl.T2(v, itr.next()));
             }
             return C.list();
         }
@@ -3705,7 +3893,7 @@ public class Osgl {
         }
     }
 
-    public static class Val<T> extends Var<T>{
+    public static class Val<T> extends Var<T> {
         public Val(T value) {
             super(value);
         }
@@ -3738,8 +3926,8 @@ public class Osgl {
     /**
      * Check if two object is equals to each other.
      *
-     * @param a
-     * @param b
+     * @param a the first object
+     * @param b the second object
      * @return {@code true} if {@code a} equals to {@code b}
      * @see #ne(Object, Object)
      */
@@ -3756,9 +3944,10 @@ public class Osgl {
     /**
      * Check if two objects are equals to each other. The comparison will do
      * array equal matching if needed
-     * @param a
-     * @param b
-     * @return
+     *
+     * @param a the first object
+     * @param b the second object
+     * @return {@code true} if the first object equals to the second object
      */
     public static boolean eq2(Object a, Object b) {
         if (eq(a, b)) return true;
@@ -3767,31 +3956,31 @@ public class Osgl {
         Class<?> cb = b.getClass();
         if (ca != cb) return false;
         if (ca == boolean[].class) {
-            return Arrays.equals((boolean[])a, (boolean[])b);
+            return Arrays.equals((boolean[]) a, (boolean[]) b);
         } else if (ca == byte[].class) {
-            return Arrays.equals((byte[])a, (byte[])b);
+            return Arrays.equals((byte[]) a, (byte[]) b);
         } else if (ca == int[].class) {
-            return Arrays.equals((int[])a, (int[])b);
+            return Arrays.equals((int[]) a, (int[]) b);
         } else if (ca == char[].class) {
-            return Arrays.equals((char[])a, (char[])b);
+            return Arrays.equals((char[]) a, (char[]) b);
         } else if (ca == long[].class) {
-            return Arrays.equals((long[])a, (long[])b);
+            return Arrays.equals((long[]) a, (long[]) b);
         } else if (ca == float[].class) {
-            return Arrays.equals((float[])a, (float[])b);
+            return Arrays.equals((float[]) a, (float[]) b);
         } else if (ca == double[].class) {
-            return Arrays.equals((double[])a, (double[])b);
+            return Arrays.equals((double[]) a, (double[]) b);
         } else if (ca == short[].class) {
-            return Arrays.equals((short[])a, (short[])b);
+            return Arrays.equals((short[]) a, (short[]) b);
         } else {
-            return Arrays.equals((Object[])a, (Object[])b);
+            return Arrays.equals((Object[]) a, (Object[]) b);
         }
     }
 
     /**
-     * Check if two object is equals to each other.
+     * Check if two objects are equals to each other.
      *
-     * @param a
-     * @param b
+     * @param a the first object
+     * @param b the second object
      * @return {@code false} if {@code a} equals to {@code b}
      * @see #eq(Object, Object)
      */
@@ -3801,7 +3990,7 @@ public class Osgl {
 
     /**
      * Evaluate an object's bool value. The rules are:
-     * <table>
+     * <table summary="boolean value evaluation rules">
      * <thead>
      * <tr>
      * <th>case</th><th>bool value</th>
@@ -3812,7 +4001,7 @@ public class Osgl {
      * <tr><td>{@link #NONE}</td><td>{@code false}</td></tr>
      * <tr><td>String</td><td>{@link S#notEmpty(String) S.notEmpty(v)}</td></tr>
      * <tr><td>Collection</td><td>{@link java.util.Collection#isEmpty() !v.isEmpty()}</td></tr>
-     * <tr><td>Array</td><td>length of the array > 0</td></tr>
+     * <tr><td>Array</td><td>length of the array &gt; 0</td></tr>
      * <tr><td>Byte</td><td>{@code v != 0}</td></tr>
      * <tr><td>Char</td><td>{@code v != 0}</td></tr>
      * <tr><td>Integer</td><td>{@code v != 0}</td></tr>
@@ -4151,7 +4340,7 @@ public class Osgl {
      * Check if an object is {@code null} or {@link #NONE}
      *
      * @param o the object to test
-     * @return {@link true} if {@code o} is {@code null} or {@code Osgl.NONE}
+     * @return {@code true} if {@code o} is {@code null} or {@link #NONE}
      */
     public static boolean isNull(Object o) {
         return null == o || NONE == o;
@@ -4159,6 +4348,10 @@ public class Osgl {
 
     /**
      * Check if any objects in the parameter list is null
+     *
+     * @param o  the first object to be checked
+     * @param oa the array of objects to be checked
+     * @return {@code true} if any one of the argument is {@code null}
      */
     public static boolean anyNull(Object o, Object... oa) {
         if (!isNull(o)) return true;
@@ -4176,7 +4369,7 @@ public class Osgl {
      * Returns String representation of an object instance. Predicate the object specified
      * is {@code null} or {@code Osgl.NONE}, then an empty string is returned
      *
-     * @param o
+     * @param o the object which will be converted into a string
      * @return a String representation of object
      */
     public static String toString(Object o) {
@@ -4210,9 +4403,12 @@ public class Osgl {
     /**
      * Alias of {@link org.osgl.util.S#fmt(String, Object...)}
      *
+     * @param tmpl the format template
+     * @param args the format arguments
+     * @return the formatted string
      * @since 0.2
      */
-    public static final String fmt(String tmpl, Object... args) {
+    public static String fmt(String tmpl, Object... args) {
         return S.fmt(tmpl, args);
     }
 
@@ -4240,7 +4436,7 @@ public class Osgl {
     }
 
     public static int hc(short o) {
-        return (int)o;
+        return (int) o;
     }
 
     public static int hc(short[] oa) {
@@ -4252,7 +4448,7 @@ public class Osgl {
     }
 
     public static int hc(byte o) {
-        return (int)o;
+        return (int) o;
     }
 
     public static int hc(byte[] oa) {
@@ -4264,7 +4460,7 @@ public class Osgl {
     }
 
     public static int hc(char o) {
-        return (int)o;
+        return (int) o;
     }
 
     public static int hc(char[] oa) {
@@ -4300,7 +4496,7 @@ public class Osgl {
     }
 
     public static int hc(long o) {
-        return  (int) (o ^ (o >> 32));
+        return (int) (o ^ (o >> 32));
     }
 
     public static int hc(long[] oa) {
@@ -4410,11 +4606,11 @@ public class Osgl {
     /**
      * Calculate hashcode of objects specified
      *
-     * @param o1 object 1
-     * @param o2 object 2
-     * @param o3 object 3
-     * @param o4 object 4
-     * @param o5 object 5
+     * @param o1   object 1
+     * @param o2   object 2
+     * @param o3   object 3
+     * @param o4   object 4
+     * @param o5   object 5
      * @param args other objects
      * @return the calculated hash code
      */
@@ -4675,10 +4871,10 @@ public class Osgl {
      * Set an object field value using reflection.
      *
      * @param fieldName the name of the field to be set
-     * @param obj the object on which the value will be set
-     * @param val the value to be set to the field
-     * @param <T> the type of the object
-     * @param <F> the type of the field value
+     * @param obj       the object on which the value will be set
+     * @param val       the value to be set to the field
+     * @param <T>       the type of the object
+     * @param <F>       the type of the field value
      * @return the object that has the new value set on the field specified
      */
     public static <T, F> T setField(String fieldName, T obj, F val) {
@@ -4699,6 +4895,7 @@ public class Osgl {
     }
 
     private static Map<Object, Class> __primitiveTypes = new HashMap<Object, Class>();
+
     static {
         __primitiveTypes.put("int", int.class);
         __primitiveTypes.put("boolean", boolean.class);
@@ -4725,7 +4922,9 @@ public class Osgl {
         __primitiveTypes.put("float[]", float[].class);
         __primitiveTypes.put("double[]", double[].class);
     }
+
     private static Map<Object, Object> __primitiveInstances = new HashMap<Object, Object>();
+
     static {
         __primitiveInstances.put("int", 0);
         __primitiveInstances.put("boolean", false);
@@ -4752,6 +4951,7 @@ public class Osgl {
         __primitiveInstances.put(float.class, 0f);
         __primitiveInstances.put(double.class, 0d);
     }
+
     public static <T> Class<T> classForName(String className) {
         Class c = __primitiveTypes.get(className);
         if (null != c) return c;
@@ -4777,7 +4977,7 @@ public class Osgl {
 
     public static <T> Option<Class<T>> safeClassForName(String className) {
         Class c = __primitiveTypes.get(className);
-        if (null != c) return some((Class<T>)c);
+        if (null != c) return some((Class<T>) c);
         try {
             return Osgl.some((Class<T>) Class.forName(className));
         } catch (Exception e) {
@@ -4787,7 +4987,7 @@ public class Osgl {
 
     public static <T> Option<Class<T>> safeClassForName(String className, ClassLoader classLoader) {
         Class c = __primitiveTypes.get(className);
-        if (null != c) return some((Class<T>)c);
+        if (null != c) return some((Class<T>) c);
         try {
             return Osgl.some((Class<T>) Class.forName(className, true, classLoader));
         } catch (Exception e) {
@@ -4797,10 +4997,11 @@ public class Osgl {
 
     public static <T> T newInstance(final String className) {
         Object o = __primitiveInstances.get(className);
-        if (null != o) return (T)o;
+        if (null != o) return (T) o;
         // see http://stackoverflow.com/questions/27719295/java-lang-internalerror-callersensitive-annotation-expected-at-frame-1
         return new SecurityManager() {
             private T t;
+
             {
                 try {
                     Class caller = getClassContext()[3];
@@ -4815,7 +5016,7 @@ public class Osgl {
 
     public static <T> T newInstance(final String className, ClassLoader cl) {
         Object o = __primitiveInstances.get(className);
-        if (null != o) return (T)o;
+        if (null != o) return (T) o;
         try {
             Class<T> c = (Class<T>) Class.forName(className, true, cl);
             return c.newInstance();
@@ -4826,7 +5027,7 @@ public class Osgl {
 
     public static <T> Option<T> safeNewInstance(String className) {
         Object o = __primitiveInstances.get(className);
-        if (null != o) return some((T)o);
+        if (null != o) return some((T) o);
         try {
             Class<T> c = (Class<T>) Class.forName(className);
             return Osgl.some(c.newInstance());
@@ -5669,13 +5870,15 @@ public class Osgl {
 
     private static ExecutorService _exec = new ThreadPoolExecutor(2, 2,
             0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(), new DefaultThreadFactory() {});
+            new LinkedBlockingQueue<Runnable>(), new DefaultThreadFactory() {
+    });
 
     /**
      * Execute callback asynchronously after delay specified
-     * @param callback the callback function to be executed
+     *
+     * @param callback     the callback function to be executed
      * @param milliseconds the delay
-     * @param <T> return type
+     * @param <T>          return type
      * @return the result of the callback
      */
     public static <T> Future<T> async(final Osgl.F0<T> callback, final int milliseconds) {
@@ -5755,7 +5958,9 @@ public class Osgl {
 
     public static final Conf conf = new Conf();
 
-    public static final int JAVA_VERSION; static {
+    public static final int JAVA_VERSION;
+
+    static {
         String _JV = System.getProperty("java.specification.version");
         int _pos = _JV.lastIndexOf('.');
         JAVA_VERSION = Integer.parseInt(_JV.substring(_pos + 1));
@@ -5772,11 +5977,11 @@ public class Osgl {
          * <code>true</code> on an element been tested
          *
          * @param predicate the predicate function that takes T type argument
-         * @param payload the payload to be passed into the {@link Break} if predicate returns {@code true}
-         * @param <P> the type of the payload object
-         * @param <T> the type of the object to be consumed by the predicate
+         * @param payload   the payload to be passed into the {@link Break} if predicate returns {@code true}
+         * @param <P>       the type of the payload object
+         * @param <T>       the type of the object to be consumed by the predicate
          * @return an new function that takes T argument and apply it to the predicate. If the result is {@code true}
-         *          then throw out the {@code Break} with payload specified
+         * then throw out the {@code Break} with payload specified
          * @since 0.2
          */
         public static <P, T> F1<T, Void> breakIf(final Function<? super T, Boolean> predicate, final P payload) {
@@ -5797,9 +6002,9 @@ public class Osgl {
          * will use test result i.e. <code>true</code> as the payload
          *
          * @param predicate the predicate function
-         * @param <T> the type of the object consumed by the predicate
+         * @param <T>       the type of the object consumed by the predicate
          * @return a new function that applies the predicate and if the result is {@code true} then
-         *          throw out a {@link Break} with payload of the object been consumed
+         * throw out a {@link Break} with payload of the object been consumed
          * @since 0.2
          */
         public static <T> F1<T, Void> breakIf(final Function<? super T, Boolean> predicate) {
@@ -5818,8 +6023,17 @@ public class Osgl {
          * Return a two variables function that throw out a {@link Break} with payload specified when
          * a two variables predicate return <code>true</code> on an element been tested
          *
+         * @param predicate the function test the arguments
+         * @param payload   the payload to be thrown out if predicate function returns {@code true} on
+         *                  the argument
+         * @param <P>       the payload type
+         * @param <T1>      the type of the first argument
+         * @param <T2>      the type of the second argument
+         * @return a function that apply predicate to arguments and throw {@link Break} with payload
+         * specified
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <P, T1, T2> F2<T1, T2, Void> breakIf(final Func2<? super T1, ? super T2, Boolean> predicate,
                                                            final P payload
         ) {
@@ -5839,8 +6053,14 @@ public class Osgl {
          * <code>true</code> on an element been tested. There is no payload specified and the <code>Break</code>
          * will use test result i.e. <code>true</code> as the payload
          *
+         * @param predicate the predicate function check if a break should be raised
+         * @param <T1>      the type of argument 1
+         * @param <T2>      the type of argument 2
+         * @return the function that raise {@link Break} if predicate function says {@code true} on the
+         * two arguments
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <T1, T2> F2<T1, T2, Void> breakIf(final Func2<? super T1, ? super T2, Boolean> predicate) {
             return new F2<T1, T2, Void>() {
                 @Override
@@ -5858,11 +6078,11 @@ public class Osgl {
          * a three variables predicate return <code>true</code> on an element been tested
          *
          * @param predicate the predicate function that takes three arguments and returns a boolean type value
-         * @param payload the payload object to be
-         * @param <P> Generic type for payload
-         * @param <T1> generic type of the first argument taken by predicate
-         * @param <T2> generic type of the second argument taken by predicate
-         * @param <T3> generic type of the thrid argument taken by predicate
+         * @param payload   the payload object to be
+         * @param <P>       Generic type for payload
+         * @param <T1>      generic type of the first argument taken by predicate
+         * @param <T2>      generic type of the second argument taken by predicate
+         * @param <T3>      generic type of the thrid argument taken by predicate
          * @return A function of {@link F3 F3&lt;T1, T2, T3, Void&gt;} type
          * @since 0.2
          */
@@ -5887,9 +6107,9 @@ public class Osgl {
          * will use test result i.e. <code>true</code> as the payload
          *
          * @param predicate the predicate function that takes three arguments and returns a {@code boolean} type value
-         * @param <T1> the generic type of the argument 1
-         * @param <T2> the generic type of the argument 2
-         * @param <T3> the generic type of the argument 3
+         * @param <T1>      the generic type of the argument 1
+         * @param <T2>      the generic type of the argument 2
+         * @param <T3>      the generic type of the argument 3
          * @return a function that check on three arguments and throw out {@code true} if the check returns {@code true}
          * @since 0.2
          */
@@ -5912,12 +6132,12 @@ public class Osgl {
          * a four variables predicate return <code>true</code> on an element been tested
          *
          * @param predicate the predicate function that takes four arguments and returns a {@code boolean} type value
-         * @param payload the payload to be throw out if the predicate function returns {@code true} on given arguments
-         * @param <P> the generic type of the payload
-         * @param <T1> the generic type of the argument 1
-         * @param <T2> the generic type of the argument 2
-         * @param <T3> the generic type of the argument 3
-         * @param <T4> the generic type of the argument 4
+         * @param payload   the payload to be throw out if the predicate function returns {@code true} on given arguments
+         * @param <P>       the generic type of the payload
+         * @param <T1>      the generic type of the argument 1
+         * @param <T2>      the generic type of the argument 2
+         * @param <T3>      the generic type of the argument 3
+         * @param <T4>      the generic type of the argument 4
          * @return a function that check on four arguments and throw out payload if the check returns {@code true}
          * @since 0.2
          */
@@ -5941,10 +6161,10 @@ public class Osgl {
          * will use test result i.e. <code>true</code> as the payload
          *
          * @param predicate the predicate function that takes four arguments and returns a {@code boolean} type value
-         * @param <T1> the generic type of the argument 1
-         * @param <T2> the generic type of the argument 2
-         * @param <T3> the generic type of the argument 3
-         * @param <T4> the generic type of the argument 4
+         * @param <T1>      the generic type of the argument 1
+         * @param <T2>      the generic type of the argument 2
+         * @param <T3>      the generic type of the argument 3
+         * @param <T4>      the generic type of the argument 4
          * @return a function that check on four arguments and throw out {@code true} if the check returns {@code true}
          * @since 0.2
          */
@@ -5967,13 +6187,13 @@ public class Osgl {
          * a five variables predicate return <code>true</code> on an element been tested
          *
          * @param predicate the predicate function that takes five arguments and returns a {@code boolean} type value
-         * @param payload the payload to be throw out if the predicate function returns {@code true} on given arguments
-         * @param <P> the generic type of the payload
-         * @param <T1> the generic type of the argument 1
-         * @param <T2> the generic type of the argument 2
-         * @param <T3> the generic type of the argument 3
-         * @param <T4> the generic type of the argument 4
-         * @param <T5> the generic type of the argument 5
+         * @param payload   the payload to be throw out if the predicate function returns {@code true} on given arguments
+         * @param <P>       the generic type of the payload
+         * @param <T1>      the generic type of the argument 1
+         * @param <T2>      the generic type of the argument 2
+         * @param <T3>      the generic type of the argument 3
+         * @param <T4>      the generic type of the argument 4
+         * @param <T5>      the generic type of the argument 5
          * @return a function that check on five arguments and throw out payload if the check returns {@code true}
          * @since 0.2
          */
@@ -5998,14 +6218,15 @@ public class Osgl {
          * will use test result i.e. <code>true</code> as the payload
          *
          * @param predicate the predicate function that takes five arguments and returns a {@code boolean} type value
-         * @param <T1> the generic type of the argument 1
-         * @param <T2> the generic type of the argument 2
-         * @param <T3> the generic type of the argument 3
-         * @param <T4> the generic type of the argument 4
-         * @param <T4> the generic type of the argument 5
+         * @param <T1>      the generic type of the argument 1
+         * @param <T2>      the generic type of the argument 2
+         * @param <T3>      the generic type of the argument 3
+         * @param <T4>      the generic type of the argument 4
+         * @param <T5>      the generic type of the argument 5
          * @return a function that check on five arguments and throw out {@code true} if the check returns {@code true}
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <T1, T2, T3, T4, T5> F5<T1, T2, T3, T4, T5, Void> breakIf(
                 final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Boolean> predicate
         ) {
@@ -6082,7 +6303,7 @@ public class Osgl {
 
         /**
          * Returns a composed {@link Osgl.Predicate} function that for any given parameter, the test result is <code>true</code>
-         * only when any one of the specified predicates returns <code>true</code> when applied to the parameter
+         * when any one of the specified predicates returns <code>true</code> on the parameter
          *
          * @param predicates an array of predicates that can be applied to a parameter and returns boolean value
          * @param <T>        the type of the parameter the predicates applied to
@@ -6090,13 +6311,16 @@ public class Osgl {
          * @since 0.2
          */
         public static <T> Predicate<T> or(final Function<? super T, Boolean>... predicates) {
-            // TODO return or(C1.list(predicates));
-            return null;
+            return or(C.listOf(predicates));
         }
 
         /**
          * Alias of {@link #or(Iterable)}
          *
+         * @param predicates the predicate functions
+         * @param <T>        the element type
+         * @return a function that returns {@code true} if any one of the predicates returns {@code true}
+         * on a given argument
          * @since 0.2
          */
         public static <T> Predicate<T> any(final Iterable<Function<? super T, Boolean>> predicates) {
@@ -6106,6 +6330,10 @@ public class Osgl {
         /**
          * Alias of {@link #or(Osgl.Function[])}
          *
+         * @param predicates an array of predicate functions
+         * @param <T>        the argument type
+         * @return the function that returns {@code true} if any one of the predicate function
+         * returns {@code true}
          * @since 0.2
          */
         public static <T> Predicate<T> any(final Function<? super T, Boolean>... predicates) {
@@ -6116,10 +6344,10 @@ public class Osgl {
          * Negation of {@link #or(Iterable)}
          *
          * @param predicates an iterable of predicate functions
-         * @param <T> the generic type of the argument the predicate functions take
+         * @param <T>        the generic type of the argument the predicate functions take
          * @return a function that apply the argument to all predicate functions and return
-         *         {@code true} if all of them return {@code false} on the argument, or
-         *         {@code false} if any one of them returns {@code true}
+         * {@code true} if all of them return {@code false} on the argument, or
+         * {@code false} if any one of them returns {@code true}
          * @since 0.2
          */
         public static <T> Predicate<T> none(final Iterable<Function<? super T, Boolean>> predicates) {
@@ -6130,10 +6358,10 @@ public class Osgl {
          * Negation of {@link #or(Osgl.Function[])}
          *
          * @param predicates an array of predicate functions
-         * @param <T> the generic type of the argument the predicate functions take
+         * @param <T>        the generic type of the argument the predicate functions take
          * @return a function that apply the argument to all predicate functions and return
-         *         {@code true} if all of them return {@code false} on the argument, or
-         *         {@code false} if any one of them returns {@code true}
+         * {@code true} if all of them return {@code false} on the argument, or
+         * {@code false} if any one of them returns {@code true}
          * @since 0.2
          */
         public static <T> Predicate<T> none(final Function<? super T, Boolean>... predicates) {
@@ -6156,11 +6384,14 @@ public class Osgl {
         }
 
         /**
+         * Returns a inverted function of {@link Bijection} which map from X to Y, and the
+         * returned function map from Y to X. This function will call {@link Bijection#invert()}
+         * to get the return function
          *
-         * @param f
-         * @param <X>
-         * @param <Y>
-         * @return
+         * @param f   the bijection function to be inverted
+         * @param <X> the argument type, and the result type of the return function
+         * @param <Y> the result type, and the argument type of the return function
+         * @return the inverted function of input function {@code f}
          */
         public static <X, Y> Bijection<Y, X> invert(final Bijection<X, Y> f) {
             return Osgl.f1(f.invert());
@@ -6295,6 +6526,8 @@ public class Osgl {
         /**
          * A type-safe version of {@link #TRUE}
          *
+         * @param <T> the argument type
+         * @return a function that always returns {@code true}
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -6309,11 +6542,14 @@ public class Osgl {
          * @see #no()
          * @since 0.2
          */
+        @SuppressWarnings("unchecked")
         public static final Predicate FALSE = negate(TRUE);
 
         /**
          * A type-safe version of {@link #FALSE}
          *
+         * @param <T> the argument type
+         * @return a function that always return {@code false}
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -6337,9 +6573,11 @@ public class Osgl {
         /**
          * The type-safe version of {@link #IS_NULL}
          *
+         * @param <T> the argument type
+         * @return a function that check if an argument is {@code null} or {@code NONE}
          * @since 0.2
          */
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unused", "unchecked"})
         public static <T> Predicate<T> isNull() {
             return IS_NULL;
         }
@@ -6347,9 +6585,12 @@ public class Osgl {
         /**
          * The type-safe version of {@link #IS_NULL}
          *
+         * @param c   the class that specifies the argument type
+         * @param <T> the argument type
+         * @return a function that check if the argument is {@code null} or {@code NONE}
          * @since 0.2
          */
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unused", "unchecked"})
         public static <T> Predicate<T> isNull(Class<T> c) {
             return IS_NULL;
         }
@@ -6360,14 +6601,17 @@ public class Osgl {
          *
          * @since 0.2
          */
+        @SuppressWarnings("unchecked")
         public static final Predicate NOT_NULL = negate(IS_NULL);
 
         /**
          * The type-safe version of {@link #NOT_NULL}
          *
+         * @param <T> the element type
+         * @return a function that check if argument is {@code null} or {@code NONE}
          * @since 0.2
          */
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unused", "unchecked"})
         public static <T> Predicate<T> notNull() {
             return NOT_NULL;
         }
@@ -6395,6 +6639,8 @@ public class Osgl {
         /**
          * The type-safe version of {@link #IDENTITY}
          *
+         * @param <T> the element type
+         * @return the identity function that always return the argument itself
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -6445,6 +6691,9 @@ public class Osgl {
         /**
          * Alias of {@link #lt(Comparable)}
          *
+         * @param v   a value used to check against function argument
+         * @param <T> the element type
+         * @return a function that check if a object is lesser than the value specified
          * @since 0.2
          */
         public static <T extends Comparable<T>> F1<T, Boolean> lessThan(final T v) {
@@ -6467,6 +6716,9 @@ public class Osgl {
         /**
          * Alias of {@link #gt(Comparable)}
          *
+         * @param v   the value used to check against function argument
+         * @param <T> the element type
+         * @return a function that check if a object is greater than the value specified
          * @since 0.2
          */
         public static <T extends Comparable<T>> F1<T, Boolean> greaterThan(final T v) {
@@ -6489,8 +6741,12 @@ public class Osgl {
         /**
          * Alias of {@link #gte(Comparable)}
          *
+         * @param v   the value used to check against function argument
+         * @param <T> the element type
+         * @return a function that check if an object is greater than or equals to the value specified
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <T extends Comparable<T>> F1<T, Boolean> greaterThanOrEqualsTo(final T v) {
             return gte(v);
         }
@@ -6511,8 +6767,12 @@ public class Osgl {
         /**
          * Alias of {@link #lte(Comparable)}
          *
+         * @param v   the value to be used to check agains function arugment
+         * @param <T> the element type
+         * @return a function that check if a object is lesser than or equals to specified value
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <T extends Comparable<T>> F1<T, Boolean> lessThanOrEqualsTo(final T v) {
             return lte(v);
         }
@@ -6569,6 +6829,8 @@ public class Osgl {
         /**
          * Alias of {@link #lt()}
          *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @return the function that do the comparison
          * @since 0.2
          */
         public static <T extends Comparable<T>> F2<T, T, Boolean> lessThan() {
@@ -6591,6 +6853,8 @@ public class Osgl {
         /**
          * Alias of {@link #lte()}
          *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @return the function that do the comparison
          * @since 0.2
          */
         public static <T extends Comparable<T>> F2<T, T, Boolean> lessThanOrEqualsTo() {
@@ -6612,8 +6876,11 @@ public class Osgl {
         /**
          * Alias of {@link #gt()}
          *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @return the function that do the comparison
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <T extends Comparable<T>> F2<T, T, Boolean> greaterThan() {
             return gt();
         }
@@ -6633,8 +6900,11 @@ public class Osgl {
         /**
          * Alias of {@link #gte()}
          *
+         * @param <T> the element type
+         * @return a function that check if one element is greater than or equals to another
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <T extends Comparable<T>> F2<T, T, Boolean> greaterThanOrEqualsTo() {
             return gte();
         }
@@ -6668,6 +6938,9 @@ public class Osgl {
         /**
          * Alias of {@link #lt(java.util.Comparator)}
          *
+         * @param c   a comparator function
+         * @param <T> element type
+         * @return a function that use {@code c} to check if an element is lesser than another
          * @since 0.2
          */
         public static <T> F2<T, T, Boolean> lessThan(final java.util.Comparator<? super T> c) {
@@ -6689,6 +6962,9 @@ public class Osgl {
         /**
          * Alias of {@link #gt(java.util.Comparator)}
          *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
          * @since 0.2
          */
         public static <T> F2<T, T, Boolean> greaterThan(final java.util.Comparator<? super T> c) {
@@ -6711,8 +6987,12 @@ public class Osgl {
         /**
          * Alias of {@link #lte(java.util.Comparator)}
          *
+         * @param c   a comparator function
+         * @param <T> the element type
+         * @return a function that use {@code c} to check if an element is lesser than or equals to another
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <T> F2<T, T, Boolean> lessThanOrEqualsTo(final java.util.Comparator<? super T> c) {
             return lte(c);
         }
@@ -6733,8 +7013,12 @@ public class Osgl {
         /**
          * Alias of {@link #gte(java.util.Comparator)}
          *
+         * @param c   a comparator function
+         * @param <T> the element type
+         * @return a function that use {@code c} to check if an element is greater than or equals to another
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static <T> F2<T, T, Boolean> greaterThanOrEqualsTo(final java.util.Comparator<? super T> c) {
             return gte(c);
         }
@@ -6767,6 +7051,9 @@ public class Osgl {
         /**
          * Alias of {@link #lt(java.util.Comparator)}
          *
+         * @param c   a comparator function
+         * @param <T> the element type
+         * @return a function that use function {@code c} to check if an element is lesser than another
          * @since 0.2
          */
         public static <T> F2<T, T, Boolean> lessThan(final Func2<? super T, ? super T, Integer> c) {
@@ -6788,6 +7075,9 @@ public class Osgl {
         /**
          * Alias of {@link #gt(java.util.Comparator)}
          *
+         * @param c   a comparator function
+         * @param <T> the element type
+         * @return a function that use comparator function {@code c} to check if an object is greater than another
          * @since 0.2
          */
         public static <T> F2<T, T, Boolean> greaterThan(final Func2<? super T, ? super T, Integer> c) {
@@ -6810,6 +7100,9 @@ public class Osgl {
         /**
          * Alias of {@link #lte(java.util.Comparator)}
          *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
          * @since 0.2
          */
         public static <T> F2<T, T, Boolean> lessThanOrEqualsTo(final Func2<? super T, ? super T, Integer> c) {
@@ -6832,6 +7125,9 @@ public class Osgl {
         /**
          * Alias of {@link #gte(java.util.Comparator)}
          *
+         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param c   The comparator that can compare the value
+         * @return the function that do the comparison
          * @since 0.2
          */
         public static <T> F2<T, T, Boolean> greaterThanOrEqualsTo(final Func2<? super T, ? super T, Integer> c) {
@@ -6853,11 +7149,15 @@ public class Osgl {
          *
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static final F2 EQUAL = EQ;
 
         /**
          * The type-safe version of {@link #EQ}
          *
+         * @param <P1> the type of the first argument
+         * @param <P2> the type of the second argument
+         * @return a type-safe function that check equility of two objects
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -6868,6 +7168,9 @@ public class Osgl {
         /**
          * Alias of {@link #eq()}
          *
+         * @param <P1> the type of the first argument
+         * @param <P2> the type of the second argument
+         * @return a type-safe function that check equility of two objects
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -6875,6 +7178,16 @@ public class Osgl {
             return EQ;
         }
 
+        /**
+         * Returns a {@link Predicate} that checkes if the argument
+         * equals to the element specified
+         *
+         * @param element the object to be checked with argument when applying
+         *                the function
+         * @param <P>     the element type
+         * @return the function that returns {@code true} if the argument equals
+         * with the element specified or {@code false} otherwise
+         */
         public static <P> Predicate<P> eq(final P element) {
             return new Predicate<P>() {
                 @Override
@@ -6897,11 +7210,15 @@ public class Osgl {
          *
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         public static final F2 NOT_EQUAL = NE;
 
         /**
          * The type-safe version of {@link #NE}
          *
+         * @param <P1> type of the first argument
+         * @param <P2> type of the second argument
+         * @return the type-safe version of {@link #NE}
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -6912,9 +7229,12 @@ public class Osgl {
         /**
          * Alias of {@link #ne()}
          *
+         * @param <P1> type of the first argument
+         * @param <P2> type of the second argument
+         * @return the type-safe version of {@link #NE}
          * @since 0.2
          */
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "unused"})
         public static <P1, P2> F2<P1, P2, Boolean> notEqual() {
             return NE;
         }
@@ -6957,10 +7277,11 @@ public class Osgl {
         /**
          * Construct a {@link Comparator} with a function to extract the key of type U from given object of type T and
          * a comparator to compare type U
-         * @param keyExtractor the function to extract the key for comparison
+         *
+         * @param keyExtractor  the function to extract the key for comparison
          * @param keyComparator the {@link Comparator} that compares type U (the key type)
-         * @param <T> the type of the object instance
-         * @param <U> the type of the key extract from T
+         * @param <T>           the type of the object instance
+         * @param <U>           the type of the key extract from T
          * @return a comparator that compares type T objects
          */
         public static <T, U> Comparator<T> comparing(
@@ -6979,8 +7300,8 @@ public class Osgl {
         /**
          * A predefined function that calculate hash code of an object
          *
-         * @since 0.2
          * @see #hc(Object)
+         * @since 0.2
          */
         public static final F1 HASH_CODE = new F1() {
             @Override
@@ -6994,7 +7315,7 @@ public class Osgl {
          *
          * @param <T> specifies the generic type of the argument passed to the returned function
          * @return a function of type {@link F1 F1&lt;T, Integer&gt;} that takes type {@code T} argument and
-         *          returns {@link Object#hashCode()} of the argument
+         * returns {@link Object#hashCode()} of the argument
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -7036,7 +7357,7 @@ public class Osgl {
          * {@link Object#toString()} function on the argument
          *
          * @param tClass the class specify the generic type
-         * @param <T> the generic type T of the returning function
+         * @param <T>    the generic type T of the returning function
          * @return a function of type {@link F1 F1&lt;T, String&gt;}
          */
         public static <T> F1<T, String> asString(Class<T> tClass) {

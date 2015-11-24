@@ -212,8 +212,9 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         boolean modified = false;
         Iterator<? extends T> e = iterable.iterator();
         while (e.hasNext()) {
-            if (add(e.next()))
+            if (add(e.next())) {
                 modified = true;
+            }
         }
         sorted = !modified;
         return modified;
@@ -829,6 +830,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return l;
     }
 
+    @SuppressWarnings("unchecked")
     private C.List<T> unLazyAppend(Iterable<? extends T> iterable) {
         if (isMutable()) {
             if (iterable instanceof Collection) {

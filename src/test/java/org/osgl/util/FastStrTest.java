@@ -50,4 +50,12 @@ public class FastStrTest extends StrTestBase<FastStr> {
         fs = fs.replace('\\', '/');
         eq(fs.toString(), "/XYZ Research/Client Docs/7. CRM templates");
     }
+
+    @Test
+    public void testConstructFastStrFromSubStr() {
+        String s = "abcde";
+        String subStr = s.substring(1, 4);
+        FastStr fastStr = FastStr.unsafeOf(subStr);
+        eq(fastStr.toString(), subStr);
+    }
 }

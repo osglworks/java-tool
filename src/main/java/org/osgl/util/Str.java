@@ -97,12 +97,19 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Str append(Collection<? extends Character> collection) {
         int sz = s.length(), sz2 = collection.size();
-        if (0 == sz2) return this;
-        if (0 == sz) return of((Collection<Character>)collection);
-        StringBuilder sb = new StringBuilder(sz + sz2);
-        sb.append(s).append(collection);
+        if (0 == sz2) {
+            return this;
+        }
+        if (0 == sz) {
+            return of((Collection<Character>)collection);
+        }
+        StringBuilder sb = new StringBuilder(sz + sz2).append(s);
+        for (Character c: collection) {
+            sb.append(c);
+        }
         return of(sb);
     }
 
@@ -111,8 +118,10 @@ public class Str extends StrBase<Str> {
         int sz = s.length(), sz2 = list.size();
         if (0 == sz2) return this;
         if (0 == sz) return of(list);
-        StringBuilder sb = new StringBuilder(sz + sz2);
-        sb.append(s).append(list);
+        StringBuilder sb = new StringBuilder(sz + sz2).append(s);
+        for (Character c : list) {
+            sb.append(c);
+        }
         return of(sb);
     }
 
@@ -143,12 +152,16 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Str prepend(Collection<? extends Character> collection) {
         int sz = s.length(), sz2 = collection.size();
         if (0 == sz2) return this;
         if (0 == sz) return of((Collection<Character>)collection);
         StringBuilder sb = new StringBuilder(sz + sz2);
-        sb.append(collection).append(s);
+        for (char c : collection) {
+            sb.append(c);
+        }
+        sb.append(this.s);
         return of(sb);
     }
 
@@ -158,13 +171,16 @@ public class Str extends StrBase<Str> {
         if (0 == sz2) return this;
         if (0 == sz) return of(list);
         StringBuilder sb = new StringBuilder(sz + sz2);
-        sb.append(list).append(s);
+        for (char c : list) {
+            sb.append(c);
+        }
+        sb.append(this.s);
         return of(sb);
     }
 
     @Override
     public Str prepend(Character character) {
-        StringBuilder sb = new StringBuilder(character).append(s);
+        StringBuilder sb = new StringBuilder().append(character).append(s);
         return of(sb);
     }
 
@@ -318,19 +334,6 @@ public class Str extends StrBase<Str> {
     }
 
     /**
-     * Wrapper of {@link String#equalsIgnoreCase(String)}
-     *
-     * @param x
-     * @return {@code true} if the argument is not {@code null} and it
-     *         represents an equivalent {@code String} ignoring case; {@code
-     *         false} otherwise
-     */
-    @Override
-    public boolean equalsIgnoreCase(String x) {
-        return s.equalsIgnoreCase(x);
-    }
-
-    /**
      * Compare content of the str and the specified char sequence, case insensitive
      *
      * @param x
@@ -340,12 +343,12 @@ public class Str extends StrBase<Str> {
      */
     @Override
     public boolean equalsIgnoreCase(CharSequence x) {
-        return null == x ? false : s.equalsIgnoreCase(x.toString());
+        return null != x && s.equalsIgnoreCase(x.toString());
     }
 
     @Override
-    public int compareTo(String x) {
-        return s.compareTo(x);
+    public int compareTo(CharSequence x) {
+        return s.compareTo(x.toString());
     }
 
     @Override
@@ -354,8 +357,8 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
-    public int compareToIgnoreCase(String x) {
-        return s.compareToIgnoreCase(x);
+    public int compareToIgnoreCase(CharSequence x) {
+        return s.compareToIgnoreCase(x.toString());
     }
 
     @Override
@@ -366,8 +369,8 @@ public class Str extends StrBase<Str> {
 
     @Override
     public boolean regionMatches(boolean ignoreCase, int toffset,
-                                 String other, int ooffset, int len) {
-        return s.regionMatches(ignoreCase, toffset, other, ooffset, len);
+                                 CharSequence other, int ooffset, int len) {
+        return s.regionMatches(ignoreCase, toffset, other.toString(), ooffset, len);
     }
 
     @Override
@@ -413,8 +416,8 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
-    public int indexOf(String str, int fromIndex) {
-        return s.indexOf(str, fromIndex);
+    public int indexOf(CharSequence str, int fromIndex) {
+        return s.indexOf(str.toString(), fromIndex);
     }
 
     @Override
@@ -423,8 +426,8 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
-    public int lastIndexOf(String str, int fromIndex) {
-        return s.lastIndexOf(str, fromIndex);
+    public int lastIndexOf(CharSequence str, int fromIndex) {
+        return s.lastIndexOf(str.toString(), fromIndex);
     }
 
     @Override

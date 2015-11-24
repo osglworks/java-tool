@@ -156,7 +156,7 @@ public class ListBuilderTest extends UtilTestBase {
 
     @Test
     public void benchmarkAppendCollections() {
-        final int max = 100, times = 100;
+        final int max = 28, times = 100;
         Integer[] a = new Integer[max];
         for (int i = 0; i < max; ++i) {
             a[i] = i;
@@ -181,11 +181,12 @@ public class ListBuilderTest extends UtilTestBase {
             lb.append(c1, c2, c3);
             long t1 = $.ns() - ts;
 
-            boolean fail = ((t1 > t3) && (t1 - t3) * 100 / t1 > 5);
+            boolean fail = ((t1 > t3));
             //_.echo("%s > %s vs %s [%s]", cnt, t1, t3, (fail ? "fail" : "ok"));
             if (fail) fails++;
         }
         yes((fails * 3) / (times * 2)  < 1, "fails: %s", fails);
+        System.out.println("fails: " + fails);
     }
 
     @Test(expected = IllegalStateException.class)

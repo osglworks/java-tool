@@ -8,101 +8,31 @@ import org.osgl.exception.NotAppliedException;
 
 import java.util.Random;
 
-@BenchmarkOptions(warmupRounds = 1, benchmarkRounds = 10)
+@BenchmarkOptions(warmupRounds = 2, benchmarkRounds = 10)
 public class UnsafeBenchmark extends BenchmarkBase {
-
-    private String _short;
-    private String _mid;
-    private String _long;
-    private String _longAllLowerCases;
 
     private static final char[] LOWER_CASE_LETTERS = Unsafe.bufOf("abcdefghijklmnopqrstuvwxyz");
 
-    private static final $.F1<String, String> JDK_TO_LOWER_CASE = new $.F1<String, String>() {
-        @Override
-        public String apply(String s) throws NotAppliedException, $.Break {
-            return s.toLowerCase();
-        }
-    };
+    private static String _short = S.random(8);
+    private static String _mid = S.random(128);
+    private static String _long = S.random(1024 * 16);
+    private static String _longAllLowerCases = _allLowerCases(1024 * 16);
 
-    private static final $.F1<String, String> UNSAFE_TO_LOWER_CASE = new $.F1<String, String>() {
-        @Override
-        public String apply(String s) throws NotAppliedException, $.Break {
-            return Unsafe.toLowerCase(s);
-        }
-    };
+    public UnsafeBenchmark() {}
 
     private static final $.F1<String, String> JDK_ITERATION = new $.F1<String, String>() {
         @Override
         public String apply(String s) throws NotAppliedException, $.Break {
-            int sz = s.length();
-            char[] buf = new char[sz];
-            for (int i = 0; i < sz; ++i) {
-                buf[i] = s.charAt(i);
-            }
-            return new String(buf);
+            return new String(s.toCharArray());
         }
     };
 
     private static final $.F1<String, String> UNSAFE_ITERATION = new $.F1<String, String>() {
         @Override
         public String apply(String s) throws NotAppliedException, $.Break {
-            char[] buf = Unsafe.bufOf(s);
-            int sz = buf.length;
-            char[] newBuf = new char[sz];
-            for (int i = 0; i < sz; ++i) {
-                newBuf[i] = buf[i];
-            }
-            return new String(buf);
+            return new String(Unsafe.bufOf(s));
         }
     };
-
-    public UnsafeBenchmark() {
-        _short = S.random(8);
-        _mid = S.random(128);
-        _long = S.random(4096);
-        _longAllLowerCases = _allLowerCases(4096);
-    }
-
-    @Test
-    public void JDK_short_toLowerCase() {
-        runTest(_short, JDK_TO_LOWER_CASE);
-    }
-
-    @Test
-    public void Unsafe_short_toLowerCase() {
-        runTest(_short, UNSAFE_TO_LOWER_CASE);
-    }
-
-    @Test
-    public void JDK_mid_toLowerCase() {
-        runTest(_mid, JDK_TO_LOWER_CASE);
-    }
-
-    @Test
-    public void Unsafe_mid_toLowerCase() {
-        runTest(_mid, UNSAFE_TO_LOWER_CASE);
-    }
-
-    @Test
-    public void JDK_long_toLowerCase() {
-        runTest(_long, JDK_TO_LOWER_CASE);
-    }
-
-    @Test
-    public void Unsafe_long_toLowerCase() {
-        runTest(_long, UNSAFE_TO_LOWER_CASE);
-    }
-
-    @Test
-    public void JDK_long2_toLowerCase() {
-        runTest(_longAllLowerCases, JDK_TO_LOWER_CASE);
-    }
-
-    @Test
-    public void Unsafe_long2_toLowerCase() {
-        runTest(_longAllLowerCases, UNSAFE_TO_LOWER_CASE);
-    }
 
     @Test
     public void JDK_short_iter() {
@@ -154,7 +84,7 @@ public class UnsafeBenchmark extends BenchmarkBase {
         }
     }
 
-    private String _allLowerCases(int len) {
+    private static String _allLowerCases(int len) {
         final char[] chars = LOWER_CASE_LETTERS;
         final int max = chars.length;
         Random r = new Random();

@@ -34,12 +34,12 @@ public enum Unsafe {
     /**
      * Get the char array buf out of a string directly
      *
-     * @param s
-     * @return
+     * @param s A string
+     * @return the char array that backed the string
      */
     public static char[] bufOf(String s) {
         if (null == s) return EMPTY_CHAR_ARRAY;
-        if (s.length() < 256) return s.toCharArray();
+        if (s.length() < 128) return s.toCharArray();
         try {
             return (char[]) STRING_BUF.get(s);
         } catch (IllegalAccessException e) {
@@ -47,6 +47,11 @@ public enum Unsafe {
         }
     }
 
+    /**
+     * Returns char array that backed the char sequence specified
+     * @param chars the char sequence
+     * @return the char array of the char sequence
+     */
     public static char[] bufOf(CharSequence chars) {
         if (null == chars) return EMPTY_CHAR_ARRAY;
         return FastStr.of(chars).unsafeChars();
@@ -56,8 +61,8 @@ public enum Unsafe {
      * Returns a string directly from the char array supplied without
      * copy operation
      *
-     * @param buf
-     * @return
+     * @param buf the char array used to construct the return string
+     * @return the string that backed by the char array specified
      */
     public static String stringOf(char[] buf) {
         if (buf.length < 256 || null == SHARED_STR_CONSTRUCTOR) {
@@ -70,6 +75,12 @@ public enum Unsafe {
         }
     }
 
+    /**
+     * Get the char array buf from a FastStr instance
+     * @param s the FastStr instance
+     * @return the char array buf of the FastStr instance
+     */
+    @SuppressWarnings("unused")
     public static char[] bufOf(FastStr s) {
         if (null == s) return EMPTY_CHAR_ARRAY;
         try {
@@ -79,98 +90,5 @@ public enum Unsafe {
         }
     }
 
-    /**
-     * Convert characters in char array to lower case. Note this method
-     * doesn't count the case for 'tr', 'az' and 'lt' language.
-     * If all characters in the buf are lower cases then it will not
-     * create new char array, instead return the char array passed in
-     *
-     * @param buf
-     * @return
-     */
-    public static char[] toLowerCase(char[] buf) {
-        final int sz = buf.length;
-        if (sz == 0) return buf;
-        boolean needsConvert = false;
-        char[] newBuf = null;
-        for (int i = 0; i < sz; ++i) {
-            char c = buf[i];
-            boolean isLowerCase = !Character.isUpperCase(c);
-            if (!isLowerCase) {
-                if (!needsConvert) {
-                    needsConvert = true;
-                    newBuf = new char[sz];
-                    System.arraycopy(buf, 0, newBuf, 0, i);
-                }
-                newBuf[i] = Character.toLowerCase(c);
-            } else if (needsConvert) {
-                newBuf[i] = c;
-            }
-        }
-        return needsConvert ? newBuf : buf;
-    }
-
-    /**
-     * Convert a string to lower case. Note this method
-     * doesn't count the case for 'tr', 'az' and 'lt' language.
-     * If all characters in the string are lower cases then it will not
-     * create new string, instead return the original string passed in
-     *
-     * @param s
-     * @return
-     */
-    public static String toLowerCase(String s) {
-        char[] buf = bufOf(s);
-        char[] newBuf = toLowerCase(buf);
-        if (buf == newBuf) return s; // not changed
-        return stringOf(newBuf);
-    }
-
-    /**
-     * Convert characters in char array to upper case. Note this method
-     * doesn't count the case for 'tr', 'az' and 'lt' language.
-     * If all characters in the buf are upper cases then it will not
-     * create new char array, instead return the char array passed in
-     *
-     * @param buf
-     * @return
-     */
-    public static char[] toUpperCase(char[] buf) {
-        final int sz = buf.length;
-        if (sz == 0) return buf;
-        boolean needsConvert = false;
-        char[] newBuf = null;
-        for (int i = 0; i < sz; ++i) {
-            char c = buf[i];
-            boolean isUpperCase = !Character.isLowerCase(c);
-            if (!isUpperCase) {
-                if (!needsConvert) {
-                    needsConvert = true;
-                    newBuf = new char[sz];
-                    System.arraycopy(buf, 0, newBuf, 0, i);
-                }
-                newBuf[i] = Character.toUpperCase(c);
-            } else if (needsConvert) {
-                newBuf[i] = c;
-            }
-        }
-        return needsConvert ? newBuf : buf;
-    }
-
-    /**
-     * Convert a string to upper case. Note this method
-     * doesn't count the case for 'tr', 'az' and 'lt' language.
-     * If all characters in the string are upper cases then it will not
-     * create new string, instead return the original string passed in
-     *
-     * @param s
-     * @return
-     */
-    public static String toUpperCase(String s) {
-        char[] buf = bufOf(s);
-        char[] newBuf = toUpperCase(buf);
-        if (buf == newBuf) return s; // not changed
-        return stringOf(newBuf);
-    }
 
 }

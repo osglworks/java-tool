@@ -4,77 +4,557 @@ import org.osgl.$;
 
 import java.util.*;
 
+/**
+ * The abstract base class for {@link Str} and {@link FastStr}. This class aggregates
+ * methods from both {@link CharSequence} and {@link org.osgl.util.C.List} to provide
+ * easy manipulation and also functional programming facilities to char sequence
+ * @param <T> the implementation class type
+ */
 public abstract class StrBase<T extends StrBase<T>> extends ListBase<Character>
 implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
 
-    protected StrBase(){}
+    protected StrBase(){
+    }
 
+    /**
+     * Return the class of the implementation
+     * @return the implementation class
+     */
     protected abstract Class<T> _impl();
+
+    /**
+     * Check if the str is empty
+     * @return {@code true} if the str is empty
+     */
     protected abstract T _empty();
 
+    /**
+     * Returns a sub str that is a part of this str
+     * @param fromIndex the from (inclusive)
+     * @param toIndex the to (exclusive)
+     * @return a sub str start at {@code fromIndex} and end at (@code toIndex)
+     * @throws StringIndexOutOfBoundsException if {@code fromIndex} is lesser than
+     *         {@code 0} or greater than or equals to {@link #size()} of the str
+     * @see #subSequence(int, int)
+     * @see #substr(int, int)
+     */
     @Override
     public abstract T subList(int fromIndex, int toIndex) throws StringIndexOutOfBoundsException;
+
+    /**
+     * Return a new str with character inserted into the char sequence of this str
+     * @param index the position to insert the character
+     * @param character the char to be inserted
+     * @return an new str with char inserted into the position specified
+     * @throws StringIndexOutOfBoundsException if {@code index} is lesser than
+     *         {@code 0} or greater than or equals to {@link #size()} of the str
+     */
     @Override
     public abstract T insert(int index, Character character) throws StringIndexOutOfBoundsException;
+
+    /**
+     * Returns a str that with all characters in this str instance except those matches the
+     * test of predicate function specified
+     * @param predicate the function determine which character in this str will be removed
+     * @return a str with characters identified by {@code predicate} removed
+     */
     @Override
     public abstract T remove($.Function<? super Character, Boolean> predicate);
+
+    /**
+     * Return a str that contains the first N characters in this string, the characters
+     * in the new str must matches the test specified by the predicate function. The match
+     * operation stop at the first character that does not match the predicate
+     * @param predicate test if the character should be put into the new str or should stop matching
+     * @return the new str with first N characters matches the test by predicate
+     */
     @Override
     public abstract T takeWhile($.Function<? super Character, Boolean> predicate);
+
+    /**
+     * Return a str that without the first N characters in the string. The characters
+     * been dropped must matches the test specified by teh predicate function. The match
+     * operation stop at the first character that matches the predicate
+     * @param predicate the function test if character should be dropped in the new str
+     *                  or stop match operation
+     * @return the new str as described
+     */
     @Override
     public abstract T dropWhile($.Function<? super Character, Boolean> predicate);
+
+    /**
+     * Returns a str that contains all characters in this str instance but in a
+     * reversed order.
+     * @return a reversed str
+     */
     @Override
     public abstract T reverse();
+
+    /**
+     * Return a str instance contains all characters of this str append with all
+     * characters in the collection specified
+     * @param collection the character collection to be appended
+     * @return the new str instance as described
+     */
     @Override
     public abstract T append(Collection<? extends Character> collection);
+
+    /**
+     * Return a str instance contains all characters of this str instance append with
+     * all characters in the list specified
+     * @param list the list of characters to be appended
+     * @return the new str instance as described
+     */
     @Override
     public abstract T append(C.List<Character> list);
+
+    /**
+     * Returns a str instance contains all characters of this str instance appended with
+     * the character specified
+     * @param character the character to be appended
+     * @return the new str instance as described
+     */
     @Override
     public abstract T append(Character character);
+
+    /**
+     * Returns a str instance contains all characters of this str instance appended with
+     * all characters in teh str specified
+     * @param s the str in which characters to be appended
+     * @return the new str instance as described
+     */
     public abstract T append(T s);
+
+    /**
+     * Returns a str instance contains all characters of this str instance appended
+     * with all characters in the {@link String} specified
+     * @param s the {@link String} in which characters to be appended
+     * @return the new str instance as described
+     */
     public abstract T append(String s);
 
+    /**
+     * Returns a str instance contains all characters of this str instance prepended
+     * with all characters in teh collection
+     * @param collection the collection in which characters to be prepended
+     * @return the new str instance as described
+     */
     @Override
     public abstract T prepend(Collection<? extends Character> collection);
-    @Override
-    public abstract T prepend(C.List<Character> list);
-    @Override
-    public abstract T prepend(Character character);
-    public abstract T prepend(T s);
-    public abstract T prepend(String s);
-    @Override
-    public abstract T subSequence(int start, int end);
-    public abstract T times(int n);
-    public abstract void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin);
-    /**
-     * Returns byte array of string composed of only ascii chars
-     */
-    public abstract byte[] getBytesAscII();
-    public abstract byte[] getBytesUTF8();
-    public abstract FastStr toFastStr();
-    public abstract boolean contentEquals(CharSequence chars);
-    public abstract boolean contentEquals(T t);
-    public abstract boolean isBlank();
-    public abstract int indexOf(int ch, int fromIndex);
-    public abstract int indexOf(String s, int fromIndex);
 
     /**
-     * Locate another strbase inside this strbase
+     * Return a str instance contains all characters of this str instance prepended with
+     * all characters in the list specified
+     * @param list the list of characters to be preppended
+     * @return the new str instance as described
+     */
+    @Override
+    public abstract T prepend(C.List<Character> list);
+
+
+    /**
+     * Returns a str instance contains all characters of this str instance prepended with
+     * the character specified
+     * @param character the character to be preppended
+     * @return the new str instance as described
+     */
+    @Override
+    public abstract T prepend(Character character);
+
+    /**
+     * Returns a str instance contains all characters of this str instance prepended with
+     * all characters in the str specified
+     * @param s the str in which characters to be prepended
+     * @return the new str instance as described
+     */
+    public abstract T prepend(T s);
+
+    /**
+     * Returns a str instance contains all characters of this str instance prepended
+     * with all characters in the {@link String} specified
+     * @param s the {@link String} in which characters to be prepended
+     * @return the new str instance as described
+     */
+    public abstract T prepend(String s);
+
+    /**
+     * Return a part of this str specified by start inclusive and end exclusive position.
+     * <p>Note calling this method has the same effect with calling {@link #subList(int, int)}
+     * and calling {@link #substr(int, int)}</p>
+     * @param start the start position
+     * @param end the end position
+     * @return the part of this str as described
+     * @see #subList(int, int)
+     * @see #substr(int, int)
+     */
+    @Override
+    public abstract T subSequence(int start, int end);
+
+    /**
+     * Returns a str instance that repeat this str's char sequence for {@code n}
+     * times
+     * @param n repeat times
+     * @return the new str as described
+     */
+    public abstract T times(int n);
+
+    /**
+     * Copy part of the char sequence into another array
+     * @param srcBegin the start of copy inclusive
+     * @param srcEnd the end of copy exclusive
+     * @param dst the destination array
+     * @param dstBegin the start of past in destination array
+     */
+    public abstract void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin);
+
+    /**
+     * Returns byte array of string composed of only ascii chars
+     * @return ASCII char array of this str
+     */
+    @SuppressWarnings("unused")
+    public abstract byte[] getBytesAscII();
+
+    /**
+     * Returns byte array of string composed of UTF-8 chars
+     * @return UTF-8 char array of this str
+     */
+    @SuppressWarnings("unused")
+    public abstract byte[] getBytesUTF8();
+
+    /**
+     * Return a {@link FastStr} that contains all the char sequence
+     * in this str instance
+     * @return a FastStr as described
+     */
+    public abstract FastStr toFastStr();
+
+    /**
+     * Check if this str content is equals to the char sequence specified
+     * @param chars the char sequence to be checked agains this str
+     * @return {@code true} if content of this str equals to that of the chars
+     */
+    public abstract boolean contentEquals(CharSequence chars);
+
+    /**
+     * Check if this str content iks equals to the str specified
+     * @param str the str instance
+     * @return {@code true} if content of this str equals to that of the str
+     */
+    public abstract boolean contentEquals(T str);
+
+    /**
+     * Check if this str is blank (empty or all space characters)
+     * @return {@code true} if this str is blank
+     */
+    public abstract boolean isBlank();
+
+    /**
+     * Returns the index within this str of the first occurrence of
+     * the specified character.
+     *
+     * @param   ch   a character (Unicode code point).
+     * @return  the index of the first occurrence of the character in the
+     *          character sequence represented by this object, or
+     *          <code>-1</code> if the character does not occur.
+     * @see     String#indexOf(int)
+     */
+    public final int indexOf(int ch) {
+        return indexOf(ch, 0);
+    }
+
+    /**
+     * Returns the index within this str of the first occurrence of
+     * the specified object. The function will check if the object is
+     * an instance of StrBase, String, Character or Integer, and delegate
+     * to the {@code indexOf(...)} override methods respectively.
+     * <p>If the object is not of the above types, then {@code -1} returned</p>
+     * @param o the object
+     * @return the index of the first occurrence of the object in this str
+     */
+    @Override
+    public int indexOf(Object o) {
+        if (getClass().isAssignableFrom(o.getClass())) {
+            T str = $.cast(o);
+            return indexOf(str);
+        } else if (o instanceof CharSequence) {
+            CharSequence str = (CharSequence) o;
+            return indexOf(str);
+        } else if (o instanceof Character) {
+            Character c = (Character) o;
+            return indexOf((int) c);
+        } else if (o instanceof Integer) {
+            Integer n = (Integer) o;
+            return indexOf(n);
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the index within this str of the first occurrence of
+     * the specified character.
+     *
+     * @param   ch   a character (Unicode code point).
+     * @return  the index of the first occurrence of the character in the
+     *          character sequence represented by this object, or
+     *          <code>-1</code> if the character does not occur.
+     * @see     String#indexOf(int, int)
+     */
+    public abstract int indexOf(int ch, int fromIndex);
+
+    /**
+     * Returns the index within this str of the first occurrence of the
+     * specified substring, starting at the specified index.
+     *
+     * @param   str         the substring to search for.
+     * @param   fromIndex   the index from which to start the search.
+     * @return  the index of the first occurrence of the specified substring,
+     *          starting at the specified index,
+     *          or {@code -1} if there is no such occurrence.
+     * @see     String#indexOf(String, int)
+     */
+    public abstract int indexOf(CharSequence str, int fromIndex);
+
+    /**
+     * Locate another str inside this str, start at the specified index
      * @param s the search string
      * @param fromIndex from where the search should begin
      * @return the location found or {@code -1} if not found
      */
     public abstract int indexOf(T s, int fromIndex);
+
+    /**
+     * Returns the index within this str of the first occurrence of the
+     * specified character list
+     * @param list the list of chars to search for
+     * @return the index of the first occurrence of the specified char list
+     */
+    public int indexOf(java.util.List<Character> list) {
+        return indexOf((CharSequence) FastStr.of(list));
+    }
+
+    /**
+     * Returns the index within this str of the first occurrence of the
+     * specified character list, starting at the specified index
+     * @param list the list of chars to search for
+     * @param startIndex the index from which to start the search
+     * @return the index of the first occurrence of the specified char list
+     */
+    public int indexOf(java.util.List<Character> list, int startIndex) {
+        return indexOf((CharSequence) FastStr.of(list), startIndex);
+    }
+
+    /**
+     * Returns the index within this str of the last occurrence of
+     * the specified character.
+     *
+     * @param   ch   a character (Unicode code point).
+     * @return  the index of the last occurrence of the character in the
+     *          character sequence represented by this object, or
+     *          <code>-1</code> if the character does not occur.
+     * @see String#lastIndexOf(int)
+     */
+    public final int lastIndexOf(int ch) {
+        return lastIndexOf(ch, size());
+    }
+
+    /**
+     * Returns the index within this str of the last occurrence of the
+     * specified substring.  The last occurrence of the empty string ""
+     * is considered to occur at the index value {@code this.length()}.
+     *
+     * <p>The returned index is the largest value <i>k</i> for which:
+     * <blockquote><pre>
+     * this.startsWith(str, <i>k</i>)
+     * </pre></blockquote>
+     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     *
+     * @param   str   the substring to search for.
+     * @return  the index of the last occurrence of the specified substring,
+     *          or {@code -1} if there is no such occurrence.
+     * @see String#lastIndexOf(String)
+     */
+    public final int lastIndexOf(CharSequence str) {
+        return lastIndexOf(str, size() - 1);
+    }
+
+
+    /**
+     * Returns the index within this str of the last occurrence of the
+     * specified substr.  The last occurrence of the empty str
+     * is considered to occur at the index value {@code this.length()}.
+     *
+     * <p>The returned index is the largest value <i>k</i> for which:
+     * <blockquote><pre>
+     * this.startsWith(str, <i>k</i>)
+     * </pre></blockquote>
+     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     *
+     * @param   str   the substring to search for.
+     * @return  the index of the last occurrence of the specified substring,
+     *          or {@code -1} if there is no such occurrence.
+     * @see #lastIndexOf(CharSequence)
+     */
+    public final int lastIndexOf(T str) {
+        return lastIndexOf(str, size() - 1);
+    }
+
+
+    /**
+     * Returns the index within this str of the last occurrence of the
+     * specified character list
+     * @param list the list of chars to search for
+     * @return the index of the last occurrence of the specified char list
+     */
+    public int lastIndexOf(java.util.List<Character> list) {
+        return lastIndexOf((CharSequence) FastStr.of(list));
+    }
+
+    /**
+     * Returns the index within this str of the last occurrence of the
+     * specified character list, starting at the specified index from tail
+     * to head
+     * @param list the list of chars to search for
+     * @param startIndex the index from which to start the search backwards
+     * @return the index of the last occurrence of the specified char list
+     */
+    public int lastIndexOf(java.util.List<Character> list, int startIndex) {
+        return lastIndexOf((CharSequence) FastStr.of(list), startIndex);
+    }
+
+    /**
+     * Returns the index within this str of the last occurrence of
+     * the specified object. The function will check if the object is
+     * an instance of StrBase, String, Character or Integer, and delegate
+     * to the {@code lastIndexOf(...)} override methods respectively.
+     * <p>If the object is not of the above types, then {@code -1} returned</p>
+     * @param o the object
+     * @return the index of the last occurrence of the object in this str
+     */
+    @Override
+    public int lastIndexOf(Object o) {
+        if (o instanceof String) {
+            String str = (String)o;
+            return lastIndexOf(str);
+        } else if (StrBase.class.isAssignableFrom(o.getClass())) {
+            T str = $.cast(o);
+            return lastIndexOf(str);
+        } else if (o instanceof Character) {
+            Character c = (Character) o;
+            return lastIndexOf((int) c);
+        } else if (o instanceof Integer) {
+            Integer n = (Integer) o;
+            return lastIndexOf(n);
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the index within this str of the last occurrence of
+     * the specified character, searching backward starting at the
+     * specified index.
+     *
+     * @param   ch          a character (Unicode code point).
+     * @param   fromIndex   the index to start the search from. There is no
+     *          restriction on the value of <code>fromIndex</code>. If it is
+     *          greater than or equal to the length of this str, it has
+     *          the same effect as if it were equal to one less than the
+     *          length of this str: this entire str may be searched.
+     *          If it is negative, it has the same effect as if it were -1:
+     *          -1 is returned.
+     * @return  the index of the last occurrence of the character in the
+     *          character sequence represented by this object that is less
+     *          than or equal to <code>fromIndex</code>, or <code>-1</code>
+     *          if the character does not occur before that point.
+     * @see     String#lastIndexOf(int, int)
+     */
     public abstract int lastIndexOf(int ch, int fromIndex);
-    public abstract int lastIndexOf(String s, int fromIndex);
-    public abstract int lastIndexOf(T s, int fromIndex);
+
+    /**
+     * Returns the index within this str of the last occurrence of the
+     * specified substring, searching backward starting at the specified index.
+     *
+     * <p>The returned index is the largest value <i>k</i> for which:
+     * <blockquote><pre>
+     * <i>k</i> &lt;= fromIndex && this.startsWith(str, <i>k</i>)
+     * </pre></blockquote>
+     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     *
+     * @param   str         the string to search for.
+     * @param   fromIndex   the index to start the search from.
+     * @return  the index of the last occurrence of the specified substring,
+     *          searching backward from the specified index,
+     *          or {@code -1} if there is no such occurrence.
+     * @see String#lastIndexOf(String)
+     */
+    public abstract int lastIndexOf(CharSequence str, int fromIndex);
+
+    /**
+     * Returns the index within this str of the last occurrence of the
+     * specified str, searching backward starting at the specified index.
+     *
+     * <p>The returned index is the largest value <i>k</i> for which:
+     * <blockquote><pre>
+     * <i>k</i> &lt;= fromIndex && this.startsWith(str, <i>k</i>)
+     * </pre></blockquote>
+     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     *
+     * @param   str         the str to search for.
+     * @param   fromIndex   the index to start the search from.
+     * @return  the index of the last occurrence of the specified str,
+     *          searching backward from the specified index,
+     *          or {@code -1} if there is no such occurrence.
+     * @see String#lastIndexOf(String)
+     * @see #lastIndexOf(CharSequence, int)
+     */
+    public abstract int lastIndexOf(T str, int fromIndex);
+
+    /**
+     * Return a sub string of type {@link java.lang.String} of this
+     * str starts from {@code beginIndex} specified till the end
+     * of the char array of this str
+     * @param beginIndex the start index of the sub string
+     * @return the sub string as described
+     */
     public abstract String substring(int beginIndex);
-    public abstract boolean equalsIgnoreCase(String x);
+
+    /**
+     * Compare content of the str and the specified char sequence, case insensitive
+     *
+     * @param x
+     * @return {@code true} if the argument is not {@code null} and it
+     * represents an equivalent {@code String} ignoring case; {@code
+     * false} otherwise
+     */
     public abstract boolean equalsIgnoreCase(CharSequence x);
-    public abstract int compareTo(String x);
+
+    /**
+     * Compare the char sequence specified against this str
+     * @param x the char sequence to be compared to this str
+     * @return the result of the comparison
+     * @see String#compareTo(String)
+     */
+    public abstract int compareTo(CharSequence x);
+
+    /**
+     * Compare the str specified against this str in a case insensitive
+     * manner
+     * @param x the str to be compared to this str
+     * @return the result of the comparison
+     * @see String#compareToIgnoreCase(String)
+     */
     public abstract int compareToIgnoreCase(T x);
-    public abstract int compareToIgnoreCase(String x);
+
+    /**
+     * Compare the char sequence specified against this str in a case insensitive
+     * manner
+     * @param x the char sequence to be compared to this str
+     * @return the result of the comparison
+     * @see String#compareToIgnoreCase(String)
+     */
+    public abstract int compareToIgnoreCase(CharSequence x);
+
     public abstract boolean regionMatches(boolean ignoreCase, int toffset, T other, int ooffset, int len);
-    public abstract boolean regionMatches(boolean ignoreCase, int toffset, String other, int ooffset, int len);
+    public abstract boolean regionMatches(boolean ignoreCase, int toffset, CharSequence other, int ooffset, int len);
     public abstract boolean startsWith(T prefix, int toffset);
     public abstract boolean startsWith(String prefix, int toffset);
     public abstract boolean endsWith(T suffix);
@@ -275,30 +755,6 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     }
 
     @Override
-    public int indexOf(Object o) {
-        if (o instanceof Character) {
-            Character c = (Character)o;
-            return indexOf(c);
-        } else if (o instanceof String) {
-            String str = (String)o;
-            return indexOf(str);
-        }
-        return -1;
-    }
-
-    @Override
-    public int lastIndexOf(Object o) {
-        if (o instanceof Character) {
-            Character c = (Character)o;
-            return lastIndexOf(c);
-        } else if (o instanceof String) {
-            String str = (String)o;
-            return lastIndexOf(str);
-        }
-        return -1;
-    }
-
-    @Override
     public T take(int n) {
         int sz = size();
         if (sz == 0) return _empty();
@@ -494,55 +950,78 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     }
 
     /**
-     * Alias of {@link #indexOf(String, int)}
+     * Alias of {@link #indexOf(CharSequence, int)}
      *
-     * @param x
-     * @param fromIndex
-     * @return
+     * @param x the substr to search for
+     * @param fromIndex the index from where the search starts, backwards
+     * @return the index of the occurrence
      */
-    public final int pos(String x, int fromIndex) {
+    @SuppressWarnings("unused")
+    public final int pos(CharSequence x, int fromIndex) {
         return indexOf(x, fromIndex);
     }
 
-
-    public final int indexOf(int ch) {
-        return indexOf(ch, 0);
+    /**
+     * Alias of {@link #indexOf(CharSequence)}
+     *
+     * @param x the substr to search for
+     * @return the index of the occurrence
+     */
+    @SuppressWarnings("unused")
+    public final int pos(CharSequence x) {
+        return indexOf(x);
     }
 
+    /**
+     * Locate another str inside this str, start at the specified index
+     * @param x the search str
+     * @return the location found or {@code -1} if not found
+     */
     public final int indexOf(T x) {
         return indexOf(x, 0);
     }
 
-    public final int indexOf(String str) {
+    /**
+     * Returns the index within this str of the first occurrence of the
+     * specified substring, starting at 0.
+     *
+     * @param   str         the substring to search for.
+     * @return  the index of the first occurrence of the specified substring,
+     *          starting at the specified index,
+     *          or {@code -1} if there is no such occurrence.
+     * @see     String#indexOf(String, int)
+     */
+    public final int indexOf(CharSequence str) {
         return indexOf(str, 0);
     }
 
     /**
      * Alias of {@link #indexOf(int)}
-     * @param ch
-     * @return
+     * @param ch the character to be located
+     * @return the position of the character in this str
      */
+    @SuppressWarnings("unused")
     public final int pos(int ch) {
         return indexOf(ch, 0);
     }
 
     /**
-     * @param x
-     * @return
+     * Alias of {@link #indexOf(StrBase)}
+     * @param x the str to be located
+     * @return the position of the str in this str
      */
-    public final int pos(String x) {
-        return indexOf(x, 0);
-    }
-
+    @SuppressWarnings("unused")
     public final int pos(T x) {
         return indexOf(x, 0);
     }
+
     /**
      * Alias of {@link #indexOf(int, int)}
-     * @param ch
-     * @param fromIndex
-     * @return
+     * @param ch the char to be located
+     * @param fromIndex the index the search begins
+     * @return the position of the char in this str
      */
+    @SuppressWarnings("unused")
     public final int pos(int ch, int fromIndex) {
         return indexOf(ch, fromIndex);
     }
@@ -555,69 +1034,71 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      * @param fromIndex the index from where the search should begins
      * @return the found position or {@code -1} if not found
      */
+    @SuppressWarnings("unused")
     public final int pos(T x, int fromIndex) {
         return indexOf(x, fromIndex);
     }
 
     /**
-     * Wrapper of {@link String#lastIndexOf(int)}
-     * @param ch
-     * @return
-     */
-    public final int lastIndexOf(int ch) {
-        return lastIndexOf(ch, size());
-    }
-
-    public final int lastIndexOf(String str) {
-        return lastIndexOf(str, size() - 1);
-    }
-
-    public final int lastIndexOf(T str) {
-        return lastIndexOf(str, size() - 1);
-    }
-
-    /**
      *  Alias of {@link #lastIndexOf(int)}
-     * @param ch
-     * @return
+     * @param ch the char to be located
+     * @return the last occurrence position the char found in this str
      */
+    @SuppressWarnings("unused")
     public final int rpos(int ch) {
         return lastIndexOf(ch, size() - 1);
     }
 
 
     /**
-     *
-     * @param x
-     * @return
+     * alias of {@link #lastIndexOf(StrBase)}
+     * @param x the str to be located
+     * @return the last occurrence position the str found in this str
      */
+    @SuppressWarnings("unused")
     public final int rpos(T x) {
         return lastIndexOf(x);
     }
 
-
-    public final int rpos(String str, int fromIndex) {
+    /**
+     * alias of {@link #lastIndexOf(CharSequence, int)}
+     * @param str the string to be located
+     * @param fromIndex the index from where the search begins backwards
+     * @return the last occurrence of the string in this str
+     */
+    @SuppressWarnings("unused")
+    public final int rpos(CharSequence str, int fromIndex) {
         return lastIndexOf(str, fromIndex);
     }
 
+    /**
+     * alias of {@link #lastIndexOf(StrBase, int)}
+     * @param str the str to be located
+     * @param fromIndex the index from where the search begins backwards
+     * @return the last occurrence of the str in this str
+     */
+    @SuppressWarnings("unused")
     public final int rpos(T str, int fromIndex) {
         return lastIndexOf(str, fromIndex);
     }
+
     /**
-     *
-     * @param x
-     * @return
+     * alias of {@link #lastIndexOf(CharSequence)}
+     * @param str the string to be located
+     * @return the last occurrence of the string in this str
      */
-    public final int rpos(String x) {
-        return lastIndexOf(x, size() - 1);
+    @SuppressWarnings("unused")
+    public final int rpos(CharSequence str) {
+        return lastIndexOf(str, size() - 1);
     }
 
     /**
      * Alias of {@link #lastIndexOf(int, int)}
-     * @param ch
-     * @param fromIndex
-     * @return
+     * @param ch the char to be located
+     * @param fromIndex the index from where the search begins backwards
+     * @return the last occurrence of the char in this str
      */
+    @SuppressWarnings("unused")
     public final int rpos(int ch, int fromIndex) {
         return lastIndexOf(ch, fromIndex);
     }

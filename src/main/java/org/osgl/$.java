@@ -19,27 +19,20 @@
 */
 package org.osgl;
 
-import org.osgl.concurrent.ContextLocal;
-import org.osgl.exception.FastRuntimeException;
-import org.osgl.exception.NotAppliedException;
-import org.osgl.exception.UnexpectedException;
-import org.osgl.util.*;
-
-import java.io.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.io.ObjectStreamException;
 
 /**
  * Alias of {@link Osgl}
  */
 public final class $ extends Osgl {
+
     public static final $ INSTANCE = new $();
-    protected $() {
+
+    private $() {
     }
+
+    private Object readResolve() throws ObjectStreamException {
+        return INSTANCE;
+    }
+
 }

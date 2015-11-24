@@ -57,12 +57,6 @@ public class FastStr extends StrBase<FastStr>
         end = 0;
     }
 
-    private FastStr(String s) {
-        buf = Unsafe.bufOf(s);
-        begin = 0;
-        end = s.length() - 1;
-    }
-
     private FastStr(char[] buf) {
         this(buf, 0, buf.length);
     }
@@ -89,7 +83,8 @@ public class FastStr extends StrBase<FastStr>
             return true;
         }
         for (int i = begin; i < end; ++i) {
-            if (buf[i] != ' ') {
+            char c = buf[i];
+            if (c > ' ') {
                 return false;
             }
         }
@@ -149,26 +144,28 @@ public class FastStr extends StrBase<FastStr>
         final int sz = size();
         if (sz == 0) return EMPTY_STR;
         char[] newBuf = null;
-        int newSz = 0;
         boolean removed = false;
+        int curNew = 0;
         for (int i = 0; i < sz; ++i) {
             char c = charAt(i);
-            if (!predicate.apply(c)) {
+            if (predicate.apply(c)) {
                 if (null == newBuf) {
                     removed = true;
                     newBuf = new char[sz];
                     System.arraycopy(buf, 0, newBuf, 0, i);
-                    newSz = i;
-                } else {
-                    newBuf[newSz++] = c;
                 }
+            } else {
+                if (null != newBuf) {
+                    newBuf[curNew] = c;
+                }
+                curNew++;
             }
         }
         if (!removed) {
             // nothing removed
             return this;
         }
-        return unsafeOf(newBuf, 0, newSz);
+        return unsafeOf(newBuf, 0, curNew);
     }
 
     @Override
@@ -308,7 +305,7 @@ public class FastStr extends StrBase<FastStr>
         int newSz = sz + sz2;
         char[] newBuf = new char[newSz];
         for (int i = 0; i < sz2; ++i) {
-            newBuf[i++] = list.get(i);
+            newBuf[i] = list.get(i);
         }
         copyTo(newBuf, sz2);
         return new FastStr(newBuf, 0, newSz);
@@ -451,6 +448,9 @@ public class FastStr extends StrBase<FastStr>
         if (o instanceof FastStr) {
             FastStr that = (FastStr) o;
             return contentEquals(that);
+        } else if (o instanceof StrBase) {
+            StrBase that = (StrBase)o;
+            return that.contentEquals(this);
         }
         return false;
     }
@@ -489,7 +489,7 @@ public class FastStr extends StrBase<FastStr>
         if (srcEnd > sz) {
             throw new StringIndexOutOfBoundsException(srcEnd);
         }
-        System.arraycopy(buf, toInternalId(srcBegin), dst, 0, srcEnd - srcBegin);
+        System.arraycopy(buf, toInternalId(srcBegin), dst, dstBegin, srcEnd - srcBegin);
     }
 
     /**
@@ -538,7 +538,7 @@ public class FastStr extends StrBase<FastStr>
                 chars = buf;
             } else {
                 chars = new char[sz];
-                System.arraycopy(buf, 0, chars, 0, sz);
+                System.arraycopy(buf, begin, chars, 0, sz);
             }
             return Unsafe.stringOf(chars).getBytes(Charset.forName("UTF-8"));
         } catch (Exception e) {
@@ -584,9 +584,10 @@ public class FastStr extends StrBase<FastStr>
      * represents an equivalent {@code String} ignoring case; {@code
      * false} otherwise
      */
-    public boolean equalsIgnoreCase(String x) {
+    public boolean equalsIgnoreCase(CharSequence x) {
+        if (x == this) return true;
         if (null == x || size() != x.length()) return false;
-        if (isEmpty() && x.isEmpty()) return true;
+        if (isEmpty() && x.length() == 0) return true;
         return regionMatches(true, 0, x, 0, size());
     }
 
@@ -596,23 +597,7 @@ public class FastStr extends StrBase<FastStr>
         return regionMatches(true, 0, x.buf, 0, size());
     }
 
-    /**
-     * Compare content of the str and the specified char sequence, case insensitive
-     *
-     * @param x
-     * @return {@code true} if the argument is not {@code null} and it
-     * represents an equivalent {@code String} ignoring case; {@code
-     * false} otherwise
-     */
-    public boolean equalsIgnoreCase(CharSequence x) {
-        if (null == x) return false;
-        if (x instanceof FastStr) {
-            return equalsIgnoreCase((FastStr) x);
-        }
-        return equalsIgnoreCase(x.toString());
-    }
-
-    public int compareTo(String x) {
+    public int compareTo(CharSequence x) {
         int len1 = size();
         int len2 = x.length();
         int lim = Math.min(len1, len2);
@@ -669,7 +654,7 @@ public class FastStr extends StrBase<FastStr>
         return len1 - len2;
     }
 
-    public int compareToIgnoreCase(String o) {
+    public int compareToIgnoreCase(CharSequence o) {
         int len1 = size();
         int len2 = o.length();
         int lim = Math.min(len1, len2);
@@ -723,12 +708,12 @@ public class FastStr extends StrBase<FastStr>
 
     private boolean regionMatches(boolean ignoreCase, int toffset, char[] other, int ooffset, int len) {
         char ta[] = buf;
-        int to = toffset;
+        int to = toInternalId(toffset);
         char pa[] = other;
         int po = ooffset;
         // Note: toffset, ooffset, or len might be near -1>>>1.
-        if ((ooffset < 0) || (toffset < 0)
-                || (toffset > (long) ta.length - len)
+        if ((ooffset < 0) || (to < 0)
+                || (toffset > (long) length() - len)
                 || (ooffset > (long) other.length - len)) {
             return false;
         }
@@ -762,7 +747,7 @@ public class FastStr extends StrBase<FastStr>
     }
 
     public boolean regionMatches(boolean ignoreCase, int toffset,
-                                 String other, int ooffset, int len
+                                 CharSequence other, int ooffset, int len
     ) {
         char[] otherBuf = bufOf(other);
         return regionMatches(ignoreCase, toffset, otherBuf, ooffset, len);
@@ -848,21 +833,14 @@ public class FastStr extends StrBase<FastStr>
         }
     }
 
-    /**
-     * Wrapper of {@link String#lastIndexOf(int, int)}
-     *
-     * @param ch
-     * @param fromIndex
-     * @return
-     */
     public int lastIndexOf(int ch, int fromIndex) {
         fromIndex = toInternalId(fromIndex);
         if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
             // handle most cases here (ch is a BMP code point or a
             // negative value (invalid code point))
             final char[] value = this.buf;
-            int i = Math.min(fromIndex, value.length - 1);
-            for (; i >= 0; i--) {
+            int i = Math.min(fromIndex, length() - 1 + begin);
+            for (; i >= begin; i--) {
                 if (value[i] == ch) {
                     return toExternalId(i);
                 }
@@ -874,7 +852,7 @@ public class FastStr extends StrBase<FastStr>
     }
 
     @Override
-    public int indexOf(String str, int fromIndex) {
+    public int indexOf(CharSequence str, int fromIndex) {
         char[] strBuf = bufOf(str);
         return toExternalId(S.indexOf(buf, begin, size(), strBuf, 0, strBuf.length, fromIndex));
     }
@@ -885,12 +863,14 @@ public class FastStr extends StrBase<FastStr>
         return S.indexOf(this.buf, this.begin, this.size(), buf, str.begin, str.size(), fromIndex);
     }
 
-    public int lastIndexOf(String str, int fromIndex) {
+    @Override
+    public int lastIndexOf(CharSequence str, int fromIndex) {
         char[] strBuf = bufOf(str);
         int sz = size();
         return lastIndexOf(buf, begin, sz, strBuf, 0, strBuf.length, fromIndex);
     }
 
+    @Override
     public int lastIndexOf(FastStr str, int fromIndex) {
         int sz = size();
         return lastIndexOf(buf, begin, sz, str.buf, str.begin, str.size(), fromIndex);
@@ -899,8 +879,8 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#substring(int)}
      *
-     * @param beginIndex
-     * @return
+     * @param beginIndex the begin index
+     * @return a String instance that is equivalent to a sub part of this FastStr
      */
     public String substring(int beginIndex) {
         if (beginIndex < 0) {
@@ -914,11 +894,11 @@ public class FastStr extends StrBase<FastStr>
     }
 
     /**
-     * Wrapper of {@link #substring(int, int)}
+     * Wrapper of {@link String#substring(int, int)}
      *
-     * @param beginIndex
-     * @param endIndex
-     * @return
+     * @param beginIndex begin index
+     * @param endIndex end index
+     * @return a String instance that is equivalent to sub part of this FastStr
      */
     @Override
     public String substring(int beginIndex, int endIndex) {
@@ -941,9 +921,9 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#replace(char, char)} but return FastStr instance
      *
-     * @param oldChar
-     * @param newChar
-     * @return
+     * @param oldChar char to be replaced
+     * @param newChar char used to replace {@code oldChar}
+     * @return a FastStr instance with all {@code oldChar} been replaced with {@code newChar}
      */
     @Override
     public FastStr replace(char oldChar, char newChar) {
@@ -976,8 +956,8 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#matches(String)}
      *
-     * @param regex
-     * @return
+     * @param regex the regular expression to checked against this FastStr
+     * @return {@code true} if this FastStr matches {@code regex}
      */
     @Override
     public boolean matches(String regex) {
@@ -987,8 +967,8 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#contains(CharSequence)}
      *
-     * @param s
-     * @return
+     * @param s the char sequence to be found
+     * @return {@code true} if {@code s} has been found
      */
     @Override
     public boolean contains(CharSequence s) {
@@ -1001,9 +981,9 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#replaceFirst(String, String)} but return FastStr inance
      *
-     * @param regex
-     * @param replacement
-     * @return
+     * @param regex the regular expression specifies the place to be replaced
+     * @param replacement the string to replace the found part
+     * @return a FastStr that has the first found part replaced
      */
     @Override
     public FastStr replaceFirst(String regex, String replacement) {
@@ -1013,9 +993,9 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#replaceAll(String, String)} but return FastStr type instance
      *
-     * @param regex
-     * @param replacement
-     * @return
+     * @param regex the regular expression specifies the pattern to be replaced
+     * @param replacement the replacement string
+     * @return a FastStr instance with all found part replaced
      */
     @Override
     public FastStr replaceAll(String regex, String replacement) {
@@ -1025,9 +1005,10 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#replace(CharSequence, CharSequence)} but return FastStr type instance
      *
-     * @param target
-     * @param replacement
-     * @return
+     * @param target the char sequence to be replaced
+     * @param replacement the char sequence used to replace {@code target}
+     * @return a FastStr instance with all {@code target} being replaced with
+     *         {@code replacement}
      */
     @Override
     public FastStr replace(CharSequence target, CharSequence replacement) {
@@ -1038,9 +1019,9 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#split(String, int)} but return an immutable List of FastStr instances
      *
-     * @param regex
-     * @param limit
-     * @return
+     * @param regex the regular expression matches the seperator
+     * @param limit the result threshold
+     * @return a {@link org.osgl.util.C.List} of FastStr instances split from this FastStr
      */
     @Override
     public C.List<FastStr> split(String regex, int limit) {
@@ -1058,8 +1039,9 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#toLowerCase(java.util.Locale)} but return FastStr type instance
      *
-     * @param locale
-     * @return
+     * @param locale the locale
+     * @return a FastStr instance with all characters from this FastStr
+     *         be converted into lowercase based on the locale specified
      */
     public FastStr toLowerCase(Locale locale) {
         String s = toString();
@@ -1069,8 +1051,9 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#toUpperCase(java.util.Locale)} but return FastStr type instance
      *
-     * @param locale
-     * @return
+     * @param locale the locale
+     * @return a FastStr instance with all characters from this FastStr
+     *         be converted into uppercase based on the locale specified
      */
     @Override
     public FastStr toUpperCase(Locale locale) {
@@ -1081,7 +1064,8 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#trim()} and return FastStr type instance
      *
-     * @return
+     * @return a FastStr instance without leading and tail space characters
+     *         from this FastStr instance
      */
     @Override
     public FastStr trim() {
@@ -1102,7 +1086,7 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Alias of {@link #toCharArray()}
      *
-     * @return
+     * @return char array buf copy of this FastStr
      */
     public char[] charArray() {
         char[] newBuf = new char[size()];
@@ -1110,6 +1094,12 @@ public class FastStr extends StrBase<FastStr>
         return newBuf;
     }
 
+    /**
+     * Return char array buf of this FastStr instance.
+     * Note this method might return the char array buf directly
+     * without copy operation
+     * @return the char array buf of this FastStr
+     */
     public char[] unsafeChars() {
         if (begin == 0) return buf;
         char[] newBuf = new char[size()];
@@ -1382,6 +1372,24 @@ public class FastStr extends StrBase<FastStr>
     }
 
     // ---- factory methods
+
+    /**
+     * Construct a FastStr from a char array
+     * @param ca the char array
+     * @return a FastStr
+     */
+    public static FastStr of(char[] ca) {
+        if (ca.length == 0) return EMPTY_STR;
+        char[] newArray = new char[ca.length];
+        System.arraycopy(ca, 0, newArray, 0, ca.length);
+        return new FastStr(ca);
+    }
+
+    /**
+     * Construct a FastStr from a CharSequence
+     * @param cs the CharSequence instance
+     * @return a FastStr
+     */
     public static FastStr of(CharSequence cs) {
         if (cs instanceof FastStr) {
             return (FastStr)cs;
@@ -1389,6 +1397,11 @@ public class FastStr extends StrBase<FastStr>
         return of(cs.toString());
     }
 
+    /**
+     * Construct a FastStr from a String
+     * @param s the String
+     * @return a FastStr
+     */
     public static FastStr of(String s) {
         int sz = s.length();
         if (sz == 0) return EMPTY_STR;
@@ -1396,6 +1409,11 @@ public class FastStr extends StrBase<FastStr>
         return new FastStr(buf, 0, sz);
     }
 
+    /**
+     * Construct a FastStr from a StringBuilder
+     * @param sb the string builder
+     * @return a FastStr
+     */
     public static FastStr of(StringBuilder sb) {
         int sz = sb.length();
         if (0 == sz) return EMPTY_STR;
@@ -1406,6 +1424,11 @@ public class FastStr extends StrBase<FastStr>
         return new FastStr(buf, 0, sz);
     }
 
+    /**
+     * Construct a FastStr from a StringBuffer
+     * @param sb the string buffer
+     * @return the FastStr
+     */
     public static FastStr of(StringBuffer sb) {
         int sz = sb.length();
         if (0 == sz) return EMPTY_STR;
@@ -1416,6 +1439,11 @@ public class FastStr extends StrBase<FastStr>
         return new FastStr(buf, 0, sz);
     }
 
+    /**
+     * Construct a FastStr instance from an iterable of characters
+     * @param itr the character iterable
+     * @return the FastStr
+     */
     public static FastStr of(Iterable<Character> itr) {
         StringBuilder sb = new StringBuilder();
         for (Character c : itr) {
@@ -1424,6 +1452,11 @@ public class FastStr extends StrBase<FastStr>
         return of(sb);
     }
 
+    /**
+     * Construct a FastStr instance from a collection of characters
+     * @param col the character collection
+     * @return a FastStr instance
+     */
     public static FastStr of(Collection<Character> col) {
         int sz = col.size();
         if (0 == sz) return EMPTY_STR;
@@ -1436,6 +1469,11 @@ public class FastStr extends StrBase<FastStr>
         return new FastStr(buf, 0, sz);
     }
 
+    /**
+     * Construct a FastStr instance from an iterator of characters
+     * @param itr the character iterator
+     * @return a FastStr instance consists of all chars in the iterator
+     */
     public static FastStr of(Iterator<Character> itr) {
         StringBuilder sb = new StringBuilder();
         while (itr.hasNext()) {
@@ -1444,6 +1482,13 @@ public class FastStr extends StrBase<FastStr>
         return of(sb);
     }
 
+    /**
+     * Construct a FastStr instance from a String instance.
+     * The FastStr instance will share the char array buf with
+     * the String instance
+     * @param s the string instance
+     * @return A FastStr instance
+     */
     public static FastStr unsafeOf(String s) {
         int sz = s.length();
         if (sz == 0) return EMPTY_STR;
@@ -1451,11 +1496,27 @@ public class FastStr extends StrBase<FastStr>
         return new FastStr(buf, 0, sz);
     }
 
+    /**
+     * Construct a FastStr instance from char array without array copying
+     * @param buf the char array
+     * @return a FastStr instance from the char array
+     */
+    @SuppressWarnings("unused")
     public static FastStr unsafeOf(char[] buf) {
         E.NPE(buf);
         return new FastStr(buf, 0, buf.length);
     }
 
+    /**
+     * Construct a FastStr instance from char array, from the start position, finished at end position
+     * without copying the array. This method might use the array directly instead of copying elements
+     * from the array. Thus it is extremely important that the array buf passed in will NOT be updated
+     * outside the FastStr instance.
+     * @param buf the char array
+     * @param start the start position (inclusive)
+     * @param end the end position (exclusive)
+     * @return a FastStr instance that consist of chars specified
+     */
     public static FastStr unsafeOf(char[] buf, int start, int end) {
         E.NPE(buf);
         E.illegalArgumentIf(start < 0 || end > buf.length);
@@ -1463,6 +1524,12 @@ public class FastStr extends StrBase<FastStr>
         return new FastStr(buf, start, end);
     }
 
+    /**
+     * Return the char array that backed the char sequence specified
+     * @param chars the char sequence
+     * @return an array of chars of the char sequence
+     */
+    @SuppressWarnings("unused")
     public static char[] bufOf(CharSequence chars) {
         return FastStr.of(chars).charArray();
     }

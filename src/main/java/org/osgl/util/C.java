@@ -38,7 +38,7 @@ public enum C {
     /**
      * The character enum for a data structure
      */
-    public static enum Feature {
+    public enum Feature {
         /**
          * Indicate whether a structure is immutable
          */
@@ -107,8 +107,9 @@ public enum C {
          */
         boolean is(Feature c);
 
-        public static class Factory {
-            public static final Featured identity(final EnumSet<Feature> predefined) {
+        @SuppressWarnings("unused")
+        class Factory {
+            public static Featured identity(final EnumSet<Feature> predefined) {
                 return new Featured() {
                     @Override
                     public EnumSet<Feature> features() {
@@ -130,7 +131,7 @@ public enum C {
      *
      * @param <T> The element type
      */
-    public static interface Traversable<T> extends Iterable<T>, Featured {
+    public interface Traversable<T> extends Iterable<T>, Featured {
 
         /**
          * Returns this traversable and try to turn on
@@ -358,7 +359,7 @@ public enum C {
         Traversable<T> forEach($.Function<? super T, ?> visitor);
     }
 
-    public static interface Sequence<T>
+    public interface Sequence<T>
             extends Traversable<T> {
 
         /**
@@ -392,6 +393,7 @@ public enum C {
         /**
          * Alias of {@link #head()}
          *
+         * @return the first element in the sequence
          * @since 0.2
          */
         T first() throws NoSuchElementException;
@@ -411,6 +413,7 @@ public enum C {
         /**
          * Alias of {@link #take(int)}
          *
+         * @return the first {@code n} element in the sequence
          * @since 0.2
          */
         Sequence<T> head(int n);
@@ -506,8 +509,8 @@ public enum C {
          * <p>Note this method does NOT modify the current sequence, instead it returns an new sequence structure
          * containing the elements as required</p>
          *
-         * @param predicate
-         * @return
+         * @param predicate the function that check if drop operation should stop
+         * @return the sequence after applying the drop operations
          * @since 0.2
          */
         Sequence<T> dropWhile($.Function<? super T, Boolean> predicate);
@@ -520,8 +523,8 @@ public enum C {
          * might append specified seq to {@code this} sequence instance
          * directly</p>
          *
-         * @param iterable
-         * @return
+         * @param iterable the iterable in which elements will be append to this sequence
+         * @return the sequence after append the iterable
          */
         Sequence<T> append(Iterable<? extends T> iterable);
 
@@ -692,7 +695,7 @@ public enum C {
          *      return _.some(result);
          * </pre>
          *
-         * @param accumulator
+         * @param accumulator the function accumulate each element to the final result
          * @return an {@link $.Option} describing the accumulating result
          * @since 0.2
          */
@@ -772,6 +775,7 @@ public enum C {
          * elements of this list paired with their index.
          * Indices start at 0.
          */
+        @SuppressWarnings("unused")
         Sequence<$.T2<T, Integer>> zipWithIndex();
     }
 
@@ -780,7 +784,7 @@ public enum C {
      *
      * @param <T> the element type
      */
-    public static interface ReversibleSequence<T>
+    public interface ReversibleSequence<T>
             extends Sequence<T> {
 
         /**
@@ -980,7 +984,10 @@ public enum C {
          *      return result;
          * </pre>
          *
-         * @see #reduce(Object, $.Func2)
+         * @param identity the initial value
+         * @param accumulator the function performs accumulation from {@code T} an {@code R} to anthoer {@code R}
+         * @param <R> the accumulation result
+         * @see #reduce(Object, Osgl.Func2)
          * @since 0.2
          */
         <R> R reduceRight(R identity, $.Func2<R, T, R> accumulator);
@@ -998,7 +1005,7 @@ public enum C {
          *      return _.some(result);
          * </pre>
          *
-         * @param accumulator
+         * @param accumulator the function accumulate each element to the final result
          * @return an {@link $.Option} describing the accumulating result
          * @since 0.2
          */
@@ -1048,14 +1055,15 @@ public enum C {
          *
          * @param visitor the function to visit elements in this sequence
          * @return this sequence
-         * @see Traversable#accept($.Function)
-         * @see Sequence#acceptLeft($.Function)
+         * @see Traversable#accept(Osgl.Function)
+         * @see Sequence#acceptLeft(Osgl.Function)
          * @since 0.2
          */
         ReversibleSequence<T> acceptRight($.Function<? super T, ?> visitor);
 
         <T2> C.ReversibleSequence<$.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq);
 
+        @SuppressWarnings("unused")
         <T2> C.ReversibleSequence<$.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2);
 
     }
@@ -1140,6 +1148,7 @@ public enum C {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public ReversibleSequence<T> reverse() throws UnsupportedOperationException {
             if (isLazy()) {
                 return ReversedRSeq.of(this);
@@ -1172,7 +1181,7 @@ public enum C {
      *
      * @param <ELEMENT> the element type
      */
-    public static interface Range<ELEMENT> extends Sequence<ELEMENT> {
+    public interface Range<ELEMENT> extends Sequence<ELEMENT> {
         /**
          * Returns the {@code from} value (inclusive) in the range
          *
@@ -1264,10 +1273,13 @@ public enum C {
 
         Iterator<ELEMENT> reverseIterator();
 
+        @SuppressWarnings("unused")
         <R> R reduceRight(R identity, $.Func2<R, ELEMENT, R> accumulator);
 
+        @SuppressWarnings("unused")
         $.Option<ELEMENT> reduceRight($.Func2<ELEMENT, ELEMENT, ELEMENT> accumulator);
 
+        @SuppressWarnings("unused")
         $.Option<ELEMENT> findLast($.Function<? super ELEMENT, Boolean> predicate);
 
         /**
@@ -1303,6 +1315,7 @@ public enum C {
          * @return this Range instance
          * @since 0.2
          */
+        @SuppressWarnings("unused")
         Range<ELEMENT> acceptRight($.Function<? super ELEMENT, ?> visitor);
     }
 
@@ -1312,7 +1325,7 @@ public enum C {
      * @param <T> the element type of the {@code List}
      * @since 0.2
      */
-    public static interface List<T> extends java.util.List<T>, ReversibleSequence<T> {
+    public interface List<T> extends java.util.List<T>, ReversibleSequence<T> {
 
         /**
          * A cursor points to an element of a {@link List}. It performs like
@@ -1327,7 +1340,7 @@ public enum C {
          *
          * @param <T>
          */
-        public interface Cursor<T> {
+        interface Cursor<T> {
 
             /**
              * Returns true if the cursor is not obsolete and points to an element
@@ -1504,6 +1517,7 @@ public enum C {
          *
          * @return a readonly view of this list
          */
+        @SuppressWarnings("unused")
         List<T> readOnly();
 
         /**
@@ -1528,6 +1542,7 @@ public enum C {
          * this list doesn't have duplicated items, it could return this list directly
          * or choose to return an new copy of this list depends on the sub class
          * implementation
+         * @return a list contains only unique elements in this list
          */
         List<T> unique();
 
@@ -1536,6 +1551,8 @@ public enum C {
          * this list and keep the orders. If this list doesn't have duplicated items,
          * it could return this list directly or choose to return an new copy of this list
          * depends on the sub class implementation
+         * @param comp the comparator check the duplicate elements
+         * @return a list contains unique element as per the comparator
          */
         List<T> unique(Comparator<T> comp);
 
@@ -1551,12 +1568,22 @@ public enum C {
         @Override
         List<T> subList(int fromIndex, int toIndex);
 
+        /**
+         * Add all elements from an {@link Iterable} into this list.
+         * Return {@code true} if the list has changed as a result of
+         * call.
+         * <p><b>Note</b> if this list is immutable or readonly, {@code UnsupportedOperationException}
+         * will be thrown out with this call</p>
+         * @param iterable the iterable provides the elements to be
+         *                 added into the list
+         * @return {@code true} if this list changed as result of addd
+         */
         boolean addAll(Iterable<? extends T> iterable);
 
         /**
          * {@inheritDoc}
          *
-         * @param n {@inheritDoc}
+         * @param n specify the number of elements to be included in the return list
          * @return A List contains first {@code n} items in this List
          */
         @Override
@@ -1605,7 +1632,7 @@ public enum C {
          * {@inheritDoc}
          * <p>This method does not alter the underline list</p>
          *
-         * @param predicate
+         * @param predicate the predicate function
          * @return {@inheritDoc}
          */
         @Override
@@ -1671,7 +1698,8 @@ public enum C {
          * a parallel locating the element been found might not be the
          * first element matches the predicate
          *
-         * @param predicate
+         * @param predicate the function that used to check the element
+         *                  at the cursor
          * @return the reference to the list itself or an new List without
          * and element matches the predicate if this is a readonly
          * list
@@ -1720,7 +1748,7 @@ public enum C {
         /**
          * {@inheritDoc}
          *
-         * @param iterable
+         * @param iterable the iterable from which elements will be appended to this list
          * @return a List contains all elements of this list followed
          * by all elements in the iterable
          */
@@ -1823,6 +1851,7 @@ public enum C {
          * @param indexedVisitor the function to be called on each element along with the index
          * @return this list
          */
+        @SuppressWarnings("unused")
         List<T> acceptLeft($.Func2<Integer, ? super T, ?> indexedVisitor);
 
         /**
@@ -1831,6 +1860,7 @@ public enum C {
          * @param indexedVisitor the function to be called on each element along with the index
          * @return this list
          */
+        @SuppressWarnings("unused")
         List<T> acceptRight($.Func2<Integer, ? super T, ?> indexedVisitor);
 
         /**
@@ -1927,6 +1957,7 @@ public enum C {
 
         private boolean ro;
 
+        @SuppressWarnings("unchecked")
         protected Map(boolean readOnly, Object... args) {
             HashMap<K, V> map = new HashMap<K, V>();
             int len = args.length;
@@ -2059,10 +2090,12 @@ public enum C {
         }
 
         // --- extensions
+        @SuppressWarnings("unused")
         public boolean readOnly() {
             return ro;
         }
 
+        @SuppressWarnings("unused")
         public Map<K, V> readOnly(boolean readOnly) {
             if (ro ^ readOnly) {
                 return new Map<K, V>(readOnly, _m);
@@ -2115,6 +2148,7 @@ public enum C {
 
         private static final long serialVersionUID = 262498820763181265L;
 
+        @SuppressWarnings("unchecked")
         private void readObject(java.io.ObjectInputStream s)
         throws IOException, ClassNotFoundException {
             s.defaultReadObject();
@@ -2124,7 +2158,7 @@ public enum C {
         }
     }
 
-    public static interface Set<T> extends java.util.Set<T>, Traversable<T> {
+    public interface Set<T> extends java.util.Set<T>, Traversable<T> {
         @Override
         Set<T> parallel();
 
@@ -2157,6 +2191,7 @@ public enum C {
          *            be included from the result set
          * @return a set contains elements only in the col
          */
+        @SuppressWarnings("unused")
         Set<T> onlyIn(Collection<? extends T> col);
 
         /**
@@ -2201,7 +2236,7 @@ public enum C {
 
     }
 
-    public static interface ListOrSet<T> extends List<T>, Set<T> {
+    public interface ListOrSet<T> extends List<T>, Set<T> {
         @Override
         ListOrSet<T> parallel();
 
@@ -2246,7 +2281,7 @@ public enum C {
      *
      * @since 0.2
      */
-    public static interface ListFactory {
+    public interface ListFactory {
         /**
          * Create an empty <code>java.util.List</code> contains the generic type E
          *
@@ -2275,7 +2310,7 @@ public enum C {
          */
         <ET> java.util.List<ET> create(int initialCapacity);
 
-        static enum Predefined {
+        enum Predefined {
             ;
             static final ListFactory JDK_ARRAYLIST_FACT = new ListFactory() {
                 @Override
@@ -2377,6 +2412,7 @@ public enum C {
         return null == col || col.isEmpty();
     }
 
+    @SuppressWarnings("unused")
     public static boolean notEmpty(Collection<?> col) {
         return !empty(col);
     }
@@ -2384,6 +2420,15 @@ public enum C {
     public static boolean isEmpty(Collection<?> col) {
         return empty(col);
     }
+
+    // --- conversion methods ---
+    public static <T> Collection<T> asCollection(Iterable<T> iterable) {
+        if (iterable instanceof Collection) {
+            return $.cast(iterable);
+        }
+        return C.list(iterable);
+    }
+    // --- eof conversion methods ---
 
     // --- factory methods ---
 
@@ -2441,6 +2486,7 @@ public enum C {
      *
      * @return a range of non negative integers
      */
+    @SuppressWarnings("unused")
     public static Range<Integer> naturalNumbers() {
         return new LazyRange<Integer>(1, Integer.MAX_VALUE, N.F.INT_RANGE_STEP);
     }
@@ -2451,6 +2497,7 @@ public enum C {
      *
      * @return a range of non-negative even numbers
      */
+    @SuppressWarnings("unused")
     public static Range<Integer> evenNumbers() {
         return new LazyRange<Integer>(0, Integer.MAX_VALUE, N.F.intRangeStep(2));
     }
@@ -2461,15 +2508,20 @@ public enum C {
      *
      * @return a range of positive odd numbers
      */
+    @SuppressWarnings("unused")
     public static Range<Integer> oddNumbers() {
         return new LazyRange<Integer>(1, Integer.MAX_VALUE, N.F.intRangeStep(2));
     }
 
+    @SuppressWarnings("unused")
     public static final List EMPTY_LIST = Nil.list();
+    @SuppressWarnings("unused")
     public static final Set EMPTY_SET = Nil.set();
+    @SuppressWarnings("unused")
     public static final java.util.Map EMPTY_MAP = Collections.EMPTY_MAP;
     public static final ListOrSet EMPTY = Nil.EMPTY;
 
+    @SuppressWarnings("unchecked")
     public static <T> ListOrSet<T> empty() {
         return EMPTY;
     }
@@ -2484,6 +2536,7 @@ public enum C {
         return Nil.list();
     }
 
+    @SuppressWarnings("unused")
     public static <T> List<T> emptyListOf(Class<T> c) {
         return Nil.list();
     }
@@ -2496,8 +2549,8 @@ public enum C {
      * Creates an immutable list of an array of elements.
      * <p>Note the array will not be copied, instead it will
      * be used directly as the backing data for the list.
-     * To create an immutable list with a copy of the array
-     * specified. Use the {@link #listOf(Object[])} method</p>
+     * To create an list with a copy of the array specified.
+     * Use the {@link #newListOf(Object[])} method</p>
      *
      * @param ta  an array of elements
      * @param <T> the element type
@@ -2508,12 +2561,12 @@ public enum C {
     }
 
     /**
-     * Creates an immutable list from an array. The element of the array is copied
-     * to the list been returned.
+     * Creates an immutable list from an element plus an array of elements
      *
+     * @param t   the first element
      * @param ta  the array
-     * @param <T>
-     * @return
+     * @param <T> the element type
+     * @return an immutable list contains the first element and followed by all element in the array
      */
     public static <T> List<T> list(T t, T... ta) {
         int len = ta.length;
@@ -2765,6 +2818,14 @@ public enum C {
         return new DelegatingList<T>(C.listOf(ts));
     }
 
+    /**
+     * Return a {@link Sequence} consists of all elements in the
+     * iterable specified
+     * @param iterable the iterable in which elements will be used to fill into the sequence
+     * @param <T> the element type
+     * @return the sequence
+     */
+    @SuppressWarnings("unchecked")
     public static <T> Sequence<T> seq(Iterable<? extends T> iterable) {
         if (iterable instanceof Sequence) {
             return ((Sequence<T>) iterable);
@@ -2797,45 +2858,102 @@ public enum C {
         }
     }
 
+    /**
+     * Concatenate two {@link Sequence} into one
+     * @param s1 the first sequence
+     * @param s2 the second sequence
+     * @param <T> the element type
+     * @return the concatenated sequence
+     */
     public static <T> Sequence<T> concat(Sequence<T> s1, Sequence<T> s2) {
         return s1.append(s2);
     }
 
+    /**
+     * Concatenate two {@link ReversibleSequence} into one
+     * @param s1 the first reversible sequence
+     * @param s2 the second reversible sequence
+     * @param <T> the element type
+     * @return the concatenated reversible sequence
+     */
+    @SuppressWarnings("unused")
     public static <T> ReversibleSequence<T> concat(ReversibleSequence<T> s1, ReversibleSequence<T> s2) {
         return s1.append(s2);
     }
 
+    /**
+     * Concatenate two {@link List} into one.
+     * <p><b>Note</b> if the first list is readonly or immutable an new list instance
+     * will be created with elements in both list 1 and list 2 filled in. Otherwise
+     * all elemnets from list 2 will be appended to list 1 and return list 1 instance</p>
+     * @param l1 list 1
+     * @param l2 list 2
+     * @param <T> the element type
+     * @return a list with elements of both list 1 and list 2
+     */
+    @SuppressWarnings("unused")
     public static <T> List<T> concat(List<T> l1, List<T> l2) {
         return l1.append(l2);
     }
 
-    public static <T> Set<T> set(T t) {
+    /**
+     * Create an immutable set of a single element
+     * @param element the single element
+     * @param <T> the element type
+     * @return the set that contains only specified element
+     */
+    public static <T> Set<T> set(T element) {
         java.util.Set<T> set = new HashSet<T>();
-        set.add(t);
+        set.add(element);
         return ImmutableSet.of(set);
     }
 
+    /**
+     * Create an immutable set contains specified elements
+     * @param t1 one element to be added into the result set
+     * @param ta an array from which all elements will be added into the result set
+     * @param <T> the element type
+     * @return a set that contains all elements specified
+     */
     public static <T> Set<T> set(T t1, T... ta) {
         java.util.Set<T> set = new HashSet<T>();
         set.add(t1);
-        for (T t : ta) {
-            set.add(t);
-        }
+        Collections.addAll(set, ta);
         return ImmutableSet.of(set);
     }
 
+    /**
+     * Create an immutable set of an array of elements
+     * @param ta the array from which all elements will be added into
+     *           the result set
+     * @param <T> the element type
+     * @return the set contains all elements in the array
+     */
     public static <T> Set<T> setOf(T... ta) {
         java.util.Set<T> set = new HashSet<T>();
-        for (T t : ta) {
-            set.add(t);
-        }
+        Collections.addAll(set, ta);
         return ImmutableSet.of(set);
     }
 
+    /**
+     * Create an immutable set of all elements contained in the collection specified
+     * @param col the collection from which elements will be added into the
+     *            result set
+     * @param <T> the element type
+     * @return the set contains all elements in the collection
+     * @see #newSet(Collection)
+     */
     public static <T> Set<T> set(Collection<? extends T> col) {
         return ImmutableSet.of(col);
     }
 
+    /**
+     * Create an immutable set of all elements supplied by the iterable specified
+     * @param itr the iterable from where elements will be added into the result set
+     * @param <T> the element type
+     * @return the set contains all elements supplied by the iterable
+     */
+    @SuppressWarnings("unchecked")
     public static <T> Set<T> set(Iterable<? extends T> itr) {
         if (itr instanceof Collection) {
             return set((Collection<T>) itr);
@@ -2845,14 +2963,49 @@ public enum C {
         return ImmutableSet.of(set);
     }
 
+    /**
+     * Create an new empty set
+     * @param <T> the element type
+     * @return an empty set
+     */
     public static <T> Set<T> newSet() {
         return new DelegatingSet<T>();
     }
 
+    /**
+     * Create an new set with all elements contained in the collection
+     * specified
+     * @param col the collection from which all elements will be added into
+     *            the result set
+     * @param <T> the element type
+     * @return the set contains all elements in the collection
+     * @see #set(Collection)
+     */
     public static <T> Set<T> newSet(Collection<? extends T> col) {
         return new DelegatingSet<T>(col);
     }
 
+    /**
+     * Create a immutable {@link java.util.Map} from elements specified in an array.
+     * <p>Example</p>
+     * <pre>
+     *     Map&lt;String, Integer&gt; scores = C.map("Tom", 80, "Peter", 93, ...);
+     * </pre>
+     * <p>The above code will create an immutable Map with the following entries</p>
+     * <ul>
+     *     <li>(Tom, 80)</li>
+     *     <li>(Peter, 93)</li>
+     *     <li>...</li>
+     * </ul>
+     * <p><b>Note</b> the array size must be an even number, otherwise {@link IndexOutOfBoundsException}
+     * will be thrown out</p>
+     * @param args the argument array specifies the entries
+     * @param <K> the key type
+     * @param <V> the value type
+     * @return an immutable map contains of specified entries
+     * @see #newMap(Object...)
+     */
+    @SuppressWarnings("unchecked")
     public static <K, V> java.util.Map<K, V> map(Object... args) {
         if (null == args || args.length == 0) {
             return Collections.EMPTY_MAP;
@@ -2860,25 +3013,77 @@ public enum C {
         return new Map(true, args);
     }
 
+    /**
+     * Create an immutable {@link java.util.Map} from existing {@link java.util.Map}
+     * @param map the map from which entries will be put into the new immutable map
+     * @param <K> the key type
+     * @param <V> the value type
+     * @return an immutable map of the existing map
+     */
     public static <K, V> java.util.Map<K, V> map(java.util.Map<? extends K, ? extends V> map) {
         if (null == map) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         return Collections.unmodifiableMap(map);
     }
 
+    /**
+     * Create an immutable {@link java.util.Map} from existing {@link Map}
+     * @param map the map from which entries will be put into the new immutable map
+     * @param <K> the key type
+     * @param <V> the value type
+     * @return an immutable map of the existing map
+     */
     public static <K, V> java.util.Map<K, V> map(Map<? extends K, ? extends V> map) {
+        if (null == map) {
+            return Collections.emptyMap();
+        }
         return Collections.unmodifiableMap(map);
     }
 
+    /**
+     * Create an new {@link Map} from an array of elements.
+     * <p>Example</p>
+     * <pre>
+     *     Map&lt;String, Integer&gt; scores = C.newMap("Tom", 80, "Peter", 93, ...);
+     * </pre>
+     * <p>The above code will create a Map with the following entries</p>
+     * <ul>
+     *     <li>(Tom, 80)</li>
+     *     <li>(Peter, 93)</li>
+     *     <li>...</li>
+     * </ul>
+     * <p><b>Note</b> the array size must be an even number, otherwise {@link IndexOutOfBoundsException}
+     * will be thrown out</p>
+     * @param args the argument array specifies the entries
+     * @param <K> the key type
+     * @param <V> the value type
+     * @return a map contains of specified entries
+     * @see #map(Object...)
+     */
+    @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> newMap(Object... args) {
         return new Map(false, args);
     }
 
+    /**
+     * Create an new {@link Map} from existing {@link java.util.Map}
+     * @param map the map that contains elements to be put into the new map
+     * @param <K> the key type
+     * @param <V> the value type
+     * @return a map that contains all entries in the existing map
+     */
+    @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> newMap(java.util.Map<? extends K, ? extends V> map) {
         return new Map(false, map);
     }
 
+    /**
+     * Convert a {@link Enumeration} to an {@link Iterable}
+     * @param e the enumeration
+     * @param <T> the element type
+     * @return an iterable corresponding to the enumeration
+     */
     public static <T> Iterable<T> enumerable(final Enumeration<T> e) {
         return new Iterable<T>() {
             @Override
@@ -2916,6 +3121,7 @@ public enum C {
      * @return {@code true} if the structure is read only
      * or immutable
      */
+    @SuppressWarnings("unused")
     public static boolean isReadOnly(Traversable<?> t) {
         return t.is(Feature.READONLY) || t.is(Feature.IMMUTABLE);
     }
@@ -2926,6 +3132,7 @@ public enum C {
      * @param t the traversable strucure to be checked
      * @return {@code true} if the traversable is immutable
      */
+    @SuppressWarnings("unused")
     public static boolean isImmutable(Traversable<?> t) {
         return t.is(Feature.IMMUTABLE);
     }
@@ -2999,6 +3206,15 @@ public enum C {
     public enum F {
         ;
 
+        public static <T> $.Transformer<Iterable<T>, Collection<T>> asCollection() {
+            return new Osgl.Transformer<Iterable<T>, Collection<T>>() {
+                @Override
+                public Collection<T> transform(Iterable<T> iterable) {
+                    return C.asCollection(iterable);
+                }
+            };
+        }
+
         /**
          * Returns a predicate function that check if the argument is contained in
          * the collection specified
@@ -3006,7 +3222,8 @@ public enum C {
          * @param collection the collection to be checked on against the argument when applying the prediate
          * @param <T> the generic type of the element of the collection
          * @return a predicate function
-         * @see {@link Collection#contains(Object)}
+         * @see Collection#contains(Object)
+         * @see #contains(Object)
          */
         public static <T> $.Predicate<T> containsIn(final Collection<? super T> collection) {
             return new $.Predicate<T>() {
@@ -3018,18 +3235,96 @@ public enum C {
         }
 
         /**
+         * Returns a predicate function that check if the argument (collection) contains the
+         * element specified
+         *
+         * @param element the element to be checked
+         * @param <T> the type of the element
+         * @return the function that do the check
+         * @see Collection#contains(Object)
+         * @see #containsIn(Collection)
+         */
+        public static <T> $.Predicate<Collection<? super T>> contains(final T element) {
+            return new $.Predicate<Collection<? super T>>() {
+                @Override
+                public boolean test(Collection<? super T> collection) {
+                    return collection.contains(element);
+                }
+            };
+        }
+
+        /**
+         * Returns a predicate function that check if all element in the argument (a collection) contained
+         * in the collection specified
+         * @param collection the collection to be checked on against all elements in the argument when
+         *                   applying the function
+         * @param <T> the generic type of the element of the collection or argument
+         * @return the function that do the check
+         * @see Collection#containsAll(Collection)
+         * @see #containsAll(Collection)
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.Predicate<Collection<? extends T>> allContainsIn(final Collection<? super T> collection) {
+            return new $.Predicate<Collection<? extends T>>() {
+                @Override
+                public boolean test(Collection<? extends T> theCollection) {
+                    return collection.containsAll(theCollection);
+                }
+            };
+        }
+
+        /**
+         * Returns a predicate function that check if all element in the collection specified are contained in
+         * the argument collection
+         * @param collection the collection in which all elements will be checked if contained in the argument
+         *                   collection when applying the function
+         * @param <T> the element type
+         * @return the function that do the check
+         * @see Collection#containsAll(Collection)
+         * @see #allContainsIn(Collection)
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.Predicate<Collection<? super T>> containsAll(final Collection<? extends T> collection) {
+            return new $.Predicate<Collection<? super T>>() {
+                @Override
+                public boolean test(Collection<? super T> theCollection) {
+                    return theCollection.contains(collection);
+                }
+            };
+        }
+
+        /**
          * Returns a function that add the argument to a collection specified and returns
          * {@code true} if added successfully or {@code false} otherwise
-         * @param collection the collection into which the argument to be added
+         * @param destination the collection into which the argument to be added
          * @param <T> the generic type of the collection elements
          * @return a function that do the add operation
-         * @see {@link Collection#add(Object)}
+         * @see Collection#add(Object)
+         * @see #add(Object)
          */
-        public static <T> $.Predicate<T> addTo(final Collection<? super T> collection) {
+        public static <T> $.Predicate<T> addTo(final Collection<? super T> destination) {
             return new $.Predicate<T>() {
                 @Override
                 public boolean test(T t) throws NotAppliedException, $.Break {
-                    return collection.add(t);
+                    return destination.add(t);
+                }
+            };
+        }
+
+        /**
+         * Returns a function that add the specified element into the argument collection and
+         * return {@code true} if add successfully or {@code false} otherwise
+         * @param element the element to be added when applying the function
+         * @param <T> the element type
+         * @return the function
+         * @see Collection#add(Object)
+         * @see #addTo(Collection)
+         */
+        public static <T> $.Predicate<Collection<? super T>> add(final T element) {
+            return new $.Predicate<Collection<? super T>>() {
+                @Override
+                public boolean test(Collection<? super T> collection) {
+                    return collection.add(element);
                 }
             };
         }
@@ -3037,80 +3332,130 @@ public enum C {
         /**
          * Returns a function that add the argument into the specified list at specified position.
          * the function returns {@code true} if added successfully or {@code false} otherwise
-         * @param list a list into which the argument to be added
+         * @param destination a list into which the argument to be added
          * @param index specify the position where the argument can be added
          * @param <L> the generic type of the list
          * @param <T> the generic type of the list element
          * @return the function that do the add operation
-         * @see {@link java.util.List#add(int, Object)}
+         * @see java.util.List#add(int, Object)
+         * @see #add(int, Object)
          */
         @SuppressWarnings("unused")
-        public static <L extends List<? super T>, T> $.F1<T, L> addTo(final L list, final int index) {
+        public static <L extends List<? super T>, T> $.F1<T, L> addTo(final int index, final L destination) {
             return new $.F1<T, L>() {
                 @Override
                 public L apply(T t) throws NotAppliedException, $.Break {
-                    list.add(index, t);
+                    destination.add(index, t);
+                    return destination;
+                }
+            };
+        }
+
+        /**
+         * Returns a function that add specified element into the argument list at specified position. The
+         * function returns the argument list after element added
+         * @param index the location at where the element should be added to
+         * @param element the element the be added to the argument list
+         * @param <L> the list type
+         * @param <T> the element type
+         * @return the function
+         * @see java.util.List#add(int, Object)
+         * @see #addTo(int, List)
+         */
+        public static <L extends List<? super T>, T> $.F1<L, L> add(final int index, final T element) {
+            return new $.F1<L, L>() {
+                @Override
+                public L apply(L list) throws NotAppliedException, Osgl.Break {
+                    list.add(index, element);
                     return list;
                 }
             };
         }
 
         /**
-         * Returns a function that takes argument of type {@link Iterable} and add all elements inside
+         * Returns a function that takes argument of type {@link Collection} and add all elements inside
          * into the specified collection. The function returns {@code true} if the collection specified
          * has been changed as a result of adding elements
-         * @param collection the collection into which all elements in the iterable argument will be added
-         *                   when applying the function
-         * @param <T> the generic type of the collection element and the iterable argument element
+         * @param destination the collection into which all elements in the argument collection will be added
+         *                    when applying the function
+         * @param <T> the generic type of the collection element and the argument collection element
          * @return the function that add all elements from iterable argument into the collection specified
-         * @see {@link Collection#addAll(Collection)}
+         * @see Collection#addAll(Collection)
+         * @see #addAll(Collection)
          */
-        @SuppressWarnings({"unused", "unchecked"})
-        public static <T> $.Predicate<Iterable<? extends T>> addAllTo(final Collection<? super T> collection) {
+        @SuppressWarnings({"unchecked"})
+        public static <T> $.Predicate<Iterable<? extends T>> addAllTo(final Collection<? super T> destination) {
             return new $.Predicate<Iterable<? extends T>>() {
                 @Override
-                public boolean test(Iterable<? extends T> c1) throws NotAppliedException, $.Break {
-                    if (c1 instanceof Collection) {
-                        return collection.addAll((Collection<? extends T>) c1);
+                public boolean test(Iterable<? extends T> source) throws NotAppliedException, $.Break {
+                    if (source instanceof Collection) {
+                        return destination.addAll((Collection)(source));
                     }
-                    boolean modified = false;
-                    for (T t : c1) {
-                        collection.add(t);
-                        modified = true;
-                    }
-                    return modified;
+                    return destination.addAll(C.list(source));
                 }
             };
         }
 
         /**
-         * Returns a function that takes argument of type {@link Iterable} and add all elements inside
-         * into the specified list at specified position. The function returns {@code true} if the
-         * collection specified has been changed as a result of adding elements
-         * @param list the list into which all elements in the iterable argument will be added
-         *             when applying the function
-         * @param <T> the generic type of the list element and the iterable argument element
-         * @return the function that add all elements from iterable argument into the list specified
-         *         at specified position
-         * @see {@link java.util.List#addAll(int, Collection)}
+         * Returns a function that add all elements in the source collection specified into the destination
+         * collection as argument. The function returns {@code true} if the argument collection has been
+         * changes as a result of call.
+         * @param source the collection from which the elements will be added into the argument collection
+         *               when applying the function
+         * @param <T> the element type
+         * @return the function the perform the add operation
+         * @see Collection#addAll(Collection)
+         * @see #addAllTo(Collection)
          */
-        @SuppressWarnings({"unused", "unchecked"})
-        public static <T> $.Predicate<Iterable<? extends T>> addAllTo(final List<? super T> list, final int index) {
-            if (0 > index || list.size() < index) {
+        @SuppressWarnings({"unchecked"})
+        public static <T> $.Predicate<Collection<? super T>> addAll(final Collection<? extends T> source) {
+            return new $.Predicate<Collection<? super T>>() {
+                @Override
+                public boolean test(Collection<? super T> destination) {
+                    return destination.addAll(source);
+                }
+            };
+        }
+
+        /**
+         * Returns a function that add all elements from the argument collection into the destination list specified
+         * at the position specified
+         * @param index the position at where the element shall be inserted into the destination list
+         * @param destination the list into which the elements will be added
+         * @param <T> the element type
+         * @return the function that do the add operation
+         * @see java.util.List#addAll(int, Collection)
+         * @see #addAll(int, Collection)
+         */
+        @SuppressWarnings({"unused"})
+        public static <T> $.Predicate<Collection<? extends T>> addAllTo(final int index, final List<? super T> destination) {
+            if (0 > index || destination.size() < index) {
                 throw new IndexOutOfBoundsException();
             }
-            return new $.Predicate<Iterable<? extends T>>() {
+            return new $.Predicate<Collection<? extends T>>() {
                 @Override
-                public boolean test(Iterable<? extends T> itr) throws NotAppliedException, $.Break {
-                    if (itr instanceof Collection) {
-                        return list.addAll(index, ((Collection<? extends T>) itr));
-                    }
-                    boolean modified = false;
-                    for (T t : itr) {
-                        list.add(index, t);
-                        modified = true;
-                    }
-                    return modified;
+                public boolean test(Collection<? extends T> collection) throws NotAppliedException, $.Break {
+                    return destination.addAll(index, collection);
+                }
+            };
+        }
+
+        /**
+         * Returns a function that add all elements from the source collection specified into the argument list at
+         * the position specified
+         * @param index the position where the element should be insert in the argument list
+         * @param source the collection from which the elements to be get to added into the argument list
+         * @param <T> the element type
+         * @return the function that do the add operation
+         * @see java.util.List#addAll(int, Collection)
+         * @see #addAllTo(int, List)
+         */
+        @SuppressWarnings({"unused"})
+        public static <T> $.Predicate<List<? super T>> addAll(final int index, final Collection<? extends T> source) {
+            return new $.Predicate<List<? super T>>() {
+                @Override
+                public boolean test(List<? super T> destination) {
+                    return destination.addAll(index, source);
                 }
             };
         }
@@ -3124,71 +3469,128 @@ public enum C {
          *                   when applying the function returned
          * @return the function that remove element from the collection
          * @see Collection#remove(Object)
+         * @see #remove(Object)
          */
         @SuppressWarnings("unused")
-        public static $.Predicate<?> removeFrom(final Collection<?> collection) {
-            return new $.Predicate<Object>() {
+        public static <T> $.Predicate<T> removeFrom(final Collection<? super T> collection) {
+            return new $.Predicate<T>() {
                 @Override
-                public boolean test(Object t) throws NotAppliedException, $.Break {
+                public boolean test(T t) throws NotAppliedException, $.Break {
                     return collection.remove(t);
                 }
             };
         }
 
         /**
-         * Returns a function that takes a argument of Iterable, and remove all elements inside
-         * it from the collection specified. The function returns {@code true} if the specified
-         * collection has been changed as a result of the removing operation, or {@code false}
-         * otherwise
-         * @param collection the collection from which the elements will be removed when
-         *                   applying the function
-         * @param <T> the generic type of the collection elements
-         * @return a function that do remove all operation on the collection
-         * @see Collection#removeAll(Collection)
+         * Returns a function that remove the element specified from the argument collection. The
+         * function returns {@code true} if the argument collection changed as a result of the call.
+         * @param toBeRemoved the element to be removed from the argument when applying the function
+         * @param <T> the element type
+         * @return the function that do removing
+         * @see Collection#remove(Object)
+         * @see #removeFrom(Collection)
          */
-        @SuppressWarnings({"unused", "unchecked"})
-        public static <T> $.Predicate<Iterable<T>> removeAllFrom(final Collection<? super T> collection) {
-            return new $.Predicate<Iterable<T>>() {
+        @SuppressWarnings("unused")
+        public static <T> $.Predicate<Collection<? super T>> remove(final T toBeRemoved) {
+            return new $.Predicate<Collection<? super T>>() {
                 @Override
-                public boolean test(Iterable<T> iterable) {
-                    if (iterable instanceof Collection) {
-                        return collection.removeAll((Collection) iterable);
-                    }
-                    boolean modified = false;
-                    for (T t : iterable) {
-                        boolean b = collection.remove(t);
-                        modified = modified || b;
-                    }
-                    return modified;
+                public boolean test(Collection<? super T> collection) {
+                    return collection.remove(toBeRemoved);
                 }
             };
         }
 
         /**
-         * Returns a function that takes a argument of Iterable, and remove all elements that are
-         * <b>NOT</b> inside the iterable from the collection specified. The function returns {@code true}
-         * if the specified collection has been changed as a result of call, or {@code false} otherwise
-         *
-         * @param collection the collection from which the elements will be removed when
-         *                   applying the function
-         * @param <T> the generic type of the collection elements
-         * @return a function that do remove operations on the collection
-         * @see Collection#retainAll(Collection)
+         * Returns a function that remove all elements in the argument collection from
+         * the {@code fromCollection} specified. The function returns {@code true} if
+         * the fromCollection changed as a result of call
+         * @param fromCollection the collection from which elements will be removed
+         * @param <T> the element type
+         * @return the function
+         * @see Collection#removeAll(Collection)
+         * @see #removeAll(Collection)
          */
-        @SuppressWarnings({"unused", "unchecked"})
-        public static <T> $.Predicate<Iterable<T>> retainAllIn(final Collection<? super T> collection) {
-            return new $.Predicate<Iterable<T>>() {
+        @SuppressWarnings("unused")
+        public static <T> $.Predicate<Collection<? extends T>> removeAllFrom(final Collection<? super T> fromCollection) {
+            return new Osgl.Predicate<Collection<? extends T>>() {
                 @Override
-                public boolean test(Iterable<T> iterable) {
-                    if (iterable instanceof Collection) {
-                        return collection.retainAll((Collection) iterable);
-                    }
-                    List<T> list = C.list(iterable);
-                    return collection.retainAll(list);
+                public boolean test(Collection<? extends T> theCollection) {
+                    return fromCollection.removeAll(theCollection);
                 }
             };
         }
 
+        /**
+         * Returns a function that remove all elements in the {@code source} collection from the
+         * argument collection. The function returns {@code true} if the argument collection changed
+         * as a result of call
+         * @param source the collection in which elements will be used to remove from argument collection
+         * @param <T> the element type
+         * @return the function
+         * @see Collection#removeAll(Collection)
+         * @see #removeAllFrom(Collection)
+         */
+        public static <T> $.Predicate<Collection<? super T>> removeAll(final Collection<? extends T> source) {
+            return new Osgl.Predicate<Collection<? super T>>() {
+                @Override
+                public boolean test(Collection<? super T> collection) {
+                    return collection.removeAll(source);
+                }
+            };
+        }
+
+
+        /**
+         * Returns a function that retains only elements contained in the argument collection in the
+         * collection specified. The function returns {@code true} if the collection specified
+         * changed as a result of call
+         * @param collection the collection in which elements will be retained/removed
+         * @param <T> the element type
+         * @return the function as described
+         * @see Collection#retainAll(Collection)
+         * @see #retainAll(Collection)
+         */
+        @SuppressWarnings({"unused"})
+        public static <T> $.Predicate<Collection<? extends T>> retainAllIn(final Collection<? super T> collection) {
+            return new $.Predicate<Collection<? extends T>>() {
+                @Override
+                public boolean test(Collection<? extends T> theCollection) {
+                    return collection.retainAll(theCollection);
+                }
+            };
+        }
+
+        /**
+         * Returns a function that retains only elements contained in the specified collection in
+         * the argument collection. The function returns {@code true} if argument collection changes
+         * as a result of the call
+         * @param collection the collection in which elements will be used to check if argument collection
+         *                   element shall be retained or not
+         * @param <T> the element type
+         * @return the function as described above
+         * @see Collection#retainAll(Collection)
+         * @see #retainAllIn(Collection)
+         */
+        @SuppressWarnings({"unused"})
+        public static <T> $.Predicate<Collection<? super T>> retainAll(final Collection<? extends T> collection) {
+            return new $.Predicate<Collection<? super T>>() {
+                @Override
+                public boolean test(Collection<? super T> theCollection) {
+                    return theCollection.retainAll(collection);
+                }
+            };
+        }
+
+        /**
+         * Returns a function that prepend an element to a deque specified and return the
+         * deque instance
+         * @param deque the deque to which the element argument will be prepend to
+         * @param <T> the element type
+         * @return the function as described
+         * @see Deque#addFirst(Object)
+         * @see #dequePrepend(Object)
+         */
+        @SuppressWarnings({"unused"})
         public static <T> $.F1<T, Deque<? super T>> prependTo(final Deque<? super T> deque) {
             return new $.F1<T, Deque<? super T>>() {
                 @Override
@@ -3200,10 +3602,30 @@ public enum C {
         }
 
         /**
+         * Returns a function that prepend specified element to argument deque
+         * @param element the element to be added to the head of the argument (deque type)
+         * @param <T> the element type
+         * @return the function as described
+         * @see Deque#addFirst(Object)
+         * @see #prependTo(Deque)
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.Processor<Deque<? super T>> dequePrepend(final T element) {
+            return new $.Processor<Deque<? super T>>() {
+                @Override
+                public void process(Deque<? super T> deque) throws Osgl.Break, NotAppliedException {
+                    deque.addFirst(element);
+                }
+            };
+        }
+
+        /**
          * Returns a function that append the argument to a {@link Deque} specified
          * @param deque the deque to which the argument shall be append when applying the function returned
          * @param <T> the generic type of the argument/deque element
          * @return the function that do the append operation
+         * @see Deque#add(Object)
+         * @see #dequeAppend(Object)
          */
         @SuppressWarnings("unused")
         public static <T> $.F1<T, Deque<? super T>> appendTo(final Deque<? super T> deque) {
@@ -3217,10 +3639,30 @@ public enum C {
         }
 
         /**
+         * Returns a function that append specified element to argument deque
+         * @param element the element to be added to the tail of the argument (deque type)
+         * @param <T> the element type
+         * @return the function as described
+         * @see Deque#add(Object)
+         * @see #appendTo(Deque)
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.Processor<Deque<? super T>> dequeAppend(final T element) {
+            return new $.Processor<Deque<? super T>>() {
+                @Override
+                public void process(Deque<? super T> deque) throws Osgl.Break, NotAppliedException {
+                    deque.add(element);
+                }
+            };
+        }
+
+        /**
          * Returns a function that prepend the argument to a {@link Sequence} specified
          * @param sequence the sequence to which the argument shall be prepend whene applying the function
          * @param <T> the generic type of the argument/sequence element
          * @return the function that do the prepend operation
+         * @see Sequence#prepend(Object)
+         * @see #sequencePrepend(Object)
          */
         @SuppressWarnings("unused")
         public static <T> $.F1<T, Sequence<? super T>> prependTo(final Sequence<? super T> sequence) {
@@ -3234,11 +3676,31 @@ public enum C {
         }
 
         /**
+         * Returns a function that preppend specified element to argument sequence
+         * @param element the element to be added to the head of the argument (sequence type)
+         * @param <T> the element type
+         * @return the function as described
+         * @see Sequence#prepend(Object)
+         * @see #prependTo(Sequence)
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.Processor<Sequence<? super T>> sequencePrepend(final T element) {
+            return new Osgl.Processor<Sequence<? super T>>() {
+                @Override
+                public void process(Sequence<? super T> sequence) throws Osgl.Break, NotAppliedException {
+                    sequence.prepend(element);
+                }
+            };
+        }
+
+        /**
          * Returns a function that append the argument to a {@link Sequence} specified
          * <p><b>Note</b> the function returns the sequence with the argument been removed</p>
          * @param sequence the sequence to which the argument shall be append when applying the function
          * @param <T> the generic type of the argument/sequence element
          * @return the function that do the append operation
+         * @see Sequence#append(Iterable)
+         * @see #sequenceAppend(Object)
          */
         @SuppressWarnings("unused")
         public static <T> $.F1<T, Sequence<? super T>> appendTo(final Sequence<? super T> sequence) {
@@ -3250,7 +3712,35 @@ public enum C {
                 }
             };
         }
-        public static <T> $.F1<Iterable<? extends T>, Void> forEach(final $.Function<? super T, ?> visitor) {
+
+
+        /**
+         * Returns a function that append specified element to argument sequence
+         * @param element the element to be added to the tail of the argument (sequence type)
+         * @param <T> the element type
+         * @return the function as described
+         * @see Sequence#append(Iterable)
+         * @see #appendTo(Sequence)
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.Processor<Sequence<? super T>> sequenceAppend(final T element) {
+            return new Osgl.Processor<Sequence<? super T>>() {
+                @Override
+                public void process(Sequence<? super T> sequence) throws Osgl.Break, NotAppliedException {
+                    sequence.append(element);
+                }
+            };
+        }
+
+        /**
+         * Returns a function that apply the visitor function specified on the argument (iterable)
+         * @param visitor the function to be used to loop through the argument
+         * @param <T> the element type
+         * @return the function as described
+         * @see C#forEach(Iterable, Osgl.Function)
+         */
+        @SuppressWarnings("unused")
+        public static <T> $.F1<Iterable<? extends T>, Void> forEachIterable(final $.Function<? super T, ?> visitor) {
             return new $.F1<Iterable<? extends T>, Void>() {
                 @Override
                 public Void apply(Iterable<? extends T> iterable) throws NotAppliedException, $.Break {
@@ -3263,7 +3753,7 @@ public enum C {
 
     public static void main(String[] args) {
         Range<Integer> r = range(0, Integer.MAX_VALUE);
-        for (Number i : r.take(5).map(N.F.mul(10))) {
+        for (Number i : r.take(5).map(N.F.multiplyBy(10))) {
             System.out.println(i);
         }
     }
