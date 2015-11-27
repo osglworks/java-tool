@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import org.apache.commons.codec.Charsets;
 import org.osgl.$;
 
 import java.io.UnsupportedEncodingException;
@@ -216,11 +217,6 @@ public class Str extends StrBase<Str> {
         return subList(start, end);
     }
 
-    /**
-     * Return a joined str of this for n times
-     * @param n the times this str to be joined
-     * @return the joined str
-     */
     @Override
     public Str times(int n) {
         return of(S.times(s, n));
@@ -236,10 +232,6 @@ public class Str extends StrBase<Str> {
         return s;
     }
 
-    /**
-     * Returns a FastStr instance that shares
-     * the char array buf of the back String
-     */
     @Override
     public FastStr toFastStr() {
         return FastStr.unsafeOf(s);
@@ -254,26 +246,18 @@ public class Str extends StrBase<Str> {
 
     // --- String utilities ---
 
-    /**
-     * Wrapper of {@link String#getChars(int, int, char[], int)}
-     *
-     * @param srcBegin
-     * @param srcEnd
-     * @param dst
-     * @param dstBegin
-     */
     public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
         s.getChars(srcBegin, srcEnd, dst, dstBegin);
     }
 
-    /**
-     * Wrapper of {@link String#getBytes(java.nio.charset.Charset)}. However this method
-     * converts checked exception to runtime exception
-     *
-     * @param charsetName
-     * @return the byte array
-     */
+    public byte[] getBytes() {
+        return s.getBytes();
+    }
+
     public byte[] getBytes(String charsetName) {
+        if (null == charsetName) {
+            return s.getBytes();
+        }
         try {
             return s.getBytes(charsetName);
         } catch (UnsupportedEncodingException e) {
@@ -281,50 +265,25 @@ public class Str extends StrBase<Str> {
         }
     }
 
-    /**
-     * Wrapper of {@link String#getBytes()}
-     *
-     * @return
-     */
-    public byte[] getBytes() {
-        return s.getBytes();
+    @Override
+    public byte[] getBytes(Charset charset) {
+        return null == charset ? s.getBytes() : s.getBytes(charset);
     }
 
     public byte[] getBytesAscII() {
         if (isEmpty()) return new byte[0];
-        int sz = size();
-        byte[] ret = new byte[sz];
-        try {
-            char[] buf = Unsafe.bufOf(s);
-            for (int i = 0; i < sz; ++i) {
-                ret[i] = (byte) buf[i];
-            }
-        } catch (Exception e) {
-            for (int i = 0; i < sz; ++i) {
-                ret[i] = (byte) charAt(i);
-            }
-        }
-        return ret;
+        return s.getBytes(Charsets.US_ASCII);
     }
 
     public byte[] getBytesUTF8() {
         return s.getBytes(Charset.forName("UTF-8"));
     }
-    /**
-     * Wrapper of {@link String#contentEquals(CharSequence)}
-     *
-     * @param x
-     * @return true if content equals content of the specified char sequence
-     */
+
     @Override
     public boolean contentEquals(CharSequence x) {
         return s.contentEquals(x);
     }
 
-    /**
-     * @param x
-     * @return <code>true</code> if the content of this str equals to the specified str
-     */
     @Override
     public boolean contentEquals(Str x) {
         if (null == x) {
@@ -333,14 +292,6 @@ public class Str extends StrBase<Str> {
         return x.s.equals(s);
     }
 
-    /**
-     * Compare content of the str and the specified char sequence, case insensitive
-     *
-     * @param x
-     * @return {@code true} if the argument is not {@code null} and it
-     *         represents an equivalent {@code String} ignoring case; {@code
-     *         false} otherwise
-     */
     @Override
     public boolean equalsIgnoreCase(CharSequence x) {
         return null != x && s.equalsIgnoreCase(x.toString());
@@ -379,37 +330,38 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
-    public boolean startsWith(String prefix, int toffset) {
-        return s.startsWith(prefix, toffset);
+    public boolean startsWith(CharSequence prefix, int toffset) {
+        return s.startsWith(prefix.toString(), toffset);
+    }
+
+    private boolean endsWith(String suffix, int offset) {
+        int prefixSz = suffix.length();
+        if (0 == prefixSz) {
+            return true;
+        }
+        int matchStart = length() - offset;
+        if (matchStart < prefixSz) {
+            return false;
+        }
+        String matchStr = s.substring(0, matchStart);
+        return matchStr.endsWith(suffix);
     }
 
     @Override
-    public boolean endsWith(Str suffix) {
-        return s.endsWith(suffix.s);
+    public boolean endsWith(CharSequence suffix, int offset) {
+        return endsWith(suffix.toString(), offset);
     }
 
     @Override
-    public boolean endsWith(String suffix) {
-        return s.endsWith(suffix);
+    public boolean endsWith(Str suffix, int toffset) {
+        return endsWith(suffix.toString(), toffset);
     }
 
-    /**
-     * Wrapper of {@link String#indexOf(String, int)}
-     * @param ch
-     * @param fromIndex
-     * @return
-     */
     @Override
     public int indexOf(int ch, int fromIndex) {
         return s.indexOf(ch, fromIndex);
     }
 
-    /**
-     * Wrapper of {@link String#lastIndexOf(int, int)}
-     * @param ch
-     * @param fromIndex
-     * @return
-     */
     @Override
     public int lastIndexOf(int ch, int fromIndex) {
         return s.lastIndexOf(ch, fromIndex);
@@ -435,97 +387,50 @@ public class Str extends StrBase<Str> {
         return s.lastIndexOf(str.s, fromIndex);
     }
 
-    /**
-     * Wrapper of {@link String#substring(int)}
-     * @param beginIndex
-     * @return
-     */
     @Override
     public String substring(int beginIndex) {
         return s.substring(beginIndex);
     }
 
-    /**
-     * Wrapper of {@link #substring(int, int)}
-     * @param beginIndex
-     * @param endIndex
-     * @return
-     */
     @Override
     public String substring(int beginIndex, int endIndex) {
         return s.substring(beginIndex, endIndex);
     }
 
-    /**
-     * Wrapper of {@link String#replace(char, char)} but return Str instance
-     * @param oldChar
-     * @param newChar
-     * @return
-     */
     @Override
     public Str replace(char oldChar, char newChar) {
-        return of(s.replace(oldChar, newChar));
+        String s1 = s.replace(oldChar, newChar);
+        if (s1 == s) {
+            return this;
+        }
+        return of(s1);
     }
 
-    /**
-     * Wrapper of {@link String#matches(String)}
-     * @param regex
-     * @return
-     */
     @Override
     public boolean matches(String regex) {
         return s.matches(regex);
     }
 
-    /**
-     * Wrapper of {@link String#contains(CharSequence)}
-     * @param s
-     * @return
-     */
     @Override
     public boolean contains(CharSequence s) {
         return this.s.contains(s);
     }
 
-    /**
-     * Wrapper of {@link String#replaceFirst(String, String)} but return Str inance
-     * @param regex
-     * @param replacement
-     * @return
-     */
     @Override
     public Str replaceFirst(String regex, String replacement) {
         return of(s.replaceFirst(regex, replacement));
     }
 
-    /**
-     * Wrapper of {@link String#replaceAll(String, String)} but return Str type instance
-     * @param regex
-     * @param replacement
-     * @return
-     */
     @Override
     public Str replaceAll(String regex, String replacement) {
         return of(s.replaceAll(regex, replacement));
     }
 
-    /**
-     * Wrapper of {@link String#replace(CharSequence, CharSequence)} but return Str type instance
-     * @param target
-     * @param replacement
-     * @return
-     */
     @Override
     public Str replace(CharSequence target, CharSequence replacement) {
         return of(s.replace(target, replacement));
     }
 
-    /**
-     * Wrapper of {@link String#split(String, int)} but return an immutable List of Str instances
-     * @param regex
-     * @param limit
-     * @return
-     */
     @Override
     public C.List<Str> split(String regex, int limit) {
         String[] sa = s.split(regex, limit);
@@ -537,48 +442,26 @@ public class Str extends StrBase<Str> {
         return C.listOf(ssa);
     }
 
-    /**
-     * Wrapper of {@link String#toLowerCase(java.util.Locale)} but return Str type instance
-     * @param locale
-     * @return
-     */
     @Override
     public Str toLowerCase(Locale locale) {
         return of(s.toLowerCase(locale));
     }
 
-    /**
-     * Wrapper of {@link String#toUpperCase(java.util.Locale)} but return Str type instance
-     * @param locale
-     * @return
-     */
     @Override
     public Str toUpperCase(Locale locale) {
         return of(s.toUpperCase(locale));
     }
 
-    /**
-     * Wrapper of {@link String#trim()} and return Str type instance
-     * @return
-     */
     @Override
     public Str trim() {
         return of(s.trim());
     }
 
-    /**
-     * Alias of {@link #toCharArray()}
-     * @return
-     */
     @Override
     public char[] charArray() {
         return s.toCharArray();
     }
 
-    /**
-     * Wrapper of {@link String#intern()}
-     * @return
-     */
     @Override
     public String intern() {
         return s.intern();

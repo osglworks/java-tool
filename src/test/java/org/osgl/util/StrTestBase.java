@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import org.apache.commons.codec.Charsets;
 import org.junit.Test;
 import org.osgl.$;
 import org.osgl.Osgl;
@@ -310,12 +311,6 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
         eq(3, ba.length);
         eq(ba[0], "a".getBytes()[0]);
         eq(ba[1], "b".getBytes()[0]);
-
-        T t = copyOf("中国");
-        ba = t.getBytesAscII();
-        eq(2, ba.length);
-        eq(ba[0], (byte)'中');
-        eq(ba[1], (byte)'国');
     }
 
     @Test
@@ -417,9 +412,62 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
     }
 
     @Test
-    public void testSubString() {
-        ceq("码代码戏码农", 码农码代码戏码农.substring(2));
-        ceq("码代", 农码代.substring(1));
+    public void testGetBytes() {
+        yes($.eq2(abc.getBytes(), abc2.getBytes()));
+        yes($.eq2(abc2.getBytes(), "abc".getBytes()));
+        yes($.eq2(abc.getBytesAscII(), "abc".getBytes()));
+        yes($.eq2(码农码代码戏码农.getBytes(), "码农码代码戏码农".getBytes()));
+        yes($.eq2(码农码代码戏码农.getBytesUTF8(), "码农码代码戏码农".getBytes(Charsets.UTF_8)));
+        yes($.eq2(码农码代码戏码农.getBytesAscII(), "码农码代码戏码农".getBytes(Charsets.US_ASCII)));
+        yes($.eq2(农码代.getBytesAscII(), "农码代".getBytes(Charsets.US_ASCII)));
+        yes($.eq2(农码代.getBytesUTF8(), "农码代".getBytes(Charsets.UTF_8)));
+        yes($.eq2(农码代.getBytesUTF8(), 农码代.getBytes(Charsets.UTF_8)));
+        yes($.eq2(农码代.getBytesUTF8(), 农码代.getBytes("UTF-8")));
+    }
+
+    @Test
+    public void testStartsWith() {
+        yes(zabcd.startsWith("za"));
+        no(zabcd.startsWith("ab"));
+        yes(zabcd.startsWith("ab", 1));
+        yes(zabcd.startsWith(abc, 1));
+        yes(abc2.startsWith("ab"));
+        yes(abc2.startsWith(abc));
+        yes(abc.startsWith(abc2));
+        yes(zabcd.startsWith(abc2, 1));
+    }
+
+    @Test
+    public void testEndsWith() {
+        yes(zabcd.endsWith("cd"));
+        no(zabcd.endsWith("bc"));
+        yes(zabcd.endsWith("bc", 1));
+        yes(zabcd.endsWith(abc, 1));
+        yes(abc2.endsWith("bc"));
+        yes(abc2.endsWith(abc));
+        yes(abc.endsWith(abc2));
+        no(abc.endsWith("abcde"));
+        yes(zabcd.endsWith(abc2, 1));
+        yes(abc.endsWith("", -1));
+    }
+
+    @Test
+    public void testSubstring() {
+        eq("zab", zabcd.substring(0, 3));
+        eq("bc", abc2.substring(1));
+        eq("b", abc2.substring(1, 2));
+        eq("码代码戏码农", 码农码代码戏码农.substring(2));
+        eq("码代", 农码代.substring(1));
+    }
+
+    @Test(expected = StringIndexOutOfBoundsException.class)
+    public void substringException1() {
+        abc2.substring(-1);
+    }
+
+    @Test(expected = StringIndexOutOfBoundsException.class)
+    public void substringException2() {
+        abc2.substring(4);
     }
 
     @Test
@@ -427,7 +475,9 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
         StringBuilder sb = S.builder().append("abC");
         yes(abc.equalsIgnoreCase(sb));
         yes(abc2.equalsIgnoreCase(sb));
+        no(zabcd.equalsIgnoreCase(sb));
     }
+
 
     @Test
     public void testCompareToCharSequence() {
@@ -457,5 +507,51 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
         yes(abc2.compareToIgnoreCase(sb) == 0);
         yes(abc.compareToIgnoreCase(zabcd) < 0);
         yes(zabcd.compareToIgnoreCase(abc) > 0);
+    }
+
+    @Test
+    public void testRegionMatch() {
+        yes(abc.regionMatches(false, 0, zabcd, 1, 3));
+        yes(abc2.regionMatches(false, 0, zabcd, 1, 3));
+        yes(zabcd.regionMatches(false, 1, abc2, 0, 2));
+        yes(zabcd.regionMatches(false, 1, "abc", 0, 2));
+        no(zabcd.regionMatches(false, 1, abc2, 0, 4));
+        no(zabcd.regionMatches(false, -1, abc2, 0, 2));
+        yes(码农码代码戏码农.regionMatches(false, 1, 农码代, 0, 2));
+        yes(码农码代码戏码农.regionMatches(false, 1, "农码代", 0, 2));
+    }
+
+    @Test
+    public void testReplaceChar() {
+        ceq("acc", abc.replace('b', 'c'));
+        ceq("acc", abc2.replace('b', 'c'));
+        ceq("c农c代c戏c农", 码农码代码戏码农.replace('码', 'c'));
+        ceq("农c代", 农码代.replace('码', 'c'));
+        yes(农码代 == 农码代.replace('x', 'y'));
+    }
+
+    @Test
+    public void testReplaceCharSequence() {
+        ceq("ba", aaa.replace("aa", "b"));
+        ceq("coder码代码戏coder", 码农码代码戏码农.replace("码农", "coder"));
+        ceq("农code代", 农码代.replace("码", "code"));
+    }
+
+    @Test
+    public void testReplaceAll() {
+        ceq("coder码代码戏coder", 码农码代码戏码农.replaceAll("(码农|农码)", "coder"));
+        ceq("codeXcodeXcodeXcodeX", 码农码代码戏码农.replaceAll("码.", "codeX"));
+        ceq("zxyzd", zabcd.replaceAll("(a.c)", "xyz"));
+    }
+
+    @Test
+    public void testReplaceFirst() {
+        ceq("coder码代码戏码农", 码农码代码戏码农.replaceFirst("(码农|农码)", "coder"));
+        ceq("codeX码代码戏码农", 码农码代码戏码农.replaceFirst("码.", "codeX"));
+        ceq("zxyzd", zabcd.replaceFirst("(a.c)", "xyz"));
+    }
+
+    public void testMatches() {
+        yes(码农码代码戏码农.matches("(码农|农码)"));
     }
 }

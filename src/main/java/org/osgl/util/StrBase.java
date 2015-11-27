@@ -2,7 +2,10 @@ package org.osgl.util;
 
 import org.osgl.$;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.*;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * The abstract base class for {@link Str} and {@link FastStr}. This class aggregates
@@ -211,15 +214,52 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      * Returns byte array of string composed of only ascii chars
      * @return ASCII char array of this str
      */
-    @SuppressWarnings("unused")
     public abstract byte[] getBytesAscII();
 
     /**
      * Returns byte array of string composed of UTF-8 chars
      * @return UTF-8 char array of this str
      */
-    @SuppressWarnings("unused")
     public abstract byte[] getBytesUTF8();
+
+    /**
+     * Encodes this str into a sequence of bytes using the
+     * platform's default charset, storing the result into a new byte array.
+     *
+     * @return  The resultant byte array
+     * @see String#getBytes()
+     */
+    public abstract byte[] getBytes();
+
+    /**
+     * Encodes this str into a sequence of bytes using the given
+     * {@linkplain java.nio.charset.Charset charset}, storing the result into a
+     * new byte array.
+     *
+     * @param  charset
+     *         The {@linkplain java.nio.charset.Charset} to be used to encode
+     *         the {@code String}. If {@code charset} is {@code null} then
+     *         this function shall return the result of {@link #getBytes()}
+     *
+     * @return  The resultant byte array
+     * @see String#getBytes(Charset)
+     */
+    public abstract byte[] getBytes(Charset charset);
+
+    /**
+     * Encodes this str into a sequence of bytes using the named
+     * charset, storing the result into a new byte array.
+     *
+     * @param  charsetName
+     *         The name of a supported {@linkplain java.nio.charset.Charset
+     *         charset}. If {@code charsetName} is {@code null} then this
+     *         function shall return the result of {@link #getBytes()}
+     *
+     * @return  The resultant byte array
+     *
+     * @see String#getBytes(String)
+     */
+    public abstract byte[] getBytes(String charsetName);
 
     /**
      * Return a {@link FastStr} that contains all the char sequence
@@ -520,7 +560,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     /**
      * Compare content of the str and the specified char sequence, case insensitive
      *
-     * @param x
+     * @param x the char sequence to be checked
      * @return {@code true} if the argument is not {@code null} and it
      * represents an equivalent {@code String} ignoring case; {@code
      * false} otherwise
@@ -553,19 +593,237 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      */
     public abstract int compareToIgnoreCase(CharSequence x);
 
+    /**
+     * Tests if two string regions are equal.
+     *
+     * @param   ignoreCase   if <code>true</code>, ignore case when comparing
+     *                       characters.
+     * @param   toffset      the starting offset of the subregion in this
+     *                       str.
+     * @param   other        the str argument.
+     * @param   ooffset      the starting offset of the subregion in the str
+     *                       argument.
+     * @param   len          the number of characters to compare.
+     * @return  <code>true</code> if the specified subregion of this string
+     *          matches the specified subregion of the string argument;
+     *          <code>false</code> otherwise. Whether the matching is exact
+     *          or case insensitive depends on the <code>ignoreCase</code>
+     *          argument.
+     * @see String#regionMatches(boolean, int, String, int, int)
+     */
     public abstract boolean regionMatches(boolean ignoreCase, int toffset, T other, int ooffset, int len);
+
+    /**
+     * Tests if two string regions are equal.
+     *
+     * @param   ignoreCase   if <code>true</code>, ignore case when comparing
+     *                       characters.
+     * @param   toffset      the starting offset of the subregion in this
+     *                       str.
+     * @param   other        the char sequence argument.
+     * @param   ooffset      the starting offset of the subregion in the str
+     *                       argument.
+     * @param   len          the number of characters to compare.
+     * @return  <code>true</code> if the specified subregion of this string
+     *          matches the specified subregion of the string argument;
+     *          <code>false</code> otherwise. Whether the matching is exact
+     *          or case insensitive depends on the <code>ignoreCase</code>
+     *          argument.
+     * @see String#regionMatches(boolean, int, String, int, int)
+     */
     public abstract boolean regionMatches(boolean ignoreCase, int toffset, CharSequence other, int ooffset, int len);
+
+    /**
+     * Check if this str starts with the given char sequence
+     * @param prefix the char sequence
+     * @return {@code true} if this str starts with the char sequence specified
+     *         or {@code false} otherwise
+     */
+    public final boolean startsWith(CharSequence prefix) {
+        return startsWith(prefix, 0);
+    }
+
+    /**
+     * Check if this str starts with the given str
+     * @param prefix the str argument
+     * @return {@code true} if this str starts with the str specified
+     *         or {@code false} otherwise
+     */
+    public final boolean startsWith(T prefix) {
+        return startsWith(prefix, 0);
+    }
+
+    /**
+     * Check this str instance starts with str, with the search starts at
+     * specified offset
+     * @param prefix the str arguments
+     * @param toffset the offset where the search begins
+     * @return {@code true} if the search matches or {@code false} otherwise
+     */
     public abstract boolean startsWith(T prefix, int toffset);
-    public abstract boolean startsWith(String prefix, int toffset);
-    public abstract boolean endsWith(T suffix);
-    public abstract boolean endsWith(String suffix);
+
+    /**
+     * Check if this str starts with a char sequence, with the search starts at
+     * the specified offset
+     * @param prefix the char sequence argument
+     * @param toffset the start offset where search begins
+     * @return {@code true} if search matches or {@code false} otherwise
+     */
+    public abstract boolean startsWith(CharSequence prefix, int toffset);
+
+
+    /**
+     * Check if this str ends with the given char sequence
+     * @param prefix the char sequence
+     * @return {@code true} if this str ends with the char sequence specified
+     *         or {@code false} otherwise
+     */
+    public final boolean endsWith(CharSequence prefix) {
+        return endsWith(prefix, 0);
+    }
+
+    /**
+     * Check if this str ends with the given str
+     * @param prefix the str argument
+     * @return {@code true} if this str ends with the str specified
+     *         or {@code false} otherwise
+     */
+    public final boolean endsWith(T prefix) {
+        return endsWith(prefix, 0);
+    }
+
+    /**
+     * Check this str instance ends with str, with the search starts at
+     * specified offset
+     * @param prefix the str arguments
+     * @param toffset the offset where the search begins (backwards)
+     * @return {@code true} if the search matches or {@code false} otherwise
+     */
+    public abstract boolean endsWith(T prefix, int toffset);
+
+    /**
+     * Check if this str ends with a char sequence, with the search starts at
+     * the specified offset
+     * @param prefix the char sequence argument
+     * @param toffset the start offset where search begins backwards
+     * @return {@code true} if search matches or {@code false} otherwise
+     */
+    public abstract boolean endsWith(CharSequence prefix, int toffset);
+
+    /**
+     * Returns a new string that is a substring of this str. The
+     * substring begins at the specified <code>beginIndex</code> and
+     * extends to the character at index <code>endIndex - 1</code>.
+     * Thus the length of the substring is <code>endIndex-beginIndex</code>.
+     * <p>
+     *
+     * @param      beginIndex   the beginning index, inclusive.
+     * @param      endIndex     the ending index, exclusive.
+     * @return     the specified substring.
+     * @exception  IndexOutOfBoundsException  if the
+     *             <code>beginIndex</code> is negative, or
+     *             <code>endIndex</code> is larger than the length of
+     *             this <code>String</code> object, or
+     *             <code>beginIndex</code> is larger than
+     *             <code>endIndex</code>.
+     * @see String#substring(int, int)
+     */
     public abstract String substring(int beginIndex, int endIndex);
+
+    /**
+     * Returns a new str resulting from replacing all occurrences of
+     * <code>oldChar</code> in this string with <code>newChar</code>.
+     * <p>
+     * If the character <code>oldChar</code> does not occur in the
+     * character sequence represented by this <code>str</code> object,
+     * then a reference to this <code>str</code> object is returned.
+     * Otherwise, a new <code>str</code> object is created that
+     * represents a character sequence identical to the character sequence
+     * represented by this <code>str</code> object, except that every
+     * occurrence of <code>oldChar</code> is replaced by an occurrence
+     * of <code>newChar</code>.
+     *
+     * @param   oldChar   the old character.
+     * @param   newChar   the new character.
+     * @return  a str derived from this str by replacing every
+     *          occurrence of <code>oldChar</code> with <code>newChar</code>.
+     */
     public abstract T replace(char oldChar, char newChar);
-    public abstract T replaceFirst(String regex, String replacement);
-    public abstract boolean matches(String regex);
-    public abstract boolean contains(CharSequence s);
-    public abstract T replaceAll(String regex, String replacement);
+
+    /**
+     * Replaces each substring of this str that matches the literal target
+     * sequence with the specified literal replacement sequence. The
+     * replacement proceeds from the beginning of the str to the end, for
+     * example, replacing "aa" with "b" in the str "aaa" will result in
+     * "ba" rather than "ab".
+     *
+     * @param  target The sequence of char values to be replaced
+     * @param  replacement The replacement sequence of char values
+     * @return  The resulting string
+     * @throws NullPointerException if <code>target</code> or
+     *         <code>replacement</code> is <code>null</code>.
+     */
     public abstract T replace(CharSequence target, CharSequence replacement);
+
+    /**
+     * Replaces each substr of this str that matches the given <a
+     * href="../util/regex/Pattern.html#sum">regular expression</a> with the
+     * given replacement.
+     *
+     * @param   regex
+     *          the regular expression to which this string is to be matched
+     * @param   replacement
+     *          the string to be substituted for each match
+     *
+     * @return  The resulting <tt>str</tt>
+     *
+     * @throws PatternSyntaxException
+     *          if the regular expression's syntax is invalid
+     *
+     * @see java.util.regex.Pattern
+     * @see java.lang.String#replaceAll(String, String)
+     */
+    public abstract T replaceAll(String regex, String replacement);
+
+    /**
+     * Replaces the first substring of this str that matches the given <a
+     * href="../util/regex/Pattern.html#sum">regular expression</a> with the
+     * given replacement.
+     *
+     * @param   regex
+     *          the regular expression to which this str is to be matched
+     * @param   replacement
+     *          the string to be substituted for the first match
+     *
+     * @return  The resulting <tt>str</tt>
+     *
+     * @throws  PatternSyntaxException
+     *          if the regular expression's syntax is invalid
+     *
+     * @see java.util.regex.Pattern
+     * @see java.lang.String#replaceFirst(String, String)
+     */
+    public abstract T replaceFirst(String regex, String replacement);
+
+    /**
+     * Tells whether or not this str matches the given <a
+     * href="../util/regex/Pattern.html#sum">regular expression</a>.
+     *
+     * @param   regex
+     *          the regular expression to which this string is to be matched
+     *
+     * @return  <tt>true</tt> if, and only if, this string matches the
+     *          given regular expression
+     *
+     * @throws  PatternSyntaxException
+     *          if the regular expression's syntax is invalid
+     *
+     * @see java.util.regex.Pattern
+     * @see java.lang.String#matches(String)
+     */
+    public abstract boolean matches(String regex);
+
+    public abstract boolean contains(CharSequence s);
     public abstract C.List<T> split(String regex, int limit);
     public abstract T toLowerCase(Locale locale);
     public abstract T toUpperCase(Locale locale);
@@ -632,6 +890,9 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
         return me();
     }
 
+    /**
+     * Returns a copy of this str. The char buf is copied
+     */
     @Override
     public T copy() {
         return me();
@@ -1113,14 +1374,6 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
 
     public final boolean regionMatches(int toffset, String other, int ooffset, int len) {
         return regionMatches(false, toffset, other, ooffset, len);
-    }
-
-    public final boolean startsWith(String prefix) {
-        return startsWith(prefix, 0);
-    }
-
-    public final boolean startsWith(T prefix) {
-        return startsWith(prefix, 0);
     }
 
     /**

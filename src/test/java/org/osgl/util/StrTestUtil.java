@@ -6,6 +6,7 @@ import org.osgl.TestBase;
 
 @Ignore
 public abstract class StrTestUtil<T extends StrBase<T>> extends TestBase {
+    protected T aaa;
     protected T abc;
     protected T abc2;
     protected T zabcd;
@@ -15,6 +16,7 @@ public abstract class StrTestUtil<T extends StrBase<T>> extends TestBase {
     protected T longStr;
     protected T empty = empty();
 
+    private T _aaa = copyOf("aaa");
     private T _abc = copyOf("abc");
     private T _zabcd = copyOf("zabcd");
     private T _abc2 = _zabcd.substr(1, 4);
@@ -33,6 +35,7 @@ public abstract class StrTestUtil<T extends StrBase<T>> extends TestBase {
 
     @Before
     public void prepare() {
+        aaa = _aaa;
         abc = _abc;
         midLength = _mid;
         longStr = _long;

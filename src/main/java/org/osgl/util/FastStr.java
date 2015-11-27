@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import org.apache.commons.codec.Charsets;
 import org.osgl.$;
 
 import java.io.UnsupportedEncodingException;
@@ -372,22 +373,12 @@ public class FastStr extends StrBase<FastStr>
         return subList(start, end);
     }
 
-    /**
-     * Returns a copy of this FastStr. The char buf is copied
-     */
     @Override
     public FastStr copy() {
         if (EMPTY_STR == this) return this;
         return unsafeOf(charArray(), 0, size());
     }
 
-    /**
-     * Return a joined str of this for n times. If n is 0, then
-     * return an EMPTY_STR, if n is 1, then return this FastStr
-     *
-     * @param n the times this str to be joined
-     * @return the joined str
-     */
     public FastStr times(int n) {
         E.illegalArgumentIf(n < 0, "n cannot be negative");
         if (0 == n) return EMPTY_STR;
@@ -470,14 +461,6 @@ public class FastStr extends StrBase<FastStr>
 
     // --- String utilities ---
 
-    /**
-     * Wrapper of {@link String#getChars(int, int, char[], int)}
-     *
-     * @param srcBegin
-     * @param srcEnd
-     * @param dst
-     * @param dstBegin
-     */
     public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
         if (srcBegin < 0) {
             throw new StringIndexOutOfBoundsException(srcBegin);
@@ -492,16 +475,16 @@ public class FastStr extends StrBase<FastStr>
         System.arraycopy(buf, toInternalId(srcBegin), dst, dstBegin, srcEnd - srcBegin);
     }
 
-    /**
-     * Wrapper of {@link String#getBytes(java.nio.charset.Charset)}. However this method
-     * converts checked exception to runtime exception
-     *
-     * @param charsetName
-     * @return the byte array
-     */
-    public byte[] getBytes(String charsetName) {
-        E.NPE(charsetName);
+    public byte[] getBytes() {
         String s = toString();
+        return s.getBytes();
+    }
+
+    public byte[] getBytes(String charsetName) {
+        String s = toString();
+        if (null == charsetName) {
+            return s.getBytes();
+        }
         try {
             return s.getBytes(charsetName);
         } catch (UnsupportedEncodingException e) {
@@ -509,29 +492,20 @@ public class FastStr extends StrBase<FastStr>
         }
     }
 
-    /**
-     * Wrapper of {@link String#getBytes()}
-     *
-     * @return
-     */
-    public byte[] getBytes() {
+    @Override
+    public byte[] getBytes(Charset charset) {
         String s = toString();
-        return s.getBytes();
+        if (null == charset) {
+            return s.getBytes();
+        }
+        return s.getBytes(charset);
     }
 
     public byte[] getBytesAscII() {
-        if (isEmpty()) return new byte[]{};
         int sz = size();
-        byte[] ret = new byte[sz];
-        for (int i = 0; i < sz; ++i) {
-            ret[i] = (byte) buf[toInternalId(i)];
+        if (sz == 0) {
+            return new byte[0];
         }
-        return ret;
-    }
-
-    @Override
-    public byte[] getBytesUTF8() {
-        int sz = size();
         try {
             char[] chars;
             if (sz == buf.length && begin == 0) {
@@ -540,9 +514,29 @@ public class FastStr extends StrBase<FastStr>
                 chars = new char[sz];
                 System.arraycopy(buf, begin, chars, 0, sz);
             }
-            return Unsafe.stringOf(chars).getBytes(Charset.forName("UTF-8"));
+            return Unsafe.stringOf(chars).getBytes(Charsets.US_ASCII);
         } catch (Exception e) {
-            return toString().getBytes(Charset.forName("UTF-8"));
+            return toString().getBytes(Charsets.US_ASCII);
+        }
+    }
+
+    @Override
+    public byte[] getBytesUTF8() {
+        int sz = size();
+        if (sz == 0) {
+            return new byte[0];
+        }
+        try {
+            char[] chars;
+            if (sz == buf.length && begin == 0) {
+                chars = buf;
+            } else {
+                chars = new char[sz];
+                System.arraycopy(buf, begin, chars, 0, sz);
+            }
+            return Unsafe.stringOf(chars).getBytes(Charsets.UTF_8);
+        } catch (Exception e) {
+            return toString().getBytes(Charsets.UTF_8);
         }
     }
 
@@ -769,16 +763,16 @@ public class FastStr extends StrBase<FastStr>
         return true;
     }
 
-    public boolean startsWith(String prefix, int toffset) {
-        if (prefix.isEmpty()) return true;
-        int sz2 = prefix.length(), sz = size();
+    public boolean startsWith(CharSequence suffix, int toffset) {
+        if (suffix.length() == 0) return true;
+        int sz2 = suffix.length(), sz = size();
         if (toffset < 0 || toffset > sz - sz2) {
             return false;
         }
         int po = 0, pc = sz2, to = toffset;
         char[] buf1 = buf;
         try {
-            char[] buf2 = Unsafe.bufOf(prefix);
+            char[] buf2 = Unsafe.bufOf(suffix);
             while (--pc >= 0) {
                 if (buf1[toInternalId(to++)] != buf2[po++]) {
                     return false;
@@ -787,7 +781,7 @@ public class FastStr extends StrBase<FastStr>
             return true;
         } catch (RuntimeException e) {
             while (--pc >= 0) {
-                if (buf1[toInternalId(to++)] != prefix.charAt(po++)) {
+                if (buf1[toInternalId(to++)] != suffix.charAt(po++)) {
                     return false;
                 }
             }
@@ -795,21 +789,49 @@ public class FastStr extends StrBase<FastStr>
         }
     }
 
-    public boolean endsWith(FastStr suffix) {
-        return startsWith(suffix, size() - suffix.size());
+
+    public boolean endsWith(CharSequence suffix, int toffset) {
+        int prefixSz = suffix.length();
+        if (0 == prefixSz) {
+            return true;
+        }
+        int matchStart = length() - toffset;
+        if (matchStart < prefixSz) {
+            return false;
+        }
+        for (int i = toInternalId(matchStart - 1), j = prefixSz - 1; j >= 0; --i, --j) {
+            char c0 = buf[i];
+            char c1 = suffix.charAt(j);
+            if (c0 != c1) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    public boolean endsWith(String suffix) {
-        return startsWith(suffix, size() - suffix.length());
+
+
+    @Override
+    public boolean endsWith(FastStr prefix, int toffset) {
+        int prefixSz = prefix.length();
+        if (0 == prefixSz) {
+            return true;
+        }
+        int matchStart = length() - toffset;
+        if (matchStart < prefixSz) {
+            return false;
+        }
+        char[] prefixBuf = prefix.buf;
+        for (int i = toInternalId(matchStart - 1), j = prefix.toInternalId(prefixSz - 1); j >= prefix.begin; --i, --j) {
+            char c0 = buf[i];
+            char c1 = prefixBuf[j];
+            if (c0 != c1) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    /**
-     * Wrapper of {@link String#indexOf(String, int)}
-     *
-     * @param ch
-     * @param fromIndex
-     * @return
-     */
     public int indexOf(int ch, int fromIndex) {
         final int max = size();
         if (fromIndex < 0) {
