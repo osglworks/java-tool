@@ -3977,6 +3977,76 @@ public class Osgl implements Serializable {
     }
 
     /**
+     * Check if two {@code boolean} value equals to each other
+     * @param a boolean a
+     * @param b boolean b
+     * @return {@code true} if {@code a == b}
+     */
+    public static boolean eq(boolean a, boolean b) {
+        return a == b;
+    }
+
+    /**
+     * Check if two {@code char} value equals to each other
+     * @param a char a
+     * @param b char b
+     * @return {@code true} if {@code a == b}
+     */
+    public static boolean eq(char a, char b) {
+        return a == b;
+    }
+
+    /**
+     * Check if two {@code short} value equals to each other
+     * @param a short a
+     * @param b short b
+     * @return {@code true} if {@code a == b}
+     */
+    public static boolean eq(short a, short b) {
+        return a == b;
+    }
+
+    /**
+     * Check if two {@code int} value equals to each other
+     * @param a int a
+     * @param b int b
+     * @return {@code true} if {@code a == b}
+     */
+    public static boolean eq(int a, int b) {
+        return a == b;
+    }
+
+    /**
+     * Check if two {@code float} value equals to each other
+     * @param a float a
+     * @param b float b
+     * @return {@code true} if {@code a == b}
+     */
+    public static boolean eq(float a, float b) {
+        return a == b;
+    }
+
+    /**
+     * Check if two {@code long} value equals to each other
+     * @param a long a
+     * @param b long b
+     * @return {@code true} if {@code a == b}
+     */
+    public static boolean eq(long a, long b) {
+        return a == b;
+    }
+
+    /**
+     * Check if two {@code double} value equals to each other
+     * @param a double a
+     * @param b double b
+     * @return {@code true} if {@code a == b}
+     */
+    public static boolean eq(double a, double b) {
+        return Double.doubleToLongBits(a) == Double.doubleToLongBits(b);
+    }
+
+    /**
      * Check if two objects are equals to each other.
      *
      * @param a the first object
