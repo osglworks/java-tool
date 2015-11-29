@@ -5217,7 +5217,7 @@ public class Osgl implements Serializable {
                 if (!testConstructor(pts, p3, 2)) {
                     continue;
                 }
-                if (!testConstructor(pts, p4, 4)) {
+                if (!testConstructor(pts, p4, 3)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2, p3, p4);
@@ -5245,10 +5245,10 @@ public class Osgl implements Serializable {
                 if (!testConstructor(pts, p3, 2)) {
                     continue;
                 }
-                if (!testConstructor(pts, p4, 4)) {
+                if (!testConstructor(pts, p4, 3)) {
                     continue;
                 }
-                if (!testConstructor(pts, p5, 5)) {
+                if (!testConstructor(pts, p5, 4)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2, p3, p4, p5);
