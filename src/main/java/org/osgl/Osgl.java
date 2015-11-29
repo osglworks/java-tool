@@ -5259,6 +5259,56 @@ public class Osgl implements Serializable {
         }
     }
 
+    public static <T> T newInstance(Class<T> c, Object p1, Object p2, Object p3, Object p4, Object p5, Object... pa) {
+        try {
+            Constructor[] ca = c.getConstructors();
+            int len = pa.length;
+            for (Constructor<T> ct : ca) {
+                Class[] pts = ct.getParameterTypes();
+                if (pts.length != 5 + len && !ct.isVarArgs()) {
+                    continue;
+                }
+                if (!testConstructor(pts, p1, 0)) {
+                    continue;
+                }
+                if (!testConstructor(pts, p2, 1)) {
+                    continue;
+                }
+                if (!testConstructor(pts, p3, 2)) {
+                    continue;
+                }
+                if (!testConstructor(pts, p4, 3)) {
+                    continue;
+                }
+                if (!testConstructor(pts, p5, 4)) {
+                    continue;
+                }
+                boolean shouldContinue = false;
+                for (int i = 0; i < len; ++i) {
+                    Object p = pa[i];
+                    if (!testConstructor(pts, p, 5 + i)) {
+                        shouldContinue = true;
+                        break;
+                    }
+                }
+                if (shouldContinue) {
+                    continue;
+                }
+                Object[] oa = new Object[5 + len];
+                oa[0] = p1;
+                oa[1] = p2;
+                oa[2] = p3;
+                oa[3] = p4;
+                oa[4] = p5;
+                System.arraycopy(pa, 0, oa, 5, len);
+                return ct.newInstance(oa);
+            }
+            throw E.unexpected("constructor not found");
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
     public static <T> byte[] serialize(T obj) {
         E.NPE(obj);
         try {
