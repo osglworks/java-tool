@@ -3987,6 +3987,16 @@ public class Osgl implements Serializable {
     }
 
     /**
+     * Check if two {@code byte} value equals to each other
+     * @param a byte a
+     * @param b byte b
+     * @return {@code true} if {@code a == b}
+     */
+    public static boolean eq(byte a, byte b) {
+        return a == b;
+    }
+
+    /**
      * Check if two {@code char} value equals to each other
      * @param a char a
      * @param b char b
