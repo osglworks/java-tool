@@ -10,6 +10,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -5309,6 +5310,129 @@ public class Osgl implements Serializable {
         }
     }
 
+    private static class Evaluator<OBJECT, PROP> extends F1<OBJECT, PROP> implements Serializable {
+        transient Class c;
+        transient Method m;
+        String mn;
+        transient Field f;
+        String fn;
+        Evaluator cascadeEvaluator;
+
+        Evaluator(Class c, Method m, Field f) {
+            E.illegalArgumentIf(null == m && null == f);
+            this.c = c;
+            this.m = m;
+            this.f = f;
+            if (null != m) {
+                this.mn = m.getName();
+            } else {
+                this.fn = f.getName();
+            }
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public PROP apply(OBJECT object) throws NotAppliedException, Break {
+            if (null == object) {
+                return null;
+            }
+            ensureMethodOrField(object);
+            try {
+                Object v;
+                if (null != m) {
+                    v = m.invoke(object);
+                } else {
+                    v = f.get(object);
+                }
+                if (null != cascadeEvaluator) {
+                    v = cascadeEvaluator.apply(v);
+                }
+                return cast(v);
+            } catch (Exception e) {
+                throw E.unexpected(e);
+            }
+        }
+
+        private void ensureMethodOrField(Object obj) {
+            if (null != m || null != f) return;
+            try {
+                if (null == c) {
+                    c = obj.getClass();
+                }
+                if (null != mn) {
+                    m = c.getMethod(mn);
+                } else if (null != fn) {
+                    f = c.getDeclaredField(fn);
+                    f.setAccessible(true);
+                } else {
+                    throw E.unexpected("neither method name nor field name found");
+                }
+            } catch (Exception e) {
+                throw E.unexpected(e);
+            }
+
+        }
+    }
+
+    public static <T> T eval(Object o, String property) {
+        if (null == o) {
+            return null;
+        }
+        if (property.contains(".")) {
+            return eval(o, property.split("\\."));
+        }
+        if (property.contains("/")) {
+            return eval(o, property.split("\\/"));
+        }
+        return _eval(o, property);
+    }
+
+    private static <T> T _eval(Object o, String p) {
+        Evaluator e = evaluator(o, p);
+        return cast(e.apply(o));
+    }
+
+    private static <T> T eval(Object o, String ... propertyPath) {
+        Object v = o;
+        for (String p : propertyPath) {
+            v = _eval(v, p);
+        }
+        return cast(v);
+    }
+
+    private static Evaluator evaluator(Object o, String property) {
+        Class c = o.getClass();
+        String p = S.capFirst(property);
+        String getter = "get" + p;
+        try {
+            Method m = c.getMethod(getter);
+            return new Evaluator(c, m, null);
+        } catch (NoSuchMethodException e) {
+            //ignore
+        }
+        String isser = "is" + p;
+        try {
+            Method m = c.getMethod(isser);
+            return new Evaluator(c, m, null);
+        } catch (NoSuchMethodException e) {
+            //ignore
+        }
+        try {
+            // try jquery style getter
+            Method m = c.getMethod(property);
+            return new Evaluator(c, m, null);
+        } catch (NoSuchMethodException e) {
+            //ignore
+        }
+        try {
+            Field f = c.getDeclaredField(property);
+            f.setAccessible(true);
+            return new Evaluator(c, null, f);
+        } catch (NoSuchFieldException e) {
+            throw E.unexpected("Cannot find access method to field % on class %s", property, c);
+        }
+    }
+
     public static <T> byte[] serialize(T obj) {
         E.NPE(obj);
         try {
@@ -5324,17 +5448,7 @@ public class Osgl implements Serializable {
 
     public static <T> T materialize(byte[] ba, Class<T> c) {
         E.NPE(ba);
-        try {
-            ByteArrayInputStream bais = new ByteArrayInputStream(ba);
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            T t = (T) ois.readObject();
-            ois.close();
-            return t;
-        } catch (IOException e) {
-            throw E.ioException(e);
-        } catch (ClassNotFoundException e) {
-            throw E.unexpected(e);
-        }
+        return materialize(ba);
     }
 
     public static <T> T deserialize(byte[] ba, Class<T> c) {

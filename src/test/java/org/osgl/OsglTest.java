@@ -2,6 +2,7 @@ package org.osgl;
 
 import org.junit.Test;
 import org.osgl.util.C;
+import org.osgl.util.N;
 import org.osgl.util.S;
 
 /**
@@ -27,6 +28,48 @@ public class OsglTest extends TestBase {
         yes(l.contains("b.html"));
         no(l.contains("c.txt"));
         no(l.contains("d.txt"));
+    }
+
+    public class Bar {
+        String s;
+        private boolean b;
+        Bar(String s, boolean b) {
+            this.s = s;
+            this.b = b;
+        }
+        public String s() {
+            return s;
+        }
+        public boolean isB() {
+            return b;
+        }
+    }
+
+    public class Foo {
+        private String s;
+        private int i;
+        private Bar bar;
+        Foo(String s1, int i, String s2, boolean b) {
+            s = s1;
+            this.i = i;
+            bar = new Bar(s2, b);
+        }
+        public String getS() {
+            return s;
+        }
+    }
+
+    @Test
+    public void testEval() {
+        String s1 = S.random();
+        String s2 = S.random();
+        int i = N.randInt();
+        boolean b = false;
+        Foo foo = new Foo(s1, i, s2, b);
+        eq(s1, $.eval(foo, "s"));
+        eq(s2, $.eval(foo, "bar.s"));
+        eq(i, $.eval(foo, "i"));
+        eq(false, $.eval(foo, "bar/b"));
     }
 
 }
