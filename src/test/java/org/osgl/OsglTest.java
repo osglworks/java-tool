@@ -1,9 +1,12 @@
 package org.osgl;
 
 import org.junit.Test;
+import org.osgl.exception.NotAppliedException;
 import org.osgl.util.C;
 import org.osgl.util.N;
 import org.osgl.util.S;
+
+import java.io.Serializable;
 
 /**
  * Created by luog on 4/04/14.
@@ -70,6 +73,41 @@ public class OsglTest extends TestBase {
         eq(s2, $.eval(foo, "bar.s"));
         eq(i, $.eval(foo, "i"));
         eq(false, $.eval(foo, "bar/b"));
+    }
+
+    @Test
+    public void testEvalWithCache() {
+        final C.Map<String, Serializable> map = C.newMap();
+        Osgl.F1<String, Serializable> getter = new Osgl.F1<String, Serializable>() {
+            @Override
+            public Serializable apply(String s) throws NotAppliedException, Osgl.Break {
+                return map.get(s);
+            }
+        };
+        Osgl.F2<String, Serializable, Object> setter = new Osgl.F2<String, Serializable, Object>() {
+            @Override
+            public Object apply(String s, Serializable serializable) throws NotAppliedException, Osgl.Break {
+                map.put(s, serializable);
+                return null;
+            }
+        };
+        Osgl.T2<? extends Osgl.Function<String, Serializable>, ? extends Osgl.Func2<String, Serializable, ?>> cache = Osgl.T2(getter, setter);
+
+        String s1 = S.random();
+        String s2 = S.random();
+        int i = N.randInt();
+        boolean b = false;
+        Foo foo = new Foo(s1, i, s2, b);
+
+        eq(s1, $.eval(cache, foo, "s"));
+        eq(s2, $.eval(cache, foo, "bar.s"));
+        eq(i, $.eval(cache, foo, "i"));
+        eq(false, $.eval(cache, foo, "bar/b"));
+
+        eq(s1, $.eval(cache, foo, "s"));
+        eq(s2, $.eval(cache, foo, "bar.s"));
+        eq(i, $.eval(cache, foo, "i"));
+        eq(false, $.eval(cache, foo, "bar/b"));
     }
 
 }

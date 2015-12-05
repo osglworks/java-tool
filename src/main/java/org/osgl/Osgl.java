@@ -5310,13 +5310,12 @@ public class Osgl implements Serializable {
         }
     }
 
-    private static class Evaluator<OBJECT, PROP> extends F1<OBJECT, PROP> implements Serializable {
+    static class Evaluator<OBJECT, PROP> extends F1<OBJECT, PROP> implements Serializable {
         transient Class c;
         transient Method m;
         String mn;
         transient Field f;
         String fn;
-        Evaluator cascadeEvaluator;
 
         Evaluator(Class c, Method m, Field f) {
             E.illegalArgumentIf(null == m && null == f);
@@ -5343,9 +5342,6 @@ public class Osgl implements Serializable {
                     v = m.invoke(object);
                 } else {
                     v = f.get(object);
-                }
-                if (null != cascadeEvaluator) {
-                    v = cascadeEvaluator.apply(v);
                 }
                 return cast(v);
             } catch (Exception e) {
@@ -5387,9 +5383,37 @@ public class Osgl implements Serializable {
         return _eval(o, property);
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T eval(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
+        if (null == o) {
+            return null;
+        }
+        if (property.contains(".")) {
+            return eval(cache, o, property.split("\\."));
+        }
+        if (property.contains("/")) {
+            return eval(cache, o, property.split("\\/"));
+        }
+        Evaluator eval = evaluator(cache, o, property);
+        return cast(eval.apply(o));
+    }
+
+    @SuppressWarnings("unchecked")
     private static <T> T _eval(Object o, String p) {
-        Evaluator e = evaluator(o, p);
+        Evaluator e = evaluator(null, o, p);
         return cast(e.apply(o));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T eval(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String ... propertyPath) {
+        Object v = o;
+        Evaluator e = null;
+        for (String p : propertyPath) {
+            Evaluator e0 = evaluator(cache, v, p);
+            e = e0;
+            v = e0.apply(v);
+        }
+        return cast(v);
     }
 
     private static <T> T eval(Object o, String ... propertyPath) {
@@ -5400,37 +5424,52 @@ public class Osgl implements Serializable {
         return cast(v);
     }
 
-    private static Evaluator evaluator(Object o, String property) {
+    private static String evaluatorKey(Class c, String p) {
+        return S.builder("osgl:evk:").append(c.getName()).append(":").append(p).toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Evaluator evaluator(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
+        Evaluator evaluator;
         Class c = o.getClass();
+        String key = null;
+        if (null != cache) {
+            key = evaluatorKey(c, property);
+            evaluator = cast(cache._1.apply(key));
+            if (null != evaluator) {
+                return evaluator;
+            }
+        }
         String p = S.capFirst(property);
         String getter = "get" + p;
         try {
             Method m = c.getMethod(getter);
-            return new Evaluator(c, m, null);
+            evaluator = new Evaluator(c, m, null);
         } catch (NoSuchMethodException e) {
-            //ignore
+            String isser = "is" + p;
+            try {
+                Method m = c.getMethod(isser);
+                evaluator = new Evaluator(c, m, null);
+            } catch (NoSuchMethodException e1) {
+                try {
+                    // try jquery style getter
+                    Method m = c.getMethod(property);
+                    evaluator = new Evaluator(c, m, null);
+                } catch (NoSuchMethodException e2) {
+                    try {
+                        Field f = c.getDeclaredField(property);
+                        f.setAccessible(true);
+                        evaluator = new Evaluator(c, null, f);
+                    } catch (NoSuchFieldException e3) {
+                        throw E.unexpected("Cannot find access method to field %s on class %s", property, c);
+                    }
+                }
+            }
         }
-        String isser = "is" + p;
-        try {
-            Method m = c.getMethod(isser);
-            return new Evaluator(c, m, null);
-        } catch (NoSuchMethodException e) {
-            //ignore
+        if (null != cache) {
+            cache._2.apply(key, evaluator);
         }
-        try {
-            // try jquery style getter
-            Method m = c.getMethod(property);
-            return new Evaluator(c, m, null);
-        } catch (NoSuchMethodException e) {
-            //ignore
-        }
-        try {
-            Field f = c.getDeclaredField(property);
-            f.setAccessible(true);
-            return new Evaluator(c, null, f);
-        } catch (NoSuchFieldException e) {
-            throw E.unexpected("Cannot find access method to field % on class %s", property, c);
-        }
+        return evaluator;
     }
 
     public static <T> byte[] serialize(T obj) {
