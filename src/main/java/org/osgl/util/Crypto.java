@@ -321,6 +321,19 @@ public enum Crypto {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
 
+    private static final int[] POWER_OF_TEN = {
+            1,
+            10,
+            100,
+            1000,
+            10000,
+            100000,
+            1000000,
+            10000000,
+            100000000,
+            1000000000
+    };
+
     private static final int DIGITS_SIZE = digits.length;
 
     /**
@@ -331,12 +344,17 @@ public enum Crypto {
      */
     public static String genRandomDigits(int len) {
         E.illegalArgumentIf(len < 1);
-        SecureRandom random = new SecureRandom();
-        char[] ca = new char[len];
-        for (int i = 0; i < len; ++i) {
-            ca[i] = digits[random.nextInt(DIGITS_SIZE)];
+        if (len < 10) {
+            SecureRandom random = new SecureRandom();
+            int n = random.nextInt(POWER_OF_TEN[len]);
+            int base = POWER_OF_TEN[len - 1];
+            if (n < base) {
+                n += base;
+            }
+            return String.valueOf(n);
+        } else {
+            return genRandomX(len, digits, DIGITS_SIZE);
         }
-        return new String(ca);
     }
 
     /**
@@ -374,10 +392,14 @@ public enum Crypto {
      */
     public static String genRandomStr(int len) {
         E.illegalArgumentIf(len < 1);
+        return genRandomX(len, symbols, SYMBOL_SIZE);
+    }
+
+    private static String genRandomX(int len, char[] space, int spaceSize) {
         SecureRandom random = new SecureRandom();
         char[] ca = new char[len];
         for (int i = 0; i < len; ++i) {
-            ca[i] = symbols[random.nextInt(SYMBOL_SIZE)];
+            ca[i] = space[random.nextInt(spaceSize)];
         }
         return new String(ca);
     }
