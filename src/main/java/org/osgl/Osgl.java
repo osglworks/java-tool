@@ -6116,6 +6116,14 @@ public class Osgl implements Serializable {
         return range.tail(n).head();
     }
 
+    public static String randomStr() {
+        return S.random();
+    }
+
+    public static String randomStr(int len) {
+        return S.random(len);
+    }
+
     public static <T> T NPE(T o) {
         E.NPE(o);
         return o;

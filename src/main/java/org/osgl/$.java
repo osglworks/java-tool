@@ -20,6 +20,7 @@
 package org.osgl;
 
 import java.io.ObjectStreamException;
+import java.util.regex.Pattern;
 
 /**
  * Alias of {@link Osgl}
@@ -33,6 +34,13 @@ public final class $ extends Osgl {
 
     private Object readResolve() throws ObjectStreamException {
         return INSTANCE;
+    }
+
+    public static void main(String[] args) {
+        String s = "ab As C";
+        Pattern p = Pattern.compile("\\s+as\\s+", Pattern.CASE_INSENSITIVE);
+        String[] sa = p.split(s);
+        System.out.println($.toString2(sa));
     }
 
 }
