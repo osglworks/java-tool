@@ -69,10 +69,10 @@ public class OsglTest extends TestBase {
         int i = N.randInt();
         boolean b = false;
         Foo foo = new Foo(s1, i, s2, b);
-        eq(s1, $.eval(foo, "s"));
-        eq(s2, $.eval(foo, "bar.s"));
-        eq(i, $.eval(foo, "i"));
-        eq(false, $.eval(foo, "bar/b"));
+        eq(s1, $.getProperty(foo, "s"));
+        eq(s2, $.getProperty(foo, "bar.s"));
+        eq(i, $.getProperty(foo, "i"));
+        eq(false, $.getProperty(foo, "bar/b"));
     }
 
     @Test
@@ -99,15 +99,15 @@ public class OsglTest extends TestBase {
         boolean b = false;
         Foo foo = new Foo(s1, i, s2, b);
 
-        eq(s1, $.eval(cache, foo, "s"));
-        eq(s2, $.eval(cache, foo, "bar.s"));
-        eq(i, $.eval(cache, foo, "i"));
-        eq(false, $.eval(cache, foo, "bar/b"));
+        eq(s1, $.getProperty(cache, foo, "s"));
+        eq(s2, $.getProperty(cache, foo, "bar.s"));
+        eq(i, $.getProperty(cache, foo, "i"));
+        eq(false, $.getProperty(cache, foo, "bar/b"));
 
-        eq(s1, $.eval(cache, foo, "s"));
-        eq(s2, $.eval(cache, foo, "bar.s"));
-        eq(i, $.eval(cache, foo, "i"));
-        eq(false, $.eval(cache, foo, "bar/b"));
+        eq(s1, $.getProperty(cache, foo, "s"));
+        eq(s2, $.getProperty(cache, foo, "bar.s"));
+        eq(i, $.getProperty(cache, foo, "i"));
+        eq(false, $.getProperty(cache, foo, "bar/b"));
     }
 
 }

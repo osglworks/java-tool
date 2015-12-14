@@ -5310,14 +5310,14 @@ public class Osgl implements Serializable {
         }
     }
 
-    static class Evaluator<OBJECT, PROP> extends F1<OBJECT, PROP> implements Serializable {
+    static class PropertyExtractor<OBJECT, PROP> extends F1<OBJECT, PROP> implements Serializable {
         transient Class c;
         transient Method m;
         String mn;
         transient Field f;
         String fn;
 
-        Evaluator(Class c, Method m, Field f) {
+        PropertyExtractor(Class c, Method m, Field f) {
             E.illegalArgumentIf(null == m && null == f);
             this.c = c;
             this.m = m;
@@ -5370,96 +5370,96 @@ public class Osgl implements Serializable {
         }
     }
 
-    public static <T> T eval(Object o, String property) {
+    public static <T> T getProperty(Object o, String property) {
         if (null == o) {
             return null;
         }
         if (property.contains(".")) {
-            return eval(o, property.split("\\."));
+            return getProperty(o, property.split("\\."));
         }
         if (property.contains("/")) {
-            return eval(o, property.split("\\/"));
+            return getProperty(o, property.split("\\/"));
         }
-        return _eval(o, property);
+        return _extract(o, property);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T eval(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
+    public static <T> T getProperty(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
         if (null == o) {
             return null;
         }
         if (property.contains(".")) {
-            return eval(cache, o, property.split("\\."));
+            return getProperty(cache, o, property.split("\\."));
         }
         if (property.contains("/")) {
-            return eval(cache, o, property.split("\\/"));
+            return getProperty(cache, o, property.split("\\/"));
         }
-        Evaluator eval = evaluator(cache, o, property);
-        return cast(eval.apply(o));
+        PropertyExtractor extractor = propertyExtractor(cache, o, property);
+        return cast(extractor.apply(o));
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T _eval(Object o, String p) {
-        Evaluator e = evaluator(null, o, p);
-        return cast(e.apply(o));
+    private static <T> T _extract(Object o, String p) {
+        PropertyExtractor extractor = propertyExtractor(null, o, p);
+        return cast(extractor.apply(o));
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T eval(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String ... propertyPath) {
+    private static <T> T getProperty(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String ... propertyPath) {
         Object v = o;
-        Evaluator e = null;
+        PropertyExtractor e = null;
         for (String p : propertyPath) {
-            Evaluator e0 = evaluator(cache, v, p);
+            PropertyExtractor e0 = propertyExtractor(cache, v, p);
             e = e0;
             v = e0.apply(v);
         }
         return cast(v);
     }
 
-    private static <T> T eval(Object o, String ... propertyPath) {
+    private static <T> T getProperty(Object o, String ... propertyPath) {
         Object v = o;
         for (String p : propertyPath) {
-            v = _eval(v, p);
+            v = _extract(v, p);
         }
         return cast(v);
     }
 
-    private static String evaluatorKey(Class c, String p) {
+    private static String extractorKey(Class c, String p) {
         return S.builder("osgl:evk:").append(c.getName()).append(":").append(p).toString();
     }
 
     @SuppressWarnings("unchecked")
-    private static Evaluator evaluator(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
-        Evaluator evaluator;
+    private static PropertyExtractor propertyExtractor(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
+        PropertyExtractor propertyExtractor;
         Class c = o.getClass();
         String key = null;
         if (null != cache) {
-            key = evaluatorKey(c, property);
-            evaluator = cast(cache._1.apply(key));
-            if (null != evaluator) {
-                return evaluator;
+            key = extractorKey(c, property);
+            propertyExtractor = cast(cache._1.apply(key));
+            if (null != propertyExtractor) {
+                return propertyExtractor;
             }
         }
         String p = S.capFirst(property);
         String getter = "get" + p;
         try {
             Method m = c.getMethod(getter);
-            evaluator = new Evaluator(c, m, null);
+            propertyExtractor = new PropertyExtractor(c, m, null);
         } catch (NoSuchMethodException e) {
             String isser = "is" + p;
             try {
                 Method m = c.getMethod(isser);
-                evaluator = new Evaluator(c, m, null);
+                propertyExtractor = new PropertyExtractor(c, m, null);
             } catch (NoSuchMethodException e1) {
                 try {
                     // try jquery style getter
                     Method m = c.getMethod(property);
-                    evaluator = new Evaluator(c, m, null);
+                    propertyExtractor = new PropertyExtractor(c, m, null);
                 } catch (NoSuchMethodException e2) {
                     try {
                         Field f = c.getDeclaredField(property);
                         f.setAccessible(true);
-                        evaluator = new Evaluator(c, null, f);
+                        propertyExtractor = new PropertyExtractor(c, null, f);
                     } catch (NoSuchFieldException e3) {
                         throw E.unexpected("Cannot find access method to field %s on class %s", property, c);
                     }
@@ -5467,9 +5467,9 @@ public class Osgl implements Serializable {
             }
         }
         if (null != cache) {
-            cache._2.apply(key, evaluator);
+            cache._2.apply(key, propertyExtractor);
         }
-        return evaluator;
+        return propertyExtractor;
     }
 
     public static <T> byte[] serialize(T obj) {
