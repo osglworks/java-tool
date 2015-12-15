@@ -5357,6 +5357,7 @@ public class Osgl implements Serializable {
                 }
                 if (null != mn) {
                     m = c.getMethod(mn);
+                    m.setAccessible(true);
                 } else if (null != fn) {
                     f = c.getDeclaredField(fn);
                     f.setAccessible(true);

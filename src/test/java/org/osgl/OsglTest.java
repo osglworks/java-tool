@@ -7,6 +7,7 @@ import org.osgl.util.N;
 import org.osgl.util.S;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by luog on 4/04/14.
@@ -48,17 +49,35 @@ public class OsglTest extends TestBase {
         }
     }
 
-    public class Foo {
+    public class FooBase {
+        private String baseId;
+        public FooBase(String baseId) {
+            this.baseId = baseId;
+        }
+        public String getBaseId() {
+            return baseId;
+        }
+    }
+
+    public class Foo extends FooBase {
         private String s;
         private int i;
         private Bar bar;
+        private List<Bar> barList;
         Foo(String s1, int i, String s2, boolean b) {
+            super(s1);
             s = s1;
             this.i = i;
             bar = new Bar(s2, b);
         }
         public String getS() {
             return s;
+        }
+        public void addBar(Bar bar) {
+            if (barList == null) {
+                barList = C.newList();
+            }
+            barList.add(bar);
         }
     }
 
@@ -71,8 +90,14 @@ public class OsglTest extends TestBase {
         Foo foo = new Foo(s1, i, s2, b);
         eq(s1, $.getProperty(foo, "s"));
         eq(s2, $.getProperty(foo, "bar.s"));
+        eq(s1, $.getProperty(foo, "baseId"));
         eq(i, $.getProperty(foo, "i"));
         eq(false, $.getProperty(foo, "bar/b"));
+        eq(false, $.getProperty(foo, "bar.b"));
+        eq(null, $.getProperty(foo, "barList"));
+        Bar bar = new Bar("bar", true);
+        foo.addBar(bar);
+        eq(bar, ((List)$.getProperty(foo, "barList")).get(0));
     }
 
     @Test
