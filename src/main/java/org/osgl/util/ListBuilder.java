@@ -104,6 +104,22 @@ implements RandomAccess, Serializable {
     }
 
     @Override
+    public void add(int index, T element) {
+        if (index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        checkState();
+        int sz = size++;
+        ensureCapacity(sz + 1);
+        if (index == sz) {
+            buf[sz] = element;
+        } else {
+            System.arraycopy(buf, index, buf, index + 1, sz - index);
+            buf[index] = element;
+        }
+    }
+
+    @Override
     public Object[] toArray() {
         checkState();
         return Arrays.copyOf(buf, size);
