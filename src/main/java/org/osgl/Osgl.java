@@ -5310,14 +5310,14 @@ public class Osgl implements Serializable {
         }
     }
 
-    static class PropertyExtractor<OBJECT, PROP> extends F1<OBJECT, PROP> implements Serializable {
+    static class ReflectionPropertyExtractor<OBJECT, PROP> extends PropertyExtractor<OBJECT, PROP> {
         transient Class c;
         transient Method m;
         String mn;
         transient Field f;
         String fn;
 
-        PropertyExtractor(Class c, Method m, Field f) {
+        ReflectionPropertyExtractor(Class c, Method m, Field f) {
             E.illegalArgumentIf(null == m && null == f);
             this.c = c;
             this.m = m;
@@ -5331,7 +5331,7 @@ public class Osgl implements Serializable {
 
         @Override
         @SuppressWarnings("unchecked")
-        public PROP apply(OBJECT object) throws NotAppliedException, Break {
+        protected PROP extract(OBJECT object) throws NotAppliedException, Break {
             if (null == object) {
                 return null;
             }
@@ -5395,22 +5395,22 @@ public class Osgl implements Serializable {
         if (property.contains("/")) {
             return getProperty(cache, o, property.split("\\/"));
         }
-        PropertyExtractor extractor = propertyExtractor(cache, o, property);
+        ReflectionPropertyExtractor extractor = propertyExtractor(cache, o, property);
         return cast(extractor.apply(o));
     }
 
     @SuppressWarnings("unchecked")
     private static <T> T _extract(Object o, String p) {
-        PropertyExtractor extractor = propertyExtractor(null, o, p);
+        ReflectionPropertyExtractor extractor = propertyExtractor(null, o, p);
         return cast(extractor.apply(o));
     }
 
     @SuppressWarnings("unchecked")
     private static <T> T getProperty(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String ... propertyPath) {
         Object v = o;
-        PropertyExtractor e = null;
+        ReflectionPropertyExtractor e = null;
         for (String p : propertyPath) {
-            PropertyExtractor e0 = propertyExtractor(cache, v, p);
+            ReflectionPropertyExtractor e0 = propertyExtractor(cache, v, p);
             e = e0;
             v = e0.apply(v);
         }
@@ -5430,8 +5430,8 @@ public class Osgl implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static PropertyExtractor propertyExtractor(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
-        PropertyExtractor propertyExtractor;
+    private static ReflectionPropertyExtractor propertyExtractor(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
+        ReflectionPropertyExtractor propertyExtractor;
         Class c = o.getClass();
         String key = null;
         if (null != cache) {
@@ -5445,22 +5445,22 @@ public class Osgl implements Serializable {
         String getter = "get" + p;
         try {
             Method m = c.getMethod(getter);
-            propertyExtractor = new PropertyExtractor(c, m, null);
+            propertyExtractor = new ReflectionPropertyExtractor(c, m, null);
         } catch (NoSuchMethodException e) {
             String isser = "is" + p;
             try {
                 Method m = c.getMethod(isser);
-                propertyExtractor = new PropertyExtractor(c, m, null);
+                propertyExtractor = new ReflectionPropertyExtractor(c, m, null);
             } catch (NoSuchMethodException e1) {
                 try {
                     // try jquery style getter
                     Method m = c.getMethod(property);
-                    propertyExtractor = new PropertyExtractor(c, m, null);
+                    propertyExtractor = new ReflectionPropertyExtractor(c, m, null);
                 } catch (NoSuchMethodException e2) {
                     try {
                         Field f = c.getDeclaredField(property);
                         f.setAccessible(true);
-                        propertyExtractor = new PropertyExtractor(c, null, f);
+                        propertyExtractor = new ReflectionPropertyExtractor(c, null, f);
                     } catch (NoSuchFieldException e3) {
                         throw E.unexpected("Cannot find access method to field %s on class %s", property, c);
                     }
