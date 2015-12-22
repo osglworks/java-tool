@@ -791,6 +791,13 @@ public enum C {
          * Indices start at 0.
          */
         Sequence<_.T2<T, Integer>> zipWithIndex();
+
+        /**
+         * Count the element occurence in this sequence
+         * @param t the element
+         * @return the number of times the element be presented in this sequence
+         */
+        int count(T t);
     }
 
     /**

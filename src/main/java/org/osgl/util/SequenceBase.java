@@ -248,4 +248,19 @@ extends TraversableBase<T> implements C.Sequence<T> {
     public C.Sequence<_.T2<T, Integer>> zipWithIndex() {
         return new ZippedSeq<T, Integer>(this, new IndexIterable(this));
     }
+
+    @Override
+    public int count(T t) {
+        return count(this, t);
+    }
+
+    public static <T> int count(C.Sequence<T> sequence, T element) {
+        int n = 0;
+        for (T t : sequence) {
+            if (_.eq(t, element)) {
+                n++;
+            }
+        }
+        return n;
+    }
 }
