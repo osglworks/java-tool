@@ -1187,7 +1187,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             }
             int n = 1;
             for (int i = pos + 1; i < size(); ++i) {
-                if (_.eq(t, get(i))) {
+                if ($.eq(t, get(i))) {
                     n++;
                 } else {
                     break;
