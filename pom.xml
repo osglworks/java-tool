@@ -101,6 +101,7 @@
 - Fix issue _.newInstance(...) failure when there are overloaded constructor with first parameter type is the same
 - Add T _.async(_.F0<T>, long)
 - Add N.round(float, int) and N.round(double, int) method
+- Add C.Sequence.count(T) method
 
 0.8
 - Rename "_" to "O" as "$" will be an illegal identifier after Java 8

@@ -194,5 +194,11 @@ public abstract class SequenceTestBase extends TraversableTestBase {
         eq(seqOf($.T2(1, 2), $.T2(3, -2)), data().zipAll(seqOf(2), -1, -2));
     }
 
+    @Test
+    public void testCount() {
+        eq(1, prepareData(1, 2, 3).count(2));
+        eq(2, prepareData(1, 2, 3, 2).count(2));
+        eq(2, prepareData(1, 2, 2, 3).count(2));
+    }
 
 }

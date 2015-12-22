@@ -206,6 +206,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     public void add(int index, T element) {
         super.add(index, element);
         sorted = false;
+        unsetFeature(SORTED);
     }
 
     public boolean addAll(Iterable<? extends T> iterable) {
@@ -217,6 +218,9 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             }
         }
         sorted = !modified;
+        if (!sorted) {
+            unsetFeature(SORTED);
+        }
         return modified;
     }
 
@@ -1172,6 +1176,26 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             return zipAll((java.util.List<T2>) rseq, def1, def2);
         }
         return new ZippedRSeq<T, T2>(this, rseq, def1, def2);
+    }
+
+    @Override
+    public int count(T t) {
+        if (sorted) {
+            int pos = indexOf(t);
+            if (pos < 0) {
+                return 0;
+            }
+            int n = 1;
+            for (int i = pos + 1; i < size(); ++i) {
+                if (_.eq(t, get(i))) {
+                    n++;
+                } else {
+                    break;
+                }
+            }
+            return n;
+        }
+        return SequenceBase.count(this, t);
     }
 
     int modCount() {
