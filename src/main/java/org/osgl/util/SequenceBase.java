@@ -257,7 +257,7 @@ extends TraversableBase<T> implements C.Sequence<T> {
     public static <T> int count(C.Sequence<T> sequence, T element) {
         int n = 0;
         for (T t : sequence) {
-            if (_.eq(t, element)) {
+            if ($.eq(t, element)) {
                 n++;
             }
         }
