@@ -1,6 +1,7 @@
 package org.osgl.util;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgl.$;
 
@@ -136,15 +137,15 @@ public class ListBuilderTest extends UtilTestBase {
 //            long t4 = _.ns() - ts;
 //
 
-            ListBuilder<Integer> lb = new ListBuilder<Integer>();
-            ts = $.ns();
-            lb.addAll(il);
-            long t1 = $.ns() - ts;
-
             ArrayList<Integer> arrayList = new ArrayList<Integer>();
             ts = $.ns();
             arrayList.addAll(il);
             long t3 = $.ns() - ts;
+
+            ListBuilder<Integer> lb = new ListBuilder<Integer>();
+            ts = $.ns();
+            lb.addAll(il);
+            long t1 = $.ns() - ts;
 
             //if (!(t3 > t1)) fails++;
             boolean fail = ((t1 > t3) && (t1 - t3) * 100 / t1 > 5);
@@ -155,6 +156,7 @@ public class ListBuilderTest extends UtilTestBase {
     }
 
     @Test
+    @Ignore
     public void benchmarkAppendCollections() {
         final int max = 28, times = 100;
         Integer[] a = new Integer[max];
