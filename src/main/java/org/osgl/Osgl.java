@@ -5350,11 +5350,15 @@ public class Osgl implements Serializable {
             return null;
         }
         Object v = o;
-        ReflectionPropertyGetter e = null;
         for (String p : propertyPath) {
-            ReflectionPropertyGetter e0 = propertyGetter(cache, v, p);
-            e = e0;
-            v = e0.apply(v);
+            ReflectionPropertyGetter getter = propertyGetter(cache, v, p);
+            if (null == getter) {
+                return null;
+            }
+            v = getter.apply(v);
+            if (null == v) {
+                return null;
+            }
         }
         return cast(v);
     }
