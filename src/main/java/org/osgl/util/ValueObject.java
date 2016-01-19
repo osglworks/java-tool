@@ -330,6 +330,10 @@ public class ValueObject {
         return $.cast(eVal);
     }
 
+    public <T> T value() {
+        return type().get(this);
+    }
+
     @Override
     public int hashCode() {
         return $.hc(type().get(this));
