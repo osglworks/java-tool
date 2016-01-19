@@ -11,7 +11,7 @@ import java.util.Map;
  * <li>Primary types</li>
  * <li>String</li>
  * <li>Enum</li>
- * <li>Date and Time types</li>
+ * <li>Types with {@link Codec} {@link #register(Codec) registered}</li>
  * </ul>
  * <p>
  * {@code ValueObject} is immutable
@@ -155,29 +155,31 @@ public class ValueObject {
                 return S.builder("\"").append(toString(vo)).append("\"").toString();
             }
         },
-        UNKNOWN() {
+        UDF() {
             @Override
             <T> T get(ValueObject vo) {
-                return $.cast(vo.unknown);
+                return $.cast(vo.udf);
             }
 
             @Override
             void set(Object o, ValueObject vo) {
-                vo.unknown = o;
+                Codec c = findCodec(vo.getClass());
+                E.illegalArgumentIf(null == c, "Cannot find registered codec for value class: %s", vo.getClass());
+                vo.udf = o;
             }
 
             @Override
             String toString(ValueObject vo) {
-                Class objType = vo.unknown.getClass();
+                Class objType = vo.udf.getClass();
                 Codec codec = findCodec(objType);
-                return null != codec ? codec.toString(vo.unknown) : super.toString(vo);
+                return null != codec ? codec.toString(vo.udf) : super.toString(vo);
             }
 
             @Override
             String toJSONString(ValueObject vo) {
-                Class objType = vo.unknown.getClass();
+                Class objType = vo.udf.getClass();
                 Codec codec = findCodec(objType);
-                return null != codec ? codec.toJSONString(vo.unknown) : super.toJSONString(vo);
+                return null != codec ? codec.toJSONString(vo.udf) : super.toJSONString(vo);
             }
 
             private Codec findCodec(Class c) {
@@ -197,6 +199,7 @@ public class ValueObject {
                 Class sc = c.getSuperclass();
                 return null == sc ? null : findCodec(c);
             }
+
         };
 
         abstract <T> T get(ValueObject vo);
@@ -210,6 +213,7 @@ public class ValueObject {
         String toJSONString(ValueObject vo) {
             return toString(vo);
         }
+
     }
 
     private transient Type type;
@@ -224,7 +228,7 @@ public class ValueObject {
     private Double dVal;
     private String sVal;
     private Enum eVal;
-    private Object unknown;
+    private Object udf;
 
     public ValueObject() {
         this("");
@@ -334,6 +338,10 @@ public class ValueObject {
         return type().get(this);
     }
 
+    public boolean isUDF() {
+        return type() == Type.UDF;
+    }
+
     @Override
     public int hashCode() {
         return $.hc(type().get(this));
@@ -413,7 +421,7 @@ public class ValueObject {
         if (shVal != null) {
             return Type.SHORT;
         }
-        return Type.UNKNOWN;
+        return Type.UDF;
     }
 
     private Type typeOf(Object o) {
@@ -450,7 +458,7 @@ public class ValueObject {
         if (o instanceof Short) {
             return Type.SHORT;
         }
-        return Type.UNKNOWN;
+        return Type.UDF;
     }
 
 }
