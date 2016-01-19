@@ -156,4 +156,11 @@ public class ValueObjectTest extends TestBase {
         ValueObject vo = new ValueObject(false);
         vo.intValue();
     }
+
+    @Test
+    public void testCopyConstructor() {
+        ValueObject vo = new ValueObject(5);
+        ValueObject copy = new ValueObject(vo);
+        eq(copy, vo);
+    }
 }

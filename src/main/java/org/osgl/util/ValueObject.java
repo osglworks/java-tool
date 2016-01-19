@@ -290,8 +290,19 @@ public class ValueObject {
     }
 
     public ValueObject(Object o) {
-        type = typeOf(o);
-        type.set(o, this);
+        if (o instanceof ValueObject) {
+            ValueObject that = (ValueObject) o;
+            type = that.type();
+            type.set(that.value(), this);
+        } else {
+            type = typeOf(o);
+            type.set(o, this);
+        }
+    }
+
+    public ValueObject(ValueObject copy) {
+        type = copy.type();
+        type.set(copy.value(), this);
     }
 
     public boolean booleanValue() {
