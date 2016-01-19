@@ -368,6 +368,13 @@ public class ValueObject {
         codecRegistry.remove(codec.targetClass());
     }
 
+    public static ValueObject of(Object o) {
+        if (o instanceof ValueObject) {
+            return $.cast(o);
+        }
+        return new ValueObject(o);
+    }
+
     private Type type() {
         if (null == type) {
             type = findType();
