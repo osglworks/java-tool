@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import com.sun.org.apache.bcel.internal.classfile.Code;
 import com.sun.org.apache.xerces.internal.impl.dv.xs.DoubleDV;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.osgl.$;
@@ -238,6 +239,13 @@ public class ValueObject {
             }
 
             @Override
+            String encode(Object o) {
+                Codec codec = findCodec(o.getClass());
+                E.illegalArgumentIf(null == codec, "Cannot find registered codec for value class: %s", o.getClass());
+                return codec.toString(o);
+            }
+
+            @Override
             String toString(ValueObject vo) {
                 Class objType = vo.udf.getClass();
                 Codec codec = findCodec(objType);
@@ -285,6 +293,9 @@ public class ValueObject {
 
         abstract <T> T decode(String s, Class<T> type);
 
+        String encode(Object o) {
+            return S.string(o);
+        }
     }
 
     private transient Type type;
@@ -468,6 +479,17 @@ public class ValueObject {
     public static <T> T decode(String string, Class<T> targetType) {
         Type type = typeOf(targetType);
         return type.decode(string, targetType);
+    }
+
+    /**
+     * Encode a object into a String
+     * @param o the object to be encoded
+     * @return the encoded string representation of the object
+     * @throws IllegalArgumentException when object is a UDF type and Codec is not registered
+     */
+    public static String encode(Object o) {
+        Type type = typeOf(o);
+        return type.encode(o);
     }
 
     public static ValueObject of(Object o) {
