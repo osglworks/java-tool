@@ -5059,6 +5059,51 @@ public class Osgl implements Serializable {
         __primitiveInstances.put(double.class, 0d);
     }
 
+    private static Map<Class, Class> __primitiveToWrappers = new HashMap<Class, Class>();
+    private static Map<Class, Class> __wrapperToPrmitives = new HashMap<Class, Class>();
+
+    static {
+        __primitiveToWrappers.put(int.class, Integer.class);
+        __primitiveToWrappers.put(boolean.class, Boolean.class);
+        __primitiveToWrappers.put(byte.class, Byte.class);
+        __primitiveToWrappers.put(short.class, Short.class);
+        __primitiveToWrappers.put(char.class, Character.class);
+        __primitiveToWrappers.put(long.class, Long.class);
+        __primitiveToWrappers.put(float.class, Float.class);
+        __primitiveToWrappers.put(double.class, Double.class);
+        __primitiveToWrappers.put(int[].class, Integer[].class);
+        __primitiveToWrappers.put(boolean[].class, Boolean[].class);
+        __primitiveToWrappers.put(byte[].class, Byte[].class);
+        __primitiveToWrappers.put(short[].class, Short[].class);
+        __primitiveToWrappers.put(char[].class, Character[].class);
+        __primitiveToWrappers.put(long[].class, Long[].class);
+        __primitiveToWrappers.put(float[].class, Float[].class);
+        __primitiveToWrappers.put(double[].class, Double[].class);
+
+        for (Class p : __primitiveToWrappers.keySet()) {
+            __wrapperToPrmitives.put(__primitiveToWrappers.get(p), p);
+        }
+    }
+
+    public static Class wrapperClassOf(Class c) {
+        if (c.isPrimitive()) {
+            return __primitiveToWrappers.get(c);
+        }
+        if (c.isArray()) {
+            Class c0 = __primitiveToWrappers.get(c);
+            return null == c0 ? c : c0;
+        }
+        return c;
+    }
+
+    public static Class primitiveTypeOf(Class c) {
+        if (c.isPrimitive()) {
+            return c;
+        }
+        Class c0 = __wrapperToPrmitives.get(c);
+        return null == c0 ? c : c0;
+    }
+
     public static <T> Class<T> classForName(String className) {
         Class c = __primitiveTypes.get(className);
         if (null != c) return c;
