@@ -197,6 +197,7 @@ public class ValueObject {
             }
         },
         ENUM() {
+
             @Override
             <T> T get(ValueObject vo) {
                 return (T) vo.eVal;
@@ -432,7 +433,8 @@ public class ValueObject {
     }
 
     public boolean isUDF() {
-        return type() == Type.UDF;
+        Type type = type();
+        return type == Type.UDF || type == Type.ENUM;
     }
 
     @Override
