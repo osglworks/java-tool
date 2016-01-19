@@ -1,5 +1,7 @@
 package org.osgl.util;
 
+import com.sun.org.apache.xerces.internal.impl.dv.xs.DoubleDV;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.osgl.$;
 
 import java.util.Map;
@@ -40,6 +42,12 @@ public class ValueObject {
             void set(Object o, ValueObject vo) {
                 vo.blVal = $.cast(o);
             }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(boolean.class != type || Boolean.class != type);
+                return (T) Boolean.valueOf(s);
+            }
         },
         BYTE() {
             @Override
@@ -50,6 +58,12 @@ public class ValueObject {
             @Override
             void set(Object o, ValueObject vo) {
                 vo.byVal = $.cast(o);
+            }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(byte.class != type || Byte.class != type);
+                return (T) Byte.valueOf(s);
             }
         },
         CHAR() {
@@ -67,6 +81,12 @@ public class ValueObject {
             String toJSONString(ValueObject vo) {
                 return S.builder("\"").append(toString(vo)).append("\"").toString();
             }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(char.class != type || Character.class != type);
+                return (T) Character.valueOf(s.charAt(0));
+            }
         },
         SHORT() {
             @Override
@@ -77,6 +97,12 @@ public class ValueObject {
             @Override
             void set(Object o, ValueObject vo) {
                 vo.shVal = $.cast(o);
+            }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(short.class != type || Short.class != type);
+                return (T) Short.valueOf(s);
             }
         },
         INT() {
@@ -89,6 +115,12 @@ public class ValueObject {
             void set(Object o, ValueObject vo) {
                 vo.iVal = $.cast(o);
             }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(int.class != type || Integer.class != type);
+                return (T) Integer.valueOf(s);
+            }
         },
         FLOAT() {
             @Override
@@ -99,6 +131,12 @@ public class ValueObject {
             @Override
             void set(Object o, ValueObject vo) {
                 vo.fVal = $.cast(o);
+            }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(float.class != type || Float.class != type);
+                return (T) Float.valueOf(s);
             }
         },
         LONG() {
@@ -111,6 +149,12 @@ public class ValueObject {
             void set(Object o, ValueObject vo) {
                 vo.lVal = $.cast(o);
             }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(long.class != type || Long.class != type);
+                return (T) Long.valueOf(s);
+            }
         },
         DOUBLE() {
             @Override
@@ -121,6 +165,12 @@ public class ValueObject {
             @Override
             void set(Object o, ValueObject vo) {
                 vo.dVal = $.cast(o);
+            }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(double.class != type || Double.class != type);
+                return (T) Double.valueOf(s);
             }
         },
         STRING() {
@@ -138,6 +188,12 @@ public class ValueObject {
             String toJSONString(ValueObject vo) {
                 return S.builder("\"").append(toString(vo)).append("\"").toString();
             }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(String.class != type);
+                return (T) s;
+            }
         },
         ENUM() {
             @Override
@@ -154,6 +210,13 @@ public class ValueObject {
             String toJSONString(ValueObject vo) {
                 return S.builder("\"").append(toString(vo)).append("\"").toString();
             }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                E.illegalArgumentIf(!Enum.class.isAssignableFrom(type));
+                Class<? extends Enum> typedType = $.cast(type);
+                return (T) Enum.valueOf(typedType, s);
+            }
         },
         UDF() {
             @Override
@@ -166,6 +229,12 @@ public class ValueObject {
                 Codec c = findCodec(o.getClass());
                 E.illegalArgumentIf(null == c, "Cannot find registered codec for value class: %s", o.getClass());
                 vo.udf = o;
+            }
+
+            @Override
+            <T> T decode(String s, Class<T> type) {
+                Codec codec = findCodec(type);
+                return (T) codec.parse(s);
             }
 
             @Override
@@ -213,6 +282,8 @@ public class ValueObject {
         String toJSONString(ValueObject vo) {
             return toString(vo);
         }
+
+        abstract <T> T decode(String s, Class<T> type);
 
     }
 
@@ -387,6 +458,18 @@ public class ValueObject {
         codecRegistry.remove(codec.targetClass());
     }
 
+    /**
+     * Decode a object instance from a string with given target object type
+     * @param string the string encoded the value of the instance
+     * @param targetType the class of the instance decoded from the string
+     * @param <T> the generic type of the instance
+     * @return the instance decoded
+     */
+    public static <T> T decode(String string, Class<T> targetType) {
+        Type type = typeOf(targetType);
+        return type.decode(string, targetType);
+    }
+
     public static ValueObject of(Object o) {
         if (o instanceof ValueObject) {
             return $.cast(o);
@@ -435,7 +518,7 @@ public class ValueObject {
         return Type.UDF;
     }
 
-    private Type typeOf(Object o) {
+    private static Type typeOf(Object o) {
         if (null == o) {
             return Type.STRING;
         }
@@ -467,6 +550,38 @@ public class ValueObject {
             return Type.BYTE;
         }
         if (o instanceof Short) {
+            return Type.SHORT;
+        }
+        return Type.UDF;
+    }
+
+    private static Type typeOf(Class c) {
+        E.NPE(c);
+        if (String.class.isAssignableFrom(c)) {
+            return Type.STRING;
+        }
+        if (Integer.class.isAssignableFrom(c) || int.class.isAssignableFrom(c)) {
+            return Type.INT;
+        }
+        if (Boolean.class.isAssignableFrom(c) || boolean.class.isAssignableFrom(c)) {
+            return Type.BOOL;
+        }
+        if (Enum.class.isAssignableFrom(c)) {
+            return Type.ENUM;
+        }
+        if (Double.class.isAssignableFrom(c) || double.class.isAssignableFrom(c)) {
+            return Type.DOUBLE;
+        }
+        if (Long.class.isAssignableFrom(c) || long.class.isAssignableFrom(c)) {
+            return Type.LONG;
+        }
+        if (Character.class.isAssignableFrom(c) || char.class.isAssignableFrom(c)) {
+            return Type.CHAR;
+        }
+        if (Byte.class.isAssignableFrom(c) || byte.class.isAssignableFrom(c)) {
+            return Type.BYTE;
+        }
+        if (Short.class.isAssignableFrom(c) || short.class.isAssignableFrom(c)) {
             return Type.SHORT;
         }
         return Type.UDF;
