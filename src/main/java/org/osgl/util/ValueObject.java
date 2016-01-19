@@ -163,8 +163,8 @@ public class ValueObject {
 
             @Override
             void set(Object o, ValueObject vo) {
-                Codec c = findCodec(vo.getClass());
-                E.illegalArgumentIf(null == c, "Cannot find registered codec for value class: %s", vo.getClass());
+                Codec c = findCodec(o.getClass());
+                E.illegalArgumentIf(null == c, "Cannot find registered codec for value class: %s", o.getClass());
                 vo.udf = o;
             }
 
@@ -197,7 +197,7 @@ public class ValueObject {
                     }
                 }
                 Class sc = c.getSuperclass();
-                return null == sc ? null : findCodec(c);
+                return null == sc ? null : findCodec(sc);
             }
 
         };

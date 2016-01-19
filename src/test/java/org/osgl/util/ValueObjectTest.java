@@ -117,9 +117,7 @@ public class ValueObjectTest extends TestBase {
     }
 
     @Test
-    public void testUnknown() {
-        Date date = new Date();
-        ValueObject vo = new ValueObject(date);
+    public void testUDF() {
         final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         ValueObject.Codec dateCodec = new ValueObject.Codec<Date>() {
             @Override
@@ -147,6 +145,8 @@ public class ValueObjectTest extends TestBase {
             }
         };
         ValueObject.register(dateCodec);
+        Date date = new Date();
+        ValueObject vo = new ValueObject(date);
         eq(vo.toString(), df.format(date));
         eq(vo.toJSONString(), S.fmt("\"%s\"", df.format(date)));
     }
