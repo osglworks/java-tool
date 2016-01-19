@@ -5050,7 +5050,7 @@ public class Osgl implements Serializable {
         __primitiveInstances.put("float.class", 0f);
         __primitiveInstances.put("double.class", 0d);
         __primitiveInstances.put(int.class, 0);
-        __primitiveInstances.put(boolean.class, 0);
+        __primitiveInstances.put(boolean.class, false);
         __primitiveInstances.put(byte.class, 0);
         __primitiveInstances.put(short.class, 0);
         __primitiveInstances.put(char.class, 0);
