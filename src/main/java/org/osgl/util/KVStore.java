@@ -10,7 +10,26 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class KVStore extends HashMap<String, ValueObject> implements Map<String, ValueObject> {
 
+    /**
+     * Create an empty {@code KVStore}
+     */
     public KVStore() {
+    }
+
+    /**
+     * Create a {@code KVStore} by coping another {@code KVStore}
+     * @param copy the KVStore in which all (K,V) pairs will be copied into the new KVStore instance
+     */
+    public KVStore(KVStore copy) {
+        putAll(copy);
+    }
+
+    /**
+     * Create a {@code KVStore} with a (String, Object) map
+     * @param values the map in which all entries will be stored into the new KVStore instance
+     */
+    public KVStore(Map<String, Object> values) {
+        putValues(values);
     }
 
     /**
