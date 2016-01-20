@@ -54,7 +54,11 @@ public class KVStore extends HashMap<String, ValueObject> implements Map<String,
      * @see ValueObject#value()
      */
     public <T> T getValue(String key) {
-        return get(key).value();
+        ValueObject vo = get(key);
+        if (null == vo) {
+            return null;
+        }
+        return vo.value();
     }
 
     /**
