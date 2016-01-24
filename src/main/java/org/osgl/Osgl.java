@@ -6281,6 +6281,8 @@ public class Osgl implements Serializable {
         JAVA_VERSION = Integer.parseInt(_JV.substring(_pos + 1));
     }
 
+    public static final OS OS = org.osgl.util.OS.get();
+
     /**
      * The namespace to aggregate predefined core functions
      */
