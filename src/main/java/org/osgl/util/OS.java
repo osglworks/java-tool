@@ -4,7 +4,7 @@ package org.osgl.util;
  * Operating system enum
  */
 public enum OS {
-    WINDOWS, MAC_OS_X, LINUX, OS2, HP_UX, AIX, IRIX, SOLARIS, SUN_OS, UNKNOWN;
+    WINDOWS, MAC_OS_X, LINUX, OS2, HP_UX, AIX, IRIX, SOLARIS, SUN_OS, MPE_IX, OS_390, FREEBSD, DIGITAL_UNIX, OSF1, UNKNOWN;
 
     private static OS os = null; static {
         String s = System.getProperty("os.name").toUpperCase();
@@ -17,6 +17,10 @@ public enum OS {
         if (null == os) {
             if (s.startsWith("OS/2")) {
                 os = OS2;
+            } else if (s.startsWith("OS/390")) {
+                os = OS_390;
+            } else if (s.startsWith("DIGITAL UNIX")) {
+                os = DIGITAL_UNIX;
             } else {
                 os = UNKNOWN;
             }
