@@ -531,7 +531,26 @@ public class IO {
             try {
                 write(new FileInputStream(source),  new FileOutputStream(target));
             } catch (IOException e) {
-                throw E.ioException(e);
+                if (target.isDirectory()) {
+                    if (!target.exists()) {
+                        if (!target.mkdirs()) {
+                            throw E.ioException("cannot copy [%s] to [%s]", source, target);
+                        }
+                    }
+                    target = new File(target, source.getName());
+                } else {
+                    File targetFolder = target.getParentFile();
+                    if (!targetFolder.exists()) {
+                        if (!targetFolder.mkdirs()) {
+                            throw E.ioException("cannot copy [%s] to [%s]", source, target);
+                        }
+                    }
+                }
+                try {
+                    write(new FileInputStream(source), new FileOutputStream(target));
+                } catch (IOException e0) {
+                    throw E.ioException(e0);
+                }
             }
         }
     }
