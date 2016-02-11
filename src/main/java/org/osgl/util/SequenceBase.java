@@ -3,6 +3,8 @@ package org.osgl.util;
 import org.osgl.$;
 
 import java.util.EnumSet;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -185,11 +187,27 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public C.Sequence<T> append(C.Sequence<T> seq) {
+    public C.Sequence<T> append(C.Sequence<? extends T> seq) {
         if (seq.isEmpty()) {
             return this;
         }
         return CompositeSeq.of(this, seq);
+    }
+
+    @Override
+    public C.Sequence<T> append(Iterator<? extends T> iterator) {
+        if (!iterator.hasNext()) {
+            return this;
+        }
+        return CompositeSeq.of(this, C.seq(iterator));
+    }
+
+    @Override
+    public C.Sequence<T> append(Enumeration<? extends T> enumeration) {
+        if (!enumeration.hasMoreElements()) {
+            return this;
+        }
+        return CompositeSeq.of(this, C.seq(enumeration));
     }
 
     @Override
@@ -206,11 +224,28 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public C.Sequence<T> prepend(C.Sequence<T> seq) {
+    public C.Sequence<T> prepend(Iterator<? extends T> iterator) {
+        if (!iterator.hasNext()) {
+            return this;
+        }
+        return prepend(C.seq(iterator));
+    }
+
+    @Override
+    public C.Sequence<T> prepend(Enumeration<? extends T> enumeration) {
+        if (!enumeration.hasMoreElements()) {
+            return this;
+        }
+        return prepend(C.seq(enumeration));
+    }
+
+    @Override
+    public C.Sequence<T> prepend(C.Sequence<? extends T> seq) {
         if (seq.isEmpty()) {
             return this;
         }
-        return seq.append(this);
+        C.Sequence<T> casted = $.cast(seq);
+        return casted.append(this);
     }
 
     @Override

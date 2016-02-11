@@ -316,7 +316,7 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public C.Sequence<T> append(C.Sequence<T> seq) {
+    public C.Sequence<T> append(C.Sequence<? extends T> seq) {
         if (seq instanceof C.List) {
             return appendList((C.List<T>) seq);
         }
@@ -325,6 +325,26 @@ implements C.List<T>, RandomAccess, Serializable {
         }
         ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
         lb.append(this).append(seq);
+        return lb.toList();
+    }
+
+    @Override
+    public C.Sequence<T> append(Iterator<? extends T> iterator) {
+        if (isLazy()) {
+            return CompositeSeq.of(this, C.seq(iterator));
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
+        lb.append(this).append(iterator);
+        return lb.toList();
+    }
+
+    @Override
+    public C.Sequence<T> append(Enumeration<? extends T> enumeration) {
+        if (isLazy()) {
+            return CompositeSeq.of(this, C.seq(enumeration));
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
+        lb.append(this).append(enumeration);
         return lb.toList();
     }
 
@@ -370,12 +390,6 @@ implements C.List<T>, RandomAccess, Serializable {
         return of(data);
     }
 
-
-    @Override
-    public C.Sequence<T> prepend(Iterable<? extends T> iterable) {
-        return super.prepend(iterable);
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public C.List<T> prepend(Collection<? extends T> collection) {
@@ -392,7 +406,7 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    public C.Sequence<T> prepend(C.Sequence<T> seq) {
+    public C.Sequence<T> prepend(C.Sequence<? extends T> seq) {
         if (seq instanceof C.List) {
             return prependList((C.List<T>) seq);
         }

@@ -392,6 +392,22 @@ implements RandomAccess, Serializable {
         return this;
     }
 
+    public ListBuilder<T> append(Iterator<? extends T> iterator) {
+        checkState();
+        while (iterator.hasNext()) {
+            append(iterator.next());
+        }
+        return this;
+    }
+
+    public ListBuilder<T> append(Enumeration<? extends T> enumeration) {
+        checkState();
+        while (enumeration.hasMoreElements()) {
+            append(enumeration.nextElement());
+        }
+        return this;
+    }
+
     /**
      * Return an immutable list contains all element of this list builder
      * and then release references to the internal buffer. The list builder
@@ -427,6 +443,24 @@ implements RandomAccess, Serializable {
         for (T t : iterable) {
             lb.add(t);
         }
+        return lb.toList();
+    }
+
+    /**
+     * Returns an immutable {@link org.osgl.util.C.List} from an iterator
+     * @param iterator the iterator
+     * @param <T> the element type
+     * @return an immutable list contains all elements from the iterator
+     */
+    public static <T> C.List<T> toList(Iterator<? extends T> iterator) {
+        ListBuilder<T> lb = new ListBuilder<T>(10);
+        lb.append(iterator);
+        return lb.toList();
+    }
+
+    public static <T> C.List<T> toList(Enumeration<? extends T> enumeration) {
+        ListBuilder<T> lb = new ListBuilder<T>(10);
+        lb.append(enumeration);
         return lb.toList();
     }
 

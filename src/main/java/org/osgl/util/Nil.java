@@ -20,6 +20,7 @@
 package org.osgl.util;
 
 import org.osgl.$;
+import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
 import java.io.Serializable;
@@ -349,13 +350,47 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public C.Sequence<T> append(C.Sequence<T> seq) {
-            return seq;
+        public C.Sequence<T> append(C.Sequence<? extends T> seq) {
+            return Osgl.cast(seq);
         }
 
         @Override
-        public C.Sequence<T> prepend(C.Sequence<T> seq) {
-            return seq;
+        public C.Sequence<T> prepend(C.Sequence<? extends T> seq) {
+            return Osgl.cast(seq);
+        }
+
+        @Override
+        public C.Sequence<T> prepend(Iterable<? extends T> iterable) {
+            if (!iterable.iterator().hasNext()) {
+                return this;
+            }
+            return C.seq(iterable);
+        }
+
+        @Override
+        public C.Sequence<T> prepend(Iterator<? extends T> iterator) {
+            if (!iterator.hasNext()) {
+                return this;
+            }
+            return C.seq(iterator);
+        }
+
+        @Override
+        public C.Sequence<T> prepend(Enumeration<? extends T> enumeration) {
+            if (!enumeration.hasMoreElements()) {
+                return this;
+            }
+            return C.seq(enumeration);
+        }
+
+        @Override
+        public C.Sequence<T> append(Iterator<? extends T> iterator) {
+            return C.seq(iterator);
+        }
+
+        @Override
+        public C.Sequence<T> append(Enumeration<? extends T> enumeration) {
+            return C.seq(enumeration);
         }
 
         // Preserves singleton property

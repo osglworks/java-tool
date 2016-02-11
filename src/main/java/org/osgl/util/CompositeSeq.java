@@ -11,11 +11,11 @@ import static org.osgl.util.C.Feature.READONLY;
  */
 class CompositeSeq<T> extends SequenceBase<T> {
 
-    private final C.Sequence<T> left;
-    private final C.Sequence<T> right;
+    private final C.Sequence<? extends T> left;
+    private final C.Sequence<? extends T> right;
     private EnumSet<C.Feature> features;
 
-    CompositeSeq(C.Sequence<T> left, C.Sequence<T> right) {
+    CompositeSeq(C.Sequence<? extends T> left, C.Sequence<? extends T> right) {
         E.NPE(left, right);
         if (left.isEmpty() || right.isEmpty()) {
             throw new IllegalArgumentException("left or right cannot be empty");
@@ -27,15 +27,15 @@ class CompositeSeq<T> extends SequenceBase<T> {
         features.add(READONLY);
     }
 
-    static <T> C.Sequence<T> of(C.Sequence<T> left, C.Sequence<T> right) {
+    static <T> C.Sequence<T> of(C.Sequence<? extends T> left, C.Sequence<? extends T> right) {
         return new CompositeSeq<T>(left, right);
     }
 
-    protected C.Sequence<T> left() {
+    protected C.Sequence<? extends T> left() {
         return left;
     }
 
-    protected C.Sequence<T> right() {
+    protected C.Sequence<? extends T> right() {
         return right;
     }
 

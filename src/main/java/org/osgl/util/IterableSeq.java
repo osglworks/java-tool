@@ -3,13 +3,6 @@ package org.osgl.util;
 import java.util.Collection;
 import java.util.Iterator;
 
-/**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 9/11/13
- * Time: 9:57 AM
- * To change this template use File | Settings | File Templates.
- */
 class IterableSeq<T> extends SequenceBase<T> {
     private Iterable<? extends T> data;
 

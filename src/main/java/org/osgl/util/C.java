@@ -540,7 +540,35 @@ public enum C {
          * @return a sequence consists of elements of both sequences
          * @since 0.2
          */
-        Sequence<T> append(Sequence<T> seq);
+        Sequence<T> append(Sequence<? extends T> seq);
+
+        /**
+         * Returns a sequence consists of all elements of this sequence
+         * followed by all elements of the specified iterator.
+         * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might append specified seq to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param iterator the iterator in which elements will be append to the returned sequence
+         * @return a sequence consists of elements of this sequence and the elements in the iterator
+         * @since 0.9
+         */
+        Sequence<T> append(Iterator<? extends T> iterator);
+
+        /**
+         * Returns a sequence consists of all elements of this sequence
+         * followed by all elements of the specified enumeration.
+         * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might append specified seq to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param enumeration the enumeration in which elements will be append to the returned sequence
+         * @return a sequence consists of elements of this sequence and the elements in the iterator
+         * @since 0.9
+         */
+        Sequence<T> append(Enumeration<? extends T> enumeration);
 
         /**
          * Returns a sequence consists of all elements of this sequence
@@ -572,6 +600,34 @@ public enum C {
         Sequence<T> prepend(Iterable<? extends T> iterable);
 
         /**
+         * Returns a sequence consists of all elements of the iterator specified
+         * followed by all elements of this sequence
+         * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might prepend specified seq to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param iterator the iterator to be prepended
+         * @return a sequence consists of elements of both sequences
+         * @since 0.2
+         */
+        Sequence<T> prepend(Iterator<? extends T> iterator);
+
+        /**
+         * Returns a sequence consists of all elements of the enumeration specified
+         * followed by all elements of this sequence
+         * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
+         * return an new Sequence; while a mutable Sequence implementation
+         * might prepend specified seq to {@code this} sequence instance
+         * directly</p>
+         *
+         * @param enumeration the enumeration to be prepended
+         * @return a sequence consists of elements of both sequences
+         * @since 0.2
+         */
+        Sequence<T> prepend(Enumeration<? extends T> enumeration);
+
+        /**
          * Returns a sequence consists of all elements of the sequence specified
          * followed by all elements of this sequence
          * <p>An {@link C.Feature#IMMUTABLE immutable} Sequence must
@@ -583,7 +639,7 @@ public enum C {
          * @return a sequence consists of elements of both sequences
          * @since 0.2
          */
-        Sequence<T> prepend(Sequence<T> seq);
+        Sequence<T> prepend(Sequence<? extends T> seq);
 
         /**
          * Returns a sequence consists of the element specified followed by
@@ -2765,6 +2821,14 @@ public enum C {
         return ListBuilder.toList(iterable);
     }
 
+    public static <T> List<T> list(Iterator<? extends T> iterator) {
+        return ListBuilder.toList(iterator);
+    }
+
+    public static <T> List<T> list(Enumeration<? extends T> enumeration) {
+        return ListBuilder.toList(enumeration);
+    }
+
     public static <T> List<T> list(Collection<? extends T> col) {
         return ListBuilder.toList(col);
     }
@@ -2838,6 +2902,14 @@ public enum C {
             return ((Sequence<T>) iterable);
         }
         return IterableSeq.of(iterable);
+    }
+
+    public static <T> Sequence<T> seq(Iterator<? extends T> iterator) {
+        return IteratorSeq.of(iterator);
+    }
+
+    public static <T> Sequence<T> seq(Enumeration<? extends T> enumeration) {
+        return IteratorSeq.of(new EnumerationIterator<T>(enumeration));
     }
 
     public static <T, R> Sequence<R> map(Sequence<T> seq, $.Function<? super T, ? extends R> mapper) {

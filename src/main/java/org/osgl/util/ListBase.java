@@ -857,6 +857,26 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return l;
     }
 
+    private C.List<T> unLazyAppend(Iterator<? extends T> iterator) {
+        if (isMutable()) {
+            C.forEach(iterator, C.F.addTo(this));
+            return this;
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
+        lb.append(this).append(iterator);
+        return lb.toList();
+    }
+
+    private C.List<T> unLazyAppend(Enumeration<? extends T> enumeration) {
+        if (isMutable()) {
+            C.forEach(new EnumerationIterator<T>(enumeration), C.F.addTo(this));
+            return this;
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
+        lb.append(this).append(enumeration);
+        return lb.toList();
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public C.Sequence<T> append(Iterable<? extends T> iterable) {
@@ -884,7 +904,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
-    public C.Sequence<T> append(C.Sequence<T> seq) {
+    public C.Sequence<T> append(C.Sequence<? extends T> seq) {
         if (seq instanceof C.List) {
             return appendList((C.List<T>) seq);
         }
@@ -892,6 +912,19 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             return CompositeSeq.of(this, seq);
         }
         return unLazyAppend(seq);
+    }
+
+    @Override
+    public C.Sequence<T> append(Iterator<? extends T> iterator) {
+        if (isLazy()) {
+            return CompositeSeq.of(this, C.seq(iterator));
+        }
+        return unLazyAppend(iterator);
+    }
+
+    @Override
+    public C.Sequence<T> append(Enumeration<? extends T> enumeration) {
+        return append(new EnumerationIterator<T>(enumeration));
     }
 
     protected C.ReversibleSequence<T> appendReversibleSeq(C.ReversibleSequence<T> seq) {
@@ -959,6 +992,32 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return l;
     }
 
+    private C.List<T> unLazyPrepend(Iterator<? extends T> iterator) {
+        if (isMutable()) {
+            int pos = 0;
+            while (iterator.hasNext()) {
+                add(pos++, iterator.next());
+            }
+            return this;
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
+        lb.append(iterator).append(this);
+        return lb.toList();
+    }
+
+    private C.List<T> unLazyPrepend(Enumeration<? extends T> enumeration) {
+        if (isMutable()) {
+            int pos = 0;
+            while (enumeration.hasMoreElements()) {
+                add(pos++, enumeration.nextElement());
+            }
+            return this;
+        }
+        ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
+        lb.append(enumeration).append(this);
+        return lb.toList();
+    }
+
 
     @Override
     @SuppressWarnings("unchecked")
@@ -985,6 +1044,25 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
     }
 
+    @Override
+    public C.Sequence<T> prepend(Iterator<? extends T> iterator) {
+        if (!iterator.hasNext()) {
+            return this;
+        }
+        if (isLazy()) {
+            return CompositeSeq.of(C.seq(iterator), this);
+        }
+        return unLazyAppend(iterator);
+    }
+
+    @Override
+    public C.Sequence<T> prepend(Enumeration<? extends T> enumeration) {
+        if (isLazy()) {
+            return CompositeSeq.of(C.seq(enumeration), this);
+        }
+        return unLazyAppend(enumeration);
+    }
+
     /**
      * {@inheritDoc}
      * This method will NOT change the underline list
@@ -993,7 +1071,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
      * @return
      */
     @Override
-    public C.Sequence<T> prepend(C.Sequence<T> seq) {
+    public C.Sequence<T> prepend(C.Sequence<? extends T> seq) {
         if (seq instanceof C.List) {
             return prependList((C.List<T>) seq);
         }

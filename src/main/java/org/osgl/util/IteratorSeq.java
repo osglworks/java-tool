@@ -3,6 +3,7 @@ package org.osgl.util;
 import org.osgl.$;
 
 import java.util.EnumSet;
+import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
@@ -10,9 +11,9 @@ import java.util.Iterator;
  */
 class IteratorSeq<T> extends SequenceBase<T> {
 
-    private final Iterator<T> itr_;
+    private final Iterator<? extends T> itr_;
 
-    IteratorSeq(final Iterator<T> itr) {
+    IteratorSeq(final Iterator<? extends T> itr) {
         E.NPE(itr);
         itr_ = itr;
     }
@@ -62,8 +63,18 @@ class IteratorSeq<T> extends SequenceBase<T> {
     }
 
     @Override
-    public C.Sequence<T> append(C.Sequence<T> seq) {
+    public C.Sequence<T> append(C.Sequence<? extends T> seq) {
         return of(Iterators.composite(itr_, seq.iterator()));
+    }
+
+    @Override
+    public C.Sequence<T> append(Iterator<? extends T> iterator) {
+        return of(Iterators.composite(itr_, iterator));
+    }
+
+    @Override
+    public C.Sequence<T> append(Enumeration<? extends T> enumeration) {
+        return of(Iterators.composite(itr_, new EnumerationIterator<T>(enumeration)));
     }
 
     @Override
@@ -72,7 +83,7 @@ class IteratorSeq<T> extends SequenceBase<T> {
     }
 
     @Override
-    public C.Sequence<T> prepend(C.Sequence<T> seq) {
+    public C.Sequence<T> prepend(C.Sequence<? extends T> seq) {
         return of(Iterators.composite(seq.iterator(), itr_));
     }
 
@@ -102,7 +113,7 @@ class IteratorSeq<T> extends SequenceBase<T> {
         return new IteratorSeq<R>(Iterators.flatMap(itr_, mapper));
     }
 
-    static <T> IteratorSeq<T> of(Iterator<T> itr) {
+    static <T> IteratorSeq<T> of(Iterator<? extends T> itr) {
         return new IteratorSeq<T>(itr);
     }
 }
