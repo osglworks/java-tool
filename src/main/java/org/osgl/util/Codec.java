@@ -201,9 +201,25 @@ public class Codec {
         }
     }
 
+    public static String encodeUrl(String s) {
+        try {
+            return URLEncoder.encode(s, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw E.encodingException(e);
+        }
+    }
+
     public static String decodeUrl(String s, Charset enc) {
         try {
             return URLDecoder.decode(s, enc.name());
+        } catch (UnsupportedEncodingException e) {
+            throw E.encodingException(e);
+        }
+    }
+
+    public static String decodeUrl(String s) {
+        try {
+            return URLDecoder.decode(s, "utf-8");
         } catch (UnsupportedEncodingException e) {
             throw E.encodingException(e);
         }
