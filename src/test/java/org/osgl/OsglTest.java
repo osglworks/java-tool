@@ -1,6 +1,7 @@
 package org.osgl;
 
 import org.junit.Test;
+import org.osgl.cache.CacheService;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.C;
 import org.osgl.util.N;
@@ -8,6 +9,7 @@ import org.osgl.util.S;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by luog on 4/04/14.
@@ -116,7 +118,48 @@ public class OsglTest extends TestBase {
                 return null;
             }
         };
-        Osgl.T2<? extends Osgl.Function<String, Serializable>, ? extends Osgl.Func2<String, Serializable, ?>> cache = Osgl.T2(getter, setter);
+        CacheService cache = new CacheService() {
+            private Map<String, Object> map = C.newMap();
+            @Override
+            public void put(String key, Object value, int ttl) {
+                map.put(key, value);
+            }
+
+            @Override
+            public void put(String key, Object value) {
+                map.put(key, value);
+            }
+
+            @Override
+            public void evict(String key) {
+                map.remove(key);
+            }
+
+            @Override
+            public <T> T get(String key) {
+                return (T) map.get(key);
+            }
+
+            @Override
+            public void clear() {
+                map.clear();
+            }
+
+            @Override
+            public void setDefaultTTL(int ttl) {
+
+            }
+
+            @Override
+            public void shutdown() {
+                clear();
+            }
+
+            @Override
+            public void startup() {
+
+            }
+        };
 
         String s1 = S.random();
         String s2 = S.random();
