@@ -1,5 +1,6 @@
 package org.osgl;
 
+import org.osgl.cache.CacheService;
 import org.osgl.concurrent.ContextLocal;
 import org.osgl.exception.FastRuntimeException;
 import org.osgl.exception.NotAppliedException;
@@ -5395,7 +5396,7 @@ public class Osgl implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getProperty(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
+    public static <T> T getProperty(CacheService cache, Object o, String property) {
         if (null == o) {
             return null;
         }
@@ -5416,7 +5417,7 @@ public class Osgl implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getProperty(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String ... propertyPath) {
+    private static <T> T getProperty(CacheService cache, Object o, String ... propertyPath) {
         if (null == o) {
             return null;
         }
@@ -5450,7 +5451,7 @@ public class Osgl implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static ReflectionPropertyGetter propertyGetter(T2<? extends Function<String, Serializable>, ? extends Func2<String, Serializable, ?>> cache, Object o, String property) {
+    private static ReflectionPropertyGetter propertyGetter(CacheService cache, Object o, String property) {
         ReflectionPropertyGetter propertyExtractor;
         if (null == o) {
             return null;
@@ -5459,7 +5460,7 @@ public class Osgl implements Serializable {
         String key = null;
         if (null != cache) {
             key = extractorKey(c, property);
-            propertyExtractor = cast(cache._1.apply(key));
+            propertyExtractor = cache.get(key);
             if (null != propertyExtractor) {
                 return propertyExtractor;
             }
@@ -5491,7 +5492,7 @@ public class Osgl implements Serializable {
             }
         }
         if (null != cache) {
-            cache._2.apply(key, propertyExtractor);
+            cache.put(key, propertyExtractor);
         }
         return propertyExtractor;
     }
