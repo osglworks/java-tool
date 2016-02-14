@@ -21,13 +21,13 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
             }
             Class[] ca = m.getParameterTypes();
             if (ca != null && ca.length == 1) {
-                return new ReflectionPropertySetter(c, m, null);
+                return newSetter(c, m, null);
             }
         }
         try {
             Field f = c.getDeclaredField(propName);
             f.setAccessible(true);
-            return new ReflectionPropertySetter(c, null, f);
+            return newSetter(c, null, f);
         } catch (NoSuchFieldException e) {
             throw E.unexpected("Cannot find access method to field %s on class %s", propName, c);
         }
@@ -40,22 +40,22 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
         String getter = "get" + p;
         try {
             Method m = c.getMethod(getter);
-            propertyGetter = new ReflectionPropertyGetter(c, m, null);
+            propertyGetter = newGetter(c, m, null);
         } catch (NoSuchMethodException e) {
             String isser = "is" + p;
             try {
                 Method m = c.getMethod(isser);
-                propertyGetter = new ReflectionPropertyGetter(c, m, null);
+                propertyGetter = newGetter(c, m, null);
             } catch (NoSuchMethodException e1) {
                 try {
                     // try jquery style getter
                     Method m = c.getMethod(propName);
-                    propertyGetter = new ReflectionPropertyGetter(c, m, null);
+                    propertyGetter = newGetter(c, m, null);
                 } catch (NoSuchMethodException e2) {
                     try {
                         Field f = c.getDeclaredField(propName);
                         f.setAccessible(true);
-                        propertyGetter = new ReflectionPropertyGetter(c, null, f);
+                        propertyGetter = newGetter(c, null, f);
                     } catch (NoSuchFieldException e3) {
                         throw E.unexpected("Cannot find access method to field %s on class %s", propName, c);
                     }
@@ -63,5 +63,13 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
             }
         }
         return propertyGetter;
+    }
+
+    protected PropertyGetter newGetter(Class c, Method m, Field f) {
+        return new ReflectionPropertyGetter(c, m, f);
+    }
+
+    protected PropertySetter newSetter(Class c, Method m, Field f) {
+        return new ReflectionPropertySetter(c, m, f);
     }
 }
