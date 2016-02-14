@@ -1,5 +1,7 @@
 package org.osgl.util;
 
+import org.osgl.$;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -12,6 +14,8 @@ public abstract class ReflectionPropertyHandler {
     protected String mn;
     protected transient Field f;
     protected String fn;
+    protected transient Class propertyClass;
+    protected String propertyClassName;
 
     ReflectionPropertyHandler(Class c, Method m, Field f) {
         E.illegalArgumentIf(null == m && null == f);
@@ -20,9 +24,19 @@ public abstract class ReflectionPropertyHandler {
         this.f = f;
         if (null != m) {
             this.mn = m.getName();
+            this.propertyClass = m.getReturnType();
         } else {
             this.fn = f.getName();
+            this.propertyClass = f.getType();
         }
+        this.propertyClassName = propertyClass.getName();
+    }
+
+    public Class getPropertyClass(Object entity) {
+        if (null != propertyClass) {
+            return propertyClass;
+        }
+        return $.classForName(propertyClassName, entity.getClass().getClassLoader());
     }
 
     protected void ensureMethodOrField(Object obj) {

@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import org.osgl.$;
 import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
@@ -19,6 +20,7 @@ public class ReflectionPropertyGetter<OBJECT, PROP> extends ReflectionPropertyHa
     public PROP apply(OBJECT object) throws NotAppliedException, Osgl.Break {
         return getProperty(object);
     }
+
 
     @SuppressWarnings("unchecked")
     private PROP getProperty(OBJECT object) throws NotAppliedException, Osgl.Break {

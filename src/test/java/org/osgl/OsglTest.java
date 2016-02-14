@@ -36,9 +36,10 @@ public class OsglTest extends TestBase {
         no(l.contains("d.txt"));
     }
 
-    public class Bar {
+    public static class Bar {
         String s;
         private boolean b;
+        Bar() {}
         Bar(String s, boolean b) {
             this.s = s;
             this.b = b;
@@ -51,7 +52,7 @@ public class OsglTest extends TestBase {
         }
     }
 
-    public class FooBase {
+    public static class FooBase {
         private String baseId;
         public FooBase(String baseId) {
             this.baseId = baseId;
@@ -61,11 +62,14 @@ public class OsglTest extends TestBase {
         }
     }
 
-    public class Foo extends FooBase {
+    public static class Foo extends FooBase {
         private String s;
         private int i;
         private Bar bar;
         private List<Bar> barList;
+        Foo() {
+            super(S.random());
+        }
         Foo(String s1, int i, String s2, boolean b) {
             super(s1);
             s = s1;
@@ -104,18 +108,14 @@ public class OsglTest extends TestBase {
 
     @Test
     public void testSetProperty() {
+        Foo foo = new Foo();
         String s1 = S.random();
-        String s2 = S.random();
-        int i = N.randInt();
-        boolean b = false;
-        Foo foo = new Foo(s1, i, s2, b);
-        s1 = S.random();
         $.setProperty(foo, s1, "s");
         eq(s1, foo.getS());
-        s2 = S.random();
+        String s2 = S.random();
         $.setProperty(foo, s2, "bar.s");
         eq(s2, foo.bar.s);
-        b = !foo.bar.b;
+        boolean b = !foo.bar.b;
         $.setProperty(foo, b, "bar.b");
         eq(b, foo.bar.b);
     }

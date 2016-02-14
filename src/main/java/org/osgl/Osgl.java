@@ -5200,7 +5200,9 @@ public class Osgl implements Serializable {
 
     public static <T> T newInstance(Class<T> c) {
         try {
-            return c.newInstance();
+            Constructor<T> ct = c.getDeclaredConstructor();
+            ct.setAccessible(true);
+            return ct.newInstance();
         } catch (Exception e) {
             throw E.unexpected(e);
         }
@@ -5208,7 +5210,7 @@ public class Osgl implements Serializable {
 
     public static <T, P1> T newInstance(Class<T> c, P1 p1) {
         try {
-            Constructor[] ca = c.getConstructors();
+            Constructor[] ca = c.getDeclaredConstructors();
             for (Constructor<T> ct : ca) {
                 Class[] pts = ct.getParameterTypes();
                 if (pts.length != 1 && !ct.isVarArgs()) {
@@ -5409,6 +5411,9 @@ public class Osgl implements Serializable {
 
     public static void setProperty(Object entity, Object val, String property) {
         E.NPE(entity);
+        if (property.contains("[")) {
+            property = property.replace('[', '.').replace("]", "");
+        }
         if (property.contains(".")) {
             setProperty(entity, val, property.split("\\."));
         } else if (property.contains("/")) {
@@ -5451,6 +5456,11 @@ public class Osgl implements Serializable {
     private static <T> T _getProperty(CacheService cache, Object entity, String property) {
         PropertyGetter propertyGetter = propertyGetter(cache, entity, property);
         return cast(propertyGetter.apply(entity));
+    }
+
+    private static Class _getPropertyClass(CacheService cache, Object entity, String property) {
+        PropertyGetter propertyGetter = propertyGetter(cache, entity, property);
+        return propertyGetter.getPropertyClass(entity);
     }
 
     private static <T> T getProperty(Object o, String ... propertyPath) {
@@ -5502,19 +5512,19 @@ public class Osgl implements Serializable {
         int len = propertyPath.length;
         E.illegalArgumentIf(len < 1);
         for (int i = 0; i < len - 1; ++i) {
-            entity = _getProperty(cache, entity, propertyPath[i]);
+            Object obj = _getProperty(cache, entity, propertyPath[i]);
+            if (null == obj) {
+                Class c = _getPropertyClass(cache, entity, propertyPath[i]);
+                obj = newInstance(c);
+                _setProperty(cache, entity, propertyPath[i], obj);
+            }
+            entity = obj;
         }
         _setProperty(cache, entity, propertyPath[len - 1], val);
     }
 
     private static void setProperty(Object entity, Object val, String ... propertyPath) {
-        E.NPE(entity);
-        int len = propertyPath.length;
-        E.illegalArgumentIf(len < 1);
-        for (int i = 0; i < len - 1; ++i) {
-            entity = _getProperty(null, entity, propertyPath[i]);
-        }
-        _setProperty(null, entity, propertyPath[len - 1], val);
+        setProperty(null, entity, val, propertyPath);
     }
 
     private static String propertySetterKey(Class c, String p) {

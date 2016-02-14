@@ -6,4 +6,5 @@ import org.osgl.exception.NotAppliedException;
 import java.io.Serializable;
 
 public interface PropertyGetter<OBJECT, PROP> extends Osgl.Function<OBJECT, PROP>, Serializable {
+    Class<PROP> getPropertyClass(OBJECT entity);
 }
