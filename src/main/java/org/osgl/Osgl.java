@@ -11,7 +11,6 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -5382,38 +5381,52 @@ public class Osgl implements Serializable {
         }
     }
 
-    public static <T> T getProperty(Object o, String property) {
-        if (null == o) {
-            return null;
-        }
+    public static PropertyHandlerFactory propertyHandlerFactory = new ReflectionPropertyHandlerFactory();
+
+    public static <T> T getProperty(Object entity, String property) {
+        E.NPE(entity);
         if (property.contains(".")) {
-            return getProperty(o, property.split("\\."));
+            return getProperty(entity, property.split("\\."));
         }
         if (property.contains("/")) {
-            return getProperty(o, property.split("\\/"));
+            return getProperty(entity, property.split("\\/"));
         }
-        return _extract(o, property);
+        return _getProperty(null, entity, property);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getProperty(CacheService cache, Object o, String property) {
-        if (null == o) {
-            return null;
-        }
+    public static <T> T getProperty(CacheService cache, Object entity, String property) {
+        E.NPE(entity);
         if (property.contains(".")) {
-            return getProperty(cache, o, property.split("\\."));
+            return getProperty(cache, entity, property.split("\\."));
         }
         if (property.contains("/")) {
-            return getProperty(cache, o, property.split("\\/"));
+            return getProperty(cache, entity, property.split("\\/"));
         }
-        ReflectionPropertyGetter extractor = propertyGetter(cache, o, property);
-        return cast(extractor.apply(o));
+        PropertyGetter extractor = propertyGetter(cache, entity, property);
+        return cast(extractor.apply(entity));
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T _extract(Object o, String p) {
-        ReflectionPropertyGetter extractor = propertyGetter(null, o, p);
-        return cast(extractor.apply(o));
+    public static void setProperty(Object entity, Object val, String property) {
+        E.NPE(entity);
+        if (property.contains(".")) {
+            setProperty(entity, val, property.split("\\."));
+        } else if (property.contains("/")) {
+            setProperty(entity, val, property.split("\\/"));
+        } else {
+            _setProperty(null, entity, property, val);
+        }
+    }
+
+    public static void setProperty(CacheService cache, Object entity, Object val, String property) {
+        E.NPE(entity);
+        if (property.contains(".")) {
+            setProperty(cache, entity, val, property.split("\\."));
+        } else if (property.contains("/")) {
+            setProperty(cache, entity, val, property.split("\\/"));
+        } else {
+            _setProperty(cache, entity, property, val);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -5423,7 +5436,7 @@ public class Osgl implements Serializable {
         }
         Object v = o;
         for (String p : propertyPath) {
-            ReflectionPropertyGetter getter = propertyGetter(cache, v, p);
+            PropertyGetter getter = propertyGetter(cache, v, p);
             if (null == getter) {
                 return null;
             }
@@ -5435,66 +5448,99 @@ public class Osgl implements Serializable {
         return cast(v);
     }
 
+    private static <T> T _getProperty(CacheService cache, Object entity, String property) {
+        PropertyGetter propertyGetter = propertyGetter(cache, entity, property);
+        return cast(propertyGetter.apply(entity));
+    }
+
     private static <T> T getProperty(Object o, String ... propertyPath) {
         if (null == o) {
             return null;
         }
         Object v = o;
         for (String p : propertyPath) {
-            v = _extract(v, p);
+            v = _getProperty(null, v, p);
         }
         return cast(v);
     }
 
-    private static String extractorKey(Class c, String p) {
+    private static String propertyGetterKey(Class c, String p) {
         return S.builder("osgl:pg:").append(c.getName()).append(":").append(p).toString();
     }
 
     @SuppressWarnings("unchecked")
-    private static ReflectionPropertyGetter propertyGetter(CacheService cache, Object o, String property) {
-        ReflectionPropertyGetter propertyExtractor;
+    private static PropertyGetter propertyGetter(CacheService cache, Object o, String property) {
         if (null == o) {
             return null;
         }
+        PropertyGetter propertyGetter;
         Class c = o.getClass();
         String key = null;
         if (null != cache) {
-            key = extractorKey(c, property);
-            propertyExtractor = cache.get(key);
-            if (null != propertyExtractor) {
-                return propertyExtractor;
+            key = propertyGetterKey(c, property);
+            propertyGetter = cache.get(key);
+            if (null != propertyGetter) {
+                return propertyGetter;
             }
         }
-        String p = S.capFirst(property);
-        String getter = "get" + p;
-        try {
-            Method m = c.getMethod(getter);
-            propertyExtractor = new ReflectionPropertyGetter(c, m, null);
-        } catch (NoSuchMethodException e) {
-            String isser = "is" + p;
-            try {
-                Method m = c.getMethod(isser);
-                propertyExtractor = new ReflectionPropertyGetter(c, m, null);
-            } catch (NoSuchMethodException e1) {
-                try {
-                    // try jquery style getter
-                    Method m = c.getMethod(property);
-                    propertyExtractor = new ReflectionPropertyGetter(c, m, null);
-                } catch (NoSuchMethodException e2) {
-                    try {
-                        Field f = c.getDeclaredField(property);
-                        f.setAccessible(true);
-                        propertyExtractor = new ReflectionPropertyGetter(c, null, f);
-                    } catch (NoSuchFieldException e3) {
-                        throw E.unexpected("Cannot find access method to field %s on class %s", property, c);
-                    }
-                }
-            }
-        }
+        propertyGetter = propertyHandlerFactory.createPropertyGetter(c, property);
         if (null != cache) {
-            cache.put(key, propertyExtractor);
+            cache.put(key, propertyGetter);
         }
-        return propertyExtractor;
+        return propertyGetter;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void _setProperty(CacheService cache, Object entity, String property, Object val) {
+        PropertySetter propertySetter = propertySetter(cache, entity, property);
+        propertySetter.apply(entity, val);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void setProperty(CacheService cache, Object entity, Object val, String ... propertyPath) {
+        E.NPE(entity);
+        int len = propertyPath.length;
+        E.illegalArgumentIf(len < 1);
+        for (int i = 0; i < len - 1; ++i) {
+            entity = _getProperty(cache, entity, propertyPath[i]);
+        }
+        _setProperty(cache, entity, propertyPath[len - 1], val);
+    }
+
+    private static void setProperty(Object entity, Object val, String ... propertyPath) {
+        E.NPE(entity);
+        int len = propertyPath.length;
+        E.illegalArgumentIf(len < 1);
+        for (int i = 0; i < len - 1; ++i) {
+            entity = _getProperty(null, entity, propertyPath[i]);
+        }
+        _setProperty(null, entity, propertyPath[len - 1], val);
+    }
+
+    private static String propertySetterKey(Class c, String p) {
+        return S.builder("osgl:sg:").append(c.getName()).append(":").append(p).toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static PropertySetter propertySetter(CacheService cache, Object entity, String property) {
+        if (null == entity) {
+            return null;
+        }
+        PropertySetter propertySetter;
+        Class c = entity.getClass();
+        String key = null;
+        if (null != cache) {
+            key = propertySetterKey(c, property);
+            propertySetter = cache.get(key);
+            if (null != propertySetter) {
+                return propertySetter;
+            }
+        }
+        propertySetter = propertyHandlerFactory.createPropertySetter(c, property);
+        if (null != cache) {
+            cache.put(key, propertySetter);
+        }
+        return propertySetter;
     }
 
     public static <T> byte[] serialize(T obj) {
@@ -6231,6 +6277,8 @@ public class Osgl implements Serializable {
     public static <T> ContextLocal<T> contextLocal(ContextLocal.InitialValueProvider<T> ivp) {
         return clf.create(ivp);
     }
+
+
     // --- eof common utilities
 
     /**

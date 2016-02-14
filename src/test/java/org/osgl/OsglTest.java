@@ -84,7 +84,7 @@ public class OsglTest extends TestBase {
     }
 
     @Test
-    public void testEval() {
+    public void testGetProperty() {
         String s1 = S.random();
         String s2 = S.random();
         int i = N.randInt();
@@ -103,7 +103,25 @@ public class OsglTest extends TestBase {
     }
 
     @Test
-    public void testEvalWithCache() {
+    public void testSetProperty() {
+        String s1 = S.random();
+        String s2 = S.random();
+        int i = N.randInt();
+        boolean b = false;
+        Foo foo = new Foo(s1, i, s2, b);
+        s1 = S.random();
+        $.setProperty(foo, s1, "s");
+        eq(s1, foo.getS());
+        s2 = S.random();
+        $.setProperty(foo, s2, "bar.s");
+        eq(s2, foo.bar.s);
+        b = !foo.bar.b;
+        $.setProperty(foo, b, "bar.b");
+        eq(b, foo.bar.b);
+    }
+
+    @Test
+    public void testGetPropertyWithCache() {
         final C.Map<String, Serializable> map = C.newMap();
         Osgl.F1<String, Serializable> getter = new Osgl.F1<String, Serializable>() {
             @Override

@@ -36,11 +36,4 @@ public final class $ extends Osgl {
         return INSTANCE;
     }
 
-    public static void main(String[] args) {
-        String s = "ab As C";
-        Pattern p = Pattern.compile("\\s+as\\s+", Pattern.CASE_INSENSITIVE);
-        String[] sa = p.split(s);
-        System.out.println($.toString2(sa));
-    }
-
 }
