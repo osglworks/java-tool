@@ -34,7 +34,8 @@ public class ReflectionPropertySetter<ENTITY, PROP> extends ReflectionPropertyHa
     }
 
     protected void doSet(Object entity, Object value) throws Exception {
-        value = convertValue(value);
+        Class requiredClass = super.getPropertyClass(entity);
+        value = convertValue(requiredClass, value);
         if (null != m) {
             m.invoke(entity, value);
         } else {
@@ -42,7 +43,7 @@ public class ReflectionPropertySetter<ENTITY, PROP> extends ReflectionPropertyHa
         }
     }
 
-    protected Object convertValue(Object value) {
+    protected Object convertValue(Class requiredClass, Object value) {
         return value;
     }
 
