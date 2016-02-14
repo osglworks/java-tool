@@ -9,32 +9,41 @@ import java.lang.reflect.Method;
 /**
  * Implement {@link PropertySetter} using Java reflection
  */
-public class ReflectionPropertySetter<OBJECT, PROP> extends ReflectionPropertyHandler implements PropertySetter<OBJECT, PROP> {
+public class ReflectionPropertySetter<ENTITY, PROP> extends ReflectionPropertyHandler implements PropertySetter<ENTITY, PROP> {
 
     public ReflectionPropertySetter(Class c, Method m, Field f) {
         super(c, m, f);
     }
 
     @Override
-    public Void apply(OBJECT object, PROP prop) throws NotAppliedException, Osgl.Break {
-        setProperty(object, prop);
+    public Void apply(ENTITY entity, PROP value) throws NotAppliedException, Osgl.Break {
+        setProperty(entity, value);
         return null;
     }
 
-    private void setProperty(OBJECT object, PROP value) throws NotAppliedException, Osgl.Break {
-        if (null == object) {
+    private void setProperty(ENTITY entity, PROP value) throws NotAppliedException, Osgl.Break {
+        if (null == entity) {
             return;
         }
-        ensureMethodOrField(object);
+        ensureMethodOrField(entity);
         try {
-            if (null != m) {
-                m.invoke(object, value);
-            } else {
-                f.set(object, value);
-            }
+            doSet(entity, value);
         } catch (Exception e) {
             throw E.unexpected(e);
         }
+    }
+
+    protected void doSet(Object entity, Object value) throws Exception {
+        value = convertValue(value);
+        if (null != m) {
+            m.invoke(entity, value);
+        } else {
+            f.set(entity, value);
+        }
+    }
+
+    protected Object convertValue(Object value) {
+        return value;
     }
 
 }
