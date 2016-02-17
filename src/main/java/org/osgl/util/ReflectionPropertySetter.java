@@ -13,6 +13,13 @@ public class ReflectionPropertySetter extends ReflectionPropertyHandler implemen
 
     public ReflectionPropertySetter(Class c, Method m, Field f) {
         super(c, m, f);
+        setNullValuePolicy(PropertyGetter.NullValuePolicy.CREATE_NEW);
+    }
+
+    ReflectionPropertySetter(Osgl.Function<Class<?>, Object> objectFactory,
+                             Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+                             Class entityClass, Method m, Field f) {
+        super(objectFactory, stringValueResolver, PropertyGetter.NullValuePolicy.CREATE_NEW, entityClass, m, f);
     }
 
     @Override
