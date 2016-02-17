@@ -239,6 +239,15 @@ public class S {
     }
 
     /**
+     * Check if a string is integer or long
+     * @param s the string
+     * @return {@code true} if the string is integer or long
+     */
+    public static boolean isIntOrLong(String s) {
+        return s.matches("-?\\d+(\\d+)?");
+    }
+
+    /**
      * Return the string of first N chars.
      * <p>If n is negative number, then return a string of the first N chars</p>
      * <p>If n is larger than the length of the string, then return the string</p>

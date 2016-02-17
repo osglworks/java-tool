@@ -9,19 +9,18 @@ import java.lang.reflect.Method;
 /**
  * Implement {@link PropertySetter} using Java reflection
  */
-public class ReflectionPropertySetter<ENTITY, PROP> extends ReflectionPropertyHandler implements PropertySetter<ENTITY, PROP> {
+public class ReflectionPropertySetter extends ReflectionPropertyHandler implements PropertySetter {
 
     public ReflectionPropertySetter(Class c, Method m, Field f) {
         super(c, m, f);
     }
 
     @Override
-    public Void apply(ENTITY entity, PROP value) throws NotAppliedException, Osgl.Break {
+    public void set(Object entity, Object value, Object index) {
         setProperty(entity, value);
-        return null;
     }
 
-    private void setProperty(ENTITY entity, PROP value) throws NotAppliedException, Osgl.Break {
+    private void setProperty(Object entity, Object value) throws NotAppliedException, Osgl.Break {
         if (null == entity) {
             return;
         }
@@ -44,7 +43,10 @@ public class ReflectionPropertySetter<ENTITY, PROP> extends ReflectionPropertyHa
     }
 
     protected Object convertValue(Class requiredClass, Object value) {
-        return value;
+        if (null == value || requiredClass.isAssignableFrom(value.getClass())) {
+            return value;
+        }
+        return stringValueResolver.apply(S.string(value), requiredClass);
     }
 
 }

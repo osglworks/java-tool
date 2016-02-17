@@ -8,9 +8,7 @@ import org.osgl.exception.UnexpectedException;
 import org.osgl.util.*;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -5387,31 +5385,36 @@ public class Osgl implements Serializable {
 
     public static <T> T getProperty(Object entity, String property) {
         E.NPE(entity);
+        if (property.contains("]")) {
+            property = property.replace('[', '.').replace("]", "");
+        }
         if (property.contains(".")) {
             return getProperty(entity, property.split("\\."));
-        }
-        if (property.contains("/")) {
+        } else if (property.contains("/")) {
             return getProperty(entity, property.split("\\/"));
         }
-        return _getProperty(null, entity, property);
+        PropertyGetter gettter = propertyGetter(null, entity, property, false);
+        return cast(gettter.get(entity, null));
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T getProperty(CacheService cache, Object entity, String property) {
         E.NPE(entity);
+        if (property.contains("]")) {
+            property = property.replace('[', '.').replace("]", "");
+        }
         if (property.contains(".")) {
             return getProperty(cache, entity, property.split("\\."));
-        }
-        if (property.contains("/")) {
+        } else if (property.contains("/")) {
             return getProperty(cache, entity, property.split("\\/"));
         }
-        PropertyGetter extractor = propertyGetter(cache, entity, property);
-        return cast(extractor.apply(entity));
+        PropertyGetter gettter = propertyGetter(cache, entity, property, false);
+        return cast(gettter.get(entity, null));
     }
 
     public static void setProperty(Object entity, Object val, String property) {
         E.NPE(entity);
-        if (property.contains("[")) {
+        if (property.contains("]")) {
             property = property.replace('[', '.').replace("]", "");
         }
         if (property.contains(".")) {
@@ -5419,108 +5422,186 @@ public class Osgl implements Serializable {
         } else if (property.contains("/")) {
             setProperty(entity, val, property.split("\\/"));
         } else {
-            _setProperty(null, entity, property, val);
+            PropertySetter setter = propertySetter(null, entity, property);
+            setter.set(entity, val, null);
         }
     }
 
     public static void setProperty(CacheService cache, Object entity, Object val, String property) {
         E.NPE(entity);
+        if (property.contains("]")) {
+            property = property.replace('[', '.').replace("]", "");
+        }
         if (property.contains(".")) {
             setProperty(cache, entity, val, property.split("\\."));
         } else if (property.contains("/")) {
             setProperty(cache, entity, val, property.split("\\/"));
         } else {
-            _setProperty(cache, entity, property, val);
+            PropertySetter setter = propertySetter(cache, entity, property);
+            setter.set(entity, val, null);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getProperty(CacheService cache, Object o, String ... propertyPath) {
-        if (null == o) {
+    private static <T> T getProperty(Object entity, String ... propertyPath) {
+        return getProperty(null, entity, propertyPath);
+    }
+
+    private static <T> T getProperty(CacheService cache, Object entity, String ... propertyPath) {
+        if (null == entity) {
             return null;
         }
-        Object v = o;
-        for (String p : propertyPath) {
-            PropertyGetter getter = propertyGetter(cache, v, p);
-            if (null == getter) {
+        int len = propertyPath.length;
+        E.illegalArgumentIf(len < 1);
+        Object lastEntity = null;
+        for (int i = 0; i < len; ++i) {
+            String prop = propertyPath[i];
+            String lastProp = i == 0 ? prop : propertyPath[i - 1];
+
+            if (entity instanceof List) {
+                List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
+                ListPropertyGetter getter = propertyHandlerFactory.createListPropertyGetter(classList.get(0));
+                lastEntity = entity;
+                entity = getter.get(lastEntity, prop);
+            } else if (entity instanceof Map) {
+                List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
+                MapPropertyGetter getter = propertyHandlerFactory.createMapPropertyGetter(classList.get(0), classList.get(1));
+                lastEntity = entity;
+                entity = getter.get(lastEntity, prop);
+            } else {
+                PropertyGetter getter = propertyGetter(cache, entity, prop, false);
+                lastEntity = entity;
+                entity = getter.get(entity, null);
+            }
+            if (null == entity) {
                 return null;
             }
-            v = getter.apply(v);
-            if (null == v) {
-                return null;
-            }
         }
-        return cast(v);
+        return (T) entity;
     }
 
-    private static <T> T _getProperty(CacheService cache, Object entity, String property) {
-        PropertyGetter propertyGetter = propertyGetter(cache, entity, property);
-        return cast(propertyGetter.apply(entity));
-    }
-
-    private static Class _getPropertyClass(CacheService cache, Object entity, String property) {
-        PropertyGetter propertyGetter = propertyGetter(cache, entity, property);
-        return propertyGetter.getPropertyClass(entity);
-    }
-
-    private static <T> T getProperty(Object o, String ... propertyPath) {
-        if (null == o) {
-            return null;
-        }
-        Object v = o;
-        for (String p : propertyPath) {
-            v = _getProperty(null, v, p);
-        }
-        return cast(v);
-    }
-
-    private static String propertyGetterKey(Class c, String p) {
-        return S.builder("osgl:pg:").append(c.getName()).append(":").append(p).toString();
+    private static String propertyGetterKey(Class c, String p, boolean requireField) {
+        return S.builder("osgl:pg:").append(requireField ? "f:": "").append(c.getName()).append(":").append(p).toString();
     }
 
     @SuppressWarnings("unchecked")
-    private static PropertyGetter propertyGetter(CacheService cache, Object o, String property) {
-        if (null == o) {
-            return null;
-        }
+    private static PropertyGetter propertyGetter(CacheService cache, Object entity, String property, boolean requireField) {
         PropertyGetter propertyGetter;
-        Class c = o.getClass();
+        Class c = entity.getClass();
         String key = null;
         if (null != cache) {
-            key = propertyGetterKey(c, property);
+            key = propertyGetterKey(c, property, requireField);
             propertyGetter = cache.get(key);
             if (null != propertyGetter) {
                 return propertyGetter;
             }
         }
-        propertyGetter = propertyHandlerFactory.createPropertyGetter(c, property);
+        propertyGetter = propertyHandlerFactory.createPropertyGetter(c, property, requireField);
+        if (requireField) {
+            propertyGetter.setNullValuePolicy(PropertyGetter.NullValuePolicy.CREATE_NEW);
+        }
         if (null != cache) {
             cache.put(key, propertyGetter);
         }
         return propertyGetter;
     }
 
-    @SuppressWarnings("unchecked")
-    private static void _setProperty(CacheService cache, Object entity, String property, Object val) {
-        PropertySetter propertySetter = propertySetter(cache, entity, property);
-        propertySetter.apply(entity, val);
+    private static List<Class<?>> findPropertyParameterizedType(Object entity, String prop) {
+        Class<?> c = entity.getClass();
+        while (null != c && !Object.class.equals(c)) {
+            try {
+                String p = S.capFirst(prop);
+                String getter = "get" + p;
+                Method m = c.getDeclaredMethod(getter);
+                m.setAccessible(true);
+                Type type = m.getGenericReturnType();
+                if (type instanceof ParameterizedType) {
+                    ParameterizedType ptype = cast(type);
+                    return findArgumentTypes(ptype);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    Method m = c.getDeclaredMethod(prop);
+                    m.setAccessible(true);
+                    Type type = m.getGenericReturnType();
+                    if (type instanceof ParameterizedType) {
+                        ParameterizedType ptype = cast(type);
+                        return findArgumentTypes(ptype);
+                    }
+                } catch (NoSuchMethodException e1) {
+                    try {
+                        Field f = c.getDeclaredField(prop);
+                        f.setAccessible(true);
+                        Type type = f.getGenericType();
+                        if (type instanceof ParameterizedType) {
+                            ParameterizedType ptype = cast(type);
+                            return findArgumentTypes(ptype);
+                        }
+                    } catch (NoSuchFieldException e2) {
+                        c = c.getSuperclass();
+                    }
+                }
+            }
+        }
+        throw E.unexpected("Cannot find property %s on class %s", prop, entity.getClass());
+    }
+
+    private static List<Class<?>> findArgumentTypes(ParameterizedType ptype) {
+        List<Class<?>> retList = C.newList();
+        Type[] ta = ptype.getActualTypeArguments();
+        for (Type t: ta) {
+            if (t instanceof Class) {
+                retList.add((Class) t);
+            } else if (t instanceof ParameterizedType) {
+                retList.add((Class) ((ParameterizedType) t).getRawType());
+            }
+        }
+        return retList;
     }
 
     @SuppressWarnings("unchecked")
-    private static void setProperty(CacheService cache, Object entity, Object val, String ... propertyPath) {
+    private static void setProperty(final CacheService cache, Object entity, final Object val, String ... propertyPath) {
         E.NPE(entity);
         int len = propertyPath.length;
         E.illegalArgumentIf(len < 1);
-        for (int i = 0; i < len - 1; ++i) {
-            Object obj = _getProperty(cache, entity, propertyPath[i]);
-            if (null == obj) {
-                Class c = _getPropertyClass(cache, entity, propertyPath[i]);
-                obj = newInstance(c);
-                _setProperty(cache, entity, propertyPath[i], obj);
+        Object lastEntity = null;
+        for (int i = 0; i < len; ++i) {
+            String prop = propertyPath[i];
+            String lastProp = i == 0 ? prop : propertyPath[i - 1];
+
+            if (entity instanceof List) {
+                List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
+                if (i == len - 1) {
+                    ListPropertySetter setter = propertyHandlerFactory.createListPropertySetter(classList.get(0));
+                    setter.set(entity, val, prop);
+                } else {
+                    ListPropertyGetter getter = propertyHandlerFactory.createListPropertyGetter(classList.get(0));
+                    getter.setNullValuePolicy(PropertyGetter.NullValuePolicy.CREATE_NEW);
+                    lastEntity = entity;
+                    entity = getter.get(lastEntity, prop);
+                }
+            } else if (lastEntity instanceof Map) {
+                List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
+                if (i == len - 1) {
+                    MapPropertySetter setter = propertyHandlerFactory.createMapPropertySetter(classList.get(0), classList.get(1));
+                    setter.set(entity, val, prop);
+                } else {
+                    MapPropertyGetter getter = propertyHandlerFactory.createMapPropertyGetter(classList.get(0), classList.get(1));
+                    getter.setNullValuePolicy(PropertyGetter.NullValuePolicy.CREATE_NEW);
+                    lastEntity = entity;
+                    entity = getter.get(lastEntity, prop);
+                }
+            } else {
+                if (i == len - 1) {
+                    PropertySetter setter = propertySetter(cache, entity, prop);
+                    setter.set(entity, val, null);
+                } else {
+                    PropertyGetter getter = propertyGetter(cache, entity, prop, true);
+                    lastEntity = entity;
+                    entity = getter.get(entity, null);
+                }
             }
-            entity = obj;
         }
-        _setProperty(cache, entity, propertyPath[len - 1], val);
     }
 
     private static void setProperty(Object entity, Object val, String ... propertyPath) {

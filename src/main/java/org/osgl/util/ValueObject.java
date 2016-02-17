@@ -1,8 +1,5 @@
 package org.osgl.util;
 
-import com.sun.org.apache.bcel.internal.classfile.Code;
-import com.sun.org.apache.xerces.internal.impl.dv.xs.DoubleDV;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.osgl.$;
 
 import java.util.Map;

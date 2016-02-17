@@ -2,6 +2,7 @@ package org.osgl.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * Create {@link PropertyGetter} and {@link PropertySetter} based on Java reflection
@@ -9,7 +10,6 @@ import java.lang.reflect.Method;
 public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory {
     @Override
     public PropertySetter createPropertySetter(Class c, String propName) {
-        PropertySetter propertySetter;
         String p = S.capFirst(propName);
         String setter = "set" + p;
         String isser = "is" + p;
@@ -29,13 +29,20 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
             f.setAccessible(true);
             return newSetter(c, null, f);
         } catch (NoSuchFieldException e) {
-            throw E.unexpected("Cannot find access method to field %s on class %s", propName, c);
+            throw E.unexpected(e, "Cannot find access method to field %s on class %s", propName, c);
         }
     }
 
     @Override
-    public PropertyGetter createPropertyGetter(Class c, String propName) {
+    public PropertyGetter createPropertyGetter(Class c, String propName, boolean requireField) {
         PropertyGetter propertyGetter;
+        if (requireField) {
+            try {
+                return getterViaField(c, propName);
+            } catch (Exception e) {
+                // ignore: try the java bean getter later on
+            }
+        }
         String p = S.capFirst(propName);
         String getter = "get" + p;
         try {
@@ -52,17 +59,45 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
                     Method m = c.getMethod(propName);
                     propertyGetter = newGetter(c, m, null);
                 } catch (NoSuchMethodException e2) {
-                    try {
-                        Field f = c.getDeclaredField(propName);
-                        f.setAccessible(true);
-                        propertyGetter = newGetter(c, null, f);
-                    } catch (NoSuchFieldException e3) {
-                        throw E.unexpected("Cannot find access method to field %s on class %s", propName, c);
-                    }
+                    propertyGetter = getterViaField(c, propName);
                 }
             }
         }
         return propertyGetter;
+    }
+
+    @Override
+    public MapPropertyGetter createMapPropertyGetter(Class keyType, Class valType) {
+        return new MapPropertyGetter(keyType, valType);
+    }
+
+    @Override
+    public MapPropertySetter createMapPropertySetter(Class keyType, Class valType) {
+        return new MapPropertySetter(keyType, valType);
+    }
+
+    @Override
+    public ListPropertyGetter createListPropertyGetter(Class itemType) {
+        return new ListPropertyGetter(itemType);
+    }
+
+    @Override
+    public ListPropertySetter createListPropertySetter(Class itemType) {
+        return new ListPropertySetter(itemType);
+    }
+
+    private PropertyGetter getterViaField(Class entityClass, String propName) {
+        while (!Object.class.equals(entityClass)) {
+            try {
+                Field f = entityClass.getDeclaredField(propName);
+                f.setAccessible(true);
+                return newGetter(entityClass, null, f);
+            } catch (NoSuchFieldException e3) {
+                entityClass = entityClass.getSuperclass();
+                throw E.unexpected(e3, "Cannot find access method to field %s on class %s", propName, entityClass);
+            }
+        }
+        throw E.unexpected("entity class is Object.class");
     }
 
     protected PropertyGetter newGetter(Class c, Method m, Field f) {
@@ -72,4 +107,6 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
     protected PropertySetter newSetter(Class c, Method m, Field f) {
         return new ReflectionPropertySetter(c, m, f);
     }
+
+
 }
