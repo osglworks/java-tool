@@ -5580,7 +5580,7 @@ public class Osgl implements Serializable {
                     lastEntity = entity;
                     entity = getter.get(lastEntity, prop);
                 }
-            } else if (lastEntity instanceof Map) {
+            } else if (entity instanceof Map) {
                 List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
                 if (i == len - 1) {
                     MapPropertySetter setter = propertyHandlerFactory.createMapPropertySetter(classList.get(0), classList.get(1));

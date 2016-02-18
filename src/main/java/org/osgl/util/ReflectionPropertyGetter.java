@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import org.osgl.$;
 import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
@@ -11,25 +12,33 @@ import java.lang.reflect.Method;
  */
 public class ReflectionPropertyGetter extends ReflectionPropertyHandler implements PropertyGetter {
 
-    ReflectionPropertyGetter(Osgl.Function<Class<?>, Object> objectFactory,
-                             Osgl.Func2<String, Class<?>, ?> stringValueResolver,
-                             Class entityClass, Method m, Field f) {
+    private ReflectionPropertyHandlerFactory factory;
+
+    public ReflectionPropertyGetter(Osgl.Function<Class<?>, Object> objectFactory,
+                                    Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+                                    Class entityClass, Method m, Field f,
+                                    ReflectionPropertyHandlerFactory factory) {
         super(objectFactory, stringValueResolver, entityClass, m, f);
+        this.factory = $.notNull(factory);
     }
 
-    ReflectionPropertyGetter(Osgl.Function<Class<?>, Object> objectFactory,
-                             Osgl.Func2<String, Class<?>, ?> stringValueResolver,
-                             NullValuePolicy nullValuePolicy,
-                             Class entityClass, Method m, Field f) {
+    public ReflectionPropertyGetter(Osgl.Function<Class<?>, Object> objectFactory,
+                                    Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+                                    NullValuePolicy nullValuePolicy,
+                                    Class entityClass, Method m, Field f,
+                                    ReflectionPropertyHandlerFactory factory) {
         super(objectFactory, stringValueResolver, nullValuePolicy, entityClass, m, f);
+        this.factory = $.notNull(factory);
     }
 
-    ReflectionPropertyGetter(Class entityClass, Method m, Field f) {
+    public ReflectionPropertyGetter(Class entityClass, Method m, Field f,
+                                    ReflectionPropertyHandlerFactory factory) {
         super(entityClass, m, f);
+        this.factory = $.notNull(factory);
     }
 
-    ReflectionPropertyGetter(NullValuePolicy nullValuePolicy,
-                             Class entityClass, Method m, Field f) {
+    public ReflectionPropertyGetter(NullValuePolicy nullValuePolicy,
+                                    Class entityClass, Method m, Field f) {
         super(nullValuePolicy, entityClass, m, f);
     }
 
@@ -73,6 +82,15 @@ public class ReflectionPropertyGetter extends ReflectionPropertyHandler implemen
 
     @Override
     public PropertySetter setter() {
-        return new ReflectionPropertySetter(entityClass, m, f);
+        String prop;
+        if (null != m) {
+            prop = m.getName();
+            if (prop.startsWith("get")) {
+                prop = prop.substring(3);
+            }
+        } else {
+            prop = f.getName();
+        }
+        return factory.createPropertySetter(entityClass, prop);
     }
 }

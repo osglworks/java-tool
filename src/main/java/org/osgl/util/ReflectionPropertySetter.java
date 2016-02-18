@@ -16,7 +16,7 @@ public class ReflectionPropertySetter extends ReflectionPropertyHandler implemen
         setNullValuePolicy(PropertyGetter.NullValuePolicy.CREATE_NEW);
     }
 
-    ReflectionPropertySetter(Osgl.Function<Class<?>, Object> objectFactory,
+    public ReflectionPropertySetter(Osgl.Function<Class<?>, Object> objectFactory,
                              Osgl.Func2<String, Class<?>, ?> stringValueResolver,
                              Class entityClass, Method m, Field f) {
         super(objectFactory, stringValueResolver, PropertyGetter.NullValuePolicy.CREATE_NEW, entityClass, m, f);

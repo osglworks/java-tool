@@ -101,7 +101,7 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
     }
 
     protected PropertyGetter newGetter(Class c, Method m, Field f) {
-        return new ReflectionPropertyGetter(c, m, f);
+        return new ReflectionPropertyGetter(c, m, f, this);
     }
 
     protected PropertySetter newSetter(Class c, Method m, Field f) {

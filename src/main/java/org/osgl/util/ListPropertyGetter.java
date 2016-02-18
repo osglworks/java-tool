@@ -43,7 +43,7 @@ public class ListPropertyGetter extends ListPropertyHandler implements PropertyG
             }
         }
         Object val = null;
-        if (id > -1 && id <= list.size()) {
+        if (id > -1 && id < list.size()) {
             val = list.get(id);
         }
         if (null == val) {
