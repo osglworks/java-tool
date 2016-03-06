@@ -2976,6 +2976,15 @@ public enum C {
     }
 
     /**
+     * Create an empty immutable set
+     * @param <T> the generic type
+     * @return the empty set
+     */
+    public static <T> Set<T> set() {
+        return Nil.set();
+    }
+
+    /**
      * Create an immutable set of a single element
      * @param element the single element
      * @param <T> the element type
