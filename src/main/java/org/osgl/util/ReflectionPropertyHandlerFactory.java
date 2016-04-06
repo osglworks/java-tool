@@ -24,13 +24,7 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
                 return newSetter(c, m, null);
             }
         }
-        try {
-            Field f = c.getDeclaredField(propName);
-            f.setAccessible(true);
-            return newSetter(c, null, f);
-        } catch (NoSuchFieldException e) {
-            throw E.unexpected(e, "Cannot find access method to field %s on class %s", propName, c);
-        }
+        return setterViaField(c, propName);
     }
 
     @Override
@@ -86,6 +80,19 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
         return new ListPropertySetter(itemType);
     }
 
+    private PropertySetter setterViaField(Class entityClass, String propName) {
+        while (!Object.class.equals(entityClass)) {
+            try {
+                Field f = entityClass.getDeclaredField(propName);
+                f.setAccessible(true);
+                return newSetter(entityClass, null, f);
+            } catch (NoSuchFieldException e3) {
+                entityClass = entityClass.getSuperclass();
+            }
+        }
+        throw E.unexpected("Cannot find access method to field %s on %s", propName, entityClass);
+    }
+
     private PropertyGetter getterViaField(Class entityClass, String propName) {
         while (!Object.class.equals(entityClass)) {
             try {
@@ -94,10 +101,9 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
                 return newGetter(entityClass, null, f);
             } catch (NoSuchFieldException e3) {
                 entityClass = entityClass.getSuperclass();
-                throw E.unexpected(e3, "Cannot find access method to field %s on class %s", propName, entityClass);
             }
         }
-        throw E.unexpected("entity class is Object.class");
+        throw E.unexpected("Cannot find access method to field %s on %s", propName, entityClass);
     }
 
     protected PropertyGetter newGetter(Class c, Method m, Field f) {
