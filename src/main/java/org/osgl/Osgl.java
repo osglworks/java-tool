@@ -5465,9 +5465,15 @@ public class Osgl implements Serializable {
                 entity = getter.get(lastEntity, prop);
             } else if (entity instanceof Map) {
                 List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
-                MapPropertyGetter getter = propertyHandlerFactory.createMapPropertyGetter(classList.get(0), classList.get(1));
-                lastEntity = entity;
-                entity = getter.get(lastEntity, prop);
+                if (null == classList) {
+                    PropertyGetter getter = propertyGetter(cache, entity, prop, false);
+                    lastEntity = entity;
+                    entity = getter.get(entity, null);
+                } else {
+                    MapPropertyGetter getter = propertyHandlerFactory.createMapPropertyGetter(classList.get(0), classList.get(1));
+                    lastEntity = entity;
+                    entity = getter.get(lastEntity, prop);
+                }
             } else {
                 PropertyGetter getter = propertyGetter(cache, entity, prop, false);
                 lastEntity = entity;
@@ -5518,6 +5524,8 @@ public class Osgl implements Serializable {
                 if (type instanceof ParameterizedType) {
                     ParameterizedType ptype = cast(type);
                     return findArgumentTypes(ptype);
+                } else {
+                    return null;
                 }
             } catch (NoSuchMethodException e) {
                 try {
