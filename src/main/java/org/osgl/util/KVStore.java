@@ -73,4 +73,19 @@ public class KVStore extends HashMap<String, ValueObject> implements Map<String,
         }
     }
 
+    /**
+     * Returns a `Map` contains (key, value) pairs that stored in this
+     * `KVStore`. The value in the pair should be the {@link ValueObject#value()}
+     * stored in the {@link ValueObject} in this `KVStore`
+     *
+     * @return the map of key and raw value stored in this store
+     */
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = C.newMap();
+        for (Map.Entry<String, ValueObject> entry : entrySet()) {
+            map.put(entry.getKey(), entry.getValue().value());
+        }
+        return map;
+    }
+
 }

@@ -1,6 +1,7 @@
 package org.osgl.util;
 
 import org.osgl.$;
+import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.*;
@@ -579,6 +580,26 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             forEach($.predicate(predicate).ifThen(C.F.addTo(l)));
             return l;
         }
+    }
+
+    @Override
+    public Osgl.T2<C.List<T>, C.List<T>> split(final Osgl.Function<? super T, Boolean> predicate) {
+        final C.List<T> left = C.newList();
+        final C.List<T> right = C.newList();
+        accept(new $.Visitor<T>() {
+            @Override
+            public void visit(T t) throws Osgl.Break {
+                if (predicate.apply(t)) {
+                    left.add(t);
+                } else {
+                    right.add(t);
+                }
+            }
+        });
+        if (isImmutable() || isReadOnly()) {
+            return $.T2(C.list(left), C.list(right));
+        }
+        return $.T2(left, right);
     }
 
     private Cursor<T> fromLeft() {

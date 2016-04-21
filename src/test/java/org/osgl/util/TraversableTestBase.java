@@ -109,6 +109,14 @@ public abstract class TraversableTestBase extends UtilTestBase {
     }
 
     @Test
+    public void testSplit() {
+        data = prepareData(1, 2, 3, 4, 5, 6, 7);
+        $.T2<C.List<Integer>, C.List<Integer>> t2 = C.list(data).split(N.F.gt(3));
+        eq(seqOf(4, 5, 6, 7), t2._1);
+        eq(seqOf(1, 2, 3), t2._2);
+    }
+
+    @Test
     public void testReduce() {
         data = prepareData(1, 2, 3, 4, 5);
         int sum = data.reduce(N.F.aggregate(Integer.class)).get();

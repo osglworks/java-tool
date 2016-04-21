@@ -685,6 +685,12 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
             return true;
         }
 
+        @Override
+        public Osgl.T2<C.List<T>, C.List<T>> split(Osgl.Function<? super T, Boolean> predicate) {
+            C.List<T> empty = this;
+            return $.T2(empty, empty);
+        }
+
         // Preserves singleton property
         private Object readResolve() {
             return INSTANCE;

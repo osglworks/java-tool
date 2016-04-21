@@ -1742,6 +1742,20 @@ public enum C {
         List<T> filter($.Function<? super T, Boolean> predicate);
 
         /**
+         * Split this list into two list based on the predicate specified.
+         * <p>
+         *     The function use the predicate to test all elements in this list. If test passed
+         *     then it add the element into {@link $.T2#_1 left side list}, otherwise the
+         *     element will be added into {@link $.T2#_2 right side list}. The result
+         *     is returned as a {@link org.osgl.Osgl.Tuple tuple} contains the left and
+         *     right side lift
+         * </p>
+         * @param predicate the function to test the elements in this list
+         * @return a tuple of two lists
+         */
+        $.T2<List<T>, List<T>> split($.Function<? super T, Boolean> predicate);
+
+        /**
          * Find the first element in this list that matches the predicate.
          * Return a cursor point to the location of the element. If no
          * such element is found then a cursor that point to {@code -1}
