@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -128,6 +129,13 @@ public class IO {
      * Returns a file input stream
      */
     public static InputStream is(File file) {
+        // workaround http://stackoverflow.com/questions/36880692/java-file-does-not-exists-but-file-getabsolutefile-exists
+        if (!file.exists()) {
+            file = file.getAbsoluteFile();
+        }
+        if (!file.exists()) {
+            throw E.ioException("File does not exists: %s", file.getPath());
+        }
         try {
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
@@ -251,6 +259,21 @@ public class IO {
         if (!f.delete()) {
             f.deleteOnExit();
         }
+    }
+
+    /**
+     * Load properties from a file
+     * @param file the properties file
+     * @return the properties loaded from the file specified
+     */
+    public static Properties loadProperties(File file) {
+        Properties prop = new Properties();
+        try {
+            prop.load(IO.is(file));
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+        return prop;
     }
 
     /**
