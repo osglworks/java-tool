@@ -267,13 +267,50 @@ public class IO {
      * @return the properties loaded from the file specified
      */
     public static Properties loadProperties(File file) {
+        return loadProperties(IO.is(file));
+    }
+
+    /**
+     * Load properties from an inputStream
+     * @param inputStream the input stream to property source
+     * @return the properties loaded from the input stream specified
+     */
+    public static Properties loadProperties(InputStream inputStream) {
         Properties prop = new Properties();
         try {
-            prop.load(IO.is(file));
+            prop.load(inputStream);
         } catch (IOException e) {
             throw E.ioException(e);
+        } finally {
+            IO.close(inputStream);
         }
         return prop;
+    }
+
+    /**
+     * Load properties from an inputStream
+     * @param reader the reader to property source
+     * @return the properties loaded from the reader specified
+     */
+    public static Properties loadProperties(Reader reader) {
+        Properties prop = new Properties();
+        try {
+            prop.load(reader);
+        } catch (IOException e) {
+            throw E.ioException(e);
+        } finally {
+            IO.close(reader);
+        }
+        return prop;
+    }
+
+    /**
+     * Load properties from a string content
+     * @param content the content of a properties file
+     * @return the properties loaded
+     */
+    public static Properties loadProperties(String content) {
+        return loadProperties(new StringReader(content));
     }
 
     /**
