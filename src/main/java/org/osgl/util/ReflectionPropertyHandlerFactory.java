@@ -81,6 +81,7 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
     }
 
     private PropertySetter setterViaField(Class entityClass, String propName) {
+        final Class entityClass0 = entityClass;
         while (!Object.class.equals(entityClass)) {
             try {
                 Field f = entityClass.getDeclaredField(propName);
@@ -90,10 +91,14 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
                 entityClass = entityClass.getSuperclass();
             }
         }
+        if (Map.class.isAssignableFrom(entityClass0)) {
+            return createMapPropertySetter(String.class, Object.class);
+        }
         throw E.unexpected("Cannot find access method to field %s on %s", propName, entityClass);
     }
 
     private PropertyGetter getterViaField(Class entityClass, String propName) {
+        final Class entityClass0 = entityClass;
         while (!Object.class.equals(entityClass)) {
             try {
                 Field f = entityClass.getDeclaredField(propName);
@@ -102,6 +107,9 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
             } catch (NoSuchFieldException e3) {
                 entityClass = entityClass.getSuperclass();
             }
+        }
+        if (Map.class.isAssignableFrom(entityClass0)) {
+            return createMapPropertyGetter(String.class, Object.class);
         }
         throw E.unexpected("Cannot find access method to field %s on %s", propName, entityClass);
     }

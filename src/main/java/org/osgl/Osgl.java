@@ -5394,7 +5394,7 @@ public class Osgl implements Serializable {
             return getProperty(entity, property.split("\\/"));
         }
         PropertyGetter gettter = propertyGetter(null, entity, property, false);
-        return cast(gettter.get(entity, null));
+        return cast(gettter.get(entity, property));
     }
 
     @SuppressWarnings("unchecked")
@@ -5409,7 +5409,7 @@ public class Osgl implements Serializable {
             return getProperty(cache, entity, property.split("\\/"));
         }
         PropertyGetter gettter = propertyGetter(cache, entity, property, false);
-        return cast(gettter.get(entity, null));
+        return cast(gettter.get(entity, property));
     }
 
     public static void setProperty(Object entity, Object val, String property) {
@@ -5423,7 +5423,7 @@ public class Osgl implements Serializable {
             setProperty(entity, val, property.split("\\/"));
         } else {
             PropertySetter setter = propertySetter(null, entity, property);
-            setter.set(entity, val, null);
+            setter.set(entity, val, property);
         }
     }
 
@@ -5438,7 +5438,7 @@ public class Osgl implements Serializable {
             setProperty(cache, entity, val, property.split("\\/"));
         } else {
             PropertySetter setter = propertySetter(cache, entity, property);
-            setter.set(entity, val, null);
+            setter.set(entity, val, property);
         }
     }
 
