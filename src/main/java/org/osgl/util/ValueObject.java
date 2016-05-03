@@ -21,8 +21,11 @@ public class ValueObject {
 
     public static interface Codec<T> {
         Class<T> targetClass();
+
         T parse(String s);
+
         String toString(T o);
+
         String toJSONString(T o);
     }
 
@@ -184,7 +187,58 @@ public class ValueObject {
 
             @Override
             String toJSONString(ValueObject vo) {
-                return S.builder("\"").append(toString(vo)).append("\"").toString();
+                String string = toString(vo);
+                if (string == null || string.length() == 0) {
+                    return "\"\"";
+                }
+
+                char c;
+                int i;
+                int len = string.length();
+                StringBuilder sb = new StringBuilder(len + 4);
+                String t;
+
+                sb.append('"');
+                for (i = 0; i < len; i += 1) {
+                    c = string.charAt(i);
+                    switch (c) {
+                        case '\\':
+                        case '"':
+                            sb.append('\\');
+                            sb.append(c);
+                            break;
+                        case '/':
+                            //                if (b == '<') {
+                            sb.append('\\');
+                            //                }
+                            sb.append(c);
+                            break;
+                        case '\b':
+                            sb.append("\\b");
+                            break;
+                        case '\t':
+                            sb.append("\\t");
+                            break;
+                        case '\n':
+                            sb.append("\\n");
+                            break;
+                        case '\f':
+                            sb.append("\\f");
+                            break;
+                        case '\r':
+                            sb.append("\\r");
+                            break;
+                        default:
+                            if (c < ' ') {
+                                t = "000" + Integer.toHexString(c);
+                                sb.append("\\u" + t.substring(t.length() - 4));
+                            } else {
+                                sb.append(c);
+                            }
+                    }
+                }
+                sb.append('"');
+                return sb.toString();
             }
 
             @Override
@@ -193,8 +247,8 @@ public class ValueObject {
                 return (T) s;
             }
         },
-        ENUM() {
 
+        ENUM() {
             @Override
             <T> T get(ValueObject vo) {
                 return (T) vo.eVal;
@@ -470,9 +524,10 @@ public class ValueObject {
 
     /**
      * Decode a object instance from a string with given target object type
-     * @param string the string encoded the value of the instance
+     *
+     * @param string     the string encoded the value of the instance
      * @param targetType the class of the instance decoded from the string
-     * @param <T> the generic type of the instance
+     * @param <T>        the generic type of the instance
      * @return the instance decoded
      */
     public static <T> T decode(String string, Class<T> targetType) {
@@ -482,6 +537,7 @@ public class ValueObject {
 
     /**
      * Encode a object into a String
+     *
      * @param o the object to be encoded
      * @return the encoded string representation of the object
      * @throws IllegalArgumentException when object is a UDF type and Codec is not registered
@@ -606,6 +662,10 @@ public class ValueObject {
             return Type.SHORT;
         }
         return Type.UDF;
+    }
+
+    static {
+        register(new BigDecimalValueObjectCodec());
     }
 
 }
