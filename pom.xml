@@ -16,7 +16,7 @@
   -->
 <!-- history 
 0.3-SNAPSHOT
-- base verion when history log started
+- base version when history log started
 
 0.3.1-SNAPSHOT
 - Added: ContextLocal, FastStr, Unsafe

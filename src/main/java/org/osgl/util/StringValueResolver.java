@@ -198,7 +198,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         }
     };
 
-    private static Map<Class, StringValueResolver> predefined = C.map(
+    private static Map<Class, StringValueResolver> predefined = C.newMap(
         boolean.class, _boolean,
         Boolean.class, _Boolean,
         char.class, _char,
