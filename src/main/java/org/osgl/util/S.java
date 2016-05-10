@@ -12,11 +12,7 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 20/09/13
- * Time: 4:24 PM
- * To change this template use File | Settings | File Templates.
+ * String utilities
  */
 public class S {
 
@@ -28,7 +24,7 @@ public class S {
     /**
      * A commonly used separator: [,;:\\s]+
      */
-    public static final String COMMON_SEP = "[,;:\\s]";
+    public static final String COMMON_SEP = "[,;:\\s]+";
 
     public final static String fmt(String tmpl) {
         return tmpl;
