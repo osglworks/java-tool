@@ -120,6 +120,7 @@
 - Add BigDecimalValueObjectCodec
 - Fix ValueObject.toJSONString() issue when type is String and content contains illegal character, .e.g (")
 - Fix issue in S.COMMON_SEP, change "[,;:\\s]" to "[,;:\\s]+"
+- Add $.F.identity(Class) method
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">

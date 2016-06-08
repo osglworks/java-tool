@@ -7113,6 +7113,17 @@ public class Osgl implements Serializable {
             return IDENTITY;
         }
 
+        /**
+         * The type-safe version of {@link #IDENTITY}
+         * @param clz the class that restrict the type of &lt;T&gt;
+         * @param <T> the generic type
+         * @return the identity function that when get called, always return the parameter
+         * @since 0.9
+         */
+        public static <T> F1<T, T> identity(Class<T> clz) {
+            return IDENTITY;
+        }
+
         private static <T extends Comparable<T>> F2<T, T, Boolean> _cmp(final boolean lt) {
             return new F2<T, T, Boolean>() {
                 @Override
