@@ -2,6 +2,7 @@ package org.osgl.util;
 
 import org.osgl.$;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -17,7 +18,9 @@ import java.util.Map;
  * {@code ValueObject} is immutable
  * </p>
  */
-public class ValueObject {
+public class ValueObject implements Serializable {
+
+    private static final long serialVersionUID = -6103505642730947577L;
 
     public static interface Codec<T> {
         Class<T> targetClass();
