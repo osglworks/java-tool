@@ -82,8 +82,13 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     }
 
     @Override
-    public <R> C.Traversable<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
-        return null;
+    public <R> C.Set<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+        C.Set<R> set = C.newSet();
+        for (T t : this) {
+            Iterable<? extends R> iterable = mapper.apply(t);
+            set.addAll(C.list(iterable));
+        }
+        return set;
     }
 
     @Override
