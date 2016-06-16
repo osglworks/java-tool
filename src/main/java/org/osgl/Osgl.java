@@ -5078,9 +5078,22 @@ public class Osgl implements Serializable {
         __primitiveToWrappers.put(float[].class, Float[].class);
         __primitiveToWrappers.put(double[].class, Double[].class);
 
-        for (Class p : __primitiveToWrappers.keySet()) {
-            __wrapperToPrmitives.put(__primitiveToWrappers.get(p), p);
+        for (Map.Entry<Class, Class> entry : __primitiveToWrappers.entrySet()) {
+            __wrapperToPrmitives.put(entry.getValue(), entry.getKey());
         }
+    }
+
+    /**
+     * Check if a give class `c` is a simple type. The following classes are considered to be simple type:
+     * 1. primitive types, e.g. int.class
+     * 2. Wrapper type of primitive types, e.g. Integer.class
+     * 3. String.class
+     * 4. Any class extends `Enum.class`
+     * @param c
+     * @return `true` if the give type `c` is simple type as described above
+     */
+    public static boolean isSimpleType(Class<?> c) {
+        return String.class == c || __wrapperToPrmitives.containsKey(c) || __primitiveToWrappers.containsKey(c) || Enum.class.isAssignableFrom(c);
     }
 
     public static Class wrapperClassOf(Class c) {
