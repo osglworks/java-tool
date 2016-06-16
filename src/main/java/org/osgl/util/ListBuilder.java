@@ -426,7 +426,10 @@ implements RandomAccess, Serializable {
 
     public C.Set<T> toSet() {
         checkState();
-        return (C.Set<T>)ImmutableSet.of(buf);
+        trimToSize();
+        Object[] data = buf;
+        buf = null;
+        return (C.Set<T>)ImmutableSet.of(data);
     }
 
     /**

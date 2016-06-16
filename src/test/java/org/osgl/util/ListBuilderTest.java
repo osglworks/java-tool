@@ -210,4 +210,13 @@ public class ListBuilderTest extends UtilTestBase {
         lb.add(4, 5);
     }
 
+    @Test
+    public void testToSet() {
+        lb = new ListBuilder<Integer>(3);
+        lb.append(3);
+        lb.append(4);
+        Set<Integer> set = lb.toSet();
+        eq(2, set.size());
+    }
+
 }
