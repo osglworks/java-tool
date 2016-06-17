@@ -3930,7 +3930,7 @@ public class Osgl implements Serializable {
         }
     }
 
-    public static class Val<T> extends Var<T> {
+    public static final class Val<T> extends Var<T> {
         public Val(T value) {
             super(value);
         }
@@ -3956,6 +3956,10 @@ public class Osgl implements Serializable {
 
     public static <T> Val<T> val(T t) {
         return Val.of(t);
+    }
+
+    public static <T> Const<T> constant(T t) {
+        return Const.<T>of(t);
     }
 
     // --- common utilities
