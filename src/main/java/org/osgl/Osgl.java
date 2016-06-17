@@ -3411,6 +3411,18 @@ public class Osgl implements Serializable {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (o instanceof Var) {
+                Var v = (Var)o;
+                return $.eq(v.get(), this.get());
+            }
+            return false;
+        }
+
+        @Override
         public boolean isEmpty() {
             return false;
         }
