@@ -54,7 +54,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         @Override
         public Character resolve(String value) {
             if (S.empty(value)) {
-                return ' ';
+                return '\0';
             }
             return value.charAt(0);
         }
