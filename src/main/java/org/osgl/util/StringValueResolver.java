@@ -1,6 +1,7 @@
 package org.osgl.util;
 
 import org.osgl.$;
+import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
 import java.math.BigDecimal;
@@ -204,16 +205,22 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return new BigDecimal(value);
         }
     };
-    private static final StringValueResolver<String> _String = wrap($.F.asString(String.class));
+    private static final StringValueResolver<String> _String = wrap($.F.<String>identity());
     private static final StringValueResolver<Str> _Str = new StringValueResolver<Str>() {
         @Override
         public Str resolve(String value) {
+            if (null == value) {
+                return null;
+            }
             return S.str(value);
         }
     };
     private static final StringValueResolver<FastStr> _FastStr = new StringValueResolver<FastStr>() {
         @Override
         public FastStr resolve(String value) {
+            if (null == value) {
+                return null;
+            }
             return FastStr.of(value);
         }
     };
