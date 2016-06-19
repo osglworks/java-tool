@@ -2654,7 +2654,37 @@ public enum C {
     }
 
     /**
-     * Create an immutable Byte list from a byte (primary type) array.
+     * Create an immutable Boolean list from a boolean (primitive type) array.
+     * <p>At the moment the implementation will convert the boolean (primary)
+     * array to Boolean (wraper) array, thus a copy of the array
+     * will actually take place. However it should assume the
+     * array will directly be used as backing data in user application
+     * to cater to the future optimized implementation</p>
+     *
+     * @param elements an array of primary boolean
+     * @return a Boolean typed list
+     */
+    public static List<Boolean> listOf(boolean[] elements) {
+        return list(elements);
+    }
+
+    /**
+     * Create an immutable Boolean list of a byte (primitive type) array.
+     * The elements of the array is copied into the returned list
+     *
+     * @param elements an array of bytes
+     * @return an immutable list contains specified elements
+     */
+    public static List<Boolean> list(boolean[] elements) {
+        if (elements.length == 0) {
+            return Nil.list();
+        }
+        Boolean[] ba = $.asObject(elements);
+        return ImmutableList.of(ba);
+    }
+
+    /**
+     * Create an immutable Byte list from a byte (primitive type) array.
      * <p>At the moment the implementation will convert the byte (primary)
      * array to Byte (reference) array, thus a copy of the array
      * will actually take place. However it should assume the
@@ -2669,7 +2699,7 @@ public enum C {
     }
 
     /**
-     * Create an immutable Byte list of a byte (pimary type) array.
+     * Create an immutable Byte list of a byte (primitive type) array.
      * The elements of the array is copied into the returned list
      *
      * @param elements an array of bytes
@@ -2683,9 +2713,38 @@ public enum C {
         return ImmutableList.of(ba);
     }
 
+    /**
+     * Create an immutable Short list from a char (primitive type) array.
+     * <p>At the moment the implementation will convert the char (primary)
+     * array to Character (reference) array, thus a copy of the array
+     * will actually take place. However it should assume the
+     * array will directly be used as backing data in user application
+     * to cater to the future optimized implementation</p>
+     *
+     * @param elements an array of primary short
+     * @return a Short typed list
+     */
+    public static List<Character> listOf(char[] elements) {
+        return list(elements);
+    }
 
     /**
-     * Create an immutable Short list from a short (primary type) array.
+     * Create an immutable Character list of a char array.
+     * The elements of the array is copied into the returned list
+     *
+     * @param elements an array of shorts
+     * @return an immutable list contains specified elements
+     */
+    public static List<Character> list(char[] elements) {
+        if (0 == elements.length) {
+            return Nil.list();
+        }
+        Character[] a = $.asObject(elements);
+        return ImmutableList.of(a);
+    }
+
+    /**
+     * Create an immutable Short list from a short (primitive type) array.
      * <p>At the moment the implementation will convert the short (primary)
      * array to Short (reference) array, thus a copy of the array
      * will actually take place. However it should assume the
@@ -2715,7 +2774,7 @@ public enum C {
     }
 
     /**
-     * Create an immutable Integer list from an int (primary type) array.
+     * Create an immutable Integer list from an int (primitive type) array.
      * <p>At the moment the implementation will convert the int (primary)
      * array to Integer (reference) array, thus a copy of the array
      * will actually take place. However it should assume the
@@ -2745,7 +2804,7 @@ public enum C {
     }
 
     /**
-     * Create an immutable Long list from a long (primary type) array.
+     * Create an immutable Long list from a long (primitive type) array.
      * <p>At the moment the implementation will convert the long (primary)
      * array to Long (reference) array, thus a copy of the array
      * will actually take place. However it should assume the
@@ -2774,7 +2833,7 @@ public enum C {
     }
 
     /**
-     * Create an immutable Float list from a float (primary type) array.
+     * Create an immutable Float list from a float (primitive type) array.
      * <p>At the moment the implementation will convert the float (primary)
      * array to Float (reference) array, thus a copy of the array
      * will actually take place. However it should assume the
@@ -2803,7 +2862,7 @@ public enum C {
     }
 
     /**
-     * Create an immutable Double list from an double (primary type) array.
+     * Create an immutable Double list from an double (primitive type) array.
      * <p>At the moment the implementation will convert the double (primary)
      * array to Double (reference) array, thus a copy of the array
      * will actually take place. However it should assume the
