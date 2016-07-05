@@ -1,7 +1,6 @@
 package org.osgl.util;
 
 import org.osgl.$;
-import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
 import java.math.BigDecimal;
@@ -187,24 +186,6 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return Double.valueOf(value);
         }
     };
-    private static final StringValueResolver<BigInteger> _BigInteger = new StringValueResolver<BigInteger>() {
-        @Override
-        public BigInteger resolve(String value) {
-            if (S.blank(value)) {
-                return BigInteger.ZERO;
-            }
-            return new BigInteger(value);
-        }
-    };
-    private static final StringValueResolver<BigDecimal> _BigDecimal = new StringValueResolver<BigDecimal>() {
-        @Override
-        public BigDecimal resolve(String value) {
-            if (S.blank(value)) {
-                return BigDecimal.ZERO;
-            }
-            return new BigDecimal(value);
-        }
-    };
     private static final StringValueResolver<String> _String = wrap($.F.<String>identity());
     private static final StringValueResolver<Str> _Str = new StringValueResolver<Str>() {
         @Override
@@ -242,11 +223,12 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         Float.class, _Float,
         double.class, _double,
         Double.class, _Double,
-        BigInteger.class, _BigInteger,
-        BigDecimal.class, _BigDecimal,
         String.class, _String,
         Str.class, _Str,
-        FastStr.class, _FastStr
+        FastStr.class, _FastStr,
+        BigInteger.class, BigIntegerValueObjectCodec.INSTANCE,
+        BigDecimal.class, BigDecimalValueObjectCodec.INSTANCE,
+        Keyword.class, KeywordValueObjectCodec.INSTANCE
     );
 
     public static <T> void addPredefinedResolver(Class<T> type, StringValueResolver<T> resolver) {

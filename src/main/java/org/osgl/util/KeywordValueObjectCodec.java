@@ -1,9 +1,17 @@
 package org.osgl.util;
 
-public class KeywordValueObjectCodec implements ValueObject.Codec<Keyword> {
+public class KeywordValueObjectCodec extends StringValueResolver<Keyword> implements ValueObject.Codec<Keyword> {
+
+    public static final KeywordValueObjectCodec INSTANCE = new KeywordValueObjectCodec();
+
     @Override
     public Class<Keyword> targetClass() {
         return Keyword.class;
+    }
+
+    @Override
+    public Keyword resolve(String value) {
+        return Keyword.of(value);
     }
 
     @Override
