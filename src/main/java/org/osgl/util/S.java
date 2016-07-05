@@ -556,6 +556,18 @@ public class S {
         }
     }
 
+    public static String camelCase(CharSequence s) {
+        return Keyword.of(s).camelCase();
+    }
+
+    public static String underscore(CharSequence s) {
+        return Keyword.of(s).underscore();
+    }
+
+    public static String dashed(CharSequence s) {
+        return Keyword.of(s).dashed();
+    }
+
     public static String capFirst(String s) {
         if (null == s || "" == s) {
             return "";
