@@ -137,12 +137,11 @@
   <description>A simple Java toolkit</description>
   <url>http://java-tool.osgl.org/</url>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
 
   <scm>
     <connection>scm:git:git://github.com/greenlaw110/java-tool.git</connection>
