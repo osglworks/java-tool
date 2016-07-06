@@ -48,7 +48,7 @@ public class KeywordTest extends TestBase {
         eq("camel_case", keyword.underscore());
         eq("Camel case", keyword.readable());
         eq("CamelCase", keyword.camelCase());
-        eq("CAMEL_CASE", keyword.constant());
+        eq("CAMEL_CASE", keyword.constantName());
     }
 
 }

@@ -65,9 +65,9 @@ public final class Keyword implements Comparable<Keyword> {
         UNDERSCORE(SEP_UNDERSCORE),
 
         /**
-         * `CONSTANT_STYLE`
+         * `CONSTANT_NAME_STYLE`
          */
-        CONSTANT(SEP_UNDERSCORE) {
+        CONSTANT_NAME(SEP_UNDERSCORE) {
             @Override
             protected CharSequence processToken(FastStr token, int seq) {
                 return token.toUpperCase();
@@ -130,8 +130,8 @@ public final class Keyword implements Comparable<Keyword> {
         return Style.CAMEL_CASE.toString(this);
     }
 
-    public String constant() {
-        return Style.CONSTANT.toString(this);
+    public String constantName() {
+        return Style.CONSTANT_NAME.toString(this);
     }
 
     public String underscore() {
@@ -163,9 +163,23 @@ public final class Keyword implements Comparable<Keyword> {
         return false;
     }
 
+    /**
+     * Returns string representation of this keyword using
+     * {@link Style#UNDERSCORE underscore style}
+     * @return the underscore style representation of this keyword
+     */
     @Override
     public String toString() {
         return underscore();
+    }
+
+    /**
+     * Return string representation of this keyword using style specified
+     * @param style the style used to print this keyword
+     * @return the printed string of this keyword by style specified
+     */
+    public String toString(Style style) {
+        return style.toString(this);
     }
 
     @Override
