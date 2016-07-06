@@ -19,8 +19,9 @@ public class KeywordTest extends TestBase {
     public void testKeywordFromSeparatedWordGroups() {
         verify("camel-case");
         verify("camel case");
-        verify("Camel,Case");
+        verify("Camel, Case");
         verify("camel:case");
+        verify("CAMEL_CASE");
     }
 
     @Test
@@ -47,6 +48,7 @@ public class KeywordTest extends TestBase {
         eq("camel_case", keyword.underscore());
         eq("Camel case", keyword.readable());
         eq("CamelCase", keyword.camelCase());
+        eq("CAMEL_CASE", keyword.constant());
     }
 
 }

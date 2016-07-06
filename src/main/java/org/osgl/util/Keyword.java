@@ -8,6 +8,7 @@ import java.util.Arrays;
  * A `Keyword` can be presented in the different ways:
  * * CamelCaseStyle
  * * underscore_style
+ * * CONSTANT_STYLE
  * * dash-style
  * * "readable style"
  *
@@ -48,14 +49,39 @@ public final class Keyword implements Comparable<Keyword> {
     }
 
     public static enum Style {
+        /**
+         * `CamelCaseStyle`
+         */
         CAMEL_CASE () {
             @Override
             protected CharSequence processToken(FastStr token, int seq) {
                 return token.capFirst();
             }
         },
+
+        /**
+         * `underscore_style`
+         */
         UNDERSCORE(SEP_UNDERSCORE),
+
+        /**
+         * `CONSTANT_STYLE`
+         */
+        CONSTANT(SEP_UNDERSCORE) {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return token.toUpperCase();
+            }
+        },
+
+        /**
+         * `dashed_style`
+         */
         DASHED(SEP_DASH),
+
+        /**
+         * `Readable style`
+         */
         READABLE(SEP_SPACE) {
             @Override
             protected CharSequence processToken(FastStr token, int seq) {
@@ -102,6 +128,10 @@ public final class Keyword implements Comparable<Keyword> {
 
     public String camelCase() {
         return Style.CAMEL_CASE.toString(this);
+    }
+
+    public String constant() {
+        return Style.CONSTANT.toString(this);
     }
 
     public String underscore() {
