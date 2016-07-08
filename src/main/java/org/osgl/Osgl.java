@@ -2,9 +2,7 @@ package org.osgl;
 
 import org.osgl.cache.CacheService;
 import org.osgl.concurrent.ContextLocal;
-import org.osgl.exception.FastRuntimeException;
-import org.osgl.exception.NotAppliedException;
-import org.osgl.exception.UnexpectedException;
+import org.osgl.exception.*;
 import org.osgl.util.*;
 
 import java.io.*;
@@ -5136,8 +5134,8 @@ public class Osgl implements Serializable {
         if (null != c) return c;
         try {
             return (Class<T>) Class.forName(className);
-        } catch (Exception e) {
-            throw new UnexpectedException(e);
+        } catch (ClassNotFoundException e) {
+            throw new UnexpectedClassNotFoundException(e);
         }
     }
 
@@ -5149,8 +5147,8 @@ public class Osgl implements Serializable {
                 className = S.builder().append("[L").append(S.before(className, "[")).append(";").toString();
             }
             return (Class<T>) Class.forName(className, true, classLoader);
-        } catch (Exception e) {
-            throw new UnexpectedException(e);
+        } catch (ClassNotFoundException e) {
+            throw new UnexpectedClassNotFoundException(e);
         }
     }
 
@@ -5187,7 +5185,7 @@ public class Osgl implements Serializable {
                     Class<T> c = (Class<T>) Class.forName(className, true, caller.getClassLoader());
                     t = c.newInstance();
                 } catch (Exception e) {
-                    throw new UnexpectedException(e);
+                    throw new UnexpectedNewInstanceException(e);
                 }
             }
         }.t;
@@ -5200,7 +5198,7 @@ public class Osgl implements Serializable {
             Class<T> c = (Class<T>) Class.forName(className, true, cl);
             return c.newInstance();
         } catch (Exception e) {
-            throw new UnexpectedException(e);
+            throw new UnexpectedNewInstanceException(e);
         }
     }
 
@@ -5215,10 +5213,11 @@ public class Osgl implements Serializable {
         }
     }
 
-    private static boolean testConstructor(Class[] pts, Object p, int pos) {
+    private static boolean testMethodParamType(Class[] pts, Object p, int pos) {
         E.invalidArgIf(pos < 0);
         if (pos < pts.length) {
             Class pt = pts[pos];
+            pt = $.wrapperClassOf(pt);
             return (pt.isAssignableFrom(p.getClass()));
         } else {
             return false;
@@ -5231,7 +5230,7 @@ public class Osgl implements Serializable {
             ct.setAccessible(true);
             return ct.newInstance();
         } catch (Exception e) {
-            throw E.unexpected(e);
+            throw new UnexpectedNewInstanceException(e);
         }
     }
 
@@ -5243,14 +5242,16 @@ public class Osgl implements Serializable {
                 if (pts.length != 1 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(pts, p1, 0)) {
+                if (!testMethodParamType(pts, p1, 0)) {
                     continue;
                 }
                 return ct.newInstance(p1);
             }
-            throw E.unexpected("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found");
+        } catch (UnexpectedNewInstanceException e) {
+            throw e;
         } catch (Exception e) {
-            throw E.unexpected(e);
+            throw new UnexpectedNewInstanceException(e);
         }
     }
 
@@ -5262,17 +5263,19 @@ public class Osgl implements Serializable {
                 if (pts.length != 2 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(pts, p1, 0)) {
+                if (!testMethodParamType(pts, p1, 0)) {
                     continue;
                 }
-                if (!testConstructor(pts, p2, 1)) {
+                if (!testMethodParamType(pts, p2, 1)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2);
             }
-            throw E.unexpected("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found");
+        } catch (UnexpectedNewInstanceException e) {
+            throw e;
         } catch (Exception e) {
-            throw E.unexpected(e);
+            throw new UnexpectedNewInstanceException(e);
         }
     }
 
@@ -5284,20 +5287,22 @@ public class Osgl implements Serializable {
                 if (pts.length != 3 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(pts, p1, 0)) {
+                if (!testMethodParamType(pts, p1, 0)) {
                     continue;
                 }
-                if (!testConstructor(pts, p2, 1)) {
+                if (!testMethodParamType(pts, p2, 1)) {
                     continue;
                 }
-                if (!testConstructor(pts, p3, 2)) {
+                if (!testMethodParamType(pts, p3, 2)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2, p3);
             }
-            throw E.unexpected("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found");
+        } catch (UnexpectedNewInstanceException e) {
+            throw e;
         } catch (Exception e) {
-            throw E.unexpected(e);
+            throw new UnexpectedNewInstanceException(e);
         }
     }
 
@@ -5309,23 +5314,25 @@ public class Osgl implements Serializable {
                 if (pts.length != 4 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(pts, p1, 0)) {
+                if (!testMethodParamType(pts, p1, 0)) {
                     continue;
                 }
-                if (!testConstructor(pts, p2, 1)) {
+                if (!testMethodParamType(pts, p2, 1)) {
                     continue;
                 }
-                if (!testConstructor(pts, p3, 2)) {
+                if (!testMethodParamType(pts, p3, 2)) {
                     continue;
                 }
-                if (!testConstructor(pts, p4, 3)) {
+                if (!testMethodParamType(pts, p4, 3)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2, p3, p4);
             }
-            throw E.unexpected("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found");
+        } catch (UnexpectedNewInstanceException e) {
+            throw e;
         } catch (Exception e) {
-            throw E.unexpected(e);
+            throw new UnexpectedNewInstanceException(e);
         }
     }
 
@@ -5337,26 +5344,28 @@ public class Osgl implements Serializable {
                 if (pts.length != 5 && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(pts, p1, 0)) {
+                if (!testMethodParamType(pts, p1, 0)) {
                     continue;
                 }
-                if (!testConstructor(pts, p2, 1)) {
+                if (!testMethodParamType(pts, p2, 1)) {
                     continue;
                 }
-                if (!testConstructor(pts, p3, 2)) {
+                if (!testMethodParamType(pts, p3, 2)) {
                     continue;
                 }
-                if (!testConstructor(pts, p4, 3)) {
+                if (!testMethodParamType(pts, p4, 3)) {
                     continue;
                 }
-                if (!testConstructor(pts, p5, 4)) {
+                if (!testMethodParamType(pts, p5, 4)) {
                     continue;
                 }
                 return ct.newInstance(p1, p2, p3, p4, p5);
             }
-            throw E.unexpected("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found");
+        } catch (UnexpectedNewInstanceException e) {
+            throw e;
         } catch (Exception e) {
-            throw E.unexpected(e);
+            throw new UnexpectedNewInstanceException(e);
         }
     }
 
@@ -5369,25 +5378,25 @@ public class Osgl implements Serializable {
                 if (pts.length != 5 + len && !ct.isVarArgs()) {
                     continue;
                 }
-                if (!testConstructor(pts, p1, 0)) {
+                if (!testMethodParamType(pts, p1, 0)) {
                     continue;
                 }
-                if (!testConstructor(pts, p2, 1)) {
+                if (!testMethodParamType(pts, p2, 1)) {
                     continue;
                 }
-                if (!testConstructor(pts, p3, 2)) {
+                if (!testMethodParamType(pts, p3, 2)) {
                     continue;
                 }
-                if (!testConstructor(pts, p4, 3)) {
+                if (!testMethodParamType(pts, p4, 3)) {
                     continue;
                 }
-                if (!testConstructor(pts, p5, 4)) {
+                if (!testMethodParamType(pts, p5, 4)) {
                     continue;
                 }
                 boolean shouldContinue = false;
                 for (int i = 0; i < len; ++i) {
                     Object p = pa[i];
-                    if (!testConstructor(pts, p, 5 + i)) {
+                    if (!testMethodParamType(pts, p, 5 + i)) {
                         shouldContinue = true;
                         break;
                     }
@@ -5404,9 +5413,53 @@ public class Osgl implements Serializable {
                 System.arraycopy(pa, 0, oa, 5, len);
                 return ct.newInstance(oa);
             }
-            throw E.unexpected("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found");
+        } catch (UnexpectedNewInstanceException e) {
+            throw e;
         } catch (Exception e) {
-            throw E.unexpected(e);
+            throw new UnexpectedNewInstanceException(e);
+        }
+    }
+
+    public static <T, R> R invokeStaticMethod(Class<T> c, String methodName, Object ... pa) {
+        return invokeMethod(c, null, methodName, pa);
+    }
+
+    public static <T, R> R invokeInstanceMethod(T o, String methodName, Object ... pa) {
+        E.NPE(o);
+        return invokeMethod(null, o, methodName, pa);
+    }
+
+    private static <T, R> R invokeMethod(Class c, T o, String methodName, Object ... pa) {
+        try {
+            if (null == c) {
+                c = o.getClass();
+            }
+            Method[] ma = c.getMethods();
+            for (Method m: ma) {
+                if (!m.getName().equals(methodName)) {
+                    continue;
+                }
+                Class[] pts = m.getParameterTypes();
+                boolean shouldContinue = false;
+                int len = pts.length;
+                for (int i = 0; i < len ; ++i) {
+                    Object p = pa[i];
+                    if (!testMethodParamType(pts, p, i)) {
+                        shouldContinue = true;
+                        break;
+                    }
+                }
+                if (shouldContinue) {
+                    continue;
+                }
+                return (R) m.invoke(o, pa);
+            }
+            throw new UnexpectedNoSuchMethodException(c, methodName);
+        } catch (UnexpectedNoSuchMethodException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new UnexpectedMethodInvocationException(e);
         }
     }
 

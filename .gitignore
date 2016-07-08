@@ -12,3 +12,4 @@ target
 classes
 *.iml
 deploy
+.DS_Store
