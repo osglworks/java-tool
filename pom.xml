@@ -144,9 +144,9 @@
   </parent>
 
   <scm>
-    <connection>scm:git:git://github.com/greenlaw110/java-tool.git</connection>
-    <developerConnection>scm:git:git@github.com:greenlaw110/java-tool.git</developerConnection>
-    <url>git://github.com/greenlaw110/java-tool.git</url>
+    <connection>scm:git:git://github.com/osglworks/java-tool.git</connection>
+    <developerConnection>scm:git:git@github.com:osglworks/java-tool.git</developerConnection>
+    <url>git://github.com/osglworks/java-tool.git</url>
   </scm>
 
   <properties>
