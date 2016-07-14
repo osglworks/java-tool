@@ -30,4 +30,5 @@ public class BigDecimalValueObjectCodec extends StringValueResolver<BigDecimal> 
     public String toJSONString(BigDecimal o) {
         return o.toString();
     }
+
 }

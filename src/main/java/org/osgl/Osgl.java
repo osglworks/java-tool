@@ -3952,6 +3952,10 @@ public class Osgl implements Serializable {
         return Var.of(t);
     }
 
+    public static <T> Var<T> var() {
+        return Var.of(null);
+    }
+
     public static <T> Val<T> val(T t) {
         return Val.of(t);
     }
@@ -5421,16 +5425,135 @@ public class Osgl implements Serializable {
         }
     }
 
-    public static <T, R> R invokeStaticMethod(Class<T> c, String methodName, Object ... pa) {
-        return invokeMethod(c, null, methodName, pa);
+    /**
+     * Invoke a static method by name and parameters
+     * @param c the class
+     * @param methodName the method name
+     * @param pa the parameters
+     * @param <T> the generic type of the class
+     * @param <R> the generic type of the return result
+     * @return the result of method invocation
+     */
+    public static <T, R> R invokeStatic(Class<T> c, String methodName, Object ... pa) {
+        return invokeMethod(null, c, null, methodName, pa);
     }
 
-    public static <T, R> R invokeInstanceMethod(T o, String methodName, Object ... pa) {
+    /**
+     * Invoke a static method by name and parameters. After invocation
+     * it will cache the method into method bag supplied. This method
+     * will convert all checked exception into corresponding runtime exception
+     * @param methodBag the method bag
+     * @param c the class
+     * @param methodName the method name
+     * @param pa the parameters
+     * @param <T> the generic type of class
+     * @param <R> the generic type of return instance
+     * @return the result of method invocation
+     */
+    public static <T, R> R invokeStatic(Var<Method> methodBag, Class<T> c, String methodName, Object ... pa) {
+        return invokeMethod(methodBag, c, null, methodName, pa);
+    }
+
+    /**
+     * Invoke a static method. This method will convert all checked exception
+     * into corresponding runtime exception
+     * @param method the method
+     * @param pa the arguments to invoke the method
+     * @param <R> the generic type of the return result
+     * @return the result of the method invocation
+     */
+    public static <R> R invokeStatic(Method method, Object ... pa) {
+        try {
+            return (R) method.invoke(null, pa);
+        } catch (Exception e) {
+            throw new UnexpectedMethodInvocationException(e);
+        }
+    }
+
+    /**
+     * Invoke a virtual method by instance, method name and arguments. This method
+     * will convert all checked exception into corresponding runtime exception.
+     *
+     * After invocation, the method will be cached into the method bag supplied
+     *
+     * @param o the instance on which the virtual method will be invoked
+     * @param methodName the method name
+     * @param pa the arguments
+     * @param <T> generic type of the instance object
+     * @param <R> generic type of the return result
+     * @return result of method invocation
+     */
+    public static <T, R> R invokeVirtual(Var<Method> methodBag, T o, String methodName, Object ... pa) {
         E.NPE(o);
-        return invokeMethod(null, o, methodName, pa);
+        return invokeMethod(methodBag, null, o, methodName, pa);
     }
 
-    private static <T, R> R invokeMethod(Class c, T o, String methodName, Object ... pa) {
+    /**
+     * Invoke a virtual method by instance, method name and arguments. This method
+     * will convert all checked exception into corresponding runtime exception
+     * @param o the instance on which the virtual method will be invoked
+     * @param methodName the method name
+     * @param pa the arguments
+     * @param <T> generic type of the instance object
+     * @param <R> generic type of the return result
+     * @return result of method invocation
+     */
+    public static <T, R> R invokeVirtual(T o, String methodName, Object ... pa) {
+        E.NPE(o);
+        return invokeMethod(null, null, o, methodName, pa);
+    }
+
+    /**
+     * Invoke a virtual {@link Method method}. This method will convert all checked exception
+     * to corresponding runtime exception
+     * @param o the instance on which the method will be invoked
+     * @param method the method
+     * @param pa the arguments
+     * @param <T> generic type of the instance
+     * @param <R> generic type of the result
+     * @return result of method invocation
+     */
+    public static <T, R> R invokeVirtual(T o, Method method, Object ... pa) {
+        E.NPE(o);
+        try {
+            return (R) method.invoke(o, pa);
+        } catch (Exception e) {
+            throw new UnexpectedMethodInvocationException(e);
+        }
+    }
+
+    /**
+     * Returns {@link Method} by name and parameter
+     * @param c the class
+     * @param methodName the method name
+     * @param pa the parameter used to invoke the method
+     * @return the method or `null` if not found
+     */
+    public static Method getMethod(Class c, String methodName, Object ... pa) {
+        Method[] ma = c.getMethods();
+        for (Method m: ma) {
+            if (!m.getName().equals(methodName)) {
+                continue;
+            }
+            Class[] pts = m.getParameterTypes();
+            boolean shouldContinue = false;
+            int len = pts.length;
+            for (int i = 0; i < len ; ++i) {
+                Object p = pa[i];
+                if (!testMethodParamType(pts, p, i)) {
+                    shouldContinue = true;
+                    break;
+                }
+            }
+            if (shouldContinue) {
+                continue;
+            }
+            return m;
+        }
+        return null;
+    }
+
+    private static <T, R> R invokeMethod(Var<Method> methodBag, Class c, T o, String methodName, Object ... pa) {
         try {
             if (null == c) {
                 c = o.getClass();
@@ -5452,6 +5575,9 @@ public class Osgl implements Serializable {
                 }
                 if (shouldContinue) {
                     continue;
+                }
+                if (null != methodBag) {
+                    methodBag.set(m);
                 }
                 return (R) m.invoke(o, pa);
             }

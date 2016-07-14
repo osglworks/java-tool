@@ -5,6 +5,8 @@ import org.osgl.exception.UnexpectedMethodInvocationException;
 import org.osgl.exception.UnexpectedNoSuchMethodException;
 import org.osgl.util.E;
 
+import java.lang.reflect.Method;
+
 /**
  * Test `invokeXxx` method on {@link Osgl} class
  */
@@ -23,32 +25,56 @@ public class InvokeMethodTest extends TestBase {
         public void v(int i, int j) {
             E.illegalArgumentIf(i < j);
         }
+
+        public static void minusOne($.Var<Integer> num) {
+            num.set(num.get() - 1);
+        }
     }
 
     @Test
     public void testInvokeStaticMethod() {
-        eq("foo2", $.invokeStaticMethod(Foo.class, "bar", "foo", 2));
+        eq("foo2", $.invokeStatic(Foo.class, "bar", "foo", 2));
     }
 
     @Test
     public void testInvokeInstanceMethod() {
-        eq(true, $.invokeInstanceMethod(new Foo(), "b", "true"));
-        eq(false, $.invokeInstanceMethod(new Foo(), "b", "false"));
+        eq(true, $.invokeVirtual(new Foo(), "b", "true"));
+        eq(false, $.invokeVirtual(new Foo(), "b", "false"));
     }
 
     @Test(expected = UnexpectedNoSuchMethodException.class)
     public void testInvokeNoExistingMethod() {
-        $.invokeInstanceMethod(new Foo(), "xx");
+        $.invokeVirtual(new Foo(), "xx");
     }
 
     @Test
     public void testInvokeMethodThrowsOutException() {
         try {
-            $.invokeInstanceMethod(new Foo(), "v", 1, 2);
+            $.invokeVirtual(new Foo(), "v", 1, 2);
             fail("Expected UnexpectedMethodInvocationException here");
         } catch (UnexpectedMethodInvocationException e) {
             yes(e.getCause() instanceof IllegalArgumentException);
         }
+    }
+
+    @Test
+    public void testVoidReturnType() {
+        $.Var<Integer> v = $.var(10);
+        eq(null, $.invokeStatic(Foo.class, "minusOne", v));
+        eq(9, v.get());
+    }
+
+    @Test
+    public void testGetAndInvokeMethod() {
+        Method method = $.getMethod(Foo.class, "bar", "foo", 1);
+        eq("12", $.invokeStatic(method, "1", 2));
+    }
+
+    @Test
+    public void testInvokeStaticAndCache() {
+        $.Var<Method> bag = $.var();
+        eq("foo1", $.invokeStatic(bag, Foo.class, "bar", "foo", 1));
+        eq("12", $.invokeStatic(bag.get(), "1", 2));
     }
 
 }

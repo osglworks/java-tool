@@ -226,9 +226,9 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         String.class, _String,
         Str.class, _Str,
         FastStr.class, _FastStr,
-        BigInteger.class, BigIntegerValueObjectCodec.INSTANCE,
-        BigDecimal.class, BigDecimalValueObjectCodec.INSTANCE,
-        Keyword.class, KeywordValueObjectCodec.INSTANCE
+        BigInteger.class, new BigIntegerValueObjectCodec(),
+        BigDecimal.class, new BigDecimalValueObjectCodec(),
+        Keyword.class, new KeywordValueObjectCodec()
     );
 
     public static <T> void addPredefinedResolver(Class<T> type, StringValueResolver<T> resolver) {

@@ -28,4 +28,5 @@ public class KeywordValueObjectCodec extends StringValueResolver<Keyword> implem
     public String toJSONString(Keyword o) {
         return ValueObject.of(o.underscore()).toJSONString();
     }
+
 }

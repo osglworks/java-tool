@@ -30,4 +30,5 @@ public class BigIntegerValueObjectCodec extends StringValueResolver<BigInteger> 
     public String toJSONString(BigInteger o) {
         return o.toString();
     }
+
 }
