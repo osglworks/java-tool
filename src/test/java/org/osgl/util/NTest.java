@@ -263,4 +263,14 @@ public class NTest extends TestBase {
         }
     }
 
+    @Test
+    public void testPerfectSquare() {
+        for (int i = 0; i < 100; ++i) {
+            long l = N.randInt(5000) + 13;
+            long ll = l * l;
+            yes(N.isPerfectSquare(ll));
+            no(N.isPerfectSquare(ll - 1));
+        }
+    }
+
 }
