@@ -6918,12 +6918,15 @@ public class Osgl implements Serializable {
          * Returns a composed {@link Osgl.Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when all of the specified predicates returns <code>true</code> when applied to the parameter
          *
-         * @param predicates an iterable of predicates that can be applied to a parameter and returns boolean value
+         * @param predicates a collection of predicates that can be applied to a parameter and returns boolean value
          * @param <T>        the type of the parameter the predicates applied to
          * @return a composed function
          * @since 0.2
          */
-        public static <T> Predicate<T> and(final Iterable<Function<? super T, Boolean>> predicates) {
+        public static <T> Predicate<T> and(final Collection<Function<? super T, Boolean>> predicates) {
+            if (predicates.isEmpty()) {
+                return yes();
+            }
             return new Predicate<T>() {
                 @Override
                 public boolean test(T t) {
@@ -6947,20 +6950,25 @@ public class Osgl implements Serializable {
          * @since 0.2
          */
         public static <T> Predicate<T> and(final Function<? super T, Boolean>... predicates) {
-            //TODO return and(C1.list(predicates));
-            return null;
+            if (predicates.length == 0) {
+                return yes();
+            }
+            return and(C.listOf(predicates));
         }
 
         /**
          * Returns a composed {@link Osgl.Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when any one of the specified predicates returns <code>true</code> when applied to the parameter
          *
-         * @param predicates an iterable of predicates that can be applied to a parameter and returns boolean value
+         * @param predicates a collection of predicates that can be applied to a parameter and returns boolean value
          * @param <T>        the type of the parameter the predicates applied to
          * @return a composed function
          * @since 0.2
          */
-        public static <T> Predicate<T> or(final Iterable<Function<? super T, Boolean>> predicates) {
+        public static <T> Predicate<T> or(final Collection<Function<? super T, Boolean>> predicates) {
+            if (predicates.isEmpty()) {
+                return no();
+            }
             return new Predicate<T>() {
                 @Override
                 public boolean test(T t) {
@@ -6984,11 +6992,14 @@ public class Osgl implements Serializable {
          * @since 0.2
          */
         public static <T> Predicate<T> or(final Function<? super T, Boolean>... predicates) {
+            if (predicates.length == 0) {
+                return no();
+            }
             return or(C.listOf(predicates));
         }
 
         /**
-         * Alias of {@link #or(Iterable)}
+         * Alias of {@link #or(Collection)}
          *
          * @param predicates the predicate functions
          * @param <T>        the element type
@@ -6996,7 +7007,7 @@ public class Osgl implements Serializable {
          * on a given argument
          * @since 0.2
          */
-        public static <T> Predicate<T> any(final Iterable<Function<? super T, Boolean>> predicates) {
+        public static <T> Predicate<T> any(final Collection<Function<? super T, Boolean>> predicates) {
             return or(predicates);
         }
 
@@ -7023,7 +7034,7 @@ public class Osgl implements Serializable {
          * {@code false} if any one of them returns {@code true}
          * @since 0.2
          */
-        public static <T> Predicate<T> none(final Iterable<Function<? super T, Boolean>> predicates) {
+        public static <T> Predicate<T> none(final Collection<Function<? super T, Boolean>> predicates) {
             return negate(or(predicates));
         }
 
