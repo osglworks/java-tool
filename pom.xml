@@ -123,6 +123,8 @@
 - Add $.F.identity(Class) method
 - Add Keyword utility
 - Add N.isPerfectSquare(long) method
+- Add $.IS_SERVER flag
+- Add $.IS_64 flag
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">

@@ -6629,14 +6629,9 @@ public class Osgl implements Serializable {
 
     public static final Conf conf = new Conf();
 
-    public static final int JAVA_VERSION;
-
-    static {
-        String _JV = System.getProperty("java.specification.version");
-        int _pos = _JV.lastIndexOf('.');
-        JAVA_VERSION = Integer.parseInt(_JV.substring(_pos + 1));
-    }
-
+    public static final int JAVA_VERSION = VM.VERSION;
+    public static final boolean IS_SERVER = VM.IS_SERVER;
+    public static final boolean IS_64 = VM.IS_64;
     public static final OS OS = org.osgl.util.OS.get();
 
     /**
