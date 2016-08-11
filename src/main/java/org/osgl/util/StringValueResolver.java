@@ -66,7 +66,29 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         PREDEFINED_CHARS.put("\\\\", '\\');
     }
 
+    /**
+     * Parsing String into char. The rules are:
+     *
+     * 1. if there value is null or empty length String then return `defval` specified
+     * 2. if the length of the String is `1`, then return that one char in the string
+     * 3. if the value not starts with '\', then throw `IllegalArgumentException`
+     * 4. if the value starts with `\u` then parse the integer using `16` radix. The check
+     *    the range, if it fall into Character range, then return that number, otherwise raise
+     *    `IllegalArgumentException`
+     * 5. if the value length is 2 then check if it one of {@link #PREDEFINED_CHARS}, if found
+     *    then return
+     * 6. check if it valid OctalEscape defined in the <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">spec</a>
+     *    if pass the check then return that char
+     * 7. all other cases throw `IllegalArgumentException`
+     *
+     * @param value
+     * @param defVal
+     * @return
+     */
     private static Character resolveChar(String value, Character defVal) {
+        if (null == value) {
+            return defVal;
+        }
         switch (value.length()) {
             case 0:
                 return defVal;
@@ -109,14 +131,21 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         }
     }
 
+    /**
+     * Returns the char resolver based on {@link #resolveChar(String, Character)} with `\0` as
+     * default value
+     */
     private static final StringValueResolver<Character> _char = new StringValueResolver<Character>() {
-
         @Override
         public Character resolve(String value) {
             return resolveChar(value, '\0');
         }
     };
 
+    /**
+     * Returns the char resolver based on {@link #resolveChar(String, Character)} with `null` as
+     * default value
+     */
     private static final StringValueResolver<Character> _Char = new StringValueResolver<Character>() {
         @Override
         public Character resolve(String value) {
