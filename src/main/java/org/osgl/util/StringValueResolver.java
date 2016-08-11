@@ -5,6 +5,7 @@ import org.osgl.exception.NotAppliedException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,13 +17,13 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
     public abstract T resolve(String value);
 
     @Override
-    public T apply(String s) throws NotAppliedException, $.Break {
+    public final T apply(String s) throws NotAppliedException, $.Break {
         return resolve(s);
     }
 
     public static <T> StringValueResolver<T> wrap(final $.Function<String, T> func) {
         if (func instanceof StringValueResolver) {
-            return (StringValueResolver)func;
+            return (StringValueResolver) func;
         } else {
             return new StringValueResolver<T>() {
                 @Override
@@ -52,29 +53,82 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return Boolean.parseBoolean(value);
         }
     };
+    private static final Map<String, Character> PREDEFINED_CHARS = new HashMap<String, Character>();
+
+    static {
+        PREDEFINED_CHARS.put("\\b", '\b');
+        PREDEFINED_CHARS.put("\\f", '\f');
+        PREDEFINED_CHARS.put("\\n", '\n');
+        PREDEFINED_CHARS.put("\\r", '\r');
+        PREDEFINED_CHARS.put("\\t", '\t');
+        PREDEFINED_CHARS.put("\\", '\"');
+        PREDEFINED_CHARS.put("\\'", '\'');
+        PREDEFINED_CHARS.put("\\\\", '\\');
+    }
+
+    private static Character resolveChar(String value, Character defVal) {
+        switch (value.length()) {
+            case 0:
+                return defVal;
+            case 1:
+                return value.charAt(0);
+            default:
+                if (value.startsWith("\\")) {
+                    if (value.length() == 2) {
+                        Character c = PREDEFINED_CHARS.get(value);
+                        if (null != c) {
+                            return c;
+                        }
+                    }
+                    try {
+                        String s = value.substring(1);
+                        if (s.startsWith("u")) {
+                            int i = Integer.parseInt(s.substring(1), 16);
+                            if (i > Character.MAX_VALUE || i < Character.MIN_VALUE) {
+                                throw new IllegalArgumentException("Invalid character: " + value);
+                            }
+                            return (char) i;
+                        } else if (s.length() > 3) {
+                            throw new IllegalArgumentException("Invalid character: " + value);
+                        } else {
+                            if (s.length() == 3) {
+                                int i = Integer.parseInt(s.substring(0, 1));
+                                if (i > 3) {
+                                    throw new IllegalArgumentException("Invalid character: " + value);
+                                }
+                            }
+                            int i = Integer.parseInt(s, 8);
+                            return (char) i;
+                        }
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("Invalid character: " + value);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Invalid character: " + value);
+                }
+        }
+    }
+
     private static final StringValueResolver<Character> _char = new StringValueResolver<Character>() {
+
         @Override
         public Character resolve(String value) {
-            if (S.empty(value)) {
-                return '\0';
-            }
-            return value.charAt(0);
+            return resolveChar(value, '\0');
         }
     };
+
     private static final StringValueResolver<Character> _Char = new StringValueResolver<Character>() {
         @Override
         public Character resolve(String value) {
-            if (S.empty(value)) {
-                return null;
-            }
-            return value.charAt(0);
+            return resolveChar(value, null);
         }
     };
+
     private static final StringValueResolver<Byte> _byte = new StringValueResolver<Byte>() {
         @Override
         public Byte resolve(String value) {
             if (S.blank(value)) {
-                return (byte)0;
+                return (byte) 0;
             }
             return Byte.parseByte(value);
         }
@@ -92,7 +146,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         @Override
         public Short resolve(String value) {
             if (S.blank(value)) {
-                return (short)0;
+                return (short) 0;
             }
             return Short.valueOf(value);
         }
@@ -106,6 +160,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return Short.valueOf(value);
         }
     };
+
     private static int _int(String s) {
         if (s.contains(".")) {
             float f = Float.valueOf(s);
@@ -114,6 +169,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return Integer.valueOf(s);
         }
     }
+
     private static final StringValueResolver<Integer> _int = new StringValueResolver<Integer>() {
         @Override
         public Integer resolve(String value) {
@@ -207,28 +263,28 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
     };
 
     private static Map<Class, StringValueResolver> predefined = C.newMap(
-        boolean.class, _boolean,
-        Boolean.class, _Boolean,
-        char.class, _char,
-        Character.class, _Char,
-        byte.class, _byte,
-        Byte.class, _Byte,
-        short.class, _short,
-        Short.class, _Short,
-        int.class, _int,
-        Integer.class, _Integer,
-        long.class, _long,
-        Long.class, _Long,
-        float.class, _float,
-        Float.class, _Float,
-        double.class, _double,
-        Double.class, _Double,
-        String.class, _String,
-        Str.class, _Str,
-        FastStr.class, _FastStr,
-        BigInteger.class, new BigIntegerValueObjectCodec(),
-        BigDecimal.class, new BigDecimalValueObjectCodec(),
-        Keyword.class, new KeywordValueObjectCodec()
+            boolean.class, _boolean,
+            Boolean.class, _Boolean,
+            char.class, _char,
+            Character.class, _Char,
+            byte.class, _byte,
+            Byte.class, _Byte,
+            short.class, _short,
+            Short.class, _Short,
+            int.class, _int,
+            Integer.class, _Integer,
+            long.class, _long,
+            Long.class, _Long,
+            float.class, _float,
+            Float.class, _Float,
+            double.class, _double,
+            Double.class, _Double,
+            String.class, _String,
+            Str.class, _Str,
+            FastStr.class, _FastStr,
+            BigInteger.class, new BigIntegerValueObjectCodec(),
+            BigDecimal.class, new BigDecimalValueObjectCodec(),
+            Keyword.class, new KeywordValueObjectCodec()
     );
 
     public static <T> void addPredefinedResolver(Class<T> type, StringValueResolver<T> resolver) {
