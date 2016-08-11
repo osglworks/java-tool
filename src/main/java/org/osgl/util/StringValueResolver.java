@@ -81,9 +81,9 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
      *    if pass the check then return that char
      * 7. all other cases throw `IllegalArgumentException`
      *
-     * @param value
-     * @param defVal
-     * @return
+     * @param value the string value to be resolved
+     * @param defVal the default value when string value is `null` or empty
+     * @return the char resolved from the string
      */
     private static Character resolveChar(String value, Character defVal) {
         if (null == value) {
