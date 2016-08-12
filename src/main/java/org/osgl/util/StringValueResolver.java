@@ -241,7 +241,11 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             if (S.blank(value)) {
                 return 0f;
             }
-            return Float.valueOf(value);
+            float n = Float.valueOf(value);
+            if (Float.isInfinite(n) || Float.isNaN(n)) {
+                throw new IllegalArgumentException("float value out of scope: " + value);
+            }
+            return n;
         }
     };
     private static final StringValueResolver<Float> _Float = new StringValueResolver<Float>() {
@@ -250,7 +254,11 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             if (S.blank(value)) {
                 return null;
             }
-            return Float.valueOf(value);
+            float n = Float.valueOf(value);
+            if (Float.isInfinite(n) || Float.isNaN(n)) {
+                throw new IllegalArgumentException("float value out of scope: " + value);
+            }
+            return n;
         }
     };
     private static final StringValueResolver<Double> _double = new StringValueResolver<Double>() {
@@ -259,7 +267,11 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             if (S.blank(value)) {
                 return 0d;
             }
-            return Double.valueOf(value);
+            double n = Double.valueOf(value);
+            if (Double.isInfinite(n) || Double.isNaN(n)) {
+                throw new IllegalArgumentException("double value out of scope: " + value);
+            }
+            return n;
         }
     };
     private static final StringValueResolver<Double> _Double = new StringValueResolver<Double>() {
@@ -268,7 +280,11 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             if (S.blank(value)) {
                 return null;
             }
-            return Double.valueOf(value);
+            double n = Double.valueOf(value);
+            if (Double.isInfinite(n) || Double.isNaN(n)) {
+                throw new IllegalArgumentException("double value out of scope: " + value);
+            }
+            return n;
         }
     };
     private static final StringValueResolver<String> _String = wrap($.F.<String>identity());
