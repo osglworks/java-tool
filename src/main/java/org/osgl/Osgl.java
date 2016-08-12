@@ -5426,6 +5426,39 @@ public class Osgl implements Serializable {
     }
 
     /**
+     * Returns all fields of a class and all super classes. Note all fields returned will
+     * be called on {@link Field#setAccessible(boolean)} with value `true`
+     * @param c the class
+     * @param noStatic specify if static fields shall be included
+     * @return a list of fields
+     */
+    public static List<Field> fieldsOf(Class<?> c, boolean noStatic) {
+        List<Field> fields = new ArrayList<Field>();
+        addFieldsToList(fields, c, noStatic);
+        return fields;
+    }
+
+    private static void addFieldsToList(List<Field> list, Class<?> c, boolean noStatic) {
+        if (c.isInterface()) {
+            return;
+        }
+        Field[] fields = c.getDeclaredFields();
+        for (Field field : fields) {
+            if (noStatic && Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+            field.setAccessible(true);
+            list.add(field);
+        }
+        if (c != Object.class) {
+            c = c.getSuperclass();
+            if (null != c) {
+                addFieldsToList(list, c, noStatic);
+            }
+        }
+    }
+
+    /**
      * Invoke a static method by name and parameters
      * @param c the class
      * @param methodName the method name
@@ -7020,7 +7053,7 @@ public class Osgl implements Serializable {
         }
 
         /**
-         * Negation of {@link #or(Iterable)}
+         * Negation of {@link #or(Collection)}
          *
          * @param predicates an iterable of predicate functions
          * @param <T>        the generic type of the argument the predicate functions take

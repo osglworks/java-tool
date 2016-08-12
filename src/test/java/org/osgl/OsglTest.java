@@ -4,6 +4,10 @@ import org.junit.Test;
 import org.osgl.util.C;
 import org.osgl.util.S;
 
+import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.List;
+
 public class OsglTest extends TestBase {
 
     @Test
@@ -24,6 +28,27 @@ public class OsglTest extends TestBase {
         yes(l.contains("b.html"));
         no(l.contains("c.txt"));
         no(l.contains("d.txt"));
+    }
+
+    private static class Foo {
+        private String f1;
+        private static String fs1;
+    }
+
+    private static class Bar extends Foo {
+        private String f1;
+        private int f2;
+    }
+
+    @Test
+    public void testFieldsOf() {
+        List<Field> fields = $.fieldsOf(Bar.class, false);
+        eq(4, fields.size());
+        eq(4, new HashSet<Field>(fields).size());
+        fields = $.fieldsOf(Bar.class, true);
+        eq(3, fields.size());
+        eq(3, new HashSet<Field>(fields).size());
+
     }
 
 }
