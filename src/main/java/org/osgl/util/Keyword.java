@@ -75,9 +75,19 @@ public final class Keyword implements Comparable<Keyword> {
         },
 
         /**
-         * `dashed_style`
+         * `dashed-style`
          */
         DASHED(SEP_DASH),
+
+        /**
+         * `Http-Header-Style`
+         */
+        HEADER(SEP_DASH) {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return token.capFirst();
+            }
+        },
 
         /**
          * `Readable style`
@@ -140,6 +150,10 @@ public final class Keyword implements Comparable<Keyword> {
 
     public String dashed() {
         return Style.DASHED.toString(this);
+    }
+
+    public String header() {
+        return Style.HEADER.toString(this);
     }
 
     public String readable() {

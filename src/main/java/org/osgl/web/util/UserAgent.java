@@ -260,30 +260,30 @@ public class UserAgent {
 
     public static void main(String[] args) {
         String s = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.20 (KHTML, like Gecko) Chrome/11.0.669.0 Safari/534.20";
-        UserAgent ua = set(s);
+        UserAgent ua = valueOf(s);
         assert_(ua.getBrowser() == Browser.CHROME, "1");
 
         s = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.3; Zune 4.0)";
-        ua = set(s);
+        ua = valueOf(s);
         assert_(!ua.is(Device.IPHONE), "4");
         assert_(ua.getBrowser() == Browser.IE_8, "4");
 
         s = "Mozilla/5.0 (Linux; U; Android 3.0; en-us; Xoom Build/HRI39) AppleWebKit/534.13 (KHTML, like Gecko) Version/4.0 Safari/534.13";
-        ua = set(s);
+        ua = valueOf(s);
         assert_(ua.is(Device.DROID_TABLET), "2");
         assert_(ua.getBrowser() == Browser.SAFARI, "3");
 
         s = "Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.2.3) Gecko/20100403 Fedora/3.6.3-4.fc13 Firefox/3.6.3";
-        ua = set(s);
+        ua = valueOf(s);
         assert_(ua.isFirefox3(), "firefox 3");
         
         s = "Mozilla/5.0 (Linux; Android 4.1.1; C1504 Build/11.3.A.0.47) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.94 Mobile Safari/537.36";
-        ua = set(s);
+        ua = valueOf(s);
         assert_(ua.is(Device.DROID), "droid mobile");
         assert_(ua.isMobile(), "mobile");
         
         s = "Mozilla/5.0 (Linux; Android 4.0.3; GT-P5110 Build/IML74K) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.123 Safari/537.22";
-        ua = set(s);
+        ua = valueOf(s);
         assert_(ua.is(Device.DROID_TABLET), "droid tablet");
         assert_(ua.isTablet(), "tablet");
 
