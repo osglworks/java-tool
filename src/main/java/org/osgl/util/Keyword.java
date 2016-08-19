@@ -11,9 +11,10 @@ import java.util.Arrays;
  * * CONSTANT_STYLE
  * * dash-style
  * * "readable style"
+ * * "Http-Header-Style"
  *
  * When reading a string into a keyword, the following separator chars
- * will be ignored and used as separator to constructo the keyword
+ * will be ignored and used as separator to construct the keyword
  *
  * * space `' '`
  * * underscore: `_`
@@ -82,7 +83,7 @@ public final class Keyword implements Comparable<Keyword> {
         /**
          * `Http-Header-Style`
          */
-        HEADER(SEP_DASH) {
+        HTTP_HEADER(SEP_DASH) {
             @Override
             protected CharSequence processToken(FastStr token, int seq) {
                 return token.capFirst();
@@ -152,8 +153,8 @@ public final class Keyword implements Comparable<Keyword> {
         return Style.DASHED.toString(this);
     }
 
-    public String header() {
-        return Style.HEADER.toString(this);
+    public String httpHeader() {
+        return Style.HTTP_HEADER.toString(this);
     }
 
     public String readable() {

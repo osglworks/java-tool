@@ -28,7 +28,7 @@ public class KeywordTest extends TestBase {
     public void testCamelCaseWithSeparators() {
         keyword = Keyword.of("CamelCase and Separators");
         eq("camel-case-and-separators", keyword.dashed());
-        eq("Camel-Case-And-Separators", keyword.header());
+        eq("Camel-Case-And-Separators", keyword.httpHeader());
     }
 
     @Test
@@ -50,6 +50,7 @@ public class KeywordTest extends TestBase {
         eq("Camel case", keyword.readable());
         eq("CamelCase", keyword.camelCase());
         eq("CAMEL_CASE", keyword.constantName());
+        eq("Camel-Case", keyword.httpHeader());
     }
 
 }
