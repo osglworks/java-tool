@@ -2,7 +2,9 @@ package org.osgl.util;
 
 import org.osgl.$;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A `Keyword` can be presented in the different ways:
@@ -161,6 +163,13 @@ public final class Keyword implements Comparable<Keyword> {
         return Style.READABLE.toString(this);
     }
 
+    public List<String> tokens() {
+        List<String> list = new ArrayList<String>();
+        for (FastStr fs : this.list) {
+            list.add(fs.toString());
+        }
+        return list;
+    }
 
     @Override
     public int hashCode() {
