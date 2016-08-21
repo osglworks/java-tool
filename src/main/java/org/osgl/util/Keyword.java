@@ -62,6 +62,13 @@ public final class Keyword implements Comparable<Keyword> {
             }
         },
 
+        JAVA_VARIABLE() {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return seq > 0 ? token.capFirst() : token;
+            }
+        },
+
         /**
          * `underscore_style`
          */
@@ -141,6 +148,10 @@ public final class Keyword implements Comparable<Keyword> {
 
     public String camelCase() {
         return Style.CAMEL_CASE.toString(this);
+    }
+
+    public String javaVariable() {
+        return Style.JAVA_VARIABLE.toString(this);
     }
 
     public String constantName() {

@@ -54,6 +54,7 @@ public class KeywordTest extends TestBase {
         eq("CamelCase", keyword.camelCase());
         eq("CAMEL_CASE", keyword.constantName());
         eq("Camel-Case", keyword.httpHeader());
+        eq("camelCase", keyword.javaVariable());
         eq(C.listOf("camel", "case"), keyword.tokens());
     }
 
