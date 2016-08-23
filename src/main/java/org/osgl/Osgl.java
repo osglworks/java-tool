@@ -2345,6 +2345,7 @@ public class Osgl implements Serializable {
          * @param payload the payload object
          */
         public Break(Object payload) {
+            super("break out");
             this.payload = payload;
         }
 
