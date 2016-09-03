@@ -5699,6 +5699,12 @@ public class Osgl implements Serializable {
         for (int i = 0; i < len; ++i) {
             String prop = propertyPath[i];
             String lastProp = i == 0 ? prop : propertyPath[i - 1];
+            if (entity instanceof ValueObject) {
+                ValueObject vo = (ValueObject) entity;
+                if (vo.isUDF()) {
+                    entity = vo.value();
+                }
+            }
 
             if (entity instanceof List) {
                 List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
@@ -5710,7 +5716,7 @@ public class Osgl implements Serializable {
                 if (null == classList) {
                     PropertyGetter getter = propertyGetter(cache, entity, prop, false);
                     lastEntity = entity;
-                    entity = getter.get(entity, null);
+                    entity = getter.get(entity, prop);
                 } else {
                     MapPropertyGetter getter = propertyHandlerFactory.createMapPropertyGetter(classList.get(0), classList.get(1));
                     lastEntity = entity;
@@ -5754,13 +5760,29 @@ public class Osgl implements Serializable {
         return propertyGetter;
     }
 
+    private static Method findPropertyMethod(Class<?> c, String method) throws NoSuchMethodException {
+        try {
+            return c.getDeclaredMethod(method);
+        } catch (NoSuchMethodException e) {
+            return c.getMethod(method);
+        }
+    }
+
+    private static Field findPropertyField(Class<?> c, String field) throws NoSuchFieldException {
+        try {
+            return c.getDeclaredField(field);
+        } catch (NoSuchFieldException e) {
+            return c.getField(field);
+        }
+    }
+
     private static List<Class<?>> findPropertyParameterizedType(Object entity, String prop) {
         Class<?> c = entity.getClass();
         while (null != c && !Object.class.equals(c)) {
             try {
                 String p = S.capFirst(prop);
                 String getter = "get" + p;
-                Method m = c.getDeclaredMethod(getter);
+                Method m = findPropertyMethod(c, getter);
                 m.setAccessible(true);
                 Type type = m.getGenericReturnType();
                 if (type instanceof ParameterizedType) {
@@ -5771,7 +5793,7 @@ public class Osgl implements Serializable {
                 }
             } catch (NoSuchMethodException e) {
                 try {
-                    Method m = c.getDeclaredMethod(prop);
+                    Method m = findPropertyMethod(c, prop);
                     m.setAccessible(true);
                     Type type = m.getGenericReturnType();
                     if (type instanceof ParameterizedType) {
@@ -5780,7 +5802,7 @@ public class Osgl implements Serializable {
                     }
                 } catch (NoSuchMethodException e1) {
                     try {
-                        Field f = c.getDeclaredField(prop);
+                        Field f = findPropertyField(c, prop);
                         f.setAccessible(true);
                         Type type = f.getGenericType();
                         if (type instanceof ParameterizedType) {
@@ -5793,7 +5815,7 @@ public class Osgl implements Serializable {
                 }
             }
         }
-        throw E.unexpected("Cannot find property %s on class %s", prop, entity.getClass());
+        return null;
     }
 
     private static List<Class<?>> findArgumentTypes(ParameterizedType ptype) {
