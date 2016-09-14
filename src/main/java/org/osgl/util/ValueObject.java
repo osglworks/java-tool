@@ -668,9 +668,10 @@ public class ValueObject implements Serializable {
     }
 
     static {
-        register(BigDecimalValueObjectCodec.INSTANCE);
-        register(BigIntegerValueObjectCodec.INSTANCE);
-        register(KeywordValueObjectCodec.INSTANCE);
+        ValueObject.register(BigDecimalValueObjectCodec.INSTANCE);
+        ValueObject.register(BigIntegerValueObjectCodec.INSTANCE);
+        ValueObject.register(KeywordValueObjectCodec.INSTANCE);
     }
+
 
 }
