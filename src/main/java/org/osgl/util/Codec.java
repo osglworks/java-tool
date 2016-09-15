@@ -225,13 +225,4 @@ public class Codec {
         }
     }
 
-    public static void main(String[] args) {
-        String s = "3397a189131e8718f16ba60e3780979687b6843b-%00___ID%3A857c21a8-7a8d-45f4-a9e4-fcf75552f928%00%00username%3Agreen%40pixolut.com%00%00___EXPIRED%3Atrue%00%00lcw-shopping-url%3Ahttp%3A%2F%2Fwww.apt2b.com%2Fcollections%2Faccent-chairs%2Fproducts%2Fborden-fabric-chair-grayundefined%00%00___TS%3A1442295861246%00,";
-        System.out.println(Codec.encodeUrlSafeBase64(s));
-        s = "YjNiYjhjZWE4NDE3M2U4NzVlYjdmMDQxMjcwNjhkOTZlYWMwZDlkMi0lMDBfX19JRCUzQWZkNmUwYmM1LTYzNTItNDFjYi1hYzI2LTA3ODNjNmUyMWI3MCUwMCUwMHVzZXJuYW1lJTNBZ3JlZW4lNDBwaXhvbHV0LmNvbSUwMCUwMF9fX1RTJTNBMTQ0MjMwOTgwMzU0NiUwMA..";
-        System.out.println(new String(Codec.decodeUrlSafeBase64(s)));
-        s = "YjNiYjhjZWE4NDE3M2U4NzVlYjdmMDQxMjcwNjhkOTZlYWMwZDlkMi0lMDBfX19JRCUzQWZkNmUwYmM1LTYzNTItNDFjYi1hYzI2LTA3ODNjNmUyMWI3MCUwMCUwMHVzZXJuYW1lJTNBZ3JlZW4lNDBwaXhvbHV0LmNvbSUwMCUwMF9fX1RTJTNBMTQ0MjMwOTgwMzU0NiUwMA..";
-        System.out.println(new String(Codec.decodeUrlSafeBase64(s)));
-    }
-
 }

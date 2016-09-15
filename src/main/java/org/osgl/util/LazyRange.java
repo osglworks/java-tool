@@ -322,8 +322,4 @@ implements C.Range<ELEMENT>, Serializable {
         return new SerializationProxy<ELEMENT>(this);
     }
 
-    public static void main(String[] args) {
-        System.out.println();
-    }
-
 }

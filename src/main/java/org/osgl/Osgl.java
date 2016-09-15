@@ -8111,8 +8111,4 @@ public class Osgl implements Serializable {
         }
     }
 
-    public static void main(String[] args) {
-        int[] ia = {1, 2, 3};
-        System.out.println(Osgl.toString2(ia));
-    }
 }

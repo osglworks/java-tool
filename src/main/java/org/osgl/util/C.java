@@ -3912,11 +3912,4 @@ public enum C {
         }
     }
 
-    public static void main(String[] args) {
-        Range<Integer> r = range(0, Integer.MAX_VALUE);
-        for (Number i : r.take(5).map(N.F.multiplyBy(10))) {
-            System.out.println(i);
-        }
-    }
-
 }

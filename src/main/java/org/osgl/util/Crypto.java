@@ -415,33 +415,4 @@ public enum Crypto {
         return genRandomStr(len);
     }
 
-    public static void main(String[] args) {
-        a();
-    }
-
-    private static void b() {
-        String s0 = "";
-        String k0 = passwordHash(s0);
-
-        String s1 = "Qtr~QkbxxLX15IQAFN8AyqnftVQ$4fA8VDxB7i3m@zzJdYoUG06fI4_HncSnJJDorEr~kmHnc~gw&#0G5ecnRDLanbvkooZ51VzL47AsM^8169wwHBPm4zVx~JEAmna&WcaZuPerSeh1pj8hf3BAhEm1nO5fTDFs3oInaNE@@&4KV!q@N&~d3n0Vizwu9PVXtPT$B3m7";
-        String k1 = passwordHash(s1);
-
-        String s2 = "Qtr~QkbxxLX15IQAFN8AyqnftVQ$4fA8VDxB7i3m@zzJdYoUG06fI4_HncSnJJDorEr~kmHnc1gw&#0G5ecnRDLanbvkooZ51VzL47AsM^8169wwHBPm4zVx~JEAmna&WcaZuPerSeh1pj8hf3BAhEm1nO5fTDFs3oInaNE@@&4KV!q@N&~d3n0Vizwu9PVXtPT$B3m7";
-        String k2 = passwordHash(s2);
-
-        $.echo("s0: %s\nk0: %s\ns1: %s\nk1: %s\ns2: %s\nk2: %s", s0, k0, s1, k1, s2, k2);
-    }
-
-    private static void a() {
-        String key = S.random(64);
-        String s = "Hello world!";
-//        String es = encryptBlowfish(s, key);
-//        String s1 = decryptBlowfish(es, key);
-
-        String salt = S.random();
-        String es = encryptAES(s, key, salt);
-        String s1 = decryptAES(es, key, salt);
-
-        System.out.println(String.format("%s\n %s\n %s\n %s", key, s, es, s1));
-    }
 }

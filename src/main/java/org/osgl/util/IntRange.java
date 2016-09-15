@@ -24,13 +24,6 @@ public class IntRange extends LazyRange<Integer> {
         }
     }
 
-    public static void main(String[] args) {
-        IntRange range = new IntRange(0, 10, 2);
-        System.out.println(range.get(2));
-        range = new IntRange(100, 30);
-        System.out.println(range.get(11));
-    }
-
     public static IntRange of(int from, int to) {
         return new IntRange(from, to);
     }

@@ -606,11 +606,4 @@ public class Str extends StrBase<Str> {
         return of(sb);
     }
 
-
-    public static void main(String[] args) {
-        Str s = S.str("abc");
-        System.out.println(s.drop(1));
-        System.out.println(s.drop(-1));
-    }
-
 }
