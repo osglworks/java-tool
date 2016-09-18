@@ -1049,8 +1049,57 @@ public class FastStr extends StrBase<FastStr>
      */
     @Override
     public C.List<FastStr> split(String regex, int limit) {
-        String s = toString();
-        String[] sa = s.split(regex, limit);
+        /* fastpath if the regex is a
+         (1)one-char String and this character is not one of the
+            RegEx's meta characters ".$|()[{^?*+\\", or
+         (2)two-char String and the first char is the backslash and
+            the second is not the ascii digit or ascii letter.
+         */
+        char ch = 0;
+        if (((regex.length() == 1 &&
+                ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
+                (regex.length() == 2 &&
+                        regex.charAt(0) == '\\' &&
+                        (((ch = regex.charAt(1))-'0')|('9'-ch)) < 0 &&
+                        ((ch-'a')|('z'-ch)) < 0 &&
+                        ((ch-'A')|('Z'-ch)) < 0)) &&
+                (ch < Character.MIN_HIGH_SURROGATE ||
+                        ch > Character.MAX_LOW_SURROGATE)) {
+            int off = 0;
+            int next = 0;
+            boolean limited = limit > 0;
+            C.List<FastStr> list = C.newList();
+            while ((next = indexOf(ch, off)) != -1) {
+                if (!limited || list.size() < limit - 1) {
+                    list.add(substr(off, next));
+                    off = next + 1;
+                } else {    // last one
+                    //assert (list.size() == limit - 1);
+                    list.add(substr(off, buf.length));
+                    off = buf.length;
+                    break;
+                }
+            }
+            // If no match was found, return this
+            if (off == 0) {
+                return C.listOf(this);
+            }
+
+            // Add remaining segment
+            if (!limited || list.size() < limit) {
+                list.add(substr(off, buf.length));
+            }
+
+            // Construct result
+            int resultSize = list.size();
+            if (limit == 0) {
+                while (resultSize > 0 && list.get(resultSize - 1).length() == 0) {
+                    resultSize--;
+                }
+            }
+            return list.subList(0, resultSize);
+        }
+        String[] sa = Pattern.compile(regex).split(this, limit);
         int len = sa.length;
         FastStr[] ssa = new FastStr[len];
         for (int i = 0; i < len; ++i) {

@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import com.sun.org.apache.bcel.internal.generic.FASTORE;
 import org.junit.Test;
 
 public class FastStrTest extends StrTestBase<FastStr> {
@@ -64,6 +65,16 @@ public class FastStrTest extends StrTestBase<FastStr> {
         String s = S.random();
         byte[] ba = s.getBytes("utf-8");
         FastStr fs = FastStr.of(ba, "utf-8");
-        eq(fs.toString(), s);
+        ceq(fs, s);
+    }
+
+    @Test
+    public void testSplit() {
+        FastStr s = FastStr.of("a=1&&b=2");
+        C.List<FastStr> list = s.split("&");
+        eq(3, list.size());
+        ceq("a=1", list.get(0));
+        ceq("", list.get(1));
+        ceq("b=2", list.get(2));
     }
 }
