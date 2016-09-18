@@ -4,6 +4,8 @@ import org.apache.commons.codec.Charsets;
 import org.osgl.$;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -1502,6 +1504,15 @@ public class FastStr extends StrBase<FastStr>
             sb.append(itr.next());
         }
         return of(sb);
+    }
+
+    public static FastStr of(byte[] bytes, String encoding) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        CharBuffer charBuffer = Charset.forName(encoding).decode(byteBuffer);
+        char[] chars = Arrays.copyOfRange(charBuffer.array(), charBuffer.position(), charBuffer.limit());
+        Arrays.fill(charBuffer.array(), '\u0000'); // clear sensitive data
+        Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
+        return FastStr.of(chars);
     }
 
     /**
