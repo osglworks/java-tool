@@ -77,4 +77,15 @@ public class FastStrTest extends StrTestBase<FastStr> {
         ceq("", list.get(1));
         ceq("b=2", list.get(2));
     }
+
+    @Test
+    public void testCopy() {
+        char[] ca = new char[]{'a', 'b', 'c'};
+        FastStr fs = FastStr.unsafeOf(ca);
+        FastStr copy = fs.copy();
+        ceq("abc", copy);
+        ca[1] = 'x';
+        ceq("axc", fs);
+        ceq("abc", copy);
+    }
 }

@@ -378,7 +378,7 @@ public class FastStr extends StrBase<FastStr>
     @Override
     public FastStr copy() {
         if (EMPTY_STR == this) return this;
-        return of(charArray());
+        return unsafeOf(charArray(), 0, size());
     }
 
     public FastStr times(int n) {
