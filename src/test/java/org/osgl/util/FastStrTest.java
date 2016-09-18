@@ -58,4 +58,12 @@ public class FastStrTest extends StrTestBase<FastStr> {
         FastStr fastStr = FastStr.unsafeOf(subStr);
         eq(fastStr.toString(), subStr);
     }
+
+    @Test
+    public void testConstructFromByteArray() throws Exception {
+        String s = S.random();
+        byte[] ba = s.getBytes("utf-8");
+        FastStr fs = FastStr.of(ba, "utf-8");
+        eq(fs.toString(), s);
+    }
 }

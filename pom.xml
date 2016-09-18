@@ -33,6 +33,7 @@
 - Add N.isPerfectSquare(long) method
 - Add $.IS_SERVER flag
 - Add $.IS_64 flag
+- Add FastStr.of(byte[], String) factory method
 
 0.8
 - Rename "_" to "O" as "$" will be an illegal identifier after Java 8
