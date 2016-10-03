@@ -437,7 +437,7 @@ public class IO {
 
     public static List<String> readLines(InputStream is, String encoding, int limit) {
         if (encoding == null) {
-            return readLines(is);
+            return readLines(is, limit);
         } else {
             InputStreamReader r = null;
             try {
