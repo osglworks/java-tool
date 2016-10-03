@@ -405,18 +405,24 @@ public class IO {
         }
     }
 
-
     public static List<String> readLines(File file) {
-        return readLines(file, "utf-8");
+        return readLines(file, 0);
     }
 
+    public static List<String> readLines(File file, int limit) {
+        return readLines(file, "utf-8", limit);
+    }
 
     public static List<String> readLines(File file, String encoding) {
+        return readLines(file, encoding, 0);
+    }
+
+    public static List<String> readLines(File file, String encoding, int limit) {
         List<String> lines = null;
         InputStream is = null;
         try {
             is = new FileInputStream(file);
-            lines = readLines(is, encoding);
+            lines = readLines(is, encoding, limit);
         } catch (IOException ex) {
             throw E.ioException(ex);
         } finally {
@@ -426,6 +432,10 @@ public class IO {
     }
 
     public static List<String> readLines(InputStream is, String encoding) {
+        return readLines(is, encoding, 0);
+    }
+
+    public static List<String> readLines(InputStream is, String encoding, int limit) {
         if (encoding == null) {
             return readLines(is);
         } else {
@@ -435,21 +445,33 @@ public class IO {
             } catch (UnsupportedEncodingException e) {
                 throw E.encodingException(e);
             }
-            return readLines(r);
+            return readLines(r, limit);
         }
     }
 
     public static List<String> readLines(InputStream inputStream) {
+        return readLines(inputStream, 0);
+    }
+
+    public static List<String> readLines(InputStream inputStream, int limit) {
         InputStreamReader r = new InputStreamReader(inputStream);
-        return readLines(r);
+        return readLines(r, limit);
     }
 
     public static List<String> readLines(Reader input) {
+        return readLines(input, 0);
+    }
+
+    public static List<String> readLines(Reader input, int limit) {
         BufferedReader reader = new BufferedReader(input);
         List<String> list = new ArrayList<String>();
+        if (limit < 1) {
+            limit = Integer.MAX_VALUE;
+        }
         try {
+            int n = 0;
             String line = reader.readLine();
-            while (line != null) {
+            while ((n++ < limit) && line != null) {
                 list.add(line);
                 line = reader.readLine();
             }
