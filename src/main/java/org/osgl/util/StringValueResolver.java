@@ -3,6 +3,8 @@ package org.osgl.util;
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -14,9 +16,34 @@ import java.util.Map;
  */
 public abstract class StringValueResolver<T> extends $.F1<String, T> {
 
+    private final Class<T> targetType;
+
     protected Map<String, Object> attributes = new HashMap<String, Object>();
 
+    public StringValueResolver() {
+        targetType = findTargetType();
+    }
+
+    private StringValueResolver(Class<T> targetType) {
+        this.targetType = $.notNull(targetType);
+    }
+
     public abstract T resolve(String value);
+
+    public Class<T> targetType() {
+        return targetType;
+    }
+
+    private Class<T> findTargetType() {
+        Type superType = getClass().getGenericSuperclass();
+        if (superType instanceof ParameterizedType) {
+            Type type = ((ParameterizedType) superType).getActualTypeArguments()[0];
+            if (type instanceof Class) {
+                return (Class<T>) type;
+            }
+        }
+        throw E.unsupport("Cannot identify the target type from %s", getClass());
+    }
 
     @Override
     public final T apply(String s) throws NotAppliedException, $.Break {
@@ -46,11 +73,11 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         return this;
     }
 
-    public static <T> StringValueResolver<T> wrap(final $.Function<String, T> func) {
+    public static <T> StringValueResolver<T> wrap(final $.Function<String, T> func, final Class<T> targetType) {
         if (func instanceof StringValueResolver) {
             return (StringValueResolver) func;
         } else {
-            return new StringValueResolver<T>() {
+            return new StringValueResolver<T>(targetType) {
                 @Override
                 public T resolve(String value) {
                     return func.apply(value);
@@ -312,7 +339,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return n;
         }
     };
-    private static final StringValueResolver<String> _String = wrap($.F.<String>identity());
+    private static final StringValueResolver<String> _String = wrap($.F.<String>identity(), String.class);
     private static final StringValueResolver<Str> _Str = new StringValueResolver<Str>() {
         @Override
         public Str resolve(String value) {
@@ -370,5 +397,8 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         return predefined.get(type);
     }
 
-
+    public static void main(String[] args) {
+        System.out.println(_float.targetType());
+        System.out.println(_String.targetType());
+    }
 }
