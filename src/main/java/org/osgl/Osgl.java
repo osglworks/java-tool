@@ -6,6 +6,7 @@ import org.osgl.exception.*;
 import org.osgl.util.*;
 
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -6640,6 +6641,31 @@ public class Osgl implements Serializable {
     public static <T> ContextLocal<T> contextLocal(ContextLocal.InitialValueProvider<T> ivp) {
         return clf.create(ivp);
     }
+
+    private static Set<String> standardsAnnotationMethods = C.newSet(C.list("equals", "hashCode", "toString", "annotationType", "getClass"));
+
+    private static boolean isStandardAnnotationMethod(Method m) {
+        return standardsAnnotationMethods.contains(m.getName());
+    }
+
+    /**
+     * Evaluate Annotation properties
+     * @param anno the annotation instance
+     * @return a Map contains annotation instance properties
+     */
+    public static Map<String, Object> evaluate(Annotation anno) {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        Class<? extends Annotation> annoClass = anno.annotationType();
+        Method[] ma = annoClass.getMethods();
+        for (Method m : ma) {
+            if (isStandardAnnotationMethod(m)) {
+                continue;
+            }
+            properties.put(m.getName(), $.invokeVirtual(anno, m));
+        }
+        return properties;
+    }
+
 
 
     // --- eof common utilities
