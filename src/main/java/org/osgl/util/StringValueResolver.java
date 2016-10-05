@@ -14,11 +14,22 @@ import java.util.Map;
  */
 public abstract class StringValueResolver<T> extends $.F1<String, T> {
 
+    protected Map<String, Object> attributes = new HashMap<String, Object>();
+
     public abstract T resolve(String value);
 
     @Override
     public final T apply(String s) throws NotAppliedException, $.Break {
         return resolve(s);
+    }
+
+    public StringValueResolver<T> attribute(String key, Object value) {
+        attributes.put(key, value);
+        return this;
+    }
+
+    protected <O> O attribute(String key) {
+        return (O) attributes.get(key);
     }
 
     /**
