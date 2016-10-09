@@ -3,6 +3,7 @@ package org.osgl.util;
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.Map;
  */
 public abstract class StringValueResolver<T> extends $.F1<String, T> {
 
-    private final Class<T> targetType;
+    private final Type targetType;
 
     protected Map<String, Object> attributes = new HashMap<String, Object>();
 
@@ -30,17 +31,21 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
     public abstract T resolve(String value);
 
     public Class<T> targetType() {
+        return Generics.classOf(targetType);
+    }
+
+    public Type genericTargetType() {
         return targetType;
     }
 
-    private Class<T> findTargetType() {
+    private Type findTargetType() {
         return findTargetType(getClass());
     }
 
-    private static <T> Class<T> findTargetType(Class<?> clazz) {
-        List<Class> typeParams = Generics.typeParamImplementations(clazz, StringValueResolver.class);
+    private static Type findTargetType(Class<?> clazz) {
+        List<Type> typeParams = Generics.typeParamImplementations(clazz, StringValueResolver.class);
         if (typeParams.size() > 0) {
-            return (Class<T>)typeParams.get(0);
+            return typeParams.get(0);
         }
         throw E.unsupport("Cannot identify the target type from %s", clazz);
     }

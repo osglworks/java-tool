@@ -1,6 +1,5 @@
 package org.osgl.util;
 
-import netscape.security.ParameterizedTarget;
 import org.osgl.$;
 
 import java.lang.reflect.ParameterizedType;
@@ -40,14 +39,18 @@ public class Generics {
      * @param rootClass the root class or interface
      * @return a list of type variable implementation on root class
      */
-    public static List<Class> typeParamImplementations(Class theClass, Class rootClass) {
+    public static List<Type> typeParamImplementations(Class theClass, Class rootClass) {
         if (rootClass.getTypeParameters().length == 0) {
             return C.list();
         }
-        return typeParamImplementations(theClass, rootClass, new ArrayList<Class>());
+        try {
+            return typeParamImplementations(theClass, rootClass, new ArrayList<Type>());
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException(S.fmt("Cannot infer type parameter implementation on %s against %s", theClass.getName(), rootClass.getName()), e);
+        }
     }
 
-    private static List<Class> typeParamImplementations(Class theClass, Class rootClass, List<Class> subClassTypeParams) {
+    private static List<Type> typeParamImplementations(Class theClass, Class rootClass, List<Type> subClassTypeParams) {
         Type superType = null;
         Type[] interfaces = theClass.getGenericInterfaces();
         for (Type intf : interfaces) {
@@ -65,12 +68,10 @@ public class Generics {
         if (superType instanceof ParameterizedType) {
             ParameterizedType pSuperType = $.cast(superType);
             Type[] superTypeParams = pSuperType.getActualTypeArguments();
-            List<Class> nextList = new ArrayList<Class>();
+            List<Type> nextList = new ArrayList<Type>();
             for (Type stp: superTypeParams) {
-                if (stp instanceof Class) {
-                    nextList.add((Class) stp);
-                } else if (stp instanceof ParameterizedType) {
-                    nextList.add((Class) ((ParameterizedType) stp).getRawType());
+                if (stp instanceof Class || stp instanceof ParameterizedType) {
+                    nextList.add(stp);
                 } else if (stp instanceof TypeVariable) {
                     boolean found = false;
                     for (int i = 0; i < declaredTypeVariables.length; ++i) {
