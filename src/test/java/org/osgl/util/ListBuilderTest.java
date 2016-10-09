@@ -113,6 +113,7 @@ public class ListBuilderTest extends UtilTestBase {
     }
 
     @Test
+    @Ignore
     public void benchmarkBulkAppend() {
         final int max = 100, times = 200;
 

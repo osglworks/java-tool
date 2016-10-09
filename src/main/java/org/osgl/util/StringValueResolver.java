@@ -3,11 +3,10 @@ package org.osgl.util;
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,14 +34,15 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
     }
 
     private Class<T> findTargetType() {
-        Type superType = getClass().getGenericSuperclass();
-        if (superType instanceof ParameterizedType) {
-            Type type = ((ParameterizedType) superType).getActualTypeArguments()[0];
-            if (type instanceof Class) {
-                return (Class<T>) type;
-            }
+        return findTargetType(getClass());
+    }
+
+    private static <T> Class<T> findTargetType(Class<?> clazz) {
+        List<Class> typeParams = Generics.typeParamImplementations(clazz, StringValueResolver.class);
+        if (typeParams.size() > 0) {
+            return (Class<T>)typeParams.get(0);
         }
-        throw E.unsupport("Cannot identify the target type from %s", getClass());
+        throw E.unsupport("Cannot identify the target type from %s", clazz);
     }
 
     @Override
