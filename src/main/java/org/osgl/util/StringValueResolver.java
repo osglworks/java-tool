@@ -55,13 +55,28 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         return resolve(s);
     }
 
+    /**
+     * Set attribute of this resolver.
+     *
+     * Note use this method only on new resolver instance instead of shared instance
+     *
+     * @param key the attribute key
+     * @param value the attribute value
+     * @return this resolver instance
+     */
     public StringValueResolver<T> attribute(String key, Object value) {
         attributes.put(key, value);
         return this;
     }
 
-    protected <O> O attribute(String key) {
-        return (O) attributes.get(key);
+    /**
+     * Get attribute of this resolver by key specified
+     * @param key the attribute key
+     * @param <V> the generic type variable of attribute value
+     * @return the attribute value
+     */
+    protected <V> V attribute(String key) {
+        return (V) attributes.get(key);
     }
 
     /**
