@@ -24,7 +24,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         targetType = findTargetType();
     }
 
-    private StringValueResolver(Class<T> targetType) {
+    protected StringValueResolver(Class<T> targetType) {
         this.targetType = $.notNull(targetType);
     }
 
@@ -65,7 +65,33 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
      * @return this resolver instance
      */
     public StringValueResolver<T> attribute(String key, Object value) {
-        attributes.put(key, value);
+        if (null == value) {
+            attributes.remove(value);
+        } else {
+            attributes.put(key, value);
+        }
+        return this;
+    }
+
+    /**
+     * Set attributes to this resolver
+     *
+     * Note use this method only on new resolver instance instead of shared instance
+     *
+     * @param attributes the attributes map
+     * @return this resolver instance
+     */
+    public StringValueResolver<T> attributes(Map<String, Object> attributes) {
+        this.attributes.putAll(attributes);
+        return this;
+    }
+
+    /**
+     * Clear all attributes on this resolver
+     * @return this resolver instance
+     */
+    public StringValueResolver<T> clearAttributes() {
+        attributes.clear();
         return this;
     }
 
