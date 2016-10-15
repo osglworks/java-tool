@@ -54,7 +54,7 @@ public final class Const<T> {
     }
 
     public static <E> Const of(Osgl.Var<E> var) {
-        return new Const<E>(var.get());
+        return null == var ? new Const<E>(null) : new Const<E>(var.get());
     }
 
 }
