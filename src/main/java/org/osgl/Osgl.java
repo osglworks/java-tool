@@ -3966,6 +3966,10 @@ public class Osgl implements Serializable {
         return Const.<T>of(t);
     }
 
+    public static <T> Const<T> constant() {
+        return Const.<T>of(null);
+    }
+
     // --- common utilities
 
     /**
