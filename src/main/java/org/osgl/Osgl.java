@@ -3255,6 +3255,14 @@ public class Osgl implements Serializable {
             v = value;
         }
 
+        public final boolean isDefined() {
+            return null != v;
+        }
+
+        public final boolean isNull() {
+            return !isDefined();
+        }
+
         @Override
         public T apply() throws NotAppliedException, Break {
             return v;
