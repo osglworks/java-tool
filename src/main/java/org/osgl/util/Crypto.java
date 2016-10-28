@@ -144,25 +144,18 @@ public enum Crypto {
         }
     }
 
-    private static SecretKey secretKeyAES(String pass, String salt)
-    throws NoSuchAlgorithmException, InvalidKeySpecException {
-        int len = pass.length();
-        if (len < 16) {
-            pass = pass + "                ";
-        }
-        pass = pass.substring(0, 16);
-        if (S.empty(salt)) {
-            salt = pass;
-        }
-
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-
-
-        // NOTE: last argument is the key length, and it is 256
-        KeySpec spec = new PBEKeySpec(pass.toCharArray(), salt.getBytes(), 1024, 256);
-        SecretKey tmp = factory.generateSecret(spec);
-        SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
-        return(secret);
+    /**
+     * This method is deprecated. Please use {@link #encryptAES(String, byte[])} instead
+     *
+     * Encrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
+     *
+     * @param value      The String to encrypt
+     * @param privateKey The key used to encrypt
+     * @return An hexadecimal encrypted string
+     */
+    @Deprecated
+    public static String encryptAES(String value, String privateKey) {
+        return encryptAES(value, privateKey.getBytes(Charsets.UTF_8));
     }
 
     /**
@@ -172,11 +165,11 @@ public enum Crypto {
      * @param privateKey The key used to encrypt
      * @return An hexadecimal encrypted string
      */
-    public static String encryptAES(String value, String privateKey) {
+    public static String encryptAES(String value, byte[] privateKey) {
         try {
             if (null != svc) return svc.encrypt(value, privateKey);
             MessageDigest md = MessageDigest.getInstance("SHA-384");
-            md.update(privateKey.getBytes(Charsets.UTF_8));
+            md.update(privateKey);
             byte[] ba = md.digest();
             byte[] key = new byte[32], iv = new byte[16];
             System.arraycopy(ba, 0, key, 0, 32);
@@ -200,6 +193,8 @@ public enum Crypto {
     }
 
     /**
+     * This method is deprecated, please use {@link #encryptAES(String, byte[])} instead
+     *
      * Encrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
      *
      * @param value      The String to encrypt
@@ -207,14 +202,27 @@ public enum Crypto {
      * @param salt       The salt
      * @return An hexadecimal encrypted string
      */
+    @Deprecated
     public static String encryptAES(String value, String privateKey, String salt) {
+        return encryptAES(value, privateKey.getBytes(Charsets.UTF_8), salt.getBytes(Charsets.UTF_8));
+    }
+
+    /**
+     * Encrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
+     *
+     * @param value      The String to encrypt
+     * @param privateKey The key used to encrypt
+     * @param salt       The salt
+     * @return An hexadecimal encrypted string
+     */
+    public static String encryptAES(String value, byte[] privateKey, byte[] salt) {
         try {
             if (null != svc) return svc.encrypt(value, privateKey, salt);
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(privateKey.getBytes("utf-8"));
+            md.update(privateKey);
             byte[] key = md.digest();
             md = MessageDigest.getInstance("SHA-1");
-            md.update(salt.getBytes("utf-8"));
+            md.update(salt);
             byte[] tmp = md.digest();
             byte[] iv = new byte[16];
             System.arraycopy(tmp, 0, iv, 0, 16);
@@ -231,20 +239,34 @@ public enum Crypto {
 
 
     /**
+     * This method is deprecated. please use {@link #decryptAES(String, byte[])} instead
+     *
      * Decrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
      *
      * @param value      An hexadecimal encrypted string
      * @param privateKey The key used to encrypt
      * @return The decrypted String
      */
+    @Deprecated
     public static String decryptAES(String value, String privateKey) {
+        return decryptAES(value, privateKey.getBytes(Charsets.UTF_8));
+    }
+
+    /**
+     * Decrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
+     *
+     * @param value      An hexadecimal encrypted string
+     * @param privateKey The key used to encrypt
+     * @return The decrypted String
+     */
+    public static String decryptAES(String value, byte[] privateKey) {
         try {
             if (null != svc) return svc.decrypt(value, privateKey);
             byte[] ba0 = Codec.hexStringToByte(value);
             byte[] baVal = new byte[ba0.length - 16];
             System.arraycopy(ba0, 0, baVal, 0, ba0.length - 16);
             MessageDigest md = MessageDigest.getInstance("SHA-384");
-            md.update(privateKey.getBytes(Charsets.UTF_8));
+            md.update(privateKey);
             byte[] ba = md.digest();
             byte[] key = new byte[32], iv = new byte[16];
             System.arraycopy(ba, 0, key, 0, 32);
@@ -262,21 +284,35 @@ public enum Crypto {
 
 
     /**
+     * This method is deprecated. please use {@link #decryptAES(String, byte[], byte[])} instead
+     *
      * Decrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
      *
      * @param value      An hexadecimal encrypted string
      * @param privateKey The key used to encrypt
      * @return The decrypted String
      */
+    @Deprecated
     public static String decryptAES(String value, String privateKey, String salt) {
+        return decryptAES(value, privateKey.getBytes(Charsets.UTF_8), salt.getBytes(Charsets.UTF_8));
+    }
+
+    /**
+     * Decrypt a String with the AES encryption standard. Private key must have a length of 16 bytes
+     *
+     * @param value      An hexadecimal encrypted string
+     * @param privateKey The key used to encrypt
+     * @return The decrypted String
+     */
+    public static String decryptAES(String value, byte[] privateKey, byte[] salt) {
         try {
             if (null != svc) return svc.decrypt(value, privateKey, salt);
             byte[] baVal = Codec.hexStringToByte(value);
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(privateKey.getBytes(Charsets.UTF_8));
+            md.update(privateKey);
             byte[] key = md.digest();
             md = MessageDigest.getInstance("SHA-1");
-            md.update(salt.getBytes(Charsets.UTF_8));
+            md.update(salt);
             byte[] tmp = md.digest();
             byte[] iv = new byte[16];
             System.arraycopy(tmp, 0, iv, 0, 16);
@@ -285,8 +321,7 @@ public enum Crypto {
             Cipher cipher = Cipher.getInstance(ALGO);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
             byte[] ba = cipher.doFinal(baVal);
-            String s = new String(ba);
-            return s;
+            return new String(ba);
         } catch (Exception ex) {
             throw E.unexpected(ex);
         }
