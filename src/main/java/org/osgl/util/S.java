@@ -955,6 +955,10 @@ public class S {
         return Str.of(o.toString());
     }
 
+    public static Str str(char... ca) {
+        return Str.of(ca);
+    }
+
     public static StringBuilder builder(boolean o) {
         return new StringBuilder(String.valueOf(o));
     }

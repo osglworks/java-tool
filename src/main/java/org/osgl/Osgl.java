@@ -3621,6 +3621,26 @@ public class Osgl implements Serializable {
         }
 
         @Override
+        public C.List<T> insert(int index, T... ta) throws IndexOutOfBoundsException {
+            if (index == 0) {
+                return C.listOf(ta).prepend(v);
+            } else if (index == 1) {
+                return C.listOf(ta).append(v);
+            }
+            throw new IndexOutOfBoundsException();
+        }
+
+        @Override
+        public C.List<T> insert(int index, List<T> subList) throws IndexOutOfBoundsException {
+            if (index == 0) {
+                return C.list(subList).prepend(v);
+            } else if (index == 1) {
+                return C.list(subList).append(v);
+            }
+            throw new IndexOutOfBoundsException();
+        }
+
+        @Override
         public C.List<T> reverse() {
             return this;
         }

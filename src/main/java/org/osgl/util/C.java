@@ -1801,16 +1801,48 @@ public enum C {
          * <p>If this list is readonly or immutable, then an new
          * list should be created with all elements in this list
          * and the new element inserted at the specified position.
-         * The new list should be mutable and read write</p>
+         * The new list should have the same feature as this list</p>
          * <p>If index is less than zero then it will insert at
          * {@code (size() + index)}</p>
          *
          * @param index specify the position where the element should be inserted
          * @param t     the element to be inserted
-         * @return a reference to the List itself
+         * @return a list as specified above
          * @throws IndexOutOfBoundsException Math.abs(index) &gt; size()
          */
         List<T> insert(int index, T t) throws IndexOutOfBoundsException;
+
+        /**
+         * Insert an array of elements at the position specified by {@code index}.
+         * <p>If this list is readonly or immutable, then an new
+         * list should be created with all elements in this list
+         * and the new element inserted at the specified position.
+         * The new list should have the same feature as this list</p>
+         * <p>If index is less than zero then it will insert at
+         * {@code (size() + index)}</p>
+         *
+         * @param index specify the position where the element should be inserted
+         * @param ta    the array of elements to be inserted
+         * @return a list as specified above
+         * @throws IndexOutOfBoundsException Math.abs(index) &gt; size()
+         */
+        List<T> insert(int index, T... ta) throws IndexOutOfBoundsException;
+
+        /**
+         * Insert a sub list at the position specified by {@code index}.
+         * <p>If this list is readonly or immutable, then an new
+         * list should be created with all elements in this list
+         * and the elements of sub list inserted at the specified position.
+         * The new list should have the same feature as this list</p>
+         * <p>If index is less than zero then it will insert at
+         * {@code (size() + index)}</p>
+         *
+         * @param index specify the position where the element should be inserted
+         * @param subList the sub list contains elements to be inserted
+         * @return a list as specified above
+         * @throws IndexOutOfBoundsException Math.abs(index) &gt; size()
+         */
+        List<T> insert(int index, java.util.List<T> subList) throws IndexOutOfBoundsException;
 
         /**
          * {@inheritDoc}

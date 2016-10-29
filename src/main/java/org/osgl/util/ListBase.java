@@ -652,9 +652,6 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             add(index, t);
             return this;
         }
-        if (index < 0 || index > sz) {
-            throw new IndexOutOfBoundsException();
-        }
         if (isImmutable()) {
             ListBuilder<T> lb = new ListBuilder<T>(sz + 1);
             if (index > 0) {
@@ -671,6 +668,54 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 l.addAll(subList(0, index));
             }
             l.add(t);
+            if (index < sz) {
+                l.addAll(subList(index, sz));
+            }
+            return l;
+        }
+    }
+
+    @Override
+    public C.List<T> insert(int index, T... ta) throws IndexOutOfBoundsException {
+        if (ta.length == 0) {
+            return this;
+        }
+        return insert(index, C.listOf(ta));
+    }
+
+    @Override
+    public C.List<T> insert(int index, List<T> subList) throws IndexOutOfBoundsException {
+        if (subList.isEmpty()) {
+            return this;
+        }
+        int sz = size();
+        if (sz < Math.abs(index)) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index < 0) {
+            index = sz + index;
+        }
+        if (isMutable()) {
+            addAll(index, subList);
+            return this;
+        }
+        if (isImmutable()) {
+            int delta = subList.size();
+            ListBuilder<T> lb = new ListBuilder<T>(sz + delta);
+            if (index > 0) {
+                lb.addAll(subList(0, index));
+            }
+            lb.addAll(subList);
+            if (index < sz) {
+                lb.addAll(subList(index, sz));
+            }
+            return lb.toList();
+        } else {
+            C.List<T> l = C.newSizedList(sz + 1);
+            if (index > 0) {
+                l.addAll(subList(0, index));
+            }
+            l.addAll(subList);
             if (index < sz) {
                 l.addAll(subList(index, sz));
             }

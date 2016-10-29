@@ -78,7 +78,7 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
-    public Str insert(int index, Character character) throws IndexOutOfBoundsException {
+    public Str insert(int index, char character) throws StringIndexOutOfBoundsException {
         int len = s.length();
         if (len < Math.abs(index)) {
             throw new StringIndexOutOfBoundsException(index);
@@ -88,6 +88,45 @@ public class Str extends StrBase<Str> {
         }
         StringBuilder sb = new StringBuilder(s.substring(0, index));
         sb.append(character);
+        sb.append(s.substring(index, size()));
+        return of(sb);
+    }
+
+    @Override
+    public Str insert(int index, Character character) throws IndexOutOfBoundsException {
+        return insert_(index, (Object) character);
+    }
+
+    @Override
+    public Str insert(int index, Character... ca) throws StringIndexOutOfBoundsException {
+        return insert_(index, Str.of(ca));
+    }
+
+    @Override
+    public Str insert(int index, char... ca) throws StringIndexOutOfBoundsException {
+        return insert_(index, Str.of(ca));
+    }
+
+    @Override
+    public Str insert(int index, StrBase<?> str) throws StringIndexOutOfBoundsException {
+        return insert_(index, (Object) str);
+    }
+
+    @Override
+    public Str insert(int index, String s) throws StringIndexOutOfBoundsException {
+        return insert_(index, (Object) s);
+    }
+
+    private Str insert_(int index, Object o) throws StringIndexOutOfBoundsException {
+        int len = s.length();
+        if (len < Math.abs(index)) {
+            throw new StringIndexOutOfBoundsException(index);
+        }
+        if (index < 0) {
+            index = len + index;
+        }
+        StringBuilder sb = new StringBuilder(s.substring(0, index));
+        sb.append(o);
         sb.append(s.substring(index, size()));
         return of(sb);
     }
@@ -568,6 +607,17 @@ public class Str extends StrBase<Str> {
     public static Str of(String s) {
         if (S.empty(s)) return EMPTY_STR;
         return new Str(s);
+    }
+
+    public static Str of(Character ... chars) {
+        if (chars.length == 0) return EMPTY_STR;
+        char[] ca = $.asPrimitive(chars);
+        return new Str(new String(ca));
+    }
+
+    public static Str of(char ... ca) {
+        if (ca.length == 0) return EMPTY_STR;
+        return new Str(new String(ca));
     }
 
     public static Str of(StringBuilder sb) {

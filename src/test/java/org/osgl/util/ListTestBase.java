@@ -103,7 +103,7 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
     }
 
     @Test
-    public void testInsert() {
+    public void testInsertCharMutable() {
         if (!isMutable()) {
             return;
         }
@@ -128,6 +128,127 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
         }
     }
 
+    @Test
+    public void testInsertCharImmutable() {
+        if (!isImmutable()) {
+            return;
+        }
+        C.List<Integer> l = l().insert(0, 0);
+        eq(seqOf(0, 1, 2, 3, 4, 5), l);
+        l = l().insert(1, 0);
+        eq(seqOf(1, 0, 2, 3, 4, 5), l);
+        l = l().insert(5, 0);
+        eq(seqOf(1, 2, 3, 4, 5, 0), l);
+        l = l().insert(-1, 0);
+        eq(seqOf(1, 2, 3, 4, 0, 5), l);
+        yes(l.is(C.Feature.IMMUTABLE));
+        try {
+            l().insert(6, 0);
+            fail("expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException e) {
+            // pass
+        }
+    }
+
+    @Test
+    public void testInsertListMutable() {
+        if (!isMutable()) {
+            return;
+        }
+        l().insert(0, C.listOf(0, 5));
+        eq(seqOf(0, 5, 1, 2, 3, 4, 5), data);
+        setUp();
+        l().insert(1, C.listOf(0, 5));
+        eq(seqOf(1, 0, 5, 2, 3, 4, 5), data);
+        setUp();
+        l().insert(5, C.listOf(0, 7));
+        eq(seqOf(1, 2, 3, 4, 5, 0, 7), data);
+        setUp();
+        l().insert(-1, C.listOf(0, 7));
+        eq(seqOf(1, 2, 3, 4, 0, 7, 5), data);
+
+        setUp();
+        try {
+            l().insert(6, C.listOf(0, 3));
+            fail("expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException e) {
+            // pass
+        }
+    }
+
+    @Test
+    public void testInsertListImmutable() {
+        if (!isImmutable()) {
+            return;
+        }
+        C.List<Integer> l = l().insert(0, C.listOf(0, 5));
+        eq(seqOf(0, 5, 1, 2, 3, 4, 5), l);
+        l = l().insert(1, C.listOf(0, 5));
+        eq(seqOf(1, 0, 5, 2, 3, 4, 5), l);
+        l = l().insert(5, C.listOf(0, 7));
+        eq(seqOf(1, 2, 3, 4, 5, 0, 7), l);
+        l = l().insert(-1, C.listOf(0, 7));
+        eq(seqOf(1, 2, 3, 4, 0, 7, 5), l);
+        yes(l.is(C.Feature.IMMUTABLE));
+        try {
+            l().insert(6, C.listOf(0, 3));
+            fail("expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException e) {
+            // pass
+        }
+    }
+
+    @Test
+    public void testInsertArrayMutable() {
+        if (!isMutable()) {
+            return;
+        }
+        l().insert(0, 0, 5);
+        eq(seqOf(0, 5, 1, 2, 3, 4, 5), data);
+        setUp();
+        l().insert(1, 0, 5);
+        eq(seqOf(1, 0, 5, 2, 3, 4, 5), data);
+        setUp();
+        l().insert(5, 0, 7);
+        eq(seqOf(1, 2, 3, 4, 5, 0, 7), data);
+        setUp();
+        l().insert(-1, 0, 7);
+        eq(seqOf(1, 2, 3, 4, 0, 7, 5), data);
+
+        setUp();
+        try {
+            l().insert(6, 0, 3);
+            fail("expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException e) {
+            // pass
+        }
+    }
+
+
+    @Test
+    public void testInsertArrayImmutable() {
+        if (!isImmutable()) {
+            return;
+        }
+        C.List<Integer> l = l().insert(0, 0, 5);
+        eq(seqOf(0, 5, 1, 2, 3, 4, 5), l);
+        l = l().insert(1, 0, 5);
+        eq(seqOf(1, 0, 5, 2, 3, 4, 5), l);
+        l = l().insert(5, 0, 7);
+        eq(seqOf(1, 2, 3, 4, 5, 0, 7), l);
+        l = l().insert(-1, 0, 7);
+        eq(seqOf(1, 2, 3, 4, 0, 7, 5), l);
+        yes(l.is(C.Feature.IMMUTABLE));
+        try {
+            l().insert(6, 0, 3);
+            fail("expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException e) {
+            // pass
+        }
+    }
+
+
+    @Test
     public void testROInsert() {
         if (isMutable()) {
             return;
@@ -138,13 +259,8 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
         eq(seqOf(1, 0, 2, 3, 4, 5), l1);
         l1 = l().insert(5, 0);
         eq(seqOf(1, 2, 3, 4, 5, 0), l1);
-
-        try {
-            l().insert(-1, 0);
-            fail("expected IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException e) {
-            // pass
-        }
+        l1 = l().insert(-1, 0);
+        eq(seqOf(1, 2, 3, 4, 0, 5), l1);
         try {
             l().insert(6, 0);
             fail("expected IndexOutOfBoundsException");

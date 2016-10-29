@@ -2,6 +2,7 @@ package org.osgl.util;
 
 import org.apache.commons.codec.Charsets;
 import org.osgl.$;
+import org.osgl.Osgl;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -172,7 +173,7 @@ public class FastStr extends StrBase<FastStr>
     }
 
     @Override
-    public FastStr insert(int index, Character character) throws StringIndexOutOfBoundsException {
+    public FastStr insert(int index, char character) throws StringIndexOutOfBoundsException {
         E.NPE(character);
         int len = size();
         if (len < Math.abs(index)) {
@@ -180,9 +181,6 @@ public class FastStr extends StrBase<FastStr>
         }
         if (index < 0) {
             index = len + index;
-        }
-        if (index > len) {
-            throw new StringIndexOutOfBoundsException(index);
         }
         char[] newBuf = new char[len + 1];
         if (index > 0) {
@@ -193,6 +191,66 @@ public class FastStr extends StrBase<FastStr>
         }
         newBuf[index] = character;
         return unsafeOf(newBuf, 0, len + 1);
+    }
+
+    @Override
+    public FastStr insert(int index, Character character) throws StringIndexOutOfBoundsException {
+        E.NPE(character);
+        int len = size();
+        if (len < Math.abs(index)) {
+            throw new StringIndexOutOfBoundsException(index);
+        }
+        if (index < 0) {
+            index = len + index;
+        }
+        char[] newBuf = new char[len + 1];
+        if (index > 0) {
+            System.arraycopy(buf, begin, newBuf, 0, index);
+        }
+        if (index < len) {
+            System.arraycopy(buf, begin + index, newBuf, index + 1, len - index);
+        }
+        newBuf[index] = character;
+        return unsafeOf(newBuf, 0, len + 1);
+    }
+
+    @Override
+    public FastStr insert(int index, StrBase<?> str) throws StringIndexOutOfBoundsException {
+        return insert(index, str.toCharArray());
+    }
+
+    @Override
+    public FastStr insert(int index, Character... ca) throws StringIndexOutOfBoundsException {
+        return insert(0, $.asPrimitive(ca));
+    }
+
+    @Override
+    public FastStr insert(int index, char... ca) throws StringIndexOutOfBoundsException {
+        int delta = ca.length;
+        if (delta == 0) {
+            return this;
+        }
+        int len = size();
+        if (len < Math.abs(index)) {
+            throw new StringIndexOutOfBoundsException(index);
+        }
+        if (index < 0) {
+            index = len + index;
+        }
+        char[] newBuf = new char[len + delta];
+        if (index > 0) {
+            System.arraycopy(buf, begin, newBuf, 0, index);
+        }
+        System.arraycopy(ca, 0,  newBuf, index, delta);
+        if (index < len) {
+            System.arraycopy(buf, begin + index, newBuf, index + delta, len - index);
+        }
+        return unsafeOf(newBuf, 0, len + delta);
+    }
+
+    @Override
+    public FastStr insert(int index, String s) throws StringIndexOutOfBoundsException {
+        return insert(index, s.toCharArray());
     }
 
     @Override

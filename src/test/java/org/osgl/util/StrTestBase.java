@@ -177,6 +177,31 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
     }
 
     @Test
+    public void testInsertStr() {
+        T t = abc.insert(0, S.str("xy"));
+        ceq("xyabc", t);
+        ceq("abc", abc);
+        t = abc.insert(-3, S.str("xy"));
+        ceq("xyabc", t);
+        t = abc.insert(3, S.str("yz"));
+        ceq("abcyz", t);
+        t = abc.insert(-1, S.str("zi"));
+        ceq("abzic", t);
+        try {
+            abc.insert(5, S.str("d"));
+            fail("should throw out StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // pass
+        }
+        try {
+            abc.insert(-4, S.str("d"));
+            fail("should throw out StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // pass
+        }
+    }
+
+    @Test
     public void testRemove() {
         T t = zabcd.remove(charIsIn('b', 'c'));
         ceq("zad", t);

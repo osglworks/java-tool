@@ -36,7 +36,6 @@
 - Add FastStr.of(byte[], String) factory method
 - Add IO.readLine(xxx, int limit) APIs to allow read limit lines from file/inputstream/reader
 - Crypto encrypt and decrypt methods now accept byte[] as key and salt
-- Token.generateToken now accept byte[] as secret key
 
 0.8
 - Rename "_" to "O" as "$" will be an illegal identifier after Java 8

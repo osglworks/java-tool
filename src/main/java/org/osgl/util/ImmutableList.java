@@ -602,10 +602,73 @@ implements C.List<T>, RandomAccess, Serializable {
     public C.List<T> insert(int index, T t) throws IndexOutOfBoundsException {
         T[] myData = data_;
         int sz = data_.length;
+        if (sz < Math.abs(index)) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index < 0) {
+            index = sz + index;
+        }
+
         T[] data = $.newArray(myData, sz + 1);
+
+
         System.arraycopy(myData, 0, data, 0, index);
         data[index] = t;
         System.arraycopy(myData, index, data, index + 1, sz - index);
+        return of(data);
+    }
+
+    @Override
+    public C.List<T> insert(int index, T... ta) throws IndexOutOfBoundsException {
+        if (ta.length == 0) {
+            return this;
+        }
+        T[] myData = data_;
+        int sz = data_.length;
+        if (sz < Math.abs(index)) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index < 0) {
+            index = sz + index;
+        }
+
+        int delta = ta.length;
+        T[] data = $.newArray(myData, sz + delta);
+        if (index > 0) {
+            System.arraycopy(myData, 0, data, 0, index);
+        }
+        System.arraycopy(ta, 0, data, index, delta);
+        if (index < sz) {
+            System.arraycopy(myData, index, data, index + delta, sz - index);
+        }
+        return of(data);
+    }
+
+    @Override
+    public C.List<T> insert(int index, List<T> subList) throws IndexOutOfBoundsException {
+        if (subList.isEmpty()) {
+            return this;
+        }
+        T[] myData = data_;
+        int sz = data_.length;
+        if (sz < Math.abs(index)) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index < 0) {
+            index = sz + index;
+        }
+
+        int delta = subList.size();
+        T[] data = $.newArray(myData, sz + delta);
+        if (index > 0) {
+            System.arraycopy(myData, 0, data, 0, index);
+        }
+        for (int i = 0; i < delta; ++i) {
+            data[index + i] = subList.get(i);
+        }
+        if (index < sz) {
+            System.arraycopy(myData, index, data, index + delta, sz - index);
+        }
         return of(data);
     }
 

@@ -53,8 +53,59 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      * @throws StringIndexOutOfBoundsException if {@code index} is lesser than
      *         {@code 0} or greater than or equals to {@link #size()} of the str
      */
+    public abstract T insert(int index, char character) throws StringIndexOutOfBoundsException;
+
+    /**
+     * Return a new str with character inserted into the char sequence of this str
+     * @param index the position to insert the character
+     * @param character the char to be inserted
+     * @return an new str with char inserted into the position specified
+     * @throws StringIndexOutOfBoundsException if {@code index} is lesser than
+     *         {@code 0} or greater than or equals to {@link #size()} of the str
+     */
     @Override
     public abstract T insert(int index, Character character) throws StringIndexOutOfBoundsException;
+
+    /**
+     * Return a new str with character array inserted into the char sequence of this str
+     * @param index the position to insert the character
+     * @param ca the char array to be inserted
+     * @return an new str with char inserted into the position specified
+     * @throws StringIndexOutOfBoundsException if {@code index} is lesser than
+     *         {@code 0} or greater than or equals to {@link #size()} of the str
+     */
+    @Override
+    public abstract T insert(int index, Character... ca) throws StringIndexOutOfBoundsException;
+
+    /**
+     * Return a new str with character array inserted into the char sequence of this str
+     * @param index the position to insert the character
+     * @param ca the char array to be inserted
+     * @return an new str with char inserted into the position specified
+     * @throws StringIndexOutOfBoundsException if {@code index} is lesser than
+     *         {@code 0} or greater than or equals to {@link #size()} of the str
+     */
+    public abstract T insert(int index, char... ta) throws StringIndexOutOfBoundsException;
+
+    /**
+     * Returns a new str with a string specified inserted into the char sequence of this str
+     * @param index the position to insert the string
+     * @param str the str to be inserted
+     * @return an new str with string inserted into the position specified
+     * @throws StringIndexOutOfBoundsException if {@code index} is lesser than
+     *         {@code 0} or greater than or equals to {@link #size()} of the str
+     */
+    public abstract T insert(int index, StrBase<?> str) throws StringIndexOutOfBoundsException;
+
+    /**
+     * Returns a new str with a string specified inserted into the char sequence of this str
+     * @param index the position to insert the string
+     * @param s the string to be inserted
+     * @return an new str with string inserted into the position specified
+     * @throws StringIndexOutOfBoundsException if {@code index} is lesser than
+     *         {@code 0} or greater than or equals to {@link #size()} of the str
+     */
+    public abstract T insert(int index, String s) throws StringIndexOutOfBoundsException;
 
     /**
      * Returns a str that with all characters in this str instance except those matches the
