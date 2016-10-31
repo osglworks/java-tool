@@ -16,6 +16,9 @@
   -->
 <!-- history 
 
+0.9-stylyze
+- tagged version for stylyze
+
 0.9
 - Provide better support for Iterator and Enumeration
 - Move CacheService interface from osgl-cache to osgl-tool
@@ -138,7 +141,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.9.0-stylyze-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
