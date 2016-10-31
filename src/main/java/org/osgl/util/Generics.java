@@ -64,8 +64,16 @@ public class Generics {
         if (null == superType) {
             superType = theClass.getGenericSuperclass();
         }
-        TypeVariable<Class>[] declaredTypeVariables = theClass.getTypeParameters();
+        Class superClass = null;
+        while (!(superType instanceof ParameterizedType)) {
+            if (null == superClass) {
+                superClass = theClass.getSuperclass();
+            }
+            superType = superClass.getGenericSuperclass();
+            superClass = superClass.getSuperclass();
+        }
         if (superType instanceof ParameterizedType) {
+            TypeVariable<Class>[] declaredTypeVariables = theClass.getTypeParameters();
             ParameterizedType pSuperType = $.cast(superType);
             Type[] superTypeParams = pSuperType.getActualTypeArguments();
             List<Type> nextList = new ArrayList<Type>();
@@ -84,7 +92,7 @@ public class Generics {
                     E.illegalStateIf(!found, "Cannot find type implementation for %s", theClass);
                 }
             }
-            Class superClass = (Class) pSuperType.getRawType();
+            superClass = (Class) pSuperType.getRawType();
             if ($.eq(superClass, rootClass)) {
                 return nextList;
             }
