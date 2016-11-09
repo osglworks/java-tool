@@ -5460,6 +5460,23 @@ public class Osgl implements Serializable {
     }
 
     /**
+     * Returns field of a class by name. The field could be non-public field of super class of
+     * the class specified
+     * @param c the class
+     * @param name the name of the field
+     * @return the field instance of `null` if not found
+     */
+    public static Field fieldOf(Class<?> c, String name, boolean noStatic) {
+        List<Field> fields = fieldsOf(c, noStatic);
+        for (Field f : fields) {
+            if (S.eq(f.getName(), name)) {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns all fields of a class and all super classes. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`
      * @param c the class
