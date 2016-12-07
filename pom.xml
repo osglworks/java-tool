@@ -16,9 +16,6 @@
   -->
 <!-- history 
 
-0.9-stylyze
-- tagged version for stylyze
-
 0.9
 - Provide better support for Iterator and Enumeration
 - Move CacheService interface from osgl-cache to osgl-tool
@@ -39,6 +36,8 @@
 - Add FastStr.of(byte[], String) factory method
 - Add IO.readLine(xxx, int limit) APIs to allow read limit lines from file/inputstream/reader
 - Crypto encrypt and decrypt methods now accept byte[] as key and salt
+- Add $.fieldOf(Class, String, Boolean) method
+- Make Const class implement Serializable
 
 0.8
 - Rename "_" to "O" as "$" will be an illegal identifier after Java 8
@@ -141,7 +140,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.0-stylyze-SNAPSHOT</version>
+  <version>0.9.0-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>

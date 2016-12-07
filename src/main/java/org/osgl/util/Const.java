@@ -1,12 +1,15 @@
 package org.osgl.util;
 
+import org.osgl.$;
 import org.osgl.Osgl;
+
+import java.io.*;
 
 /**
  * Represent an immutable value
  * @param <T> the generic type of the object stored in the value
  */
-public final class Const<T> {
+public final class Const<T> implements Serializable {
 
     private T v;
 
@@ -57,4 +60,13 @@ public final class Const<T> {
         return null == var ? new Const<E>(null) : new Const<E>(var.get());
     }
 
+    public static void main(String[] args) throws Exception {
+        Const<String> x = $.constant("abc");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        new ObjectOutputStream(baos).writeObject(x);
+        byte[] ba = baos.toByteArray();
+        ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+        Const<String> y = (Const<String>)new ObjectInputStream(bais).readObject();
+        System.out.println(y.get());
+    }
 }
