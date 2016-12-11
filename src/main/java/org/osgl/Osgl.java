@@ -5607,7 +5607,7 @@ public class Osgl implements Serializable {
     }
 
     /**
-     * Returns {@link Method} by name and parameter
+     * Returns {@link Method} by name and parameter value
      * @param c the class
      * @param methodName the method name
      * @param pa the parameter used to invoke the method
@@ -5635,6 +5635,21 @@ public class Osgl implements Serializable {
             return m;
         }
         return null;
+    }
+
+    /**
+     * Returns {@link Method} by name and argument type
+     * @param c the class
+     * @param methodName the method name
+     * @param argTypes the argument types
+     * @return the method or `null` if not found
+     */
+    public static Method getMethod(Class c, String methodName, Class ... argTypes) {
+        try {
+            return c.getMethod(methodName, argTypes);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
     }
 
     private static <T, R> R invokeMethod(Var<Method> methodBag, Class c, T o, String methodName, Object ... pa) {

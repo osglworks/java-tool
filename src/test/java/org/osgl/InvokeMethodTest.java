@@ -71,6 +71,12 @@ public class InvokeMethodTest extends TestBase {
     }
 
     @Test
+    public void testGetByTypeAndInvokeMethod() {
+        Method method = $.getMethod(Foo.class, "bar", String.class, int.class);
+        eq("12", $.invokeStatic(method, "1", 2));
+    }
+
+    @Test
     public void testInvokeStaticAndCache() {
         $.Var<Method> bag = $.var();
         eq("foo1", $.invokeStatic(bag, Foo.class, "bar", "foo", 1));

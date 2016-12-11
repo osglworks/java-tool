@@ -38,6 +38,7 @@
 - Crypto encrypt and decrypt methods now accept byte[] as key and salt
 - Add $.fieldOf(Class, String, Boolean) method
 - Make Const class implement Serializable
+- Add $.getMethod(Class, String, Class[]) method
 
 0.8
 - Rename "_" to "O" as "$" will be an illegal identifier after Java 8
