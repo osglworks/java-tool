@@ -2611,6 +2611,9 @@ public class Osgl implements Serializable {
          *     the same value, and the last one is the winner and it's {@code _2}
          *     will be put into the map
          * </p>
+         * @param <K> the key type
+         * @param <V> the value type
+         * @param list the list of tuples to be transformed into map
          * @return the map as described
          */
         @SuppressWarnings("unused")
@@ -5141,7 +5144,7 @@ public class Osgl implements Serializable {
      * 2. Wrapper type of primitive types, e.g. Integer.class
      * 3. String.class
      * 4. Any class extends `Enum.class`
-     * @param c
+     * @param c the class to be checked
      * @return `true` if the give type `c` is simple type as described above
      */
     public static boolean isSimpleType(Class<?> c) {
@@ -5464,6 +5467,7 @@ public class Osgl implements Serializable {
      * the class specified
      * @param c the class
      * @param name the name of the field
+     * @param noStatic specify if static fields shall be included
      * @return the field instance of `null` if not found
      */
     public static Field fieldOf(Class<?> c, String name, boolean noStatic) {
@@ -5560,6 +5564,7 @@ public class Osgl implements Serializable {
      *
      * After invocation, the method will be cached into the method bag supplied
      *
+     * @param methodBag A function to cache the method found by name and arguments
      * @param o the instance on which the virtual method will be invoked
      * @param methodName the method name
      * @param pa the arguments

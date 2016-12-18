@@ -349,12 +349,15 @@ public enum C {
         Traversable<T> accept($.Function<? super T, ?> visitor);
 
         /**
-         * Alias of {@link #accept($.Function)}
+         * Alias of {@link #accept(Osgl.Function)}
+         * @param visitor the visitor to tranverse the elements
+         * @return this {@code Traversable} instance
          */
         Traversable<T> each($.Function<? super T, ?> visitor);
 
         /**
-         * Alias of {@link #accept($.Function)}
+         * Alias of {@link #accept(Osgl.Function)}
+         * @param visitor the visitor function
          */
         Traversable<T> forEach($.Function<? super T, ?> visitor);
     }
@@ -413,6 +416,7 @@ public enum C {
         /**
          * Alias of {@link #take(int)}
          *
+         * @param n the number of elements to be taken into the return sequence
          * @return the first {@code n} element in the sequence
          * @since 0.2
          */
@@ -719,8 +723,8 @@ public enum C {
          *
          * @param identity    the identity value for the accumulating function
          * @param accumulator the function to accumulate two values
+         * @param <R> the aggregation result type
          * @return the reduced result
-         * @see #reduce(Object, $.Func2)
          * @since 0.2
          */
         <R> R reduceLeft(R identity, $.Func2<R, T, R> accumulator);
@@ -783,8 +787,8 @@ public enum C {
          *
          * @param visitor the function to visit elements in this sequence
          * @return this sequence
-         * @see Traversable#accept($.Function)
-         * @see ReversibleSequence#acceptRight($.Function)
+         * @see Traversable#accept(Osgl.Function)
+         * @see ReversibleSequence#acceptRight(Osgl.Function)
          * @since 0.2
          */
         Sequence<T> acceptLeft($.Function<? super T, ?> visitor);
@@ -1050,6 +1054,7 @@ public enum C {
          * @param identity the initial value
          * @param accumulator the function performs accumulation from {@code T} an {@code R} to anthoer {@code R}
          * @param <R> the accumulation result
+         * @return the aggregation result
          * @see #reduce(Object, Osgl.Func2)
          * @since 0.2
          */
