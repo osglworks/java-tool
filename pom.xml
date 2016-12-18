@@ -141,7 +141,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.9.0</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
@@ -162,7 +162,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
+    <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
     <maven.test.skip>false</maven.test.skip>
   </properties>
 
@@ -312,7 +312,8 @@
             <version>2.9</version>
             <configuration>
               <stylesheetfile>src/etc/javadoc.css</stylesheetfile>
-              <quiet />
+              <quiet/>
+              <additionalparam>-Xdoclint:none</additionalparam>
             </configuration>
             <executions>
               <execution>
@@ -321,12 +322,19 @@
                 <goals>
                   <goal>javadoc</goal>
                 </goals>
+                <configuration>
+                  <failOnError>false</failOnError>
+                </configuration>
               </execution>
               <execution>
                 <id>attach-javadocs</id>
                 <goals>
                   <goal>jar</goal>
                 </goals>
+                <configuration> <!-- add this to disable checking -->
+                  <failOnError>false</failOnError>
+                  <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
               </execution>
             </executions>
           </plugin>
