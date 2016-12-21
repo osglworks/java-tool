@@ -26,8 +26,8 @@ public class Generics {
     /**
      * Returns implementation of type parameters declared in the root class/interface by the given sub class
      * <p>
-     * For example, suppose a super class has generic type params: `MyBase<MODEL, QUERY>`, and a
-     * sub class is declared as `MyModel<MyModel, MyQuery>`, then passing `MyModel.class` to
+     * For example, suppose a super class has generic type params: `MyBase&lt;MODEL, QUERY&gt;`, and a
+     * sub class is declared as `MyModel&lt;MyModel, MyQuery&gt;`, then passing `MyModel.class` to
      * this method shall return a list of `{MyModel.class, MyQuery.class}`
      * <p>
      *

@@ -31,18 +31,10 @@ import java.io.UnsupportedEncodingException;
  */
 public class E {
 
-    /**
-     * Throw out {@link IllegalStateException}
-     */
     public static InvalidStateException invalidState() {
         throw new InvalidStateException();
     }
 
-    /**
-     * throw out {@link IllegalStateException}
-     * @param msg message template
-     * @param args message arguments
-     */
     public static InvalidStateException invalidState(String msg, Object... args) {
         throw new InvalidStateException(S.fmt(msg, args));
     }
@@ -79,8 +71,11 @@ public class E {
 
     /**
      * Throw out NullPointerException if any one of the passed objects is null
-     * 
-     * @param objects the object instances to be tested
+     *
+     * @param o1 first object to be tested
+     * @param o2 second object to be tested
+     * @param o3 third object to be tested
+     * @param objects other object instances to be tested
      */
     public static void NPE(Object o1, Object o2, Object o3, Object... objects) {
         NPE(o1, o2, o3);
@@ -97,32 +92,14 @@ public class E {
         }
     }
 
-    /**
-     * Throw out {@link org.osgl.exception.UnexpectedException}
-     * 
-     * @param msg the message template
-     * @param args the message arguments
-     */
     public static UnexpectedException unexpected(String msg, Object... args) {
         throw new UnexpectedException(msg, args);
     }
     
-    /**
-     * Throw out {@link org.osgl.exception.UnexpectedException}
-     * 
-     * @param cause 
-     */
     public static UnexpectedException unexpected(Throwable cause) {
         throw new UnexpectedException(cause);
     }
 
-    /**
-     * Throw out {@link org.osgl.exception.UnexpectedException}
-     * 
-     * @param cause 
-     * @param msg the message template
-     * @param args the message arguments
-     */
     public static UnexpectedException unexpected(Throwable cause, String msg, Object... args) {
         throw new UnexpectedException(cause, msg, args);
     }
@@ -134,11 +111,6 @@ public class E {
     }
 
 
-    /**
-     * Throw out {@link org.osgl.exception.UnexpectedIOException}
-     * 
-     * @param cause the IOException caused this unexpected IO issue
-     */
     public static UnexpectedIOException ioException(IOException cause) {
         throw new UnexpectedIOException(cause);
     }
@@ -147,11 +119,6 @@ public class E {
         throw new UnexpectedIOException(msg, args);
     }
     
-    /**
-     * Throw out {@link org.osgl.exception.UnexpectedEncodingException}
-     * 
-     * @param cause the UnsupportedEncodingException caused this unexpected encoding issue
-     */
     public static UnexpectedEncodingException encodingException(UnsupportedEncodingException cause) {
         throw new UnexpectedEncodingException(cause);
     }

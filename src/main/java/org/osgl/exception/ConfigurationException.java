@@ -36,12 +36,6 @@ public class ConfigurationException extends UnexpectedException {
         super(cause);
     }
 
-    /**
-     * Construct a FastRuntimeException with cause, message and message arguments
-     * @param cause
-     * @param message
-     * @param args
-     */
     public ConfigurationException(Throwable cause, String message, Object... args) {
         super(cause, message, args);
     }

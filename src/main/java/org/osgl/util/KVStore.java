@@ -65,7 +65,6 @@ public class KVStore extends HashMap<String, ValueObject> implements Map<String,
      * Put a map of (key, value) pair into the store. The value could be any type
      * that supported by {@link ValueObject}
      * @param kvMap a map of {key, value} pair
-     * @return the store after put operation finished
      */
     public void putValues(Map<String, Object> kvMap) {
         for (String key : kvMap.keySet()) {

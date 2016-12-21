@@ -725,6 +725,7 @@ public class N {
 
     /**
      * @see java.util.Random#nextInt()
+     * @return a random int value
      */
     public static int randInt() {
         return new Random().nextInt();
@@ -736,6 +737,8 @@ public class N {
 
     /**
      * @see Random#nextInt(int)
+     * @param max the max limit (exclusive) of the number generated
+     * @return a random int value
      */
     public static int randInt(int max) {
         return new Random().nextInt(max);
@@ -763,6 +766,7 @@ public class N {
 
     /**
      * @see java.util.Random#nextDouble()
+     * @return a random double value
      */
     public static double randDouble() {
         return new Random().nextDouble();
@@ -1025,6 +1029,9 @@ public class N {
 
         /**
          * Use {@link #multiplyBy(Number)}
+         * @param n the number `n`
+         * @param <T> the type of number `n`
+         * @return the function that when applied will return number multiply parameter by `n`
          */
         @Deprecated
         public static <T extends Number> $.F1<T, Number> mul(final Number n) {
@@ -1033,6 +1040,10 @@ public class N {
 
         /**
          * Use {@link #multiplyBy(Number, Class)}
+         * @param n the number
+         * @param clz the number class
+         * @param <T> the number type
+         * @return the function that when applied will multiple the param by `n`
          */
         @Deprecated
         public static <T extends Number> $.F1<T, Number> mul(final Number n, final Class<T> clz) {
@@ -1082,6 +1093,9 @@ public class N {
 
         /**
          * Use {@link #divideBy(Number)} instead
+         * @param n the dividend
+         * @param <T> the number type
+         * @return a function that when applied will divide the input by `n`
          */
         @Deprecated
         public static <T extends Number> $.F1<T, Number> div(final Number n) {
@@ -1090,6 +1104,10 @@ public class N {
 
         /**
          * Use {@link #divideBy(Number, Class)} instead
+         * @param n the dividend
+         * @param clz the number class
+         * @param <T> the number type
+         * @return a function that when applied will divide the input by `n`
          */
         @Deprecated
         public static <T extends Number> $.F1<T, Number> div(final Number n, final Class<T> clz) {

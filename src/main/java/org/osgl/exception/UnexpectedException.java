@@ -43,12 +43,6 @@ public class UnexpectedException extends RuntimeException {
         super(cause);
     }
 
-    /**
-     * Construct a FastRuntimeException with cause, message and message arguments
-     * @param cause
-     * @param message
-     * @param args
-     */
     public UnexpectedException(Throwable cause, String message, Object... args) {
         super(S.fmt(message, args), cause);
     }

@@ -80,7 +80,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     /**
      * Return a new str with character array inserted into the char sequence of this str
      * @param index the position to insert the character
-     * @param ca the char array to be inserted
+     * @param ta the char array to be inserted
      * @return an new str with char inserted into the position specified
      * @throws StringIndexOutOfBoundsException if {@code index} is lesser than
      *         {@code 0} or greater than or equals to {@link #size()} of the str
@@ -385,7 +385,8 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      * Returns the index within this str of the first occurrence of
      * the specified character.
      *
-     * @param   ch   a character (Unicode code point).
+     * @param ch           a character (Unicode code point).
+     * @param fromIndex    the from index
      * @return  the index of the first occurrence of the character in the
      *          character sequence represented by this object, or
      *          <code>-1</code> if the character does not occur.
@@ -567,7 +568,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      *
      * <p>The returned index is the largest value <i>k</i> for which:
      * <blockquote><pre>
-     * <i>k</i> &lt;= fromIndex && this.startsWith(str, <i>k</i>)
+     * <i>k</i> &lt;= fromIndex &amp;&amp; this.startsWith(str, <i>k</i>)
      * </pre></blockquote>
      * If no such value of <i>k</i> exists, then {@code -1} is returned.
      *
@@ -586,7 +587,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      *
      * <p>The returned index is the largest value <i>k</i> for which:
      * <blockquote><pre>
-     * <i>k</i> &lt;= fromIndex && this.startsWith(str, <i>k</i>)
+     * <i>k</i> &lt;= fromIndex &amp;&amp; this.startsWith(str, <i>k</i>)
      * </pre></blockquote>
      * If no such value of <i>k</i> exists, then {@code -1} is returned.
      *
@@ -1197,7 +1198,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      * with "..."
      *
      * @param max the maximum length of the result
-     * @return
+     * @return A StrBase instance that contains at most `max` number of chars of this instance
      */
     public T maxLength(int max) {
         if (isEmpty()) return _empty();
@@ -1212,7 +1213,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      * with "..."
      *
      * @param max the maximum length of the result
-     * @return
+     * @return the string described above
      */
     public T cutOff(int max) {
         return maxLength(max);
@@ -1222,7 +1223,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     /**
      * Wrapper of {@link String#contentEquals(StringBuffer)}
      *
-     * @param stringBuffer
+     * @param stringBuffer string buffer
      * @return true if content equals the content of the specified buffer
      */
     public final boolean contentEquals(StringBuffer stringBuffer) {
@@ -1255,8 +1256,8 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     /**
      * Alias of {@link #contentEquals(StringBuffer)}
      *
-     * @param stringBuffer
-     * @return
+     * @param stringBuffer the string buffer
+     * @return `true` if content of this instance equals to content of the string buffer
      */
     public final boolean eq(StringBuffer stringBuffer) {
         return contentEquals(stringBuffer);
@@ -1430,8 +1431,8 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
 
     /**
      * Synonym of {@link #substring(int)} but return Str instead of String
-     * @param beginIndex
-     * @return A str of
+     * @param beginIndex the begin index
+     * @return A sub str that starts from the index specified
      */
     public final T substr(int beginIndex) {
         if (beginIndex < 0) {
@@ -1513,7 +1514,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     /**
      * Wrapper of {@link String#toCharArray()}
      *
-     * @return
+     * @return char array backed this instance
      */
     public final char[] toCharArray() {
         return charArray();

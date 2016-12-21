@@ -29,8 +29,8 @@ public interface CacheService {
     /**
      * Store an item into the cache service by key and set ttl value
      *
-     * @param key
-     * @param value
+     * @param key the cache key
+     * @param value the object to be cached
      * @param ttl   time to live of the cached item. Time unit is second.
      *              If set to negative number, then it will never expire.
      *              If set to zero then the default ttl value will be used
@@ -40,21 +40,21 @@ public interface CacheService {
     /**
      * Store an item into the cache by key and use default ttl
      *
-     * @param key
-     * @param value
+     * @param key the cache key
+     * @param value the object to be cached
      */
     void put(String key, Object value);
 
     /**
      * Remove an item from the cache service by key
-     * @param key
+     * @param key the cache key
      */
     void evict(String key);
 
     /**
      * Return an item from the cache service by key
      *
-     * @param key
+     * @param key the cache key
      * @return the value associated with the key
      */
     <T> T get(String key);
@@ -69,7 +69,7 @@ public interface CacheService {
      * Note some service might not favor this method after the internal cache service
      * is initialized. E.g. memcached and ehcaches
      *
-     * @param ttl
+     * @param ttl the default ttl value in seconds
      */
     void setDefaultTTL(int ttl);
 

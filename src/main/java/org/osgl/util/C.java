@@ -358,6 +358,7 @@ public enum C {
         /**
          * Alias of {@link #accept(Osgl.Function)}
          * @param visitor the visitor function
+         * @return this {@code Traversable} instance
          */
         Traversable<T> forEach($.Function<? super T, ?> visitor);
     }
@@ -696,11 +697,11 @@ public enum C {
         /**
          * {@inheritDoc}
          * This method does not specify how to run the accumulator. It might be
-         * {@link #reduceLeft(Object, $.Func2)} or
-         * {@link ReversibleSequence#reduceRight(Object, $.Func2)}, or
+         * {@link C.Sequence#reduceLeft(Object, Osgl.Func2)} or
+         * {@link ReversibleSequence#reduceRight(Object, Osgl.Func2)}, or
          * even run reduction in parallel, it all depending on the implementation.
          * <p>For a guaranteed reduce from left to right, use
-         * {@link #reduceLeft(Object, $.Func2)} instead</p>
+         * {@link C.Sequence#reduceLeft(Object, Osgl.Func2)}  instead</p>
          *
          * @param identity    {@inheritDoc}
          * @param accumulator {@inheritDoc}
@@ -733,7 +734,7 @@ public enum C {
          * {@inheritDoc}
          * This method does not specify the approach to run reduction.
          * For a guaranteed reduction from head to tail, use
-         * {@link #reduceLeft($.Func2)} instead
+         * {@link #reduceLeft(Osgl.Func2)} instead
          *
          * @param accumulator {@inheritDoc}
          * @return {@inheritDoc}

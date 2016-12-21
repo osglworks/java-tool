@@ -146,7 +146,7 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
      * {@link org.osgl.exception.NotAppliedException} thrown out by visitor's apply
      * method call</p>
      *
-     * @param visitor
+     * @param visitor the visitor
      * @throws $.Break if visitor needs to terminate the iteration
      */
     public SetBase<T> forEach($.Function<? super T, ?> visitor) throws $.Break {

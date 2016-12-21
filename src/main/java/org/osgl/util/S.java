@@ -33,8 +33,8 @@ public class S {
     /**
      * A handy alias for {@link String#format(String, Object...)}
      *
-     * @param tmpl
-     * @param args
+     * @param tmpl the message template
+     * @param args the message arguments
      * @return the formatted string
      */
     public final static String fmt(String tmpl, Object... args) {
@@ -45,8 +45,8 @@ public class S {
     /**
      * alias of {@link #empty(String)}
      *
-     * @param s
-     * @return
+     * @param s the string to be checked
+     * @return true if `s` is `null` or `empty`
      */
     public static boolean isEmpty(String s) {
         return empty(s);
@@ -55,7 +55,7 @@ public class S {
     /**
      * Determine if a string is empty or null
      *
-     * @param s
+     * @param s the string to be checked
      * @return true if the string is null or empty (no spaces)
      */
     public static boolean empty(String s) {
@@ -65,7 +65,7 @@ public class S {
     /**
      * Determine if a string is all blank or empty or null
      *
-     * @param s
+     * @param s the string to be checked
      * @return true if the string is null or empty or all blanks
      */
     public static boolean blank(String s) {
@@ -75,8 +75,8 @@ public class S {
     /**
      * alias of {@link #blank(String)}
      *
-     * @param s
-     * @return
+     * @param s the string to be checked
+     * @return true if `s` is `null` or empty or blank
      */
     public static boolean isBlank(String s) {
         return blank(s);
@@ -85,7 +85,7 @@ public class S {
     /**
      * alias of {@link #notEmpty(String)}
      *
-     * @param s
+     * @param s the string to be checked
      * @return true if <code>s</code> is <code>null</code> or empty
      */
     public static boolean isNotEmpty(String s) {
@@ -95,7 +95,7 @@ public class S {
     /**
      * Antonym of {@link #empty(String)}
      *
-     * @param s
+     * @param s the string to be checked
      * @return true if <code>s</code> is not <code>null</code> or empty
      */
     public static boolean notEmpty(String s) {
@@ -105,7 +105,7 @@ public class S {
     /**
      * Antonym of {@link #blank(String)}
      *
-     * @param s
+     * @param s the string to be checked
      * @return true if <code>s</code> is not <code>null</code> or empty or all in blank
      */
     public static boolean notBlank(String s) {
@@ -115,7 +115,7 @@ public class S {
     /**
      * Antonym of {@link #blank(String)}
      *
-     * @param s
+     * @param s the string to be checked
      * @return true if <code>s</code> is not <code>null</code> or empty or all in blank
      */
     public static boolean isNotBlank(String s) {
@@ -125,7 +125,7 @@ public class S {
     /**
      * Check if all of the specified string is {@link #empty(String) empty}
      *
-     * @param sa
+     * @param sa the string to be checked
      * @return true if all of the specified string is empty
      */
     public static boolean isAllEmpty(String... sa) {
@@ -135,7 +135,7 @@ public class S {
     /**
      * Alias of {@link #isAllEmpty(String...)}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return true if all of the specified string is empty
      */
     public static boolean allEmpty(String... sa) {
@@ -148,7 +148,7 @@ public class S {
     /**
      * Alias of {@link #allBlank(String...)}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return true if all of the specified string is blank
      */
     public static boolean isAllBlank(String ... sa) {
@@ -158,7 +158,7 @@ public class S {
     /**
      * Check if all of the specified string is {@link #blank(String) blank}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return true if all of the specified string is blank
      */
     public static boolean allBlank(String ... sa) {
@@ -171,7 +171,7 @@ public class S {
     /**
      * Check if anyone of the specified string is {@link #empty(String) empty}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return <code>true</code> if anyone of the specified string is empty
      */
     public static boolean isAnyEmpty(String... sa) {
@@ -181,7 +181,7 @@ public class S {
     /**
      * Alias of {@link #isAnyEmpty(String...)}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return <code>true</code> if anyone of the specified string is empty
      */
     public static boolean anyEmpty(String... sa) {
@@ -194,7 +194,7 @@ public class S {
     /**
      * Alias of {@link #anyBlank(String...)}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return <code>true</code> if anyone of the specified string is blank
      */
     public static boolean isAnyBlank(String ... sa) {
@@ -204,7 +204,7 @@ public class S {
     /**
      * Check if anyone of the specified string is {@link #empty(String) blank}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return <code>true</code> if anyone of the specified string is blank
      */
     public static boolean anyBlank(String ... sa) {
@@ -217,7 +217,7 @@ public class S {
     /**
      * Antonym of {@link #anyEmpty(String...)}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return <code>false</code> if anyone of the specified string is empty
      */
     public static boolean noEmpty(String... sa) {
@@ -227,7 +227,7 @@ public class S {
     /**
      * Antonym of {@link #anyBlank(String...)}
      *
-     * @param sa
+     * @param sa the strings to be checked
      * @return <code>false</code> if anyone of the specified string is empty
      */
     public static boolean noBlank(String ... sa) {
@@ -248,9 +248,9 @@ public class S {
      * <p>If n is negative number, then return a string of the first N chars</p>
      * <p>If n is larger than the length of the string, then return the string</p>
      *
-     * @param s
-     * @param n
-     * @return
+     * @param s the string from which the first `n` chars will be returned
+     * @param n the number of chars to be returned from `s`
+     * @return the string consists of the first `n` chars of the specified string `s`
      */
     public static String first(String s, int n) {
         if (n < 0) {
@@ -396,6 +396,9 @@ public class S {
 
     /**
      * Alias of {@link #join(String, int)}
+     * @param s     the string to be joined
+     * @param times the times the string to be joined
+     * @return the result
      */
     public static String times(String s, int times) {
         return join(s, times);
@@ -409,7 +412,7 @@ public class S {
      *
      * @param s   the original string
      * @param max the maximum length of the result
-     * @return
+     * @return the string as described
      */
     public static String cutOff(String s, int max) {
         return maxLength(s, max);
@@ -423,7 +426,7 @@ public class S {
      *
      * @param s   the original string
      * @param max the maximum length of the result
-     * @return
+     * @return the string as described
      */
     public static String maxLength(String s, int max) {
         if (null == s)
@@ -437,9 +440,9 @@ public class S {
     /**
      * Return last n chars
      *
-     * @param s
-     * @param n
-     * @return
+     * @param s the string from which last `n` chars will be returned
+     * @param n the number of chars should be returned from `s`
+     * @return a string consists of the last `n` chars in `s`
      */
     public static String last(String s, int n) {
         if (n < 0) {
@@ -523,8 +526,8 @@ public class S {
     /**
      * Null safety trim
      *
-     * @param s
-     * @return
+     * @param s the string to be trimed
+     * @return the trimed string
      */
     public static String trim(String s) {
         return null == s ? "" : s.trim();
@@ -533,13 +536,22 @@ public class S {
     /**
      * Count how many times a search string occurred in the give string
      *
-     * @param s
-     * @param search
+     * @param s string to be searched
+     * @param search the search token
+     * @return the times the search token appeared in `s` without overlap calculation
      */
     public static int count(String s, String search) {
         return count(s, search, false);
     }
 
+    /**
+     * Count how many times a search string occurred in the give string
+     *
+     * @param s string to be searched
+     * @param search the search token
+     * @param overlap specify if it should take overlap into considerations
+     * @return the times the search token appeared in `s`
+     */
     public static int count(String s, String search, boolean overlap) {
         int n = 0, l = search.length();
         while (true) {
@@ -672,8 +684,8 @@ public class S {
     /**
      * alias of {@link #equal(String, String)}
      *
-     * @param s1
-     * @param s2
+     * @param s1 string 1
+     * @param s2 string 2
      * @return <code>true</code> if s1 equals to s2
      */
     public static boolean eq(String s1, String s2) {
@@ -683,10 +695,10 @@ public class S {
     /**
      * Alias of {@link #equal(String, String, int)}
      *
-     * @param s1
-     * @param s2
-     * @param modifier
-     * @return <code>true</code> if s1 equals to s2 as per modifier
+     * @param s1 string 1
+     * @param s2 String 2
+     * @param modifier could be combination of {@link #IGNORESPACE} or {@link #IGNORECASE}
+     * @return `true` if `s1` equals to `s2` according to `modifier`
      */
     public static boolean eq(String s1, String s2, int modifier) {
         return equal(s1, s2, modifier);
@@ -695,8 +707,8 @@ public class S {
     /**
      * Antonym of {@link #equal(String, String)}
      *
-     * @param s1
-     * @param s2
+     * @param s1 string 1
+     * @param s2 string 2
      * @return <code>true</code> if s1 doesn't equal to s2
      */
     public static boolean neq(String s1, String s2) {
@@ -706,9 +718,9 @@ public class S {
     /**
      * Antonym of {@link #equal(String, String, int)}
      *
-     * @param s1
-     * @param s2
-     * @param modifier
+     * @param s1 string 1
+     * @param s2 string 2
+     * @param modifier could be combination of {@link #IGNORESPACE} or {@link #IGNORECASE}
      * @return <code>true</code> if s1 doesn't equal to s2 as per modifier
      */
     public static boolean neq(String s1, String s2, int modifier) {
@@ -719,8 +731,8 @@ public class S {
      * Return true if 2 strings are equals to each other without
      * ignore space and case sensitive.
      *
-     * @param s1
-     * @param s2
+     * @param s1 string 1
+     * @param s2 string 2
      * @return <code>true</code> if s1 equals to s2
      */
     public static boolean equal(String s1, String s2) {
@@ -730,9 +742,9 @@ public class S {
     /**
      * Return false if 2 strings are equals to each other
      *
-     * @param s1
-     * @param s2
-     * @return
+     * @param s1 string 1
+     * @param s2 string 2
+     * @return `true` if s1 does not equal to s2
      */
     public static boolean notEqual(String s1, String s2) {
         return !equal(s1, s2, 0);
@@ -741,8 +753,8 @@ public class S {
     /**
      * alias of {@link #eq(String, String)}
      *
-     * @param s1
-     * @param s2
+     * @param s1 string 1
+     * @param s2 string 2
      * @return <code>true</code> if s1 equals to s2
      */
     public static boolean isEqual(String s1, String s2) {
@@ -752,10 +764,10 @@ public class S {
     /**
      * Return true if 2 strings are equals to each other as per rule specified
      *
-     * @param s1
-     * @param s2
+     * @param s1 string 1
+     * @param s2 String 2
      * @param modifier could be combination of {@link #IGNORESPACE} or {@link #IGNORECASE}
-     * @return
+     * @return `true` if `s1` equals to `s2` according to `modifier`
      */
     public static boolean equal(String s1, String s2, int modifier) {
         if (null == s1) {
@@ -799,9 +811,9 @@ public class S {
     /**
      * Alias of {@link #equal(String, String, int)}
      *
-     * @param s1
-     * @param s2
-     * @param modifier
+     * @param s1 string 1
+     * @param s2 string 2
+     * @param modifier the modifier could be combination of {@link #IGNORESPACE} or {@link #IGNORECASE}
      * @return <code>true</code> if s1 equals to s2 as per modifier
      */
     public static boolean isEqual(String s1, String s2, int modifier) {
@@ -816,10 +828,10 @@ public class S {
      * String s = S.strip(o, "xx", "yy")</code></pre>
      * <p>At the end above code, <code>s</code> should be "BB"</p>
      *
-     * @param o
-     * @param prefix
-     * @param suffix
-     * @return the String result
+     * @param o the object to which string representation will be used
+     * @param prefix the prefix
+     * @param suffix the suffix
+     * @return the String result as described above
      */
     public static String strip(Object o, String prefix, String suffix) {
         if (null == o) {
@@ -835,7 +847,7 @@ public class S {
     /**
      * Decode Base64 encoded string
      *
-     * @param str
+     * @param str the string to be decoded
      * @return decoded string
      */
     public static String decodeBASE64(String str) {
@@ -849,7 +861,7 @@ public class S {
     /**
      * Encode a string using Base64 encoding
      *
-     * @param str
+     * @param str the string to be encoded
      * @return encoded string
      */
     public static String encodeBASE64(String str) {
@@ -859,8 +871,8 @@ public class S {
     /**
      * perform URL encoding on a giving string
      *
-     * @param s
-     * @return
+     * @param s the string to be encoded
+     * @return return encoded string
      */
     public static String urlEncode(String s) {
         if (null == s) {
@@ -887,8 +899,8 @@ public class S {
     /**
      * Get the extension of a filename
      *
-     * @param fileName
-     * @return the extension
+     * @param fileName the (supposed) file name
+     * @return the extension from the file name
      */
     public static String fileExtension(String fileName) {
         return S.after(fileName, ".");
@@ -902,7 +914,7 @@ public class S {
      * Generate random string.
      * The generated string is safe to be used as filename
      *
-     * @param len
+     * @param len the number of chars in the returned string
      * @return a random string with specified number of chars
      */
     public static String random(int len) {
@@ -938,6 +950,7 @@ public class S {
      *
      * @param o      the instance to be displayed
      * @param quoted whether display quotation mark
+     * @return the string representation of object
      */
     public final static String string(Object o, boolean quoted) {
         return quoted ? String.format("\"%s\"", o) : null == o ? "" : o.toString();

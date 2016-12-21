@@ -83,6 +83,7 @@ public class IO {
 
     /**
      * Returns a byte array output stream
+     * @return an output stream
      */
     public static OutputStream os() {
         return new ByteArrayOutputStream();
@@ -90,6 +91,8 @@ public class IO {
 
     /**
      * Returns a file output stream
+     * @param file the file to which the returned output stream can be used to write to
+     * @return an output stream that can be used to write to file specified
      */
     public static OutputStream os(File file) {
         try {
@@ -101,6 +104,7 @@ public class IO {
 
     /**
      * Returns a string writer
+     * @return an writer that write to string
      */
     public static Writer writer() {
         return new StringWriter();
@@ -108,6 +112,8 @@ public class IO {
 
     /**
      * Returns a file writer
+     * @param file the file to be written
+     * @return a writer
      */
     public static Writer writer(File file) {
         try {
@@ -119,6 +125,7 @@ public class IO {
 
     /**
      * Returns an empty input stream
+     * @return an empty input stream
      */
     public static InputStream is() {
         byte[] ba = {};
@@ -127,6 +134,8 @@ public class IO {
 
     /**
      * Returns a file input stream
+     * @param file the file to be read
+     * @return  inputstream that read the file
      */
     public static InputStream is(File file) {
         // workaround http://stackoverflow.com/questions/36880692/java-file-does-not-exists-but-file-getabsolutefile-exists
@@ -150,6 +159,8 @@ public class IO {
     /**
      * Returns an input stream from a string which will be encoded with
      * CharSet.defaultCharset()
+     * @param content the content to be read
+     * @return input stream instance that read the content
      */
     public static InputStream is(String content) {
         return is(content.getBytes());
@@ -165,6 +176,7 @@ public class IO {
 
     /**
      * Returns an empty reader
+     * @return a reader that reads empty string ""
      */
     public static Reader reader() {
         return new StringReader("");
@@ -172,6 +184,8 @@ public class IO {
 
     /**
      * Returns a file reader
+     * @param file the file to be read
+     * @return a reader that reads the file specified
      */
     public static Reader reader(File file) {
         try {
@@ -198,7 +212,9 @@ public class IO {
     }
 
     /**
-     * Returns a string reader
+     * Returns a string reader from a content specified
+     * @param content  the content to be read
+     * @return a string reader instance
      */
     public static Reader reader(String content) {
         return new StringReader(content);
@@ -348,6 +364,7 @@ public class IO {
      * Read file content to a String
      *
      * @param url The url resource to read
+     * @param encoding encoding used to read the file into string content
      * @return The String content
      */
     public static String readContentAsString(URL url, String encoding) {
@@ -372,6 +389,7 @@ public class IO {
      * Read file content to a String
      *
      * @param file The file to read
+     * @param encoding encoding used to read the file into string content
      * @return The String content
      */
     public static String readContentAsString(File file, String encoding) {
@@ -496,6 +514,7 @@ public class IO {
      *
      * @param content The content to write
      * @param file    The file to write
+     * @param encoding encoding used to write the content to file
      */
     public static void writeContent(CharSequence content, File file, String encoding) {
         OutputStream os = null;
@@ -528,8 +547,8 @@ public class IO {
     /**
      * Copy content from input stream to output stream without closing the output stream
      * 
-     * @param is
-     * @param os
+     * @param is input stream
+     * @param os output stream
      */
     public static void append(InputStream is, OutputStream os) {
         copy(is, os, false);
@@ -543,6 +562,9 @@ public class IO {
      * Copy an stream to another one. It close the input stream anyway.
      *
      * If the param closeOs is true then close the output stream
+     * @param is input stream
+     * @param os output stream
+     * @param closeOs specify whether it shall close output stream after operation
      */
     public static void copy(InputStream is, OutputStream os, boolean closeOs) {
         try {
@@ -563,8 +585,8 @@ public class IO {
 
     /**
      * Alias of {@link #copy(java.io.InputStream, java.io.OutputStream)}
-     * @param is
-     * @param os
+     * @param is input stream
+     * @param os output stream
      */
     public static void write(InputStream is, OutputStream os) {
         copy(is, os);

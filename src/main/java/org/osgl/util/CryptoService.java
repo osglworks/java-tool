@@ -11,6 +11,7 @@ public interface CryptoService {
      * @param content the content to be encrypted
      * @param privateKey the key to encrypt the content
      * @return the encrypted content
+     * @throws Exception when any exception happened
      */
     @Deprecated
     String encrypt(String content, String privateKey) throws Exception;
@@ -20,6 +21,7 @@ public interface CryptoService {
      * @param content the content to be encrypted
      * @param privateKey the key to encrypt the content
      * @return the encrypted content
+     * @throws Exception when any exception happened
      */
     String encrypt(String content, byte[] privateKey) throws Exception;
 
@@ -31,6 +33,7 @@ public interface CryptoService {
      * @param privateKey the key to encrypt the content
      * @param salt the salt string
      * @return the encrypted content
+     * @throws Exception when any exception happened
      */
     @Deprecated
     String encrypt(String content, String privateKey, String salt) throws Exception;
@@ -41,6 +44,7 @@ public interface CryptoService {
      * @param privateKey the key to encrypt the content
      * @param salt the salt string
      * @return the encrypted content
+     * @throws Exception when any exception happened
      */
     String encrypt(String content, byte[] privateKey, byte[] salt) throws Exception;
 
@@ -51,6 +55,7 @@ public interface CryptoService {
      * @param secret the encrypted content
      * @param privateKey the key to decrypt the secret
      * @return the original content
+     * @throws Exception when any exception happened
      */
     @Deprecated
     String decrypt(String secret, String privateKey) throws Exception;
@@ -63,6 +68,7 @@ public interface CryptoService {
      * @param privateKey the key to decrypt the secret
      * @param salt the salt string
      * @return the original content
+     * @throws Exception when any exception happened
      */
     @Deprecated
     String decrypt(String secret, String privateKey, String salt) throws Exception;
@@ -72,6 +78,7 @@ public interface CryptoService {
      * @param secret the encrypted content
      * @param privateKey the key to decrypt the secret
      * @return the original content
+     * @throws Exception when any exception happened
      */
     String decrypt(String secret, byte[] privateKey) throws Exception;
 
@@ -81,6 +88,7 @@ public interface CryptoService {
      * @param privateKey the key to decrypt the secret
      * @param salt the salt string
      * @return the original content
+     * @throws Exception when any exception happened
      */
     String decrypt(String secret, byte[] privateKey, byte[] salt) throws Exception;
 }

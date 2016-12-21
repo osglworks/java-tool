@@ -44,6 +44,7 @@ public class InvalidArgException extends IllegalArgumentException {
     /**
      * Convert to corresponding JDK exception. Warning, since there are synchronized method execution
      * please beware of the performance issue when calling this method
+     * @return the JDK {@link IllegalArgumentException} converted from this exception
      */
     public IllegalArgumentException asJDKException() {
         IllegalArgumentException e = new IllegalArgumentException(getMessage()) {

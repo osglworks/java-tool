@@ -1134,7 +1134,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
      * This method will NOT change the underline list
      *
      * @param seq the sequence to be prepended
-     * @return
+     * @return the prepended sequence
      */
     @Override
     public C.Sequence<T> prepend(C.Sequence<? extends T> seq) {
@@ -1169,9 +1169,6 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     /**
      * {@inheritDoc}
      * This method will NOT change the underline list
-     *
-     * @param list
-     * @return
      */
     @Override
     public C.List<T> prepend(C.List<T> list) {
@@ -1182,9 +1179,6 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
      * {@inheritDoc}
      * For mutable list, this method will insert the
      * element at {@code 0} position.
-     *
-     * @param t
-     * @return
      */
     @Override
     public C.List<T> prepend(T t) {

@@ -603,7 +603,7 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#contentEquals(CharSequence)}
      *
-     * @param x
+     * @param x the char sequence to be compared
      * @return true if content equals content of the specified char sequence
      */
     public boolean contentEquals(CharSequence x) {
@@ -633,7 +633,7 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#equalsIgnoreCase(String)}
      *
-     * @param x
+     * @param x the char sequence to be compared
      * @return {@code true} if the argument is not {@code null} and it
      * represents an equivalent {@code String} ignoring case; {@code
      * false} otherwise
@@ -1241,7 +1241,7 @@ public class FastStr extends StrBase<FastStr>
     /**
      * Wrapper of {@link String#intern()}
      *
-     * @return
+     * @return the intern of the string
      */
     @Override
     public String intern() {

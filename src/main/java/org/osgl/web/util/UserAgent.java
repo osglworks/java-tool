@@ -247,8 +247,8 @@ public class UserAgent {
     public static final String KEY = "__ua__";
     /**
      * Use valueOf instead
-     * @param userAgent
-     * @return
+     * @param userAgent the useragent String
+     * @return the {@code UserAgent} instance
      */
     @Deprecated
     public static final UserAgent set(String userAgent) {
