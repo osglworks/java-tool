@@ -290,6 +290,7 @@ public enum Crypto {
      *
      * @param value      An hexadecimal encrypted string
      * @param privateKey The key used to encrypt
+     * @param salt       the salt
      * @return The decrypted String
      */
     @Deprecated
@@ -302,6 +303,7 @@ public enum Crypto {
      *
      * @param value      An hexadecimal encrypted string
      * @param privateKey The key used to encrypt
+     * @param salt       the salt
      * @return The decrypted String
      */
     public static String decryptAES(String value, byte[] privateKey, byte[] salt) {

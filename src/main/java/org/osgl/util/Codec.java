@@ -177,6 +177,7 @@ public class Codec {
 
     /**
      * Write a byte array as hexadecimal String.
+     * @return bytes
      */
     public static String byteToHexString(byte[] bytes) {
         return String.valueOf(Hex.encodeHex(bytes));
@@ -184,6 +185,8 @@ public class Codec {
 
     /**
      * Transform an hexadecimal String to a byte array.
+     * @param hexString the string
+     * @return the byte array of the hex string
      */
     public static byte[] hexStringToByte(String hexString) {
         try {
