@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A map of (String, {@link ValueObject})
+ * A simple implementation of {@link KV} using {@link HashMap}
  */
 @SuppressWarnings("unused")
-public class KVStore extends HashMap<String, ValueObject> implements Map<String, ValueObject> {
+public class KVStore extends HashMap<String, ValueObject> implements KV {
 
     /**
      * Create an empty {@code KVStore}
@@ -40,6 +40,7 @@ public class KVStore extends HashMap<String, ValueObject> implements Map<String,
      * @return this store instance after the put operation finished
      * @see ValueObject
      */
+    @Override
     public KVStore putValue(String key, Object val) {
         put(key, ValueObject.of(val));
         return this;
@@ -53,6 +54,7 @@ public class KVStore extends HashMap<String, ValueObject> implements Map<String,
      * @return the value stored in the value object associated with the key
      * @see ValueObject#value()
      */
+    @Override
     public <T> T getValue(String key) {
         ValueObject vo = get(key);
         if (null == vo) {
@@ -66,10 +68,12 @@ public class KVStore extends HashMap<String, ValueObject> implements Map<String,
      * that supported by {@link ValueObject}
      * @param kvMap a map of {key, value} pair
      */
-    public void putValues(Map<String, Object> kvMap) {
+    @Override
+    public KVStore putValues(Map<String, Object> kvMap) {
         for (String key : kvMap.keySet()) {
             put(key, ValueObject.of(kvMap.get(key)));
         }
+        return this;
     }
 
     /**
@@ -79,6 +83,7 @@ public class KVStore extends HashMap<String, ValueObject> implements Map<String,
      *
      * @return the map of key and raw value stored in this store
      */
+    @Override
     public Map<String, Object> toMap() {
         Map<String, Object> map = C.newMap();
         for (Map.Entry<String, ValueObject> entry : entrySet()) {

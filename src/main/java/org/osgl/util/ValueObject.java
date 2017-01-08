@@ -671,6 +671,21 @@ public class ValueObject implements Serializable {
         ValueObject.register(BigDecimalValueObjectCodec.INSTANCE);
         ValueObject.register(BigIntegerValueObjectCodec.INSTANCE);
         ValueObject.register(KeywordValueObjectCodec.INSTANCE);
+
+        try {
+            Class<? extends Codec> kvCodec = $.classForName("org.osgl.util.KVCodec");
+            ValueObject.register($.newInstance(kvCodec));
+        } catch (Exception e) {
+            // ignore
+        }
+
+        try {
+            Class<? extends Codec> jsonObjectCodec = $.classForName("org.osgl.util.FastJsonObjectCodec");
+            ValueObject.register($.newInstance(jsonObjectCodec));
+        } catch (Exception e) {
+            // ignore
+        }
+
     }
 
 

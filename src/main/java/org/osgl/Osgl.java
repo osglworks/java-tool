@@ -5463,15 +5463,39 @@ public class Osgl implements Serializable {
     }
 
     /**
+     * Returns non-static field of a class by name. The field might be non-public declared in super classes
+     * of the supplied class
+     * @param c the class
+     * @param name the name of the field
+     * @return the field instance or `null` if not found
+     */
+    public static Field fieldOf(Class<?> c, String name) {
+        return fieldOf(c, name, true);
+    }
+
+    /**
      * Returns field of a class by name. The field could be non-public field of super class of
      * the class specified
      * @param c the class
      * @param name the name of the field
      * @param noStatic specify if static fields shall be included
-     * @return the field instance of `null` if not found
+     * @return the field instance or `null` if not found
      */
     public static Field fieldOf(Class<?> c, String name, boolean noStatic) {
-        List<Field> fields = fieldsOf(c, noStatic);
+        return fieldOf(c, name, Object.class, noStatic);
+    }
+
+    /**
+     * Returns field of a class by name. The field could be non-public field of super class of
+     * the class specified
+     * @param c the class
+     * @param name the name of the field
+     * @param rootClass the class that stops of the recurive operation. Default is Object.class
+     * @param noStatic specify if static fields shall be included
+     * @return the field instance or `null` if not found
+     */
+    public static Field fieldOf(Class<?> c, String name, Class<?> rootClass, boolean noStatic) {
+        List<Field> fields = fieldsOf(c, rootClass, noStatic);
         for (Field f : fields) {
             if (S.eq(f.getName(), name)) {
                 return f;
@@ -5483,32 +5507,87 @@ public class Osgl implements Serializable {
     /**
      * Returns all fields of a class and all super classes. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`
+     *
      * @param c the class
-     * @param noStatic specify if static fields shall be included
+     * @return a list of fields
+     */
+    public static List<Field> fieldsOf(Class<?> c) {
+        return fieldsOf(c, true);
+    }
+
+    /**
+     * Returns all fields of a class and all super classes. Note all fields returned will
+     * be called on {@link Field#setAccessible(boolean)} with value `true`
+     *
+     * @param c the class
+     * @param filter specify which field will be put into the list if not `null`
+     * @return a list of fields
+     */
+    public static List<Field> fieldsOf(Class<?> c, $.Function<Field, Boolean> filter) {
+        return fieldsOf(c, Object.class, filter);
+    }
+
+    /**
+     * Returns all fields of a class and all super classes. Note all fields returned will
+     * be called on {@link Field#setAccessible(boolean)} with value `true`
+     * @param c the class
+     * @param noStatic specify if static fields shall be included. Default: `true`
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, boolean noStatic) {
+        return fieldsOf(c, Object.class, noStatic);
+    }
+
+    /**
+     * Returns all fields of a class and all super classes until root class. Note all fields returned will
+     * be called on {@link Field#setAccessible(boolean)} with value `true`
+     * @param c the class
+     * @param rootClass the class that stops the recursive operation
+     * @param noStatic specify if static fields should be included
+     * @return a list of fields
+     */
+    public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean noStatic) {
         List<Field> fields = new ArrayList<Field>();
-        addFieldsToList(fields, c, noStatic);
+        $.Predicate<Field> filter = noStatic ? new $.Predicate<Field>() {
+            @Override
+            public boolean test(Field field) {
+                return !Modifier.isStatic(field.getModifiers());
+            }
+        } : null;
+        addFieldsToList(fields, c, rootClass, filter);
         return fields;
     }
 
-    private static void addFieldsToList(List<Field> list, Class<?> c, boolean noStatic) {
+    /**
+     * Returns all fields of a class and all super classes until root class. Note all fields returned will
+     * be called on {@link Field#setAccessible(boolean)} with value `true`
+     * @param c the class
+     * @param rootClass the class that stops the recursive lookup
+     * @param filter specify what field should be put into the list if not `null`
+     * @return the list of fields
+     */
+    public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, $.Function<Field, Boolean> filter) {
+        List<Field> fields = new ArrayList<Field>();
+        addFieldsToList(fields, c, rootClass, filter);
+        return fields;
+    }
+
+    private static void addFieldsToList(List<Field> list, Class<?> c, Class<?> rootClass, $.Function<Field, Boolean> filter) {
         if (c.isInterface()) {
             return;
         }
         Field[] fields = c.getDeclaredFields();
         for (Field field : fields) {
-            if (noStatic && Modifier.isStatic(field.getModifiers())) {
+            if (null != filter && !filter.apply(field)) {
                 continue;
             }
             field.setAccessible(true);
             list.add(field);
         }
-        if (c != Object.class) {
+        if (c != rootClass) {
             c = c.getSuperclass();
             if (null != c) {
-                addFieldsToList(list, c, noStatic);
+                addFieldsToList(list, c, rootClass, filter);
             }
         }
     }
@@ -8203,6 +8282,32 @@ public class Osgl implements Serializable {
          */
         public static <T> F1<T, String> asString(Class<T> tClass) {
             return AS_STRING;
+        }
+
+        /**
+         * A predicate function that when applied to a {@link java.lang.reflect.Field} type
+         * object, returns `true` when the field is not static
+         */
+        public static Predicate<Field> NON_STATIC_FIELD = new Predicate<Field>() {
+            @Override
+            public boolean test(Field field) {
+                return !Modifier.isStatic(field.getModifiers());
+            }
+        };
+
+        /**
+         * Returns a predicate function that when applied to a {@link Field} type
+         * object, returns `true` if the field has specified annotation presented
+         * @param annoClass the annotation
+         * @return a predicate function as described above
+         */
+        public static Predicate<Field> fieldWithAnnotation(final Class<? extends Annotation> annoClass) {
+            return new Predicate<Field>() {
+                @Override
+                public boolean test(Field field) {
+                    return field.isAnnotationPresent(annoClass);
+                }
+            };
         }
     }
 

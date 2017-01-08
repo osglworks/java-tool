@@ -39,6 +39,8 @@
 - Add $.fieldOf(Class, String, Boolean) method
 - Make Const class implement Serializable
 - Add $.getMethod(Class, String, Class[]) method
+- Add KV interface (implemented by KVStore)
+- Add FastJsonKvCodec (fastjson serialize/deserialize KV) and FastJsonObjectCodec (convert JSONObject to/from ValueObject)
 
 0.8
 - Rename "_" to "O" as "$" will be an illegal identifier after Java 8
@@ -233,6 +235,13 @@
       <artifactId>junit-benchmarks</artifactId>
       <version>0.7.2</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.22</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
