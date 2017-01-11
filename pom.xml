@@ -322,6 +322,13 @@
               <stylesheetfile>src/etc/javadoc.css</stylesheetfile>
               <quiet />
               <additionalparam>-Xdoclint:none</additionalparam>
+              <doclet>ch.raffael.doclets.pegdown.PegdownDoclet</doclet>
+              <docletArtifact>
+                <groupId>ch.raffael.pegdown-doclet</groupId>
+                <artifactId>pegdown-doclet</artifactId>
+                <version>1.1</version>
+              </docletArtifact>
+              <useStandardDocletOptions>true</useStandardDocletOptions>
             </configuration>
             <executions>
               <execution>
