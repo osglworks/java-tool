@@ -45,8 +45,8 @@ public class IO {
         }
         try {
             closeable.close();
-        } catch (IOException e) {
-            //
+        } catch (Exception e) {
+            // ignore
         }
     }
 
