@@ -41,6 +41,7 @@
 - Add $.getMethod(Class, String, Class[]) method
 - Add KV interface (implemented by KVStore)
 - Add FastJsonKvCodec (fastjson serialize/deserialize KV) and FastJsonObjectCodec (convert JSONObject to/from ValueObject)
+- Add Osgl.F.propertyExtractor API
 
 0.8
 - Rename "_" to "O" as "$" will be an illegal identifier after Java 8

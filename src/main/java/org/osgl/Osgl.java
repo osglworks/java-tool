@@ -8295,6 +8295,15 @@ public class Osgl implements Serializable {
             }
         };
 
+        public static <BEAN> Transformer<BEAN, Object> propertyExtractor(final String property) {
+            return new Transformer<BEAN, Object>() {
+                @Override
+                public Object transform(BEAN bean) {
+                    return $.getProperty(bean, property);
+                }
+            };
+        }
+
         /**
          * Returns a predicate function that when applied to a {@link Field} type
          * object, returns `true` if the field has specified annotation presented
