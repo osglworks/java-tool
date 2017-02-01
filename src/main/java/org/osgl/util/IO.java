@@ -549,13 +549,14 @@ public class IO {
      * 
      * @param is input stream
      * @param os output stream
+     * @return number of bytes appended
      */
-    public static void append(InputStream is, OutputStream os) {
-        copy(is, os, false);
+    public static int append(InputStream is, OutputStream os) {
+        return copy(is, os, false);
     }
     
-    public static void copy(InputStream is, OutputStream os) {
-        copy(is, os, true);
+    public static int copy(InputStream is, OutputStream os) {
+        return copy(is, os, true);
     }
 
     /**
@@ -565,14 +566,17 @@ public class IO {
      * @param is input stream
      * @param os output stream
      * @param closeOs specify whether it shall close output stream after operation
+     * @return number of bytes copied
      */
-    public static void copy(InputStream is, OutputStream os, boolean closeOs) {
+    public static int copy(InputStream is, OutputStream os, boolean closeOs) {
         try {
-            int read;
+            int read, total = 0;
             byte[] buffer = new byte[8096];
             while ((read = is.read(buffer)) > 0) {
                 os.write(buffer, 0, read);
+                total += read;
             }
+            return total;
         } catch(IOException e) {
             throw E.ioException(e);
         } finally {
@@ -588,13 +592,13 @@ public class IO {
      * @param is input stream
      * @param os output stream
      */
-    public static void write(InputStream is, OutputStream os) {
-        copy(is, os);
+    public static int write(InputStream is, OutputStream os) {
+        return copy(is, os);
     }
     
-    public static void write(InputStream is, File f) {
+    public static int write(InputStream is, File f) {
         try {
-            copy(is, new BufferedOutputStream(new FileOutputStream(f)));
+            return copy(is, new BufferedOutputStream(new FileOutputStream(f)));
         } catch (FileNotFoundException e) {
             throw E.ioException(e);
         }
