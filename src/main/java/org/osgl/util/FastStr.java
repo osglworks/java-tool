@@ -936,7 +936,7 @@ public class FastStr extends StrBase<FastStr>
     @Override
     public int indexOf(CharSequence str, int fromIndex) {
         char[] strBuf = bufOf(str);
-        return toExternalId(S.indexOf(buf, begin, size(), strBuf, 0, strBuf.length, fromIndex));
+        return S.indexOf(buf, begin, size(), strBuf, 0, strBuf.length, fromIndex);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package org.osgl.util;
 
-import com.sun.org.apache.bcel.internal.generic.FASTORE;
 import org.junit.Test;
 
 public class FastStrTest extends StrTestBase<FastStr> {

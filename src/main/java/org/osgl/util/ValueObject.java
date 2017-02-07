@@ -1,5 +1,6 @@
 package org.osgl.util;
 
+import com.alibaba.fastjson.JSON;
 import org.osgl.$;
 
 import java.io.Serializable;
@@ -282,22 +283,19 @@ public class ValueObject implements Serializable {
 
             @Override
             void set(Object o, ValueObject vo) {
-                Codec c = findCodec(o.getClass());
-                E.illegalArgumentIf(null == c, "Cannot find registered codec for value class: %s", o.getClass());
                 vo.udf = o;
             }
 
             @Override
             <T> T decode(String s, Class<T> type) {
                 Codec codec = findCodec(type);
-                return (T) codec.parse(s);
+                return (T)(null == codec ? JSON.parseObject(s, type) : codec.parse(s)) ;
             }
 
             @Override
             String encode(Object o) {
                 Codec codec = findCodec(o.getClass());
-                E.illegalArgumentIf(null == codec, "Cannot find registered codec for value class: %s", o.getClass());
-                return codec.toString(o);
+                return null == codec ? JSON.toJSONString(o) : codec.toString(o);
             }
 
             @Override

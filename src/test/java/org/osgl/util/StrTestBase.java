@@ -389,6 +389,9 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
         eq(-1, abc2.indexOf((int) 'a', 1));
         eq(1, abc2.indexOf((int) 'b', 1));
 
+        eq(1, abc.indexOf("b"));
+        eq(1, abc2.indexOf("b"));
+
         eq(1, 码农码代码戏码农.indexOf("农码代"));
         eq(-1, 码农码代码戏码农.indexOf("码代码", 3));
         C.List<Character> list = C.list('码', '代', '码');
