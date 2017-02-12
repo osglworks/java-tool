@@ -5572,6 +5572,12 @@ public class Osgl implements Serializable {
         return fields;
     }
 
+    public static List<Field> fieldsOf(Class<?> c, $.Function<Class<?>, Boolean> classFilter, $.Function<Field, Boolean> fieldFilter) {
+        List<Field> fields = new ArrayList<Field>();
+        addFieldsToList(fields, c, classFilter, fieldFilter);
+        return fields;
+    }
+
     private static void addFieldsToList(List<Field> list, Class<?> c, Class<?> rootClass, $.Function<Field, Boolean> filter) {
         if (c.isInterface()) {
             return;
@@ -5588,6 +5594,26 @@ public class Osgl implements Serializable {
             c = c.getSuperclass();
             if (null != c) {
                 addFieldsToList(list, c, rootClass, filter);
+            }
+        }
+    }
+
+    private static void addFieldsToList(List<Field> list, Class<?> c, $.Function<Class<?>, Boolean> classFilter, $.Function<Field, Boolean> fieldFilter) {
+        if (c.isInterface()) {
+            return;
+        }
+        Field[] fields = c.getDeclaredFields();
+        for (Field field : fields) {
+            if (null != fieldFilter && !fieldFilter.apply(field)) {
+                continue;
+            }
+            field.setAccessible(true);
+            list.add(field);
+        }
+        if (null != classFilter) {
+            c = c.getSuperclass();
+            if (null != c && classFilter.apply(c)) {
+                addFieldsToList(list, c, classFilter, fieldFilter);
             }
         }
     }
