@@ -587,6 +587,13 @@ public class S {
         return ("" + s.charAt(0)).toUpperCase() + s.substring(1);
     }
 
+    public static String lowerFirst(String s) {
+        if (null == s || "" == s) {
+            return "";
+        }
+        return ("" + s.charAt(0)).toLowerCase() + s.substring(1);
+    }
+
     public static String unsafeCapFirst(String s) {
         if (null == s) {
             return "";

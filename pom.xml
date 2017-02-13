@@ -17,6 +17,7 @@
 <!-- history
 0.10
 - IO.copy now returns the number of bytes copied
+- S.lowerFirst(String) API
 
 0.9
 - Provide better support for Iterator and Enumeration
