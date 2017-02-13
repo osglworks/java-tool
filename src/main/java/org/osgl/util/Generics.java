@@ -65,7 +65,7 @@ public class Generics {
             superType = theClass.getGenericSuperclass();
         }
         Class superClass = null;
-        while (!(superType instanceof ParameterizedType)) {
+        while (!(superType instanceof ParameterizedType) && Object.class != superType) {
             if (null == superClass) {
                 superClass = theClass.getSuperclass();
             }
