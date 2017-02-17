@@ -949,13 +949,13 @@ public class FastStr extends StrBase<FastStr>
     public int lastIndexOf(CharSequence str, int fromIndex) {
         char[] strBuf = bufOf(str);
         int sz = size();
-        return lastIndexOf(buf, begin, sz, strBuf, 0, strBuf.length, fromIndex);
+        return S.lastIndexOf(buf, begin, sz, strBuf, 0, strBuf.length, fromIndex);
     }
 
     @Override
     public int lastIndexOf(FastStr str, int fromIndex) {
         int sz = size();
-        return lastIndexOf(buf, begin, sz, str.buf, str.begin, str.size(), fromIndex);
+        return S.lastIndexOf(buf, begin, sz, str.buf, str.begin, str.size(), fromIndex);
     }
 
     /**
@@ -1113,7 +1113,7 @@ public class FastStr extends StrBase<FastStr>
          (2)two-char String and the first char is the backslash and
             the second is not the ascii digit or ascii letter.
          */
-        char ch = 0;
+        char ch;
         if (((regex.length() == 1 &&
                 ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
                 (regex.length() == 2 &&
@@ -1433,74 +1433,6 @@ public class FastStr extends StrBase<FastStr>
         return S.count(buf, begin, size(), search, searchOffset, searchCount, overlap);
     }
 
-
-    /**
-     * Search string pattern in another string. Copied from JDK String
-     * The source is the character array being searched, and the target
-     * is the string being searched for.
-     *
-     * @param source       the characters being searched.
-     * @param sourceOffset offset of the source string.
-     * @param sourceCount  count of the source string.
-     * @param target       the characters being searched for.
-     * @param targetOffset offset of the target string.
-     * @param targetCount  count of the target string.
-     * @param fromIndex    the index to begin searching from.
-     */
-    private static int lastIndexOf(char[] source, int sourceOffset, int sourceCount,
-                           char[] target, int targetOffset, int targetCount,
-                           int fromIndex
-    ) {
-        /*
-         * Check arguments; return immediately where possible. For
-         * consistency, don't check for null str.
-         */
-        int rightIndex = sourceCount - targetCount;
-        if (fromIndex < 0) {
-            return -1;
-        }
-        if (fromIndex > rightIndex) {
-            fromIndex = rightIndex;
-        }
-        /* Empty string always matches. */
-        if (targetCount == 0) {
-            return fromIndex;
-        }
-
-        int strLastIndex = targetOffset + targetCount - 1;
-        char strLastChar = target[strLastIndex];
-        int min = sourceOffset + targetCount - 1;
-        int i = min + fromIndex;
-
-        startSearchForLastChar:
-        while (true) {
-            while (i >= min && source[i] != strLastChar) {
-                i--;
-            }
-            if (i < min) {
-                return -1;
-            }
-            int j = i - 1;
-            int start = j - (targetCount - 1);
-            int k = strLastIndex - 1;
-
-            while (j > start) {
-                if (source[j--] != target[k--]) {
-                    i--;
-                    continue startSearchForLastChar;
-                }
-            }
-            return start - sourceOffset + 1;
-        }
-    }
-
-    private static char[] bufOf(String s) {
-        try {
-            return Unsafe.bufOf(s);
-        } catch (Exception e) {
-            return s.toCharArray();
-        }
-    }
 
     // ---- factory methods
 

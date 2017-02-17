@@ -123,7 +123,7 @@ public final class Keyword implements Comparable<Keyword> {
         }
 
         public String toString(Keyword keyword) {
-            StringBuilder sb = S.builder();
+            S.Buffer sb = S.buffer();
             int sz = keyword.list.size();
             for (int i = 0; i < sz; i++) {
                 FastStr fs = keyword.list.get(i);

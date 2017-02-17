@@ -5185,7 +5185,7 @@ public class Osgl implements Serializable {
         if (null != c) return c;
         try {
             if (className.contains("[")) {
-                className = S.builder().append("[L").append(S.before(className, "[")).append(";").toString();
+                className = S.buffer().append("[L").append(S.before(className, "[")).append(";").toString();
             }
             return (Class<T>) Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
