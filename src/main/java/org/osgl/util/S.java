@@ -364,7 +364,7 @@ public class S {
             case 1:
                 return s;
             default:
-                StringBuilder sb = newBuilder(s);
+                StringBuilder sb = builder(s);
                 for (int i = 1; i < times; ++i) {
                     sb.append(separator).append(s);
                 }
@@ -387,7 +387,7 @@ public class S {
             case 1:
                 return s;
             default:
-                StringBuilder sb = newBuilder(s);
+                StringBuilder sb = builder(s);
                 for (int i = 1; i < times; ++i) {
                     sb.append(s);
                 }
