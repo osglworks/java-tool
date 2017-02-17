@@ -1047,7 +1047,7 @@ public class S {
      */
     public static Buffer buffer() {
         Buffer sb = _buf.get();
-        return sb.consumed() ? sb : new Buffer();
+        return sb.consumed() ? sb.reset() : new Buffer();
     }
 
     public static Buffer buffer(boolean o) {
@@ -1537,6 +1537,11 @@ public class S {
     public static class Buffer implements Appendable, CharSequence {
 
         /**
+         * track if {@link #toString()} method is called
+         */
+        private boolean consumed;
+
+        /**
          * The count is the number of characters used.
          */
         private int count;
@@ -1558,10 +1563,23 @@ public class S {
          */
         public Buffer(int capacity) {
             value = new char[capacity];
+            consumed = true;
         }
 
         public boolean consumed() {
-            return length() == 0;
+            return consumed;
+        }
+
+        private Buffer consume() {
+            this.consumed = true;
+            System.out.println(super.toString() + " is consumed");
+            return this;
+        }
+
+        private Buffer reset() {
+            this.consumed = false;
+            this.setLength(0);
+            return this;
         }
 
         /**
@@ -3109,7 +3127,7 @@ public class S {
         public String toString() {
             // Create a copy, don't share the array
             String retval = new String(value, 0, count);
-            setLength(0);
+            consume();
             return retval;
         }
 
