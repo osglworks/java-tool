@@ -363,7 +363,7 @@ public class S {
             case 1:
                 return s;
             default:
-                StringBuilder sb = builder(s);
+                StringBuilder sb = newBuilder(s);
                 for (int i = 1; i < times; ++i) {
                     sb.append(separator).append(s);
                 }
@@ -386,7 +386,7 @@ public class S {
             case 1:
                 return s;
             default:
-                StringBuilder sb = builder(s);
+                StringBuilder sb = newBuilder(s);
                 for (int i = 1; i < times; ++i) {
                     sb.append(s);
                 }
@@ -979,50 +979,109 @@ public class S {
         return Str.of(ca);
     }
 
-    public static StringBuilder builder(boolean o) {
-        return new StringBuilder(String.valueOf(o));
-    }
-
-    public static StringBuilder builder(byte o) {
-        return new StringBuilder(String.valueOf(o));
-    }
-
-    public static StringBuilder builder(short o) {
-        return new StringBuilder(String.valueOf(o));
-    }
-
-    public static StringBuilder builder(char o) {
-        return new StringBuilder(String.valueOf(o));
-    }
-
-    public static StringBuilder builder(int o) {
-        return new StringBuilder(String.valueOf(o));
-    }
-
-    public static StringBuilder builder(float o) {
-        return new StringBuilder(String.valueOf(o));
-    }
-
-    public static StringBuilder builder(long o) {
-        return new StringBuilder(String.valueOf(o));
-    }
-
-    public static StringBuilder builder(double o) {
-        return new StringBuilder(String.valueOf(o));
-    }
-
-    public static StringBuilder builder(Object o) {
-        return new StringBuilder(string(o));
-    }
-
-    public static StringBuilder builder(String s) {
-        return new StringBuilder(s);
-    }
-
-    public static StringBuilder builder() {
+    /**
+     * Return an new StringBuilder instance
+     * @return the new StringBuilder instance
+     */
+    public static StringBuilder newBuilder() {
         return new StringBuilder();
     }
 
+    public static StringBuilder newBuilder(byte o) {
+        return newBuilder().append(o);
+    }
+
+    public static StringBuilder newBuilder(short o) {
+        return newBuilder().append(o);
+    }
+
+    public static StringBuilder newBuilder(char o) {
+        return newBuilder().append(o);
+    }
+
+    public static StringBuilder newBuilder(int o) {
+        return newBuilder().append(o);
+    }
+
+    public static StringBuilder newBuilder(float o) {
+        return newBuilder().append(o);
+    }
+
+    public static StringBuilder newBuilder(long o) {
+        return newBuilder().append(o);
+    }
+
+    public static StringBuilder newBuilder(double o) {
+        return newBuilder().append(o);
+    }
+
+    public static StringBuilder newBuilder(Object o) {
+        return newBuilder().append(o);
+    }
+
+    public static StringBuilder newBuilder(String s) {
+        return newBuilder().append(s);
+    }
+
+
+    private static final ThreadLocal<StringBuilder> _sb = new ThreadLocal<StringBuilder>() {
+        @Override
+        protected StringBuilder initialValue() {
+            return new StringBuilder();
+        }
+    };
+
+    /**
+     * Returns the ThreadLocal StringBuilder instance with length set to 0
+     * @return the thread local StringBuilder instance
+     */
+    public static StringBuilder builder() {
+        StringBuilder sb = _sb.get();
+        sb.setLength(0);
+        return sb;
+    }
+
+    public static StringBuilder builder(boolean o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(byte o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(short o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(char o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(int o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(float o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(long o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(double o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(Object o) {
+        return builder().append(o);
+    }
+
+    public static StringBuilder builder(String s) {
+        return builder().append(s);
+    }
+
+    @Deprecated
     public static StringBuilder sizedBuilder(int capacity) {
         return new StringBuilder(capacity);
     }
@@ -1262,7 +1321,7 @@ public class S {
             return new $.F1<String, String>() {
                 @Override
                 public String apply(String s) throws NotAppliedException, $.Break {
-                    return S.builder(s).append(appendix).toString();
+                    return S.newBuilder(s).append(appendix).toString();
                 }
             };
         }
@@ -1271,7 +1330,7 @@ public class S {
             return new $.F1<String, String>() {
                 @Override
                 public String apply(String s) throws NotAppliedException, $.Break {
-                    return S.builder(prependix).append(s).toString();
+                    return S.newBuilder(prependix).append(s).toString();
                 }
             };
         }

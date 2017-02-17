@@ -5,10 +5,17 @@ import org.osgl.util.C;
 import org.osgl.util.S;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 public class OsglTest extends TestBase {
+
+    @Test
+    public void testToString2() {
+        String[][] sa = {{"foo", "bar"}, {"1", "2"}};
+        eq("[[foo, bar], [1, 2]]", $.toString2(sa));
+    }
 
     @Test
     public void testRandom() {

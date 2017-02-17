@@ -4544,7 +4544,7 @@ public class Osgl implements Serializable {
             return "";
         }
         if (o.getClass().isArray()) {
-            StringBuilder sb = S.builder();
+            StringBuilder sb = S.newBuilder();
             int len = Array.getLength(o);
             if (len == 0) {
                 return "[]";
