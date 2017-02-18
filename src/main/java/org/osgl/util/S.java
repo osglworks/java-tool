@@ -1572,7 +1572,6 @@ public class S {
 
         private Buffer consume() {
             this.consumed = true;
-            System.out.println(super.toString() + " is consumed");
             return this;
         }
 
@@ -1753,6 +1752,13 @@ public class S {
         }
 
         /**
+         * Alias of {@link #charAt(int)}
+         */
+        public char get(int index) {
+            return charAt(index);
+        }
+
+        /**
          * Returns the character (Unicode code point) at the specified
          * index. The index refers to {@code char} values
          * (Unicode code units) and ranges from {@code 0} to
@@ -1923,6 +1929,13 @@ public class S {
         }
 
         /**
+         * Alias of {@link #setCharAt(int, char)}
+         */
+        public void set(int index, char ch) {
+            setCharAt(index, ch);
+        }
+
+        /**
          * Appends the string representation of the {@code Object} argument.
          * <p>
          * The overall effect is exactly as if the argument were converted
@@ -1937,8 +1950,22 @@ public class S {
             return append(String.valueOf(obj));
         }
 
+        /**
+         * Alias of {@link #append(Object)}
+         */
+        public Buffer a(Object obj) {
+            return append(obj);
+        }
+
         public Buffer prepend(Object obj) {
             return prepend(String.valueOf(obj));
+        }
+
+        /**
+         * Alias of {@link #prepend(Object)}
+         */
+        public Buffer p(Object obj) {
+            return prepend(obj);
         }
 
         /**
@@ -1969,6 +1996,13 @@ public class S {
             return this;
         }
 
+        /**
+         * Alias of {@link #append(String)}
+         */
+        public Buffer a(String str) {
+            return append(str);
+        }
+
         public Buffer prepend(String str) {
             if (null == str)
                 return prependNull();
@@ -1980,6 +2014,13 @@ public class S {
             return this;
         }
 
+        /**
+         * Alias of {@link #prepend(String)}
+         */
+        public Buffer p(String str) {
+            return prepend(str);
+        }
+
         // Documentation in subclasses because of synchro difference
         public Buffer append(StringBuffer sb) {
             if (sb == null)
@@ -1989,6 +2030,13 @@ public class S {
             sb.getChars(0, len, value, count);
             count += len;
             return this;
+        }
+
+        /**
+         * Alias of {@link #append(StringBuffer)}
+         */
+        public Buffer a(StringBuffer sb) {
+            return append(sb);
         }
 
         // Documentation in subclasses because of synchro difference
@@ -2003,6 +2051,13 @@ public class S {
             return this;
         }
 
+        /**
+         * Alias of {@link #prepend(StringBuffer)}
+         */
+        public Buffer p(StringBuffer sb) {
+            return prepend(sb);
+        }
+
         // Documentation in subclasses because of synchro difference
         public Buffer append(StringBuilder sb) {
             if (sb == null)
@@ -2012,6 +2067,13 @@ public class S {
             sb.getChars(0, len, value, count);
             count += len;
             return this;
+        }
+
+        /**
+         * Alias of {@link #append(StringBuilder)}
+         */
+        public Buffer a(StringBuilder sb) {
+            return append(sb);
         }
 
         // Documentation in subclasses because of synchro difference
@@ -2026,6 +2088,12 @@ public class S {
             return this;
         }
 
+        /**
+         * Alias of {@link #prepend(StringBuilder)}
+         */
+        public Buffer p(StringBuilder sb) {
+            return prepend(sb);
+        }
 
         public Buffer append(Buffer asb) {
             if (asb == null)
@@ -2035,6 +2103,13 @@ public class S {
             asb.getChars(0, len, value, count);
             count += len;
             return this;
+        }
+
+        /**
+         * Alias of {@link #append(Buffer)}
+         */
+        public Buffer a(Buffer asb) {
+            return append(asb);
         }
 
         public Buffer prepend(Buffer asb) {
@@ -2048,6 +2123,13 @@ public class S {
             return this;
         }
 
+        /**
+         * Alias of {@link #prepend(Buffer)}
+         */
+        public Buffer p(Buffer asb) {
+            return prepend(asb);
+        }
+
         // Documentation in subclasses because of synchro difference
         @Override
         public Buffer append(CharSequence s) {
@@ -2059,6 +2141,13 @@ public class S {
                 return this.append((Buffer)s);
 
             return this.append(s, 0, s.length());
+        }
+
+        /**
+         * Alias of {@link #append(CharSequence)}
+         */
+        public Buffer a(CharSequence s) {
+            return append(s);
         }
 
         public Buffer prepend(CharSequence s) {
@@ -2077,6 +2166,14 @@ public class S {
 
             return this.append(s, 0, s.length());
         }
+
+        /**
+         * Alias of {@link #prepend(CharSequence)}
+         */
+        public Buffer p(CharSequence s) {
+            return prepend(s);
+        }
+
 
         private Buffer appendNull() {
             return this;
@@ -2155,6 +2252,13 @@ public class S {
             return this;
         }
 
+        /**
+         * Alias of {@link #append(char[])}
+         */
+        public Buffer a(char[] str) {
+            return append(str);
+        }
+
         public Buffer prepend(char[] str) {
             int len = str.length;
             ensureCapacityInternal(count + len);
@@ -2162,6 +2266,13 @@ public class S {
             System.arraycopy(str, 0, value, count, 0);
             count += len;
             return this;
+        }
+
+        /**
+         * Alias of {@link #prepend(char[])}
+         */
+        public Buffer p(char[] str) {
+            return prepend(str);
         }
 
         /**
@@ -2230,6 +2341,13 @@ public class S {
             return this;
         }
 
+        /**
+         * Alias of {@link #prepend(boolean)}
+         */
+        public Buffer p(boolean b) {
+            return prepend(b);
+        }
+
         public Buffer append(boolean b) {
             if (b) {
                 ensureCapacityInternal(count + 4);
@@ -2246,6 +2364,13 @@ public class S {
                 value[count++] = 'e';
             }
             return this;
+        }
+
+        /**
+         * Alias of {@link #append(boolean)}
+         */
+        public Buffer a(boolean b) {
+            return append(b);
         }
 
         /**
@@ -2270,11 +2395,25 @@ public class S {
             return this;
         }
 
+        /**
+         * alias of {@link #append(char)}
+         */
+        public Buffer a(char c) {
+            return append(c);
+        }
+
         public Buffer prepend(char c) {
             ensureCapacityInternal(count + 1);
             System.arraycopy(value, 0, value, 1, count);
             value[0] = c;
             return this;
+        }
+
+        /**
+         * alias of {@link #prepend(char)}
+         */
+        public Buffer p(char c) {
+            return prepend(c);
         }
 
         /**
@@ -2303,6 +2442,15 @@ public class S {
             return this;
         }
 
+
+        /**
+         * alias of {@link #append(int)}
+         */
+        public Buffer a(int i) {
+            return append(i);
+        }
+
+
         public Buffer prepend(int i) {
             if (i == Integer.MIN_VALUE) {
                 prepend("-2147483648");
@@ -2317,6 +2465,15 @@ public class S {
             count = spaceNeeded;
             return this;
         }
+
+
+        /**
+         * alias of {@link #prepend(int)}
+         */
+        public Buffer p(int i) {
+            return prepend(i);
+        }
+
 
         /**
          * Appends the string representation of the {@code long}
@@ -2344,6 +2501,14 @@ public class S {
             return this;
         }
 
+        /**
+         * alias of {@link #append(long)}
+         */
+        public Buffer a(long l) {
+            return append(l);
+        }
+
+
         public Buffer prepend(long l) {
             if (l == Long.MIN_VALUE) {
                 append("-9223372036854775808");
@@ -2357,6 +2522,13 @@ public class S {
             getChars(l, appendedLength, value);
             count = spaceNeeded;
             return this;
+        }
+
+        /**
+         * alias of {@link #prepend(long)}
+         */
+        public Buffer p(long l) {
+            return prepend(l);
         }
 
         /**
@@ -2375,8 +2547,22 @@ public class S {
             return this.append(String.valueOf(f));
         }
 
+        /**
+         * Alias of {@link #append(float)}
+         */
+        public Buffer a(float f) {
+            return append(f);
+        }
+
         public Buffer prepend(float f) {
             return prepend(String.valueOf(f));
+        }
+
+        /**
+         * Alias of {@link #prepend(float)}
+         */
+        public Buffer p(float f) {
+            return prepend(f);
         }
 
         /**
@@ -2395,8 +2581,24 @@ public class S {
             return this.append(String.valueOf(d));
         }
 
+        /**
+         * Alias of {@link #append(double)}
+         */
+        public Buffer a(double d) {
+            return append(d);
+        }
+
+
+
         public Buffer prepend(double d) {
             return this.prepend(String.valueOf(d));
+        }
+
+        /**
+         * Alias of {@link #prepend(double)}
+         */
+        public Buffer p(double d) {
+            return prepend(d);
         }
 
         /**
