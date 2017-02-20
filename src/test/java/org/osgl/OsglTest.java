@@ -55,7 +55,17 @@ public class OsglTest extends TestBase {
         fields = $.fieldsOf(Bar.class, true);
         eq(3, fields.size());
         eq(3, new HashSet<Field>(fields).size());
+    }
 
+    enum Code {
+        AB, bc, Red;
+    }
+
+    @Test
+    public void testAsEnum() {
+        assertSame(Code.AB, $.asEnum(Code.class, "ab"));
+        assertSame(Code.bc, $.asEnum(Code.class, "bc"));
+        assertNull($.asEnum(Code.class, "abc"));
     }
 
 }

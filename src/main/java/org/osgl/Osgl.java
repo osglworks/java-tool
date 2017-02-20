@@ -4851,6 +4851,29 @@ public class Osgl implements Serializable {
     public static void nil() {
     }
 
+    private static ConcurrentHashMap<Class<? extends Enum>, Map<String, Enum>> enumLookup = new ConcurrentHashMap<>();
+
+    /**
+     * Return an enum value from code
+     * @param enumClass the enum class
+     * @param name the name of the enum value. `name` is case insensitive
+     * @param <T> the generic enum type
+     * @return the enum value or `null` if there is no value has the name specified
+     */
+    public static <T extends Enum<T>> T asEnum(Class<T> enumClass, String name) {
+        Map<String, Enum> map = enumLookup.get(enumClass);
+        if (null == map) {
+            map = new HashMap<>();
+            T[] values = enumClass.getEnumConstants();
+            for (T value: values) {
+                map.put(value.name().toUpperCase(), value);
+            }
+            enumLookup.putIfAbsent(enumClass, map);
+        }
+        String key = name.toUpperCase();
+        return (T) map.get(key);
+    }
+
     /**
      * Search an element in a array
      *
