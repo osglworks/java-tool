@@ -411,6 +411,7 @@ public class S {
                 int slen = s.length();
                 int len = (slen + len(separator)) * times;
                 StringBuilder sb = len > 100 ? builder() : newSizedBuilder(len);
+                sb.append(s);
                 for (int i = 1; i < times; ++i) {
                     sb.append(separator).append(s);
                 }
@@ -436,7 +437,7 @@ public class S {
                 int slen = s.length();
                 int len = slen * times;
                 StringBuilder sb = len > 100 ? builder() : newSizedBuilder(len);
-                for (int i = 1; i < times; ++i) {
+                for (int i = 0; i < times; ++i) {
                     sb.append(s);
                 }
                 return sb.toString();
