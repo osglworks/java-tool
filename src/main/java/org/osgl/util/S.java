@@ -276,29 +276,29 @@ public class S {
     }
 
     public static String concat(String s1, String s2) {
-        return S.newSizedBuffer(len(s1) + len(s2)).append(s1).append(s2).toString();
+        return S.sizedBuffer(len(s1) + len(s2)).append(s1).append(s2).toString();
     }
 
     public static String concat(String s1, String s2, String s3) {
-        return S.newSizedBuffer(len(s1) + len(s2) + len(s3))
+        return S.sizedBuffer(len(s1) + len(s2) + len(s3))
                 .a(s1).a(s2).a(s3)
                 .toString();
     }
 
     public static String concat(String s1, String s2, String s3, String s4) {
-        return S.newSizedBuffer(len(s1) + len(s2) + len(s3) + len(s4))
+        return S.sizedBuffer(len(s1) + len(s2) + len(s3) + len(s4))
                 .a(s1).a(s2).a(s3).a(s4)
                 .toString();
     }
 
     public static String concat(String s1, String s2, String s3, String s4, String s5) {
-        return S.newSizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5))
+        return S.sizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5))
                 .a(s1).a(s2).a(s3).a(s4).a(s5)
                 .toString();
     }
 
     public static String concat(String s1, String s2, String s3, String s4, String s5, String ... extra) {
-        S.Buffer sb = S.newSizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5, extra))
+        S.Buffer sb = S.sizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5, extra))
                 .a(s1).a(s2).a(s3).a(s4).a(s5);
         for (String s : extra) {
             sb.a(s);
