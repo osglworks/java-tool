@@ -306,6 +306,52 @@ public class S {
         return sb.toString();
     }
 
+    public static boolean endsWith(String string, String suffix) {
+        return string.endsWith(suffix);
+    }
+
+    public static boolean endsWith(String string, char suffix) {
+        return string.charAt(string.length() - 1) == suffix;
+    }
+
+    public static boolean startsWith(String string, String prefix) {
+        return string.startsWith(prefix);
+    }
+
+    public static boolean startsWith(String string, char prefix) {
+        return string.charAt(0) == prefix;
+    }
+
+    public static String ensureStartsWith(String string, String prefix) {
+        return startsWith(string, prefix) ? string : concat(prefix, string);
+    }
+
+    public static String ensureStartsWith(String string, char prefix) {
+        return startsWith(string, prefix) ? string : newSizedBuffer(string.length() + 1).append(prefix).append(string).toString();
+    }
+
+    public static String ensureEndsWith(String string, String suffix) {
+        return endsWith(string, suffix) ? string : concat(string, suffix);
+    }
+
+    public static String ensureEndsWith(String string, char suffix) {
+        return endsWith(string, suffix) ? string : newSizedBuffer(string.length() + 1).append(string).append(suffix).toString();
+    }
+
+    public static String pathConcat(String prefix, char sep, String suffix) {
+        boolean prefixHasSep = endsWith(prefix, sep);
+        boolean suffixHasSep = startsWith(suffix, sep);
+        int prefixLen = len(prefix), suffixLen = len(suffix);
+        int len = prefixLen + suffixLen + 1;
+        S.Buffer buffer = sizedBuffer(len).append(prefix);
+        if (prefixHasSep && suffixHasSep) {
+            return buffer.deleteCharAt(prefixLen - 1).append(suffix).toString();
+        } else if (prefixHasSep || suffixHasSep) {
+            return buffer.append(suffix).toString();
+        } else {
+            return buffer.append(sep).append(suffix).toString();
+        }
+    }
 
     /**
      * Join a list of object into a string
@@ -1036,6 +1082,10 @@ public class S {
      */
     public static Buffer newSizedBuffer(int size) {
         return new Buffer(size);
+    }
+
+    public static Buffer sizedBuffer(int size) {
+        return size > 100 ? buffer() : newSizedBuffer(size);
     }
 
     /**

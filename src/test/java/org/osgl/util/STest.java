@@ -37,4 +37,41 @@ public class STest extends TestBase {
         Str s0 = Str.of(s);
         eq(s0.times(2).toString(), s + s);
     }
+
+    @Test
+    public void testEnsureEndsWith() {
+        eq("abc/", S.ensureEndsWith("abc", "/"));
+        eq("abc/", S.ensureEndsWith("abc/", "/"));
+
+        eq("abc/", S.ensureEndsWith("abc", '/'));
+        eq("abc/", S.ensureEndsWith("abc/", '/'));
+    }
+
+    @Test
+    public void testEnsureStartsWith() {
+        eq("/abc", S.ensureStartsWith("abc", "/"));
+        eq("/abc", S.ensureStartsWith("/abc", "/"));
+
+        eq("/abc", S.ensureStartsWith("abc", '/'));
+        eq("/abc", S.ensureStartsWith("/abc", '/'));
+    }
+
+    @Test
+    public void testPathConcat() {
+        eq("foo/bar", S.pathConcat("foo", '/', "bar"));
+        eq("foo/bar", S.pathConcat("foo/", '/', "bar"));
+        eq("foo/bar", S.pathConcat("foo", '/', "/bar"));
+        eq("foo/bar", S.pathConcat("foo/", '/', "/bar"));
+    }
+
+    @Test
+    public void testConcat() {
+        eq("ab", S.concat("a", "b"));
+        eq("abc", S.concat("a", "b", "c"));
+        eq("abcd", S.concat("a", "b", "c", "d"));
+        eq("abcde", S.concat("a", "b", "c", "d", "e"));
+        eq("abcdef", S.concat("a", "b", "c", "d", "e", "f"));
+        eq("abcdefg", S.concat("a", "b", "c", "d", "e", "f", "g"));
+        eq("abcdefgh", S.concat("a", "b", "c", "d", "e", "f", "g", "h"));
+    }
 }

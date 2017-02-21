@@ -20,6 +20,8 @@
 - S.buffer() APIs is created to replace S.builder() APIs
 - Added Osgl.asEnum(Class<? extends Enum>, String) API
 - Add S.concat(String ...) API
+- Add S.ensureEndsWith and S.ensureStartsWith API
+- Add S.pathConcat API
 
 0.10
 - IO.copy now returns the number of bytes copied
