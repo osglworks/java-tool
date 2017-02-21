@@ -4863,8 +4863,8 @@ public class Osgl implements Serializable {
     public static <T extends Enum<T>> T asEnum(Class<T> enumClass, String name) {
         Map<String, Enum> map = enumLookup.get(enumClass);
         if (null == map) {
-            map = new HashMap<>();
             T[] values = enumClass.getEnumConstants();
+            map = new HashMap<>(values.length * 2);
             for (T value: values) {
                 map.put(value.name().toUpperCase(), value);
             }

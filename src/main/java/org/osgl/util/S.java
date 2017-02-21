@@ -263,6 +263,50 @@ public class S {
         return s.substring(0, n);
     }
 
+    public static int len(String s1) {
+        return null == s1 ? 0 : s1.length();
+    }
+
+    public static int len(String s1, String... sa) {
+        int len = len(s1);
+        for (String s : sa) {
+            len += len(s);
+        }
+        return len;
+    }
+
+    public static String concat(String s1, String s2) {
+        return S.newSizedBuffer(len(s1) + len(s2)).append(s1).append(s2).toString();
+    }
+
+    public static String concat(String s1, String s2, String s3) {
+        return S.newSizedBuffer(len(s1) + len(s2) + len(s3))
+                .a(s1).a(s2).a(s3)
+                .toString();
+    }
+
+    public static String concat(String s1, String s2, String s3, String s4) {
+        return S.newSizedBuffer(len(s1) + len(s2) + len(s3) + len(s4))
+                .a(s1).a(s2).a(s3).a(s4)
+                .toString();
+    }
+
+    public static String concat(String s1, String s2, String s3, String s4, String s5) {
+        return S.newSizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5))
+                .a(s1).a(s2).a(s3).a(s4).a(s5)
+                .toString();
+    }
+
+    public static String concat(String s1, String s2, String s3, String s4, String s5, String ... extra) {
+        S.Buffer sb = S.newSizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5, extra))
+                .a(s1).a(s2).a(s3).a(s4).a(s5);
+        for (String s : extra) {
+            sb.a(s);
+        }
+        return sb.toString();
+    }
+
+
     /**
      * Join a list of object into a string
      *
@@ -303,7 +347,7 @@ public class S {
     public static String join(String separator, String prefix, String suffix,
                               Iterable<?> iterable, boolean quoted, boolean separateFixes
     ) {
-        StringBuilder sb = new StringBuilder();
+        S.Buffer sb = buffer();
 
         if (null != prefix) {
             sb.append(prefix);
@@ -337,7 +381,7 @@ public class S {
      * @return a string joined
      */
     public static String join(String separator, String... list) {
-        StringBuilder sb = new StringBuilder();
+        S.Buffer sb = buffer();
 
         if (list.length > 0) {
             sb.append(list[0]);
@@ -364,7 +408,9 @@ public class S {
             case 1:
                 return s;
             default:
-                StringBuilder sb = builder(s);
+                int slen = s.length();
+                int len = (slen + len(separator)) * times;
+                StringBuilder sb = len > 100 ? builder() : newSizedBuilder(len);
                 for (int i = 1; i < times; ++i) {
                     sb.append(separator).append(s);
                 }
@@ -387,7 +433,9 @@ public class S {
             case 1:
                 return s;
             default:
-                StringBuilder sb = builder(s);
+                int slen = s.length();
+                int len = slen * times;
+                StringBuilder sb = len > 100 ? builder() : newSizedBuilder(len);
                 for (int i = 1; i < times; ++i) {
                     sb.append(s);
                 }
@@ -1195,6 +1243,10 @@ public class S {
 
     @Deprecated
     public static StringBuilder sizedBuilder(int capacity) {
+        return new StringBuilder(capacity);
+    }
+
+    public static StringBuilder newSizedBuilder(int capacity) {
         return new StringBuilder(capacity);
     }
 

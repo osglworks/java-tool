@@ -19,6 +19,7 @@
 - S.builder() APIs now reuse StringBuilder instance through ThreadLocal
 - S.buffer() APIs is created to replace S.builder() APIs
 - Added Osgl.asEnum(Class<? extends Enum>, String) API
+- Add S.concat(String ...) API
 
 0.10
 - IO.copy now returns the number of bytes copied
