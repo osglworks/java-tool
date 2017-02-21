@@ -306,6 +306,15 @@ public class S {
         return sb.toString();
     }
 
+    public static String concat(String[] sa) {
+        int len = sa.length;
+        S.Buffer buf = S.sizedBuffer(len * 8);
+        for (int i = 0; i < len; ++i) {
+            buf.a(sa[i]);
+        }
+        return buf.toString();
+    }
+
     public static boolean endsWith(String string, String suffix) {
         return string.endsWith(suffix);
     }
