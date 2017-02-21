@@ -509,6 +509,20 @@ public class S {
         return join(s, times);
     }
 
+    public static String quote(String s, char quote) {
+        if (null == s) {
+            return String.valueOf(new char[]{quote, quote});
+        }
+        return S.sizedBuffer(s.length() + 2).append(quote).append(s).append(quote).toString();
+    }
+
+    public static String quote(String s, String quote) {
+        if (null == s) {
+            return times(quote, 2);
+        }
+        return S.concat(quote, s, quote);
+    }
+
     /**
      * <p>Return a string no longer than specified max length.
      * <p>If the string supplied is longer than the specified max length

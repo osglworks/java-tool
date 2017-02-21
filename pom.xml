@@ -22,6 +22,7 @@
 - Add S.concat(String ...) API
 - Add S.ensureEndsWith and S.ensureStartsWith API
 - Add S.pathConcat API
+- Add S.quote API
 
 0.10
 - IO.copy now returns the number of bytes copied
