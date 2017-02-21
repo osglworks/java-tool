@@ -2171,7 +2171,7 @@ public class S {
                 return appendNull();
             int len = sb.length();
             ensureCapacityInternal(count + len);
-            System.arraycopy(value, 0, value, count, count);
+            System.arraycopy(value, 0, value, len, count);
             sb.getChars(0, len, value, 0);
             count += len;
             return this;
@@ -2208,7 +2208,7 @@ public class S {
                 return prependNull();
             int len = sb.length();
             ensureCapacityInternal(count + len);
-            System.arraycopy(value, 0, value, count, count);
+            System.arraycopy(value, 0, value, len, count);
             sb.getChars(0, len, value, 0);
             count += len;
             return this;
@@ -2243,7 +2243,7 @@ public class S {
                 return prependNull();
             int len = asb.length();
             ensureCapacityInternal(count + len);
-            System.arraycopy(value, 0, value, count, count);
+            System.arraycopy(value, 0, value, len, count);
             asb.getChars(0, len, value, 0);
             count += len;
             return this;
