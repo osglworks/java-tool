@@ -260,7 +260,7 @@
     <dependency>
       <groupId>org.osgl</groupId>
       <artifactId>osgl-storage</artifactId>
-      <version>0.8</version>
+      <version>0.8.0-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
