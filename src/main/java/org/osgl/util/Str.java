@@ -1,6 +1,5 @@
 package org.osgl.util;
 
-import org.apache.commons.codec.Charsets;
 import org.osgl.$;
 
 import java.io.UnsupportedEncodingException;

@@ -20,7 +20,6 @@
 package org.osgl;
 
 import java.io.ObjectStreamException;
-import java.util.regex.Pattern;
 
 /**
  * Alias of {@link Osgl}

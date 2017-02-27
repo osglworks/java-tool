@@ -2,9 +2,7 @@ package org.osgl.util;
 
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
-import sun.misc.FloatingDecimal;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
@@ -977,11 +975,11 @@ public class S {
      * @return decoded string
      */
     public static String decodeBASE64(String str) {
-        try {
-            return new String(Codec.decodeBASE64(str), "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw E.encodingException(e);
-        }
+        return new String(Codec.decodeBase64(str), Charsets.UTF_8);
+    }
+
+    public static String decodeBase64(String string) {
+        return decodeBASE64(string);
     }
 
     /**
@@ -991,7 +989,11 @@ public class S {
      * @return encoded string
      */
     public static String encodeBASE64(String str) {
-        return Codec.encodeBASE64(str);
+        return Codec.encodeBase64(str);
+    }
+
+    public static String encodeBase64(String str) {
+        return encodeBASE64(str);
     }
 
     /**

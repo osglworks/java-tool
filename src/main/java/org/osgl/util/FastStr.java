@@ -1,10 +1,9 @@
 package org.osgl.util;
 
-import org.apache.commons.codec.Charsets;
 import org.osgl.$;
-import org.osgl.Osgl;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.Character;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;

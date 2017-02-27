@@ -1,7 +1,6 @@
 package org.osgl.util;
 
 import org.osgl.$;
-import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.Algorithms;
 

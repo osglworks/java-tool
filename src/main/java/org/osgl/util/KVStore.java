@@ -2,7 +2,6 @@ package org.osgl.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A simple implementation of {@link KV} using {@link HashMap}

@@ -19,22 +19,14 @@
 */
 package org.osgl.util;
 
-import org.apache.commons.codec.Charsets;
-import org.osgl.$;
-
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 
 /**
  * Cryptography utils. Comes from play!framework under apache license

@@ -1,6 +1,5 @@
 package org.osgl.util;
 
-import org.apache.commons.codec.Charsets;
 import org.junit.Test;
 import org.osgl.$;
 import org.osgl.Osgl;

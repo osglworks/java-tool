@@ -19,11 +19,9 @@
 */
 package org.osgl.util;
 
-import org.apache.commons.codec.Charsets;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.osgl.exception.UnexpectedException;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -38,15 +36,18 @@ import java.util.UUID;
 public class Codec {
 
     /**
-     * The famous UTF8 Charset
-     */
-    public static final Charset UTF_8 = Charset.forName("UTF-8");
-
-    /**
      * @return an UUID String
      */
     public static String UUID() {
         return UUID.randomUUID().toString();
+    }
+
+    /**
+     * Alias of {@link #UUID()}
+     * @return an UUID string
+     */
+    public static String uuid() {
+        return UUID();
     }
 
     /**
@@ -185,7 +186,7 @@ public class Codec {
      * @return bytes
      */
     public static String byteToHexString(byte[] bytes) {
-        return String.valueOf(Hex.encodeHex(bytes));
+        return DatatypeConverter.printHexBinary(bytes);
     }
 
     /**
@@ -194,11 +195,7 @@ public class Codec {
      * @return the byte array of the hex string
      */
     public static byte[] hexStringToByte(String hexString) {
-        try {
-            return Hex.decodeHex(hexString.toCharArray());
-        } catch (DecoderException e) {
-            throw new UnexpectedException(e);
-        }
+        return DatatypeConverter.parseHexBinary(hexString);
     }
 
     public static String encodeUrl(String s, Charset enc) {

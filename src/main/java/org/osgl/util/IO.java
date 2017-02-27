@@ -679,7 +679,7 @@ public class IO {
         } finally {
             close(zos);
         }
-        return SObject.valueOf(Codec.encodeUrl(S.random()), baos.toByteArray());
+        return SObject.of(Codec.encodeUrl(S.random()), baos.toByteArray());
     }
 
     public static File zip(File... files) {
