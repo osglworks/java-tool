@@ -38,6 +38,11 @@ import java.util.UUID;
 public class Codec {
 
     /**
+     * The famous UTF8 Charset
+     */
+    public static final Charset UTF_8 = Charset.forName("UTF-8");
+
+    /**
      * @return an UUID String
      */
     public static String UUID() {
