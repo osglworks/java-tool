@@ -2536,15 +2536,15 @@ public enum C {
         return empty(col);
     }
 
-    public static boolean empty(Map map) {
+    public static boolean empty(java.util.Map map) {
         return null == map || map.isEmpty();
     }
 
-    public static boolean notEmpty(Map map) {
+    public static boolean notEmpty(java.util.Map map) {
         return !empty(map);
     }
 
-    public static boolean isEmpty(Map map) {
+    public static boolean isEmpty(java.util.Map map) {
         return empty(map);
     }
 
