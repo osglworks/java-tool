@@ -2536,6 +2536,18 @@ public enum C {
         return empty(col);
     }
 
+    public static boolean empty(Map map) {
+        return null == map || map.isEmpty();
+    }
+
+    public static boolean notEmpty(Map map) {
+        return !empty(map);
+    }
+
+    public static boolean isEmpty(Map map) {
+        return empty(map);
+    }
+
     // --- conversion methods ---
     public static <T> Collection<T> asCollection(Iterable<T> iterable) {
         if (iterable instanceof Collection) {
