@@ -26,6 +26,7 @@
 - Remove commons-codec from dependencies
 - Add Codec.UTF_8 constant
 - Add C.empty(Map) APIs
+- Use ThreadLocalRandom to replace new Random
 
 0.10
 - IO.copy now returns the number of bytes copied

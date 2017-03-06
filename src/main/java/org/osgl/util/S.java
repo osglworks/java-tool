@@ -6,6 +6,7 @@ import org.osgl.exception.NotAppliedException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Character.highSurrogate;
 import static java.lang.Character.lowSurrogate;
@@ -1057,7 +1058,7 @@ public class S {
                               '~', '!', '@'};
 
         final int max = chars.length;
-        Random r = new Random();
+        Random r = ThreadLocalRandom.current();
         StringBuilder sb = new StringBuilder(len);
         while (len-- > 0) {
             int i = r.nextInt(max);
