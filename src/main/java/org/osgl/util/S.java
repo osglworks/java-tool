@@ -1704,7 +1704,7 @@ public class S {
             return this;
         }
 
-        private Buffer reset() {
+        public Buffer reset() {
             this.consumed = false;
             this.setLength(0);
             return this;
