@@ -27,6 +27,7 @@
 - Add Codec.UTF_8 constant
 - Add C.empty(Map) APIs
 - Use ThreadLocalRandom to replace new Random
+- Add Generics.buildTypeParamImplLookup(Class) API
 
 0.10
 - IO.copy now returns the number of bytes copied
