@@ -24,7 +24,7 @@ package org.osgl.cache;
  */
 public interface CacheService {
 
-    public static final String DEF_CACHE_NAME = "osgl-cache";
+    String DEF_CACHE_NAME = "osgl-cache";
 
     /**
      * Store an item into the cache service by key and set ttl value
@@ -55,6 +55,7 @@ public interface CacheService {
      * Return an item from the cache service by key
      *
      * @param key the cache key
+     * @param <T> the generic type of the return value
      * @return the value associated with the key
      */
     <T> T get(String key);
