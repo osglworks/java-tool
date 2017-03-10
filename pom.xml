@@ -15,6 +15,9 @@
   ~ under the License.  
   -->
 <!-- history
+1.0.1
+- Fix issue #5 - Osgl.asEnum(Class, String) API should be null safe
+
 1.0
 - base line from 0.11
 

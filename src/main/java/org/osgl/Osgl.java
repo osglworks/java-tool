@@ -4861,6 +4861,9 @@ public class Osgl implements Serializable {
      * @return the enum value or `null` if there is no value has the name specified
      */
     public static <T extends Enum<T>> T asEnum(Class<T> enumClass, String name) {
+        if (S.blank(name)) {
+            return null;
+        }
         Map<String, Enum> map = enumLookup.get(enumClass);
         if (null == map) {
             T[] values = enumClass.getEnumConstants();
