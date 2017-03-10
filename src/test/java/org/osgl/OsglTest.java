@@ -5,7 +5,6 @@ import org.osgl.util.C;
 import org.osgl.util.S;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -66,6 +65,7 @@ public class OsglTest extends TestBase {
         assertSame(Code.AB, $.asEnum(Code.class, "ab"));
         assertSame(Code.bc, $.asEnum(Code.class, "bc"));
         assertNull($.asEnum(Code.class, "abc"));
+        assertNull($.asEnum(Code.class, null));
     }
 
 }
