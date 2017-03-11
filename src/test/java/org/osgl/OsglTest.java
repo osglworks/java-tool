@@ -66,6 +66,9 @@ public class OsglTest extends TestBase {
         assertSame(Code.bc, $.asEnum(Code.class, "bc"));
         assertNull($.asEnum(Code.class, "abc"));
         assertNull($.asEnum(Code.class, null));
+
+        assertSame(Code.AB, $.asEnum(Code.class, "AB", true));
+        assertNull($.asEnum(Code.class, "ab", true));
     }
 
 }

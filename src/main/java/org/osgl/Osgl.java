@@ -4861,6 +4861,18 @@ public class Osgl implements Serializable {
      * @return the enum value or `null` if there is no value has the name specified
      */
     public static <T extends Enum<T>> T asEnum(Class<T> enumClass, String name) {
+        return asEnum(enumClass, name, false);
+    }
+
+    /**
+     * Return an enum value from code
+     * @param enumClass the enum class
+     * @param name the name of the enum value. `name` is case insensitive
+     * @param caseSensitive specify whether it should do case sensitive lookup or case insensitive lookup
+     * @param <T> the generic enum type
+     * @return the enum value or `null` if there is no value has the name specified
+     */
+    public static <T extends Enum<T>> T asEnum(final Class<T> enumClass, final String name, final boolean caseSensitive) {
         if (S.blank(name)) {
             return null;
         }
@@ -4874,7 +4886,8 @@ public class Osgl implements Serializable {
             enumLookup.putIfAbsent(enumClass, map);
         }
         String key = name.toUpperCase();
-        return (T) map.get(key);
+        T retVal = (T) map.get(key);
+        return caseSensitive && !retVal.name().equals(name) ? null : retVal;
     }
 
     /**
