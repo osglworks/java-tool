@@ -623,7 +623,7 @@ public class FastStr extends StrBase<FastStr>
         if (null == x) return false;
         int sz = size(), sz2 = x.size();
         if (sz != sz2) return false;
-        for (int i = begin, j = x.begin; i < sz; ) {
+        for (int i = begin, j = x.begin; i < end; ) {
             if (buf[i++] != x.buf[j++]) return false;
         }
         return true;

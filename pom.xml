@@ -15,6 +15,9 @@
   ~ under the License.  
   -->
 <!-- history
+1.0.2
+- Fix issue #7 - FastStr.contentEquals failed when begin cursor is greater than size
+
 1.0.1
 - Fix issue #5 - Osgl.asEnum(Class, String) API should be null safe
 
