@@ -172,7 +172,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.3</version>
+  <version>1.0.4-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
