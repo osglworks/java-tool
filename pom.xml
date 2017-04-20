@@ -15,6 +15,9 @@
   ~ under the License.  
   -->
 <!-- history
+1.0.3
+- Fix issue #8 NPE on Generics.typeParamImplementations when passed in class is an interface
+
 1.0.2
 - Fix issue #7 - FastStr.contentEquals failed when begin cursor is greater than size
 
