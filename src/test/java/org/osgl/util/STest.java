@@ -74,4 +74,20 @@ public class STest extends TestBase {
         eq("abcdefg", S.concat("a", "b", "c", "d", "e", "f", "g"));
         eq("abcdefgh", S.concat("a", "b", "c", "d", "e", "f", "g", "h"));
     }
+
+    @Test
+    public void testDos2Unix() {
+        String origin = "abc\n\rxyz\n\r";
+        eq("abc\nxyz\n", S.dos2unix(origin));
+        origin = "abc\nxyz\n";
+        eq(origin, S.dos2unix(origin));
+    }
+
+    @Test
+    public void testUnix2dos() {
+        String origin = "abc\nxyz\n";
+        eq("abc\n\rxyz\n\r", S.unix2dos(origin));
+        origin = "abc\n\rxyz\n\r";
+        eq(origin, S.unix2dos(origin));
+    }
 }

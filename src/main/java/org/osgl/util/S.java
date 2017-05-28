@@ -278,10 +278,18 @@ public class S {
         return S.sizedBuffer(len(s1) + len(s2)).append(s1).append(s2).toString();
     }
 
+    public static String concat(Object o1, Object o2) {
+        return S.concat(string(o1), string(o2));
+    }
+
     public static String concat(String s1, String s2, String s3) {
         return S.sizedBuffer(len(s1) + len(s2) + len(s3))
                 .a(s1).a(s2).a(s3)
                 .toString();
+    }
+
+    public static String concat(Object o1, Object o2, Object o3) {
+        return concat(string(o1), string(o2), string(o3));
     }
 
     public static String concat(String s1, String s2, String s3, String s4) {
@@ -290,10 +298,18 @@ public class S {
                 .toString();
     }
 
+    public static String concat(Object o1, Object o2, Object o3, Object o4) {
+        return concat(string(o1), string(o2), string(o3), string(o4));
+    }
+
     public static String concat(String s1, String s2, String s3, String s4, String s5) {
         return S.sizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5))
                 .a(s1).a(s2).a(s3).a(s4).a(s5)
                 .toString();
+    }
+
+    public static String concat(Object o1, Object o2, Object o3, Object o4, Object o5) {
+        return concat(string(o1), string(o2), string(o3), string(o4), string(o5));
     }
 
     public static String concat(String s1, String s2, String s3, String s4, String s5, String ... extra) {
@@ -305,11 +321,29 @@ public class S {
         return sb.toString();
     }
 
+    public static String concat(Object o1, Object o2, Object o3, Object o4, Object o5, Object ... extra) {
+        int len = extra.length;
+        String[] sa = new String[len];
+        for (int i = 0; i < len; ++i) {
+            sa[i] = string(extra[i]);
+        }
+        return concat(string(o1), string(o2), string(o3), string(o4), string(o5), sa);
+    }
+
     public static String concat(String[] sa) {
         int len = sa.length;
         S.Buffer buf = S.sizedBuffer(len * 8);
         for (int i = 0; i < len; ++i) {
             buf.a(sa[i]);
+        }
+        return buf.toString();
+    }
+
+    public static String concat(Object[] oa) {
+        int len = oa.length;
+        S.Buffer buf = S.sizedBuffer(len * 8);
+        for (int i = 0; i < len; ++i) {
+            buf.a(oa[i]);
         }
         return buf.toString();
     }
@@ -1023,6 +1057,14 @@ public class S {
         } catch (Exception e) {
             throw E.unexpected(e);
         }
+    }
+
+    public static String dos2unix(String s) {
+        return s.replace("\n\r", "\n");
+    }
+
+    public static String unix2dos(String s) {
+        return dos2unix(s).replace("\n", "\n\r");
     }
 
     /**
@@ -2102,8 +2144,7 @@ public class S {
          * <p>
          * The characters of the {@code String} argument are appended, in
          * order, increasing the length of this sequence by the length of the
-         * argument. If {@code str} is {@code null}, then the four
-         * characters {@code "null"} are appended.
+         * argument. If {@code str} is {@code null}, then nothing is appended
          * <p>
          * Let <i>n</i> be the length of this character sequence just prior to
          * execution of the {@code append} method. Then the character at
