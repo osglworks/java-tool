@@ -87,4 +87,12 @@ public class FastStrTest extends StrTestBase<FastStr> {
         ceq("axc", fs);
         ceq("abc", copy);
     }
+
+    @Test
+    public void ghIssue7() {
+        FastStr s1 = FastStr.of("12345678/{user}").substr(10);
+        FastStr s2 = FastStr.of("12345678/exists").substr(10);
+        no(s2.equals(s1));
+    }
+
 }

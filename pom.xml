@@ -18,6 +18,12 @@
 1.1.0
 - #6 - Add new corresponding API for Osgl.asEnum(Class, String) and make it support case sensitive enum evaluation
 
+1.0.3
+- Fix issue #8 NPE on Generics.typeParamImplementations when passed in class is an interface
+
+1.0.2
+- Fix issue #7 - FastStr.contentEquals failed when begin cursor is greater than size
+
 1.0.1
 - Fix issue #5 - Osgl.asEnum(Class, String) API should be null safe
 

@@ -1,6 +1,7 @@
 package org.osgl.util;
 
 import org.osgl.$;
+import org.osgl.exception.UnexpectedException;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -33,12 +34,11 @@ public class Generics {
      * sub class is declared as `MyModel&lt;MyModel, MyQuery&gt;`, then passing `MyModel.class` to
      * this method shall return a list of `{MyModel.class, MyQuery.class}`
      * <p>
-     *
+     * <p>
      * If the specified class doesn't have generic type declared then it shall return
      * an empty list
      *
-     *
-     * @param theClass the end class
+     * @param theClass  the end class
      * @param rootClass the root class or interface
      * @return a list of type variable implementation on root class
      */
@@ -55,6 +55,7 @@ public class Generics {
 
     /**
      * Build class type variable name and type variable implementation lookup
+     *
      * @param theClass the class to build the lookup
      * @return the lookup
      */
@@ -119,19 +120,34 @@ public class Generics {
             superType = theClass.getGenericSuperclass();
         }
         Class superClass = null;
+        boolean theClassIsInterface = theClass.isInterface();
         while (!(superType instanceof ParameterizedType) && Object.class != superType) {
-            if (null == superClass) {
-                superClass = theClass.getSuperclass();
+            if (theClassIsInterface) {
+                try {
+                    if (null == superClass) {
+                        superClass = theClass;
+                    }
+                    Type[] types = superClass.getGenericInterfaces();
+                    superType = types[0];
+                    Class[] intfs = theClass.getInterfaces();
+                    superClass = intfs[0];
+                } catch (RuntimeException e) {
+                    throw new UnexpectedException("Cannot find type implementation for %s", theClass);
+                }
+            } else {
+                if (null == superClass) {
+                    superClass = theClass.getSuperclass();
+                }
+                superType = superClass.getGenericSuperclass();
+                superClass = superClass.getSuperclass();
             }
-            superType = superClass.getGenericSuperclass();
-            superClass = superClass.getSuperclass();
         }
         if (superType instanceof ParameterizedType) {
             TypeVariable<Class>[] declaredTypeVariables = theClass.getTypeParameters();
             ParameterizedType pSuperType = $.cast(superType);
             Type[] superTypeParams = pSuperType.getActualTypeArguments();
-            List<Type> nextList = new ArrayList<Type>();
-            for (Type stp: superTypeParams) {
+            List<Type> nextList = new ArrayList<>();
+            for (Type stp : superTypeParams) {
                 if (stp instanceof Class || stp instanceof ParameterizedType) {
                     nextList.add(stp);
                 } else if (stp instanceof TypeVariable) {
