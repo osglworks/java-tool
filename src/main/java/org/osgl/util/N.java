@@ -5,6 +5,7 @@ import org.osgl.exception.NotAppliedException;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
@@ -735,6 +736,42 @@ public class N {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Check if a {@link BigDecimal} is negative
+     * @param number the number to be tested
+     * @return `true` if the number specified is negative or `false` otherwise
+     */
+    public static boolean isNegative(BigDecimal number) {
+        return -1 == number.signum();
+    }
+
+    /**
+     * Check if a {@link BigInteger} is negative
+     * @param number the number to be tested
+     * @return `true` if the number specified is negative or `false` otherwise
+     */
+    public static boolean isNegative(BigInteger number) {
+        return -1 == number.signum();
+    }
+
+    /**
+     * Check if a {@link BigDecimal} is positive
+     * @param number the number to be tested
+     * @return `true` if the number specified is positive or `false` otherwise
+     */
+    public static boolean isPositive(BigDecimal number) {
+        return 1 == number.signum();
+    }
+
+    /**
+     * Check if a {@link BigInteger} is positive
+     * @param number the number to be tested
+     * @return `true` if the number specified is positive or `false` otherwise
+     */
+    public static boolean isPositive(BigInteger number) {
+        return 1 == number.signum();
     }
 
     /**
