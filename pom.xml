@@ -15,11 +15,17 @@
   ~ under the License.  
   -->
 <!-- history
+1.2.0
+* #16 Add `Osgl.fill(element, array)` API methods
+* #15 Add `IO.readLines(URL)` method
+* #14 Add `N.isNumeric(String)` utility method
+* #13 Add `N.isNegative(BigDecimal)`,`N.isNegative(BigNumber)` ... methods
+* #12 Add `S.padLeft` and `S.padRight` methods
+
 1.1.0
 * #6 - Add new corresponding API for Osgl.asEnum(Class, String) and make it support case sensitive enum evaluation
 * #9 - Add `S.dos2unix(String)` and `S.unix2dos(String)` method
 * #10 - Add `S.concat(Object ...)` methods
-
 
 1.0.3
 * Fix issue #8 NPE on Generics.typeParamImplementations when passed in class is an interface
@@ -178,7 +184,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2.0</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
