@@ -542,6 +542,20 @@ public class S {
         return join(s, times);
     }
 
+    /**
+     * Return a string composed of `times` of char `c`
+     * @param c the character
+     * @param times the number of times the c in the string returned
+     * @return the string as described
+     */
+    public static String times(char c, int times) {
+        char[] ca = new char[times];
+        for (int i = 0; i < times; ++i) {
+            ca[i] = c;
+        }
+        return new String(ca);
+    }
+
     public static String quote(String s, char quote) {
         if (null == s) {
             return String.valueOf(new char[]{quote, quote});
@@ -1001,6 +1015,90 @@ public class S {
         if (s.startsWith(prefix)) s = s.substring(prefix.length());
         if (s.endsWith(suffix)) s = s.substring(0, s.length() - suffix.length());
         return s;
+    }
+
+    /**
+     * Left pad a string with character specified
+     * @param s the string
+     * @param c the character
+     * @param number the number of character to pad to the left
+     * @return an new string with specified number of character `c` padded to `s` at left
+     */
+    public static String padLeft(String s, char c, int number) {
+        return S.concat(S.times(c, number), s);
+    }
+
+    /**
+     * Left pad a string with number of space specified
+     * @param s the string
+     * @param number the number of space to left pad to `s`
+     * @return the string as described
+     */
+    public static String padLeft(String s, int number) {
+        return padLeft(s, ' ', number);
+    }
+
+    /**
+     * Alias of {@link #padLeft(String, char, int)}
+     * @param s the string
+     * @param c the char
+     * @param number number of char to be left pad to `s`
+     * @return the string as described above
+     */
+    public static String lpad(String s, char c, int number) {
+        return padLeft(s, c, number);
+    }
+
+    /**
+     * Alias of {@link #padLeft(String, int)}
+     * @param s the string
+     * @param number the number of space to left pad to `s`
+     * @return the string as described
+     */
+    public static String lpad(String s, int number) {
+        return padLeft(s, ' ', number);
+    }
+
+    /**
+     * Right pad a string with character specified
+     * @param s the string
+     * @param c the character
+     * @param number the number of character to pad to the left
+     * @return an new string with specified number of character `c` padded to `s` at right
+     */
+    public static String padRight(String s, char c, int number) {
+        return S.concat(s, S.times(c, number));
+    }
+
+    /**
+     * Right pad a string with number of space specified
+     * @param s the string
+     * @param number the number of space to right pad to `s`
+     * @return the string as described
+     */
+    public static String padRight(String s, int number) {
+        return padRight(s, ' ', number);
+    }
+
+    /**
+     * Alias of {@link #padRight(String, char, int)}
+     * @param s the string
+     * @param c the char
+     * @param number number of char to be left pad to `s`
+     * @return the string as described above
+     */
+    public static String rpad(String s, char c, int number) {
+        return padLeft(s, c, number);
+    }
+
+    /**
+     * Alias of {@link #padRight(String, int)}
+     * @param s the string
+     * @param number the number of space to left pad to `s`
+     * @return the string as described
+     */
+    public static String rpad(String s, int number) {
+        return padLeft(s, ' ', number);
     }
 
     /**
