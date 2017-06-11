@@ -369,7 +369,7 @@ public class IO {
      */
     public static String readContentAsString(URL url, String encoding) {
         try {
-            return readContentAsString(url.openStream());
+            return readContentAsString(url.openStream(), encoding);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -457,7 +457,7 @@ public class IO {
         if (encoding == null) {
             return readLines(is, limit);
         } else {
-            InputStreamReader r = null;
+            InputStreamReader r;
             try {
                 r = new InputStreamReader(is, encoding);
             } catch (UnsupportedEncodingException e) {
@@ -497,6 +497,30 @@ public class IO {
             throw E.ioException(e);
         }
         return list;
+    }
+
+    public static List<String> readLines(URL url) {
+        return readLines(url, 0);
+    }
+
+    public static List<String> readLines(URL url, int limit) {
+        try {
+            return readLines(url.openStream(), limit);
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    public static List<String> readLines(URL url, String encode) {
+        return readLines(url, encode, 0);
+    }
+
+    public static List<String> readLines(URL url, String encode, int limit) {
+        try {
+            return readLines(url.openStream(), encode, limit);
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
     }
 
     /**
