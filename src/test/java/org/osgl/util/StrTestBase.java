@@ -273,9 +273,16 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
     }
 
     @Test
-    public void testPrependList() {
+    public void testPrependCharList() {
         C.List<Character> list = C.list('1', '2');
         T t = abc.prepend(list);
+        ceq("12abc", t);
+    }
+
+    @Test
+    public void testPrependCharArray() {
+        char[] ca = {'1', '2'};
+        T t = abc.prepend(ca);
         ceq("12abc", t);
     }
 
@@ -303,6 +310,18 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
         ceq("za", t);
         t = zabcd.subSequence(3, 5);
         ceq("cd", t);
+    }
+
+    @Test
+    public void testPadLeft() {
+        ceq("^^^abc", abc.padLeft('^', 3));
+        ceq("   abc", abc.padLeft(3));
+    }
+
+    @Test
+    public void testPadRight() {
+        ceq("abc^^^", abc.padRight('^', 3));
+        ceq("abc   ", abc.padRight(3));
     }
 
     @Test

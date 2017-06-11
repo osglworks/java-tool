@@ -6495,6 +6495,58 @@ public class Osgl implements Serializable {
         return ret;
     }
 
+    public static void fill(boolean element, boolean[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+
+    public static void fill(byte element, byte[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+    public static void fill(char element, char[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+    public static void fill(short element, short[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+
+    public static void fill(int element, int[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+
+    public static void fill(float element, float[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+
+    public static void fill(long element, long[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+
+    public static void fill(double element, double[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+
+    public static <T> void fill(T element, T[] array) {
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = element;
+        }
+    }
+
     public static boolean[] reverse(boolean[] a) {
         int len = a.length;
         for (int i = 0, mid = len >> 1, j = len - 1; i < mid; i++, j--) {

@@ -162,6 +162,14 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     public abstract T append(C.List<Character> list);
 
     /**
+     * Return a str instance contains all characters of this str instance append with
+     * all characters in the array specified
+     * @param array the array of characters to be appended
+     * @return the new str instance as described
+     */
+    public abstract T append(char... array);
+
+    /**
      * Returns a str instance contains all characters of this str instance appended with
      * the character specified
      * @param character the character to be appended
@@ -198,11 +206,19 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     /**
      * Return a str instance contains all characters of this str instance prepended with
      * all characters in the list specified
-     * @param list the list of characters to be preppended
+     * @param list the list of characters to be prepended
      * @return the new str instance as described
      */
     @Override
     public abstract T prepend(C.List<Character> list);
+
+    /**
+     * Return a str instance contains all characters of this str instance prepended with
+     * all characters in the array specified
+     * @param chars the array of characters to be prepended
+     * @return the new str instance as described
+     */
+    public abstract T prepend(char ... chars);
 
 
     /**
@@ -250,6 +266,66 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
      * @return the new str as described
      */
     public abstract T times(int n);
+
+    /**
+     * Returns a str instance with `times` of char `c` left pad to the current str
+     * @param c the char used to pad to this str
+     * @param times the repeat times
+     * @return the str instance as described above
+     */
+    public abstract T padLeft(char c, int times);
+
+    /**
+     * Alias of {@link #padLeft(char, int)}
+     * @param c the char used to pad to this str
+     * @param times the repeat times
+     * @return the str instance as described above
+     */
+    public abstract T lpad(char c, int times);
+
+    /**
+     * Returns a str instance with `times` of char `' '` (space) left pad to the current str
+     * @param times the repeat times
+     * @return the str instance as described above
+     */
+    public abstract T padLeft(int times);
+
+    /**
+     * Alias of {@link #padLeft(int)}
+     * @param times the repeat times
+     * @return the str instance as described above
+     */
+    public abstract T lpad(int times);
+
+    /**
+     * Returns a str instance with `times` of char `c` right pad to the current str
+     * @param c the char used to pad to this str
+     * @param times the repeat times
+     * @return the str instance as described above
+     */
+    public abstract T padRight(char c, int times);
+
+    /**
+     * Alias of {@link #padRight(char, int)}
+     * @param c the char used to pad to this str
+     * @param times the repeat times
+     * @return the str instance as described above
+     */
+    public abstract T rpad(char c, int times);
+
+    /**
+     * Returns a str instance with `times` of char `' '` (space) right pad to the current str
+     * @param times the repeat times
+     * @return the str instance as described above
+     */
+    public abstract T padRight(int times);
+
+    /**
+     * Alias of {@link #padRight(int)}
+     * @param times the repeat times
+     * @return the str instance as described above
+     */
+    public abstract T rpad(int times);
 
     /**
      * Copy part of the char sequence into another array

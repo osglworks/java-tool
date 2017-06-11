@@ -3,7 +3,6 @@ package org.osgl.util;
 import org.osgl.$;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.Character;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -293,6 +292,24 @@ public class FastStr extends StrBase<FastStr>
     }
 
     @Override
+    public FastStr parallel() {
+        return super.parallel();
+    }
+
+    @Override
+    public FastStr append(char... array) {
+        int sz = size(), sz2 = array.length;
+        if (0 == sz2) return this;
+        if (0 == sz) return of(array);
+        char[] newBuf = new char[sz + sz2];
+        copyTo(newBuf, 0);
+        for (int i = 0; i < sz2; ++i) {
+            newBuf[sz + i] = array[i];
+        }
+        return new FastStr(newBuf, 0, sz + sz2);
+    }
+
+    @Override
     public FastStr append(Character character) {
         int sz = size();
         char[] newBuf = new char[sz + 1];
@@ -372,6 +389,24 @@ public class FastStr extends StrBase<FastStr>
     }
 
     @Override
+    public FastStr prepend(char... chars) {
+        int sz = size();
+        if (0 == sz) return of(chars);
+        int sz2 = chars.length;
+        if (0 == sz2) return this;
+        if (1 == sz2) {
+            return prepend(chars[0]);
+        }
+        int newSz = sz + sz2;
+        char[] newBuf = new char[newSz];
+        for (int i = 0; i < sz2; ++i) {
+            newBuf[i] = chars[i];
+        }
+        copyTo(newBuf, sz2);
+        return new FastStr(newBuf, 0, newSz);
+    }
+
+    @Override
     public FastStr prepend(Character character) {
         // check if I can back begin pointer for one step
         if (begin > 0) {
@@ -420,6 +455,50 @@ public class FastStr extends StrBase<FastStr>
         }
         copyTo(newBuf, sz2);
         return new FastStr(newBuf, 0, newSz);
+    }
+
+    @Override
+    public FastStr padLeft(char c, int times) {
+        char[] ca = new char[times];
+        $.fill(c, ca);
+        return prepend(ca);
+    }
+
+    @Override
+    public FastStr lpad(char c, int times) {
+        return padLeft(c, times);
+    }
+
+    @Override
+    public FastStr padLeft(int times) {
+        return padLeft(' ', times);
+    }
+
+    @Override
+    public FastStr lpad(int times) {
+        return padLeft(times);
+    }
+
+    @Override
+    public FastStr padRight(char c, int times) {
+        char[] ca = new char[times];
+        $.fill(c, ca);
+        return append(ca);
+    }
+
+    @Override
+    public FastStr rpad(char c, int times) {
+        return padRight(c, times);
+    }
+
+    @Override
+    public FastStr padRight(int times) {
+        return padRight(' ', times);
+    }
+
+    @Override
+    public FastStr rpad(int times) {
+        return padRight(times);
     }
 
     @Override

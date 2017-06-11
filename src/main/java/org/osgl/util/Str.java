@@ -165,6 +165,18 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
+    public Str append(char... array) {
+        int sz = s.length(), sz2 = array.length;
+        if (0 == sz2) return this;
+        if (0 == sz) return of(array);
+        StringBuilder sb = new StringBuilder(sz + sz2).append(s);
+        for (Character c : array) {
+            sb.append(c);
+        }
+        return of(sb);
+    }
+
+    @Override
     public Str append(Character character) {
         StringBuilder sb = new StringBuilder(s).append(character);
         return of(sb);
@@ -218,6 +230,19 @@ public class Str extends StrBase<Str> {
     }
 
     @Override
+    public Str prepend(char... chars) {
+        int sz = s.length(), sz2 = chars.length;
+        if (0 == sz2) return this;
+        if (0 == sz) return of(chars);
+        StringBuilder sb = new StringBuilder(sz + sz2);
+        for (char c : chars) {
+            sb.append(c);
+        }
+        sb.append(this.s);
+        return of(sb);
+    }
+
+    @Override
     public Str prepend(Character character) {
         StringBuilder sb = new StringBuilder().append(character).append(s);
         return of(sb);
@@ -258,6 +283,50 @@ public class Str extends StrBase<Str> {
     @Override
     public Str times(int n) {
         return of(S.times(s, n));
+    }
+
+    @Override
+    public Str padLeft(char c, int times) {
+        char[] ca = new char[times];
+        $.fill(c, ca);
+        return prepend(ca);
+    }
+
+    @Override
+    public Str lpad(char c, int times) {
+        return padLeft(c, times);
+    }
+
+    @Override
+    public Str padLeft(int times) {
+        return padLeft(' ', times);
+    }
+
+    @Override
+    public Str lpad(int times) {
+        return padLeft(times);
+    }
+
+    @Override
+    public Str padRight(char c, int times) {
+        char[] ca = new char[times];
+        $.fill(c, ca);
+        return append(ca);
+    }
+
+    @Override
+    public Str rpad(char c, int times) {
+        return padRight(c, times);
+    }
+
+    @Override
+    public Str padRight(int times) {
+        return padRight(' ', times);
+    }
+
+    @Override
+    public Str rpad(int times) {
+        return padRight(times);
     }
 
     @Override
