@@ -724,6 +724,20 @@ public class N {
     }
 
     /**
+     * Check if a String `s` is numeric string
+     * @param s the string
+     * @return `true` if `s` is numeric or `false` otherwise
+     */
+    public static boolean isNumeric(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
      * @see java.util.Random#nextInt()
      * @return a random int value
      */
