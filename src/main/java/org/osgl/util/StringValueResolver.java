@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -404,6 +405,12 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return FastStr.of(value);
         }
     };
+    private static final StringValueResolver<Locale> _Locale = new StringValueResolver<Locale>() {
+        @Override
+        public Locale resolve(String value) {
+            return Locale.forLanguageTag(value);
+        }
+    };
 
     private static Map<Class, StringValueResolver> predefined = C.newMap(
             boolean.class, _boolean,
@@ -423,6 +430,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             double.class, _double,
             Double.class, _Double,
             String.class, _String,
+            Locale.class, _Locale,
             Str.class, _Str,
             FastStr.class, _FastStr,
             BigInteger.class, new BigIntegerValueObjectCodec(),
