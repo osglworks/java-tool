@@ -275,7 +275,7 @@ public class S {
     }
 
     public static String concat(String s1, String s2) {
-        return S.sizedBuffer(len(s1) + len(s2)).append(s1).append(s2).toString();
+        return buffer().append(s1).append(s2).toString();
     }
 
     public static String concat(Object o1, Object o2) {
@@ -283,9 +283,7 @@ public class S {
     }
 
     public static String concat(String s1, String s2, String s3) {
-        return S.sizedBuffer(len(s1) + len(s2) + len(s3))
-                .a(s1).a(s2).a(s3)
-                .toString();
+        return buffer().append(s1).append(s2).append(s3).toString();
     }
 
     public static String concat(Object o1, Object o2, Object o3) {
@@ -293,9 +291,7 @@ public class S {
     }
 
     public static String concat(String s1, String s2, String s3, String s4) {
-        return S.sizedBuffer(len(s1) + len(s2) + len(s3) + len(s4))
-                .a(s1).a(s2).a(s3).a(s4)
-                .toString();
+        return buffer().append(s1).append(s2).append(s3).append(s4).toString();
     }
 
     public static String concat(Object o1, Object o2, Object o3, Object o4) {
@@ -303,8 +299,7 @@ public class S {
     }
 
     public static String concat(String s1, String s2, String s3, String s4, String s5) {
-        return S.sizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5))
-                .a(s1).a(s2).a(s3).a(s4).a(s5)
+        return S.buffer(s1).append(s2).append(s3).append(s4).append(s5)
                 .toString();
     }
 
@@ -313,8 +308,7 @@ public class S {
     }
 
     public static String concat(String s1, String s2, String s3, String s4, String s5, String ... extra) {
-        S.Buffer sb = S.sizedBuffer(len(s1) + len(s2) + len(s3) + len(s4) + len(s5, extra))
-                .a(s1).a(s2).a(s3).a(s4).a(s5);
+        S.Buffer sb = S.buffer(s1).a(s2).a(s3).a(s4).a(s5);
         for (String s : extra) {
             sb.a(s);
         }
