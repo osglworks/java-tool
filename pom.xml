@@ -15,6 +15,10 @@
   ~ under the License.  
   -->
 <!-- history
+1.2.1
+* #18 Treat `Locale` as simple type
+* #17 Performance issue with `S.concat(...)` API
+
 1.2.0
 * #16 Add `Osgl.fill(element, array)` API methods
 * #15 Add `IO.readLines(URL)` method
