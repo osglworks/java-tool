@@ -5920,7 +5920,14 @@ public class Osgl implements Serializable {
                     entity = vo.value();
                 }
             }
-
+            if (entity.getClass().isArray()) {
+                int lenArray = Array.getLength(entity);
+                List list = new ArrayList(lenArray);
+                for (int j = 0; j < lenArray; ++j) {
+                    list.add(Array.get(entity, j));
+                }
+                entity = list;
+            }
             if (entity instanceof List) {
                 List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
                 ListPropertyGetter getter = propertyHandlerFactory.createListPropertyGetter(classList.get(0));
@@ -6023,7 +6030,13 @@ public class Osgl implements Serializable {
                         if (type instanceof ParameterizedType) {
                             ParameterizedType ptype = cast(type);
                             return findArgumentTypes(ptype);
+                        } else if (type instanceof Class) {
+                            Class classType = (Class) type;
+                            if (classType.isArray()) {
+                                return (List)C.list(classType.getComponentType());
+                            }
                         }
+                        throw new UnexpectedException("cannot determine generic type of field: %s", f);
                     } catch (NoSuchFieldException e2) {
                         c = c.getSuperclass();
                     }
