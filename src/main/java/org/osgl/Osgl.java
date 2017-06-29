@@ -6007,47 +6007,45 @@ public class Osgl implements Serializable {
 
     private static List<Class<?>> findPropertyParameterizedType(Object entity, String prop) {
         Class<?> c = entity.getClass();
+        Type type = null;
         while (null != c && !Object.class.equals(c)) {
             try {
                 String p = S.capFirst(prop);
                 String getter = "get" + p;
                 Method m = findPropertyMethod(c, getter);
                 m.setAccessible(true);
-                Type type = m.getGenericReturnType();
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType ptype = cast(type);
-                    return findArgumentTypes(ptype);
-                } else {
-                    return null;
-                }
+                type = m.getGenericReturnType();
             } catch (NoSuchMethodException e) {
                 try {
                     Method m = findPropertyMethod(c, prop);
                     m.setAccessible(true);
-                    Type type = m.getGenericReturnType();
-                    if (type instanceof ParameterizedType) {
-                        ParameterizedType ptype = cast(type);
-                        return findArgumentTypes(ptype);
-                    }
+                    type = m.getGenericReturnType();
                 } catch (NoSuchMethodException e1) {
                     try {
                         Field f = findPropertyField(c, prop);
                         f.setAccessible(true);
-                        Type type = f.getGenericType();
-                        if (type instanceof ParameterizedType) {
-                            ParameterizedType ptype = cast(type);
-                            return findArgumentTypes(ptype);
-                        } else if (type instanceof Class) {
-                            Class classType = (Class) type;
-                            if (classType.isArray()) {
-                                return (List)C.list(classType.getComponentType());
-                            }
-                        }
-                        throw new UnexpectedException("cannot determine generic type of field: %s", f);
+                        type = f.getGenericType();
                     } catch (NoSuchFieldException e2) {
                         c = c.getSuperclass();
+                        continue;
                     }
                 }
+            }
+            if (null != type) {
+                break;
+            }
+        }
+        return genericTypesOf(type);
+    }
+
+    private static List<Class<?>> genericTypesOf(Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType ptype = cast(type);
+            return findArgumentTypes(ptype);
+        } else if (type instanceof Class) {
+            Class classType = (Class) type;
+            if (classType.isArray()) {
+                return (List)C.list(classType.getComponentType());
             }
         }
         return null;
