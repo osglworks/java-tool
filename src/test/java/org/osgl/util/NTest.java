@@ -273,4 +273,13 @@ public class NTest extends TestBase {
         }
     }
 
+    @Test
+    public void testIsInt() {
+        yes(N.isInt("23423"));
+        no(N.isInt("2Addf"));
+        yes(N.isInt("2AddF", 16));
+        no(N.isInt("2AddFG", 16));
+        yes(N.isInt(String.valueOf(Long.MAX_VALUE)));
+    }
+
 }

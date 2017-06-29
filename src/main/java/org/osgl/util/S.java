@@ -240,7 +240,16 @@ public class S {
      * @return {@code true} if the string is integer or long
      */
     public static boolean isIntOrLong(String s) {
-        return s.matches("-?\\d+(\\d+)?");
+        return N.isInt(s);
+    }
+
+    /**
+     * Check if a string is integer or long
+     * @param s the string
+     * @return {@code true} if the string is integer or long
+     */
+    public static boolean isInt(String s) {
+        return N.isInt(s);
     }
 
     /**

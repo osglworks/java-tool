@@ -725,6 +725,33 @@ public class N {
     }
 
     /**
+     * Check if a string `s` represent an int or long
+     * @param s the string
+     * @return `true` if s represents an int or `false` otherwise
+     */
+    public static boolean isInt(String s) {
+        return isInt(s, 10);
+    }
+
+    /**
+     * Check if a string `s` represent an int or long as per radix specified
+     * @param s the string
+     * @param radix the radix
+     * @return `true` if s represents an int or `false` otherwise
+     */
+    public static boolean isInt(String s, int radix) {
+        if(s.isEmpty()) return false;
+        for(int i = 0; i < s.length(); i++) {
+            if(i == 0 && s.charAt(i) == '-') {
+                if(s.length() == 1) return false;
+                else continue;
+            }
+            if(Character.digit(s.charAt(i),radix) < 0) return false;
+        }
+        return true;
+    }
+
+    /**
      * Check if a String `s` is numeric string
      * @param s the string
      * @return `true` if `s` is numeric or `false` otherwise

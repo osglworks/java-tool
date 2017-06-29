@@ -5932,8 +5932,7 @@ public class Osgl implements Serializable {
                 List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
                 ListPropertyGetter getter = propertyHandlerFactory.createListPropertyGetter(classList.get(0));
                 lastEntity = entity;
-                // TODO use a more efficient way to check if prop is an integer
-                if (N.isNumeric(prop)) {
+                if (N.isInt(prop)) {
                     entity = getter.get(lastEntity, prop);
                 } else {
                     // See https://github.com/osglworks/java-tool/issues/20
