@@ -5932,7 +5932,15 @@ public class Osgl implements Serializable {
                 List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
                 ListPropertyGetter getter = propertyHandlerFactory.createListPropertyGetter(classList.get(0));
                 lastEntity = entity;
-                entity = getter.get(lastEntity, prop);
+                // TODO use a more efficient way to check if prop is an integer
+                if (N.isNumeric(prop)) {
+                    entity = getter.get(lastEntity, prop);
+                } else {
+                    // See https://github.com/osglworks/java-tool/issues/20
+                    entity = getter.get(lastEntity, 0);
+                    // we injected a '.0' into the path thus we must retreat one step
+                    i -= 1;
+                }
             } else if (entity instanceof Map) {
                 List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
                 if (null == classList) {
