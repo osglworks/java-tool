@@ -192,7 +192,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2.2</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
