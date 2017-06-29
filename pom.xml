@@ -195,7 +195,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.3.0-SNAPSHOT</version>
+  <version>1.3.0</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
