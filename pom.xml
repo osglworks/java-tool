@@ -18,6 +18,9 @@
 1.3
 * #21 Add a method to detect if a string is an integer
 
+1.2.3
+* #22 `Osgl.findPropertyParameterizedType` method shall treat array as List
+
 1.2.2
 * #20 `Osgl.getProperty` shall pickup the first element in an iterable if index not provided
 * #19 `Osgl.getProperty` API shall handle array like a list

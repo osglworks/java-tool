@@ -6035,7 +6035,7 @@ public class Osgl implements Serializable {
                 break;
             }
         }
-        return genericTypesOf(type);
+        return null == type ? null : genericTypesOf(type);
     }
 
     private static List<Class<?>> genericTypesOf(Type type) {
