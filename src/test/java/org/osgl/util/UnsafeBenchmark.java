@@ -1,6 +1,7 @@
 package org.osgl.util;
 
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgl.BenchmarkBase;
 import org.osgl.$;
@@ -8,6 +9,7 @@ import org.osgl.exception.NotAppliedException;
 
 import java.util.Random;
 
+@Ignore
 @BenchmarkOptions(warmupRounds = 2, benchmarkRounds = 10)
 public class UnsafeBenchmark extends BenchmarkBase {
 

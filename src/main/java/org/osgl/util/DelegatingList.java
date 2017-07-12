@@ -228,3 +228,39 @@ class DelegatingList<T> extends ListBase<T> implements C.List<T>, Serializable {
     }
 
 }
+
+class DelegatingStringList extends DelegatingList<String> implements S.List {
+    public DelegatingStringList(boolean noInit) {
+        super(noInit);
+    }
+
+    public DelegatingStringList() {
+    }
+
+    public DelegatingStringList(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public DelegatingStringList(C.ListFactory fact) {
+        super(fact);
+    }
+
+    public DelegatingStringList(int initialCapacity, C.ListFactory fact) {
+        super(initialCapacity, fact);
+    }
+
+    public DelegatingStringList(Iterable<? extends String> iterable) {
+        super(iterable);
+    }
+
+    public DelegatingStringList(Iterable<? extends String> iterable, C.ListFactory fact) {
+        super(iterable, fact);
+    }
+
+    public DelegatingStringList(Collection<String> col, C.ListFactory fact) {
+        super(col, fact);
+    }
+
+
+
+}

@@ -15,6 +15,14 @@
   ~ under the License.  
   -->
 <!-- history
+1.4.0
+* #25 Add alias to Osgl Tuple types
+* #24 Add more getter method to Osgl tuple types
+* #23 Add fast split APIs in `S` util
+
+1.3.1
+* catch up 1.2.3 update
+
 1.3
 * #21 Add a method to detect if a string is an integer
 
@@ -198,7 +206,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.3.2-SNAPSHOT</version>
+  <version>1.4.0-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>

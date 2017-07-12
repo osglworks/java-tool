@@ -1,6 +1,7 @@
 package org.osgl.util;
 
 import org.osgl.$;
+import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
 import java.net.URLDecoder;
@@ -25,6 +26,15 @@ public class S {
      * A commonly used separator: [,;:\\s]+
      */
     public static final String COMMON_SEP = "[,;:\\s]+";
+
+    /**
+     * An empty string array constant
+     */
+    public static final String[] EMPTY_ARRAY = new String[0];
+
+    public static String getCommonSep() {
+        return COMMON_SEP;
+    }
 
     public final static String fmt(String tmpl) {
         return tmpl;
@@ -151,7 +161,7 @@ public class S {
      * @param sa the strings to be checked
      * @return true if all of the specified string is blank
      */
-    public static boolean isAllBlank(String ... sa) {
+    public static boolean isAllBlank(String... sa) {
         return allBlank(sa);
     }
 
@@ -161,7 +171,7 @@ public class S {
      * @param sa the strings to be checked
      * @return true if all of the specified string is blank
      */
-    public static boolean allBlank(String ... sa) {
+    public static boolean allBlank(String... sa) {
         for (String s : sa) {
             if (!blank(s)) return false;
         }
@@ -197,7 +207,7 @@ public class S {
      * @param sa the strings to be checked
      * @return <code>true</code> if anyone of the specified string is blank
      */
-    public static boolean isAnyBlank(String ... sa) {
+    public static boolean isAnyBlank(String... sa) {
         return anyBlank(sa);
     }
 
@@ -207,7 +217,7 @@ public class S {
      * @param sa the strings to be checked
      * @return <code>true</code> if anyone of the specified string is blank
      */
-    public static boolean anyBlank(String ... sa) {
+    public static boolean anyBlank(String... sa) {
         for (String s : sa) {
             if (blank(s)) return true;
         }
@@ -230,14 +240,16 @@ public class S {
      * @param sa the strings to be checked
      * @return <code>false</code> if anyone of the specified string is empty
      */
-    public static boolean noBlank(String ... sa) {
+    public static boolean noBlank(String... sa) {
         return !anyBlank(sa);
     }
 
     /**
      * Check if a string is integer or long
+     *
      * @param s the string
      * @return {@code true} if the string is integer or long
+     * @see N#isInt(String)
      */
     public static boolean isIntOrLong(String s) {
         return N.isInt(s);
@@ -245,11 +257,24 @@ public class S {
 
     /**
      * Check if a string is integer or long
+     *
      * @param s the string
      * @return {@code true} if the string is integer or long
+     * @see N#isInt(String)
      */
     public static boolean isInt(String s) {
         return N.isInt(s);
+    }
+
+    /**
+     * Check if a string is numeric
+     *
+     * @param s the string to be checked
+     * @return `true` if `s` is numeric string
+     * @see N#isNumeric(String)
+     */
+    public static boolean isNumeric(String s) {
+        return N.isNumeric(s);
     }
 
     /**
@@ -281,6 +306,124 @@ public class S {
             len += len(s);
         }
         return len;
+    }
+
+    /**
+     * Split string by separator into two parts and return in a {@link T2()} object
+     * <p>
+     * **Note** this will only check the first position of the separator, anything after that will
+     * be put into the second element of the `T2` instance, including the following separator char
+     * <p>
+     * **Note** it will put the entire string into the first element of the return object if
+     * no separator is found in the string and leave the second element to be an empty string
+     *
+     * @param string    the string to be split
+     * @param separator the separator character
+     * @return a `T2` instance contains the two parts
+     */
+    public static T2 binarySplit(String string, char separator) {
+        int pos = string.indexOf(separator);
+        if (pos < 0) {
+            return new T2(string, "");
+        }
+        return new S.T2(string.substring(0, pos), string.substring(pos + 1, string.length()));
+    }
+
+    /**
+     * Split string by separator into three parts and return in a {@link T3()} object
+     * <p>
+     *
+     * **Note** this will only check the first two positions of the separator, anything after that will
+     * be put into the third element of the `T2` instance, including the following separator char
+     * <p>
+     *
+     * **Note** it will put the entire string into the first element of the return object if
+     * no separator is found in the string and leave the second element to be an empty string
+     *
+     * @param string    the string to be split
+     * @param separator the separator character
+     * @return a `T2` instance contains the two parts
+     */
+    public static T3 tripleSplit(String string, char separator) {
+        int pos = string.indexOf(separator);
+        if (pos < 0) {
+            return new S.T3(string, "", "");
+        }
+        int pos2 = string.indexOf(separator, pos + 1);
+        if (pos2 < 0) {
+            return new S.T3(string.substring(0, pos), string.substring(pos + 1, string.length()), "");
+        }
+        return new S.T3(string.substring(0, pos), string.substring(pos + 1, pos2), string.substring(pos2 + 1, string.length()));
+    }
+
+    /**
+     * Split a string by separator literal and return a list of strings
+     * <p>
+     * Note：
+     * <p>
+     * * Unlike {@link String#split(String)} method, this will NOT do regex based split
+     * * If there are consecutive separators they will be treated as a single separator
+     * * Leading or ending separator will be trimmed
+     * * If separator not found then the string will be returned in a single element list
+     *
+     * @param string    the string to be split
+     * @param separator the string literal to split the string
+     * @return a list of strings
+     * @throws IllegalArgumentException if the separator is empty or `null`
+     */
+    public static List fastSplit(String string, String separator) {
+        E.illegalArgumentIf(S.isEmpty(separator), "seperator must not be empty string or null");
+        if (S.isEmpty(string)) {
+            return ImmutableStringList.of(EMPTY_ARRAY);
+        }
+        ListBuilder<String> lb = ListBuilder.create();
+        int lastPos = 0, gap = separator.length(), len = string.length();
+        while (true) {
+            int pos = string.indexOf(separator, lastPos);
+            String part = string.substring(lastPos, pos < 0 ? len : pos);
+            if (notEmpty(part)) {
+                lb.add(part);
+            }
+            if (pos < 0) {
+                break;
+            }
+            lastPos = pos + gap;
+        }
+        return ImmutableStringList.of(lb);
+    }
+
+    /**
+     * Split a string into a list of strings by specified separator char
+     * <p>
+     * * If there are consecutive separators they will be treated as a single separator
+     * * Leading or ending separator will be trimmed
+     * * If separator not found then the string will be returned in a single element list
+     *
+     * @param string    the string to be split
+     * @param separator the char to split the string
+     * @return a list of strings
+     */
+    public static List split(String string, char separator) {
+        if (S.isEmpty(string)) {
+            return ImmutableStringList.of(EMPTY_ARRAY);
+        }
+        ListBuilder<String> lb = ListBuilder.create();
+        int lastPos = 0, len = string.length();
+        while (true) {
+            int pos = string.indexOf(separator, lastPos);
+            String part = string.substring(lastPos, pos < 0 ? len : pos);
+            if (notEmpty(part)) {
+                lb.add(part);
+            }
+            if (pos < 0) {
+                break;
+            }
+            lastPos = pos + 1;
+            while (++lastPos < len && separator == string.charAt(lastPos)) {
+            }
+            lastPos--;
+        }
+        return ImmutableStringList.of(lb);
     }
 
     public static String concat(String s1, String s2) {
@@ -316,7 +459,7 @@ public class S {
         return concat(string(o1), string(o2), string(o3), string(o4), string(o5));
     }
 
-    public static String concat(String s1, String s2, String s3, String s4, String s5, String ... extra) {
+    public static String concat(String s1, String s2, String s3, String s4, String s5, String... extra) {
         S.Buffer sb = S.buffer(s1).a(s2).a(s3).a(s4).a(s5);
         for (String s : extra) {
             sb.a(s);
@@ -324,7 +467,7 @@ public class S {
         return sb.toString();
     }
 
-    public static String concat(Object o1, Object o2, Object o3, Object o4, Object o5, Object ... extra) {
+    public static String concat(Object o1, Object o2, Object o3, Object o4, Object o5, Object... extra) {
         int len = extra.length;
         String[] sa = new String[len];
         for (int i = 0; i < len; ++i) {
@@ -537,6 +680,7 @@ public class S {
 
     /**
      * Alias of {@link #join(String, int)}
+     *
      * @param s     the string to be joined
      * @param times the times the string to be joined
      * @return the result
@@ -547,7 +691,8 @@ public class S {
 
     /**
      * Return a string composed of `times` of char `c`
-     * @param c the character
+     *
+     * @param c     the character
      * @param times the number of times the c in the string returned
      * @return the string as described
      */
@@ -705,7 +850,7 @@ public class S {
     /**
      * Count how many times a search string occurred in the give string
      *
-     * @param s string to be searched
+     * @param s      string to be searched
      * @param search the search token
      * @return the times the search token appeared in `s` without overlap calculation
      */
@@ -716,8 +861,8 @@ public class S {
     /**
      * Count how many times a search string occurred in the give string
      *
-     * @param s string to be searched
-     * @param search the search token
+     * @param s       string to be searched
+     * @param search  the search token
      * @param overlap specify if it should take overlap into considerations
      * @return the times the search token appeared in `s`
      */
@@ -779,12 +924,13 @@ public class S {
 
     /**
      * Convert the char at begin position in the buf to upper case.
-     *
+     * <p>
      * If char is already upper case, then it returns the buf directly, otherwise,
      * it returns an new char array copy from begin to end
+     *
      * @param buf
      * @param begin start inclusive
-     * @param end stop exclusive
+     * @param end   stop exclusive
      * @return
      */
     static char[] unsafeCapFirst(char[] buf, int begin, int end) {
@@ -871,8 +1017,8 @@ public class S {
     /**
      * Alias of {@link #equal(String, String, int)}
      *
-     * @param s1 string 1
-     * @param s2 String 2
+     * @param s1       string 1
+     * @param s2       String 2
      * @param modifier could be combination of {@link #IGNORESPACE} or {@link #IGNORECASE}
      * @return `true` if `s1` equals to `s2` according to `modifier`
      */
@@ -894,8 +1040,8 @@ public class S {
     /**
      * Antonym of {@link #equal(String, String, int)}
      *
-     * @param s1 string 1
-     * @param s2 string 2
+     * @param s1       string 1
+     * @param s2       string 2
      * @param modifier could be combination of {@link #IGNORESPACE} or {@link #IGNORECASE}
      * @return <code>true</code> if s1 doesn't equal to s2 as per modifier
      */
@@ -940,8 +1086,8 @@ public class S {
     /**
      * Return true if 2 strings are equals to each other as per rule specified
      *
-     * @param s1 string 1
-     * @param s2 String 2
+     * @param s1       string 1
+     * @param s2       String 2
      * @param modifier could be combination of {@link #IGNORESPACE} or {@link #IGNORECASE}
      * @return `true` if `s1` equals to `s2` according to `modifier`
      */
@@ -987,8 +1133,8 @@ public class S {
     /**
      * Alias of {@link #equal(String, String, int)}
      *
-     * @param s1 string 1
-     * @param s2 string 2
+     * @param s1       string 1
+     * @param s2       string 2
      * @param modifier the modifier could be combination of {@link #IGNORESPACE} or {@link #IGNORECASE}
      * @return <code>true</code> if s1 equals to s2 as per modifier
      */
@@ -1004,7 +1150,7 @@ public class S {
      * String s = S.strip(o, "xx", "yy")</code></pre>
      * <p>At the end above code, <code>s</code> should be "BB"</p>
      *
-     * @param o the object to which string representation will be used
+     * @param o      the object to which string representation will be used
      * @param prefix the prefix
      * @param suffix the suffix
      * @return the String result as described above
@@ -1022,8 +1168,9 @@ public class S {
 
     /**
      * Left pad a string with character specified
-     * @param s the string
-     * @param c the character
+     *
+     * @param s      the string
+     * @param c      the character
      * @param number the number of character to pad to the left
      * @return an new string with specified number of character `c` padded to `s` at left
      */
@@ -1033,7 +1180,8 @@ public class S {
 
     /**
      * Left pad a string with number of space specified
-     * @param s the string
+     *
+     * @param s      the string
      * @param number the number of space to left pad to `s`
      * @return the string as described
      */
@@ -1043,8 +1191,9 @@ public class S {
 
     /**
      * Alias of {@link #padLeft(String, char, int)}
-     * @param s the string
-     * @param c the char
+     *
+     * @param s      the string
+     * @param c      the char
      * @param number number of char to be left pad to `s`
      * @return the string as described above
      */
@@ -1054,7 +1203,8 @@ public class S {
 
     /**
      * Alias of {@link #padLeft(String, int)}
-     * @param s the string
+     *
+     * @param s      the string
      * @param number the number of space to left pad to `s`
      * @return the string as described
      */
@@ -1064,8 +1214,9 @@ public class S {
 
     /**
      * Right pad a string with character specified
-     * @param s the string
-     * @param c the character
+     *
+     * @param s      the string
+     * @param c      the character
      * @param number the number of character to pad to the left
      * @return an new string with specified number of character `c` padded to `s` at right
      */
@@ -1075,7 +1226,8 @@ public class S {
 
     /**
      * Right pad a string with number of space specified
-     * @param s the string
+     *
+     * @param s      the string
      * @param number the number of space to right pad to `s`
      * @return the string as described
      */
@@ -1085,8 +1237,9 @@ public class S {
 
     /**
      * Alias of {@link #padRight(String, char, int)}
-     * @param s the string
-     * @param c the char
+     *
+     * @param s      the string
+     * @param c      the char
      * @param number number of char to be left pad to `s`
      * @return the string as described above
      */
@@ -1096,7 +1249,8 @@ public class S {
 
     /**
      * Alias of {@link #padRight(String, int)}
-     * @param s the string
+     *
+     * @param s      the string
      * @param number the number of space to left pad to `s`
      * @return the string as described
      */
@@ -1191,14 +1345,14 @@ public class S {
      */
     public static String random(int len) {
         final char[] chars = {'0', '1', '2', '3', '4',
-                              '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
-                              'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-                              'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                              'u', 'v', 'w', 'x', 'y', 'z',
-                              'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                              'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                              'U', 'V', 'W', 'X', 'Y', 'Z',
-                              '~', '!', '@'};
+                '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
+                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                'u', 'v', 'w', 'x', 'y', 'z',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+                'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                'U', 'V', 'W', 'X', 'Y', 'Z',
+                '~', '!', '@'};
 
         final int max = chars.length;
         Random r = ThreadLocalRandom.current();
@@ -1246,6 +1400,7 @@ public class S {
 
     /**
      * Return an new {@link Buffer} instance with predefined size specified
+     *
      * @param size the initial capacity of the buffer
      * @return an new `Buffer` instance
      */
@@ -1259,6 +1414,7 @@ public class S {
 
     /**
      * Returns an new {@link Buffer} instance
+     *
      * @return an new Buffer instance
      */
     public static Buffer newBuffer() {
@@ -1311,6 +1467,7 @@ public class S {
     /**
      * Returns a {@link Buffer} instance. If the thread local instance is consumed already
      * then return it. Otherwise, return an new `Buffer` instance
+     *
      * @return a `Buffer` instance as described above
      */
     public static Buffer buffer() {
@@ -1361,6 +1518,7 @@ public class S {
 
     /**
      * Return an new StringBuilder instance
+     *
      * @return the new StringBuilder instance
      */
     public static StringBuilder newBuilder() {
@@ -1413,6 +1571,7 @@ public class S {
 
     /**
      * Returns the ThreadLocal StringBuilder instance with length set to 0
+     *
      * @return the thread local StringBuilder instance
      */
     public static StringBuilder builder() {
@@ -1470,22 +1629,26 @@ public class S {
         return new StringBuilder(capacity);
     }
 
+    public static Binary binary($.T2<String, String> t2) {
+        return new Binary(t2);
+    }
+
     /**
      * Search for strings. Copied from jdk String.indexOf.
      * The source is the character array being searched, and the target
      * is the string being searched for.
      *
-     * @param   source        the characters being searched.
-     * @param   sourceOffset  offset of the source string.
-     * @param   sourceCount   count of the source string.
-     * @param   target        the characters being searched for.
-     * @param   targetOffset  offset of the target string.
-     * @param   targetCount   count of the target string.
-     * @param   fromIndex     the index to begin searching from.
+     * @param source       the characters being searched.
+     * @param sourceOffset offset of the source string.
+     * @param sourceCount  count of the source string.
+     * @param target       the characters being searched for.
+     * @param targetOffset offset of the target string.
+     * @param targetCount  count of the target string.
+     * @param fromIndex    the index to begin searching from.
      */
     static int indexOf(char[] source, int sourceOffset, int sourceCount,
-            char[] target, int targetOffset, int targetCount,
-            int fromIndex) {
+                       char[] target, int targetOffset, int targetCount,
+                       int fromIndex) {
         if (fromIndex >= sourceCount) {
             return (targetCount == 0 ? sourceCount : -1);
         }
@@ -1502,7 +1665,7 @@ public class S {
         for (int i = sourceOffset + fromIndex; i <= max; i++) {
             /* Look for first character. */
             if (source[i] != first) {
-                while (++i <= max && source[i] != first);
+                while (++i <= max && source[i] != first) ;
             }
 
             /* Found first character, now look at the rest of v2 */
@@ -1510,7 +1673,8 @@ public class S {
                 int j = i + 1;
                 int end = j + targetCount - 1;
                 for (int k = targetOffset + 1; j < end && source[j]
-                        == target[k]; j++, k++);
+                        == target[k]; j++, k++)
+                    ;
 
                 if (j == end) {
                     /* Found whole string. */
@@ -1607,7 +1771,7 @@ public class S {
         }
     }
 
-    public static enum F {
+    public enum F {
         ;
 
         public static $.F2<String, String, Boolean> STARTS_WITH = new $.F2<String, String, Boolean>() {
@@ -1704,13 +1868,13 @@ public class S {
         /**
          * A split function that use the {@link #COMMON_SEP} to split Strings
          */
-        public static $.F1<String, List<String>> SPLIT = split(COMMON_SEP);
+        public static $.F1<String, List> SPLIT = split(COMMON_SEP);
 
-        public static $.F1<String, List<String>> split(final String sep) {
-            return new $.F1<String, List<String>>() {
+        public static $.F1<String, List> split(final String sep) {
+            return new $.F1<String, List>() {
                 @Override
-                public List<String> apply(String s) throws NotAppliedException, $.Break {
-                    return C.listOf(s.split(sep));
+                public List apply(String s) throws NotAppliedException, $.Break {
+                    return ImmutableStringList.of(s.split(sep));
                 }
             };
         }
@@ -1796,13 +1960,13 @@ public class S {
      * the state of the instance, i.e. decide whether the
      * constructor's buffer has been consumed (via {@link #toString()}
      * method.
-     *
+     * <p>
      * **Note** when buffer is consumed (i.e. the `toString()`) method
      * is called, the length of the buffer will be reset to `0`. However
      * the internal char array will be leave as it is.
-     *
+     * <p>
      * **Note** this class is **NOT** thread safe
-     *
+     * <p>
      * **Note** Unlike {@link StringBuilder} when appending `null`
      * it will **NOT** change the state of this object.
      */
@@ -1856,8 +2020,8 @@ public class S {
         /**
          * Returns the length (character count).
          *
-         * @return  the length of the sequence of characters currently
-         *          represented by this object
+         * @return the length of the sequence of characters currently
+         * represented by this object
          */
         @Override
         public int length() {
@@ -1869,7 +2033,7 @@ public class S {
          * available for newly inserted characters, beyond which an allocation
          * will occur.
          *
-         * @return  the current capacity
+         * @return the current capacity
          */
         public int capacity() {
             return value.length;
@@ -1889,7 +2053,7 @@ public class S {
          * Note that subsequent operations on this object can reduce the
          * actual capacity below that requested here.
          *
-         * @param   minimumCapacity   the minimum desired capacity.
+         * @param minimumCapacity the minimum desired capacity.
          */
         public void ensureCapacity(int minimumCapacity) {
             if (minimumCapacity > 0)
@@ -1926,9 +2090,9 @@ public class S {
          * Will not return a capacity greater than {@code MAX_ARRAY_SIZE}
          * unless the given minimum capacity is greater than that.
          *
-         * @param  minCapacity the desired minimum capacity
+         * @param minCapacity the desired minimum capacity
          * @throws OutOfMemoryError if minCapacity is less than zero or
-         *         greater than Integer.MAX_VALUE
+         *                          greater than Integer.MAX_VALUE
          */
         private int newCapacity(int minCapacity) {
             // overflow-conscious code
@@ -1971,7 +2135,7 @@ public class S {
          * character at index <i>k</i> in the old sequence if <i>k</i> is less
          * than the length of the old character sequence; otherwise, it is the
          * null character {@code '\u005Cu0000'}.
-         *
+         * <p>
          * In other words, if the {@code newLength} argument is less than
          * the current length, the length is changed to the specified length.
          * <p>
@@ -1983,9 +2147,9 @@ public class S {
          * The {@code newLength} argument must be greater than or equal
          * to {@code 0}.
          *
-         * @param      newLength   the new length
-         * @throws     IndexOutOfBoundsException  if the
-         *               {@code newLength} argument is negative.
+         * @param newLength the new length
+         * @throws IndexOutOfBoundsException if the
+         *                                   {@code newLength} argument is negative.
          */
         public void setLength(int newLength) {
             if (newLength < 0)
@@ -2006,15 +2170,15 @@ public class S {
          * <p>
          * The index argument must be greater than or equal to
          * {@code 0}, and less than the length of this sequence.
-         *
+         * <p>
          * <p>If the {@code char} value specified by the index is a
          * <a href="Character.html#unicode">surrogate</a>, the surrogate
          * value is returned.
          *
-         * @param      index   the index of the desired {@code char} value.
-         * @return     the {@code char} value at the specified index.
-         * @throws     IndexOutOfBoundsException  if {@code index} is
-         *             negative or greater than or equal to {@code length()}.
+         * @param index the index of the desired {@code char} value.
+         * @return the {@code char} value at the specified index.
+         * @throws IndexOutOfBoundsException if {@code index} is
+         *                                   negative or greater than or equal to {@code length()}.
          */
         @Override
         public char charAt(int index) {
@@ -2035,7 +2199,7 @@ public class S {
          * index. The index refers to {@code char} values
          * (Unicode code units) and ranges from {@code 0} to
          * {@link #length()}{@code  - 1}.
-         *
+         * <p>
          * <p> If the {@code char} value specified at the given index
          * is in the high-surrogate range, the following index is less
          * than the length of this sequence, and the
@@ -2044,12 +2208,12 @@ public class S {
          * corresponding to this surrogate pair is returned. Otherwise,
          * the {@code char} value at the given index is returned.
          *
-         * @param      index the index to the {@code char} values
-         * @return     the code point value of the character at the
-         *             {@code index}
-         * @exception  IndexOutOfBoundsException  if the {@code index}
-         *             argument is negative or not less than the length of this
-         *             sequence.
+         * @param index the index to the {@code char} values
+         * @return the code point value of the character at the
+         * {@code index}
+         * @throws IndexOutOfBoundsException if the {@code index}
+         *                                   argument is negative or not less than the length of this
+         *                                   sequence.
          */
         public int codePointAt(int index) {
             if ((index < 0) || (index >= count)) {
@@ -2063,7 +2227,7 @@ public class S {
          * index. The index refers to {@code char} values
          * (Unicode code units) and ranges from {@code 1} to {@link
          * #length()}.
-         *
+         * <p>
          * <p> If the {@code char} value at {@code (index - 1)}
          * is in the low-surrogate range, {@code (index - 2)} is not
          * negative, and the {@code char} value at {@code (index -
@@ -2073,11 +2237,11 @@ public class S {
          * 1} is an unpaired low-surrogate or a high-surrogate, the
          * surrogate value is returned.
          *
-         * @param     index the index following the code point that should be returned
-         * @return    the Unicode code point value before the given index.
-         * @exception IndexOutOfBoundsException if the {@code index}
-         *            argument is less than 1 or greater than the length
-         *            of this sequence.
+         * @param index the index following the code point that should be returned
+         * @return the Unicode code point value before the given index.
+         * @throws IndexOutOfBoundsException if the {@code index}
+         *                                   argument is less than 1 or greater than the length
+         *                                   of this sequence.
          */
         public int codePointBefore(int index) {
             int i = index - 1;
@@ -2097,21 +2261,21 @@ public class S {
          * this sequence count as one code point each.
          *
          * @param beginIndex the index to the first {@code char} of
-         * the text range.
-         * @param endIndex the index after the last {@code char} of
-         * the text range.
+         *                   the text range.
+         * @param endIndex   the index after the last {@code char} of
+         *                   the text range.
          * @return the number of Unicode code points in the specified text
          * range
-         * @exception IndexOutOfBoundsException if the
-         * {@code beginIndex} is negative, or {@code endIndex}
-         * is larger than the length of this sequence, or
-         * {@code beginIndex} is larger than {@code endIndex}.
+         * @throws IndexOutOfBoundsException if the
+         *                                   {@code beginIndex} is negative, or {@code endIndex}
+         *                                   is larger than the length of this sequence, or
+         *                                   {@code beginIndex} is larger than {@code endIndex}.
          */
         public int codePointCount(int beginIndex, int endIndex) {
             if (beginIndex < 0 || endIndex > count || beginIndex > endIndex) {
                 throw new IndexOutOfBoundsException();
             }
-            return Character.codePointCount(value, beginIndex, endIndex-beginIndex);
+            return Character.codePointCount(value, beginIndex, endIndex - beginIndex);
         }
 
         /**
@@ -2121,17 +2285,17 @@ public class S {
          * {@code index} and {@code codePointOffset} count as
          * one code point each.
          *
-         * @param index the index to be offset
+         * @param index           the index to be offset
          * @param codePointOffset the offset in code points
          * @return the index within this sequence
-         * @exception IndexOutOfBoundsException if {@code index}
-         *   is negative or larger then the length of this sequence,
-         *   or if {@code codePointOffset} is positive and the subsequence
-         *   starting with {@code index} has fewer than
-         *   {@code codePointOffset} code points,
-         *   or if {@code codePointOffset} is negative and the subsequence
-         *   before {@code index} has fewer than the absolute value of
-         *   {@code codePointOffset} code points.
+         * @throws IndexOutOfBoundsException if {@code index}
+         *                                   is negative or larger then the length of this sequence,
+         *                                   or if {@code codePointOffset} is positive and the subsequence
+         *                                   starting with {@code index} has fewer than
+         *                                   {@code codePointOffset} code points,
+         *                                   or if {@code codePointOffset} is negative and the subsequence
+         *                                   before {@code index} has fewer than the absolute value of
+         *                                   {@code codePointOffset} code points.
          */
         public int offsetByCodePoints(int index, int codePointOffset) {
             if (index < 0 || index > count) {
@@ -2153,24 +2317,23 @@ public class S {
          * dstbegin + (srcEnd-srcBegin) - 1
          * }</pre>
          *
-         * @param      srcBegin   start copying at this offset.
-         * @param      srcEnd     stop copying at this offset.
-         * @param      dst        the array to copy the data into.
-         * @param      dstBegin   offset into {@code dst}.
-         * @throws     IndexOutOfBoundsException  if any of the following is true:
-         *             <ul>
-         *             <li>{@code srcBegin} is negative
-         *             <li>{@code dstBegin} is negative
-         *             <li>the {@code srcBegin} argument is greater than
-         *             the {@code srcEnd} argument.
-         *             <li>{@code srcEnd} is greater than
-         *             {@code this.length()}.
-         *             <li>{@code dstBegin+srcEnd-srcBegin} is greater than
-         *             {@code dst.length}
-         *             </ul>
+         * @param srcBegin start copying at this offset.
+         * @param srcEnd   stop copying at this offset.
+         * @param dst      the array to copy the data into.
+         * @param dstBegin offset into {@code dst}.
+         * @throws IndexOutOfBoundsException if any of the following is true:
+         *                                   <ul>
+         *                                   <li>{@code srcBegin} is negative
+         *                                   <li>{@code dstBegin} is negative
+         *                                   <li>the {@code srcBegin} argument is greater than
+         *                                   the {@code srcEnd} argument.
+         *                                   <li>{@code srcEnd} is greater than
+         *                                   {@code this.length()}.
+         *                                   <li>{@code dstBegin+srcEnd-srcBegin} is greater than
+         *                                   {@code dst.length}
+         *                                   </ul>
          */
-        public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)
-        {
+        public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin) {
             if (srcBegin < 0)
                 throw new StringIndexOutOfBoundsException(srcBegin);
             if ((srcEnd < 0) || (srcEnd > count))
@@ -2189,10 +2352,10 @@ public class S {
          * The index argument must be greater than or equal to
          * {@code 0}, and less than the length of this sequence.
          *
-         * @param      index   the index of the character to modify.
-         * @param      ch      the new character.
-         * @throws     IndexOutOfBoundsException  if {@code index} is
-         *             negative or greater than or equal to {@code length()}.
+         * @param index the index of the character to modify.
+         * @param ch    the new character.
+         * @throws IndexOutOfBoundsException if {@code index} is
+         *                                   negative or greater than or equal to {@code length()}.
          */
         public void setCharAt(int index, char ch) {
             if ((index < 0) || (index >= count))
@@ -2215,8 +2378,8 @@ public class S {
          * and the characters of that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   obj   an {@code Object}.
-         * @return  a reference to this object.
+         * @param obj an {@code Object}.
+         * @return a reference to this object.
          */
         public Buffer append(Object obj) {
             return append(String.valueOf(obj));
@@ -2254,8 +2417,8 @@ public class S {
          * than <i>n</i>; otherwise, it is equal to the character at index
          * <i>k-n</i> in the argument {@code str}.
          *
-         * @param   str   a string.
-         * @return  a reference to this object.
+         * @param str a string.
+         * @return a reference to this object.
          */
         public Buffer append(String str) {
             if (str == null)
@@ -2407,9 +2570,9 @@ public class S {
             if (s == null)
                 return appendNull();
             if (s instanceof String)
-                return this.append((String)s);
+                return this.append((String) s);
             if (s instanceof Buffer)
-                return this.append((Buffer)s);
+                return this.append((Buffer) s);
 
             return this.append(s, 0, s.length());
         }
@@ -2425,9 +2588,9 @@ public class S {
             if (s == null)
                 return prependNull();
             if (s instanceof String)
-                return this.prepend((String)s);
+                return this.prepend((String) s);
             if (s instanceof Buffer)
-                return this.prepend((Buffer)s);
+                return this.prepend((Buffer) s);
             if (s instanceof StringBuffer) {
                 return this.prepend((StringBuffer) s);
             }
@@ -2474,14 +2637,14 @@ public class S {
          * characters as if the s parameter was a sequence containing the four
          * characters {@code "null"}.
          *
-         * @param   s the sequence to append.
-         * @param   start   the starting index of the subsequence to be appended.
-         * @param   end     the end index of the subsequence to be appended.
-         * @return  a reference to this object.
-         * @throws     IndexOutOfBoundsException if
-         *             {@code start} is negative, or
-         *             {@code start} is greater than {@code end} or
-         *             {@code end} is greater than {@code s.length()}
+         * @param s     the sequence to append.
+         * @param start the starting index of the subsequence to be appended.
+         * @param end   the end index of the subsequence to be appended.
+         * @return a reference to this object.
+         * @throws IndexOutOfBoundsException if
+         *                                   {@code start} is negative, or
+         *                                   {@code start} is greater than {@code end} or
+         *                                   {@code end} is greater than {@code s.length()}
          */
         @Override
         public Buffer append(CharSequence s, int start, int end) {
@@ -2512,8 +2675,8 @@ public class S {
          * and the characters of that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   str   the characters to be appended.
-         * @return  a reference to this object.
+         * @param str the characters to be appended.
+         * @return a reference to this object.
          */
         public Buffer append(char[] str) {
             int len = str.length;
@@ -2556,17 +2719,16 @@ public class S {
          * by the value of {@code len}.
          * <p>
          * The overall effect is exactly as if the arguments were converted
-         * to a string by the method {@link String#valueOf(char[],int,int)},
+         * to a string by the method {@link String#valueOf(char[], int, int)},
          * and the characters of that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   str      the characters to be appended.
-         * @param   offset   the index of the first {@code char} to append.
-         * @param   len      the number of {@code char}s to append.
-         * @return  a reference to this object.
-         * @throws IndexOutOfBoundsException
-         *         if {@code offset < 0} or {@code len < 0}
-         *         or {@code offset+len > str.length}
+         * @param str    the characters to be appended.
+         * @param offset the index of the first {@code char} to append.
+         * @param len    the number of {@code char}s to append.
+         * @return a reference to this object.
+         * @throws IndexOutOfBoundsException if {@code offset < 0} or {@code len < 0}
+         *                                   or {@code offset+len > str.length}
          */
         public Buffer append(char str[], int offset, int len) {
             if (len > 0)                // let arraycopy report AIOOBE for len < 0
@@ -2585,8 +2747,8 @@ public class S {
          * and the characters of that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   b   a {@code boolean}.
-         * @return  a reference to this object.
+         * @param b a {@code boolean}.
+         * @return a reference to this object.
          */
         public Buffer prepend(boolean b) {
             if (b) {
@@ -2656,8 +2818,8 @@ public class S {
          * and the character in that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   c   a {@code char}.
-         * @return  a reference to this object.
+         * @param c a {@code char}.
+         * @return a reference to this object.
          */
         @Override
         public Buffer append(char c) {
@@ -2696,8 +2858,8 @@ public class S {
          * and the characters of that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   i   an {@code int}.
-         * @return  a reference to this object.
+         * @param i an {@code int}.
+         * @return a reference to this object.
          */
         public Buffer append(int i) {
             if (i == Integer.MIN_VALUE) {
@@ -2755,8 +2917,8 @@ public class S {
          * and the characters of that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   l   a {@code long}.
-         * @return  a reference to this object.
+         * @param l a {@code long}.
+         * @return a reference to this object.
          */
         public Buffer append(long l) {
             if (l == Long.MIN_VALUE) {
@@ -2811,8 +2973,8 @@ public class S {
          * and the characters of that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   f   a {@code float}.
-         * @return  a reference to this object.
+         * @param f a {@code float}.
+         * @return a reference to this object.
          */
         public Buffer append(float f) {
             return this.append(String.valueOf(f));
@@ -2845,8 +3007,8 @@ public class S {
          * and the characters of that string were then
          * {@link #append(String) appended} to this character sequence.
          *
-         * @param   d   a {@code double}.
-         * @return  a reference to this object.
+         * @param d a {@code double}.
+         * @return a reference to this object.
          */
         public Buffer append(double d) {
             return this.append(String.valueOf(d));
@@ -2858,7 +3020,6 @@ public class S {
         public Buffer a(double d) {
             return append(d);
         }
-
 
 
         public Buffer prepend(double d) {
@@ -2879,12 +3040,12 @@ public class S {
          * sequence if no such character exists. If
          * {@code start} is equal to {@code end}, no changes are made.
          *
-         * @param      start  The beginning index, inclusive.
-         * @param      end    The ending index, exclusive.
-         * @return     This object.
-         * @throws     StringIndexOutOfBoundsException  if {@code start}
-         *             is negative, greater than {@code length()}, or
-         *             greater than {@code end}.
+         * @param start The beginning index, inclusive.
+         * @param end   The ending index, exclusive.
+         * @return This object.
+         * @throws StringIndexOutOfBoundsException if {@code start}
+         *                                         is negative, greater than {@code length()}, or
+         *                                         greater than {@code end}.
          */
         public Buffer delete(int start, int end) {
             if (start < 0)
@@ -2895,7 +3056,7 @@ public class S {
                 throw new StringIndexOutOfBoundsException();
             int len = end - start;
             if (len > 0) {
-                System.arraycopy(value, start+len, value, start, count-end);
+                System.arraycopy(value, start + len, value, start, count - end);
                 count -= len;
             }
             return this;
@@ -2904,21 +3065,21 @@ public class S {
         /**
          * Appends the string representation of the {@code codePoint}
          * argument to this sequence.
-         *
+         * <p>
          * <p> The argument is appended to the contents of this sequence.
          * The length of this sequence increases by
          * {@link Character#charCount(int) Character.charCount(codePoint)}.
-         *
+         * <p>
          * <p> The overall effect is exactly as if the argument were
          * converted to a {@code char} array by the method
          * {@link Character#toChars(int)} and the character in that array
          * were then {@link #append(char[]) appended} to this character
          * sequence.
          *
-         * @param   codePoint   a Unicode code point
-         * @return  a reference to this object.
-         * @exception IllegalArgumentException if the specified
-         * {@code codePoint} isn't a valid Unicode code point
+         * @param codePoint a Unicode code point
+         * @return a reference to this object.
+         * @throws IllegalArgumentException if the specified
+         *                                  {@code codePoint} isn't a valid Unicode code point
          */
         public Buffer appendCodePoint(int codePoint) {
             final int count = this.count;
@@ -2940,7 +3101,7 @@ public class S {
         /**
          * Removes the {@code char} at the specified position in this
          * sequence. This sequence is shortened by one {@code char}.
-         *
+         * <p>
          * <p>Note: If the character at the given index is a supplementary
          * character, this method does not remove the entire character. If
          * correct handling of supplementary characters is required,
@@ -2948,16 +3109,16 @@ public class S {
          * {@code Character.charCount(thisSequence.codePointAt(index))},
          * where {@code thisSequence} is this sequence.
          *
-         * @param       index  Index of {@code char} to remove
-         * @return      This object.
-         * @throws      StringIndexOutOfBoundsException  if the {@code index}
-         *              is negative or greater than or equal to
-         *              {@code length()}.
+         * @param index Index of {@code char} to remove
+         * @return This object.
+         * @throws StringIndexOutOfBoundsException if the {@code index}
+         *                                         is negative or greater than or equal to
+         *                                         {@code length()}.
          */
         public Buffer deleteCharAt(int index) {
             if ((index < 0) || (index >= count))
                 throw new StringIndexOutOfBoundsException(index);
-            System.arraycopy(value, index+1, value, index, count-index-1);
+            System.arraycopy(value, index + 1, value, index, count - index - 1);
             count--;
             return this;
         }
@@ -2973,13 +3134,13 @@ public class S {
          * sequence will be lengthened to accommodate the
          * specified String if necessary.)
          *
-         * @param      start    The beginning index, inclusive.
-         * @param      end      The ending index, exclusive.
-         * @param      str   String that will replace previous contents.
-         * @return     This object.
-         * @throws     StringIndexOutOfBoundsException  if {@code start}
-         *             is negative, greater than {@code length()}, or
-         *             greater than {@code end}.
+         * @param start The beginning index, inclusive.
+         * @param end   The ending index, exclusive.
+         * @param str   String that will replace previous contents.
+         * @return This object.
+         * @throws StringIndexOutOfBoundsException if {@code start}
+         *                                         is negative, greater than {@code length()}, or
+         *                                         greater than {@code end}.
          */
         public Buffer replace(int start, int end, String str) {
             if (start < 0)
@@ -3008,10 +3169,10 @@ public class S {
          * substring begins at the specified index and extends to the end of
          * this sequence.
          *
-         * @param      start    The beginning index, inclusive.
-         * @return     The new string.
-         * @throws     StringIndexOutOfBoundsException  if {@code start} is
-         *             less than zero, or greater than the length of this object.
+         * @param start The beginning index, inclusive.
+         * @return The new string.
+         * @throws StringIndexOutOfBoundsException if {@code start} is
+         *                                         less than zero, or greater than the length of this object.
          */
         public String substring(int start) {
             return substring(start, count);
@@ -3019,28 +3180,26 @@ public class S {
 
         /**
          * Returns a new character sequence that is a subsequence of this sequence.
-         *
+         * <p>
          * <p> An invocation of this method of the form
-         *
+         * <p>
          * <pre>{@code
          * sb.subSequence(begin,&nbsp;end)}</pre>
-         *
+         * <p>
          * behaves in exactly the same way as the invocation
-         *
+         * <p>
          * <pre>{@code
          * sb.substring(begin,&nbsp;end)}</pre>
-         *
+         * <p>
          * This method is provided so that this class can
          * implement the {@link CharSequence} interface.
          *
-         * @param      start   the start index, inclusive.
-         * @param      end     the end index, exclusive.
-         * @return     the specified subsequence.
-         *
-         * @throws  IndexOutOfBoundsException
-         *          if {@code start} or {@code end} are negative,
-         *          if {@code end} is greater than {@code length()},
-         *          or if {@code start} is greater than {@code end}
+         * @param start the start index, inclusive.
+         * @param end   the end index, exclusive.
+         * @return the specified subsequence.
+         * @throws IndexOutOfBoundsException if {@code start} or {@code end} are negative,
+         *                                   if {@code end} is greater than {@code length()},
+         *                                   or if {@code start} is greater than {@code end}
          */
         @Override
         public CharSequence subSequence(int start, int end) {
@@ -3053,13 +3212,13 @@ public class S {
          * substring begins at the specified {@code start} and
          * extends to the character at index {@code end - 1}.
          *
-         * @param      start    The beginning index, inclusive.
-         * @param      end      The ending index, exclusive.
-         * @return     The new string.
-         * @throws     StringIndexOutOfBoundsException  if {@code start}
-         *             or {@code end} are negative or greater than
-         *             {@code length()}, or {@code start} is
-         *             greater than {@code end}.
+         * @param start The beginning index, inclusive.
+         * @param end   The ending index, exclusive.
+         * @return The new string.
+         * @throws StringIndexOutOfBoundsException if {@code start}
+         *                                         or {@code end} are negative or greater than
+         *                                         {@code length()}, or {@code start} is
+         *                                         greater than {@code end}.
          */
         public String substring(int start, int end) {
             if (start < 0)
@@ -3079,22 +3238,21 @@ public class S {
          * the position indicated by {@code index}. The length of this
          * sequence increases by {@code len} {@code char}s.
          *
-         * @param      index    position at which to insert subarray.
-         * @param      str       A {@code char} array.
-         * @param      offset   the index of the first {@code char} in subarray to
-         *             be inserted.
-         * @param      len      the number of {@code char}s in the subarray to
-         *             be inserted.
-         * @return     This object
-         * @throws     StringIndexOutOfBoundsException  if {@code index}
-         *             is negative or greater than {@code length()}, or
-         *             {@code offset} or {@code len} are negative, or
-         *             {@code (offset+len)} is greater than
-         *             {@code str.length}.
+         * @param index  position at which to insert subarray.
+         * @param str    A {@code char} array.
+         * @param offset the index of the first {@code char} in subarray to
+         *               be inserted.
+         * @param len    the number of {@code char}s in the subarray to
+         *               be inserted.
+         * @return This object
+         * @throws StringIndexOutOfBoundsException if {@code index}
+         *                                         is negative or greater than {@code length()}, or
+         *                                         {@code offset} or {@code len} are negative, or
+         *                                         {@code (offset+len)} is greater than
+         *                                         {@code str.length}.
          */
         public Buffer insert(int index, char[] str, int offset,
-                             int len)
-        {
+                             int len) {
             if ((index < 0) || (index > length()))
                 throw new StringIndexOutOfBoundsException(index);
             if ((offset < 0) || (len < 0) || (offset > str.length - len))
@@ -3115,17 +3273,17 @@ public class S {
          * The overall effect is exactly as if the second argument were
          * converted to a string by the method {@link String#valueOf(Object)},
          * and the characters of that string were then
-         * {@link #insert(int,String) inserted} into this character
+         * {@link #insert(int, String) inserted} into this character
          * sequence at the indicated offset.
          * <p>
          * The {@code offset} argument must be greater than or equal to
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      obj      an {@code Object}.
-         * @return     a reference to this object.
-         * @throws     StringIndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param obj    an {@code Object}.
+         * @return a reference to this object.
+         * @throws StringIndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, Object obj) {
             return insert(offset, String.valueOf(obj));
@@ -3157,10 +3315,10 @@ public class S {
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      str      a string.
-         * @return     a reference to this object.
-         * @throws     StringIndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param str    a string.
+         * @return a reference to this object.
+         * @throws StringIndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, String str) {
             if ((offset < 0) || (offset > length()))
@@ -3188,17 +3346,17 @@ public class S {
          * The overall effect is exactly as if the second argument were
          * converted to a string by the method {@link String#valueOf(char[])},
          * and the characters of that string were then
-         * {@link #insert(int,String) inserted} into this character
+         * {@link #insert(int, String) inserted} into this character
          * sequence at the indicated offset.
          * <p>
          * The {@code offset} argument must be greater than or equal to
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      str      a character array.
-         * @return     a reference to this object.
-         * @throws     StringIndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param str    a character array.
+         * @return a reference to this object.
+         * @throws StringIndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, char[] str) {
             if ((offset < 0) || (offset > length()))
@@ -3221,22 +3379,22 @@ public class S {
          * <p>
          * The result of this method is exactly the same as if it were an
          * invocation of this object's
-         * {@link #insert(int,CharSequence,int,int) insert}(dstOffset, s, 0, s.length())
+         * {@link #insert(int, CharSequence, int, int) insert}(dstOffset, s, 0, s.length())
          * method.
-         *
+         * <p>
          * <p>If {@code s} is {@code null}, then the four characters
          * {@code "null"} are inserted into this sequence.
          *
-         * @param      dstOffset   the offset.
-         * @param      s the sequence to be inserted
-         * @return     a reference to this object.
-         * @throws     IndexOutOfBoundsException  if the offset is invalid.
+         * @param dstOffset the offset.
+         * @param s         the sequence to be inserted
+         * @return a reference to this object.
+         * @throws IndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int dstOffset, CharSequence s) {
             if (s == null)
                 s = "null";
             if (s instanceof String)
-                return this.insert(dstOffset, (String)s);
+                return this.insert(dstOffset, (String) s);
             return this.insert(dstOffset, s, 0, s.length());
         }
 
@@ -3268,28 +3426,28 @@ public class S {
          * {@code end}.
          * <p>The end argument must be greater than or equal to
          * {@code start}, and less than or equal to the length of s.
-         *
+         * <p>
          * <p>If {@code s} is {@code null}, then this method inserts
          * characters as if the s parameter was a sequence containing the four
          * characters {@code "null"}.
          *
-         * @param      dstOffset   the offset in this sequence.
-         * @param      s       the sequence to be inserted.
-         * @param      start   the starting index of the subsequence to be inserted.
-         * @param      end     the end index of the subsequence to be inserted.
-         * @return     a reference to this object.
-         * @throws     IndexOutOfBoundsException  if {@code dstOffset}
-         *             is negative or greater than {@code this.length()}, or
-         *              {@code start} or {@code end} are negative, or
-         *              {@code start} is greater than {@code end} or
-         *              {@code end} is greater than {@code s.length()}
+         * @param dstOffset the offset in this sequence.
+         * @param s         the sequence to be inserted.
+         * @param start     the starting index of the subsequence to be inserted.
+         * @param end       the end index of the subsequence to be inserted.
+         * @return a reference to this object.
+         * @throws IndexOutOfBoundsException if {@code dstOffset}
+         *                                   is negative or greater than {@code this.length()}, or
+         *                                   {@code start} or {@code end} are negative, or
+         *                                   {@code start} is greater than {@code end} or
+         *                                   {@code end} is greater than {@code s.length()}
          */
         public Buffer insert(int dstOffset, CharSequence s,
                              int start, int end) {
             if (s == null)
                 s = "null";
             if ((dstOffset < 0) || (dstOffset > this.length()))
-                throw new IndexOutOfBoundsException("dstOffset "+dstOffset);
+                throw new IndexOutOfBoundsException("dstOffset " + dstOffset);
             if ((start < 0) || (end < 0) || (start > end) || (end > s.length()))
                 throw new IndexOutOfBoundsException(
                         "start " + start + ", end " + end + ", s.length() "
@@ -3298,7 +3456,7 @@ public class S {
             ensureCapacityInternal(count + len);
             System.arraycopy(value, dstOffset, value, dstOffset + len,
                     count - dstOffset);
-            for (int i=start; i<end; i++)
+            for (int i = start; i < end; i++)
                 value[dstOffset++] = s.charAt(i);
             count += len;
             return this;
@@ -3311,17 +3469,17 @@ public class S {
          * The overall effect is exactly as if the second argument were
          * converted to a string by the method {@link String#valueOf(boolean)},
          * and the characters of that string were then
-         * {@link #insert(int,String) inserted} into this character
+         * {@link #insert(int, String) inserted} into this character
          * sequence at the indicated offset.
          * <p>
          * The {@code offset} argument must be greater than or equal to
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      b        a {@code boolean}.
-         * @return     a reference to this object.
-         * @throws     StringIndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param b      a {@code boolean}.
+         * @return a reference to this object.
+         * @throws StringIndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, boolean b) {
             return insert(offset, String.valueOf(b));
@@ -3334,17 +3492,17 @@ public class S {
          * The overall effect is exactly as if the second argument were
          * converted to a string by the method {@link String#valueOf(char)},
          * and the character in that string were then
-         * {@link #insert(int,String) inserted} into this character
+         * {@link #insert(int, String) inserted} into this character
          * sequence at the indicated offset.
          * <p>
          * The {@code offset} argument must be greater than or equal to
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      c        a {@code char}.
-         * @return     a reference to this object.
-         * @throws     IndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param c      a {@code char}.
+         * @return a reference to this object.
+         * @throws IndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, char c) {
             ensureCapacityInternal(count + 1);
@@ -3361,17 +3519,17 @@ public class S {
          * The overall effect is exactly as if the second argument were
          * converted to a string by the method {@link String#valueOf(int)},
          * and the characters of that string were then
-         * {@link #insert(int,String) inserted} into this character
+         * {@link #insert(int, String) inserted} into this character
          * sequence at the indicated offset.
          * <p>
          * The {@code offset} argument must be greater than or equal to
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      i        an {@code int}.
-         * @return     a reference to this object.
-         * @throws     StringIndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param i      an {@code int}.
+         * @return a reference to this object.
+         * @throws StringIndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, int i) {
             return insert(offset, String.valueOf(i));
@@ -3384,17 +3542,17 @@ public class S {
          * The overall effect is exactly as if the second argument were
          * converted to a string by the method {@link String#valueOf(long)},
          * and the characters of that string were then
-         * {@link #insert(int,String) inserted} into this character
+         * {@link #insert(int, String) inserted} into this character
          * sequence at the indicated offset.
          * <p>
          * The {@code offset} argument must be greater than or equal to
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      l        a {@code long}.
-         * @return     a reference to this object.
-         * @throws     StringIndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param l      a {@code long}.
+         * @return a reference to this object.
+         * @throws StringIndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, long l) {
             return insert(offset, String.valueOf(l));
@@ -3407,17 +3565,17 @@ public class S {
          * The overall effect is exactly as if the second argument were
          * converted to a string by the method {@link String#valueOf(float)},
          * and the characters of that string were then
-         * {@link #insert(int,String) inserted} into this character
+         * {@link #insert(int, String) inserted} into this character
          * sequence at the indicated offset.
          * <p>
          * The {@code offset} argument must be greater than or equal to
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      f        a {@code float}.
-         * @return     a reference to this object.
-         * @throws     StringIndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param f      a {@code float}.
+         * @return a reference to this object.
+         * @throws StringIndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, float f) {
             return insert(offset, String.valueOf(f));
@@ -3430,17 +3588,17 @@ public class S {
          * The overall effect is exactly as if the second argument were
          * converted to a string by the method {@link String#valueOf(double)},
          * and the characters of that string were then
-         * {@link #insert(int,String) inserted} into this character
+         * {@link #insert(int, String) inserted} into this character
          * sequence at the indicated offset.
          * <p>
          * The {@code offset} argument must be greater than or equal to
          * {@code 0}, and less than or equal to the {@linkplain #length() length}
          * of this sequence.
          *
-         * @param      offset   the offset.
-         * @param      d        a {@code double}.
-         * @return     a reference to this object.
-         * @throws     StringIndexOutOfBoundsException  if the offset is invalid.
+         * @param offset the offset.
+         * @param d      a {@code double}.
+         * @return a reference to this object.
+         * @throws StringIndexOutOfBoundsException if the offset is invalid.
          */
         public Buffer insert(int offset, double d) {
             return insert(offset, String.valueOf(d));
@@ -3455,11 +3613,11 @@ public class S {
          * }</pre>
          * is {@code true}.
          *
-         * @param   str   any string.
-         * @return  if the string argument occurs as a substring within this
-         *          object, then the index of the first character of the first
-         *          such substring is returned; if it does not occur as a
-         *          substring, {@code -1} is returned.
+         * @param str any string.
+         * @return if the string argument occurs as a substring within this
+         * object, then the index of the first character of the first
+         * such substring is returned; if it does not occur as a
+         * substring, {@code -1} is returned.
          */
         public int indexOf(String str) {
             return indexOf(str, 0);
@@ -3475,10 +3633,10 @@ public class S {
          * }</pre>
          * If no such value of <i>k</i> exists, then -1 is returned.
          *
-         * @param   str         the substring for which to search.
-         * @param   fromIndex   the index from which to start the search.
-         * @return  the index within this string of the first occurrence of the
-         *          specified substring, starting at the specified index.
+         * @param str       the substring for which to search.
+         * @param fromIndex the index from which to start the search.
+         * @return the index within this string of the first occurrence of the
+         * specified substring, starting at the specified index.
          */
         public int indexOf(String str, int fromIndex) {
             char[] buf = str.toCharArray();
@@ -3495,11 +3653,11 @@ public class S {
          * }</pre>
          * is true.
          *
-         * @param   str   the substring to search for.
-         * @return  if the string argument occurs one or more times as a substring
-         *          within this object, then the index of the first character of
-         *          the last such substring is returned. If it does not occur as
-         *          a substring, {@code -1} is returned.
+         * @param str the substring to search for.
+         * @return if the string argument occurs one or more times as a substring
+         * within this object, then the index of the first character of
+         * the last such substring is returned. If it does not occur as
+         * a substring, {@code -1} is returned.
          */
         public int lastIndexOf(String str) {
             return lastIndexOf(str, count);
@@ -3515,10 +3673,10 @@ public class S {
          * }</pre>
          * If no such value of <i>k</i> exists, then -1 is returned.
          *
-         * @param   str         the substring to search for.
-         * @param   fromIndex   the index to start the search from.
-         * @return  the index within this sequence of the last occurrence of the
-         *          specified substring.
+         * @param str       the substring to search for.
+         * @param fromIndex the index to start the search from.
+         * @return the index within this sequence of the last occurrence of the
+         * specified substring.
          */
         public int lastIndexOf(String str, int fromIndex) {
             char[] buf = str.toCharArray();
@@ -3531,26 +3689,26 @@ public class S {
          * sequence, these are treated as single characters for the
          * reverse operation. Thus, the order of the high-low surrogates
          * is never reversed.
-         *
+         * <p>
          * Let <i>n</i> be the character length of this character sequence
          * (not the length in {@code char} values) just prior to
          * execution of the {@code reverse} method. Then the
          * character at index <i>k</i> in the new character sequence is
          * equal to the character at index <i>n-k-1</i> in the old
          * character sequence.
-         *
+         * <p>
          * <p>Note that the reverse operation may result in producing
          * surrogate pairs that were unpaired low-surrogates and
          * high-surrogates before the operation. For example, reversing
          * "\u005CuDC00\u005CuD800" produces "\u005CuD800\u005CuDC00" which is
          * a valid surrogate pair.
          *
-         * @return  a reference to this object.
+         * @return a reference to this object.
          */
         public Buffer reverse() {
             boolean hasSurrogates = false;
             int n = count - 1;
-            for (int j = (n-1) >> 1; j >= 0; j--) {
+            for (int j = (n - 1) >> 1; j >= 0; j--) {
                 int k = n - j;
                 char cj = value[j];
                 char ck = value[k];
@@ -3567,7 +3725,9 @@ public class S {
             return this;
         }
 
-        /** Outlined helper method for reverse() */
+        /**
+         * Outlined helper method for reverse()
+         */
         private void reverseAllValidSurrogatePairs() {
             for (int i = 0; i < count - 1; i++) {
                 char c2 = value[i];
@@ -3588,12 +3748,12 @@ public class S {
          * object. This {@code String} is then returned. Subsequent
          * changes to this sequence do not affect the contents of the
          * {@code String}.
-         *
+         * <p>
          * After this method is called, the buffer of this Buffer
          * instance will be reset to 0, meaning this Buffer is
          * consumed
          *
-         * @return  a string representation of this sequence of characters.
+         * @return a string representation of this sequence of characters.
          */
         @Override
         public String toString() {
@@ -3611,18 +3771,18 @@ public class S {
         }
 
 
-        final static int [] sizeTable = { 9, 99, 999, 9999, 99999, 999999, 9999999,
-                99999999, 999999999, Integer.MAX_VALUE };
+        final static int[] sizeTable = {9, 99, 999, 9999, 99999, 999999, 9999999,
+                99999999, 999999999, Integer.MAX_VALUE};
 
         // Requires positive x
         static int stringSize(int x) {
-            for (int i=0; ; i++)
+            for (int i = 0; ; i++)
                 if (x <= sizeTable[i])
-                    return i+1;
+                    return i + 1;
         }
 
 
-        final static char [] DigitTens = {
+        final static char[] DigitTens = {
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
                 '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
@@ -3633,9 +3793,9 @@ public class S {
                 '7', '7', '7', '7', '7', '7', '7', '7', '7', '7',
                 '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
                 '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
-        } ;
+        };
 
-        final static char [] DigitOnes = {
+        final static char[] DigitOnes = {
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -3646,18 +3806,18 @@ public class S {
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        } ;
+        };
 
         /**
          * All possible chars for representing a number as a String
          */
         final static char[] digits = {
-                '0' , '1' , '2' , '3' , '4' , '5' ,
-                '6' , '7' , '8' , '9' , 'a' , 'b' ,
-                'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
-                'i' , 'j' , 'k' , 'l' , 'm' , 'n' ,
-                'o' , 'p' , 'q' , 'r' , 's' , 't' ,
-                'u' , 'v' , 'w' , 'x' , 'y' , 'z'
+                '0', '1', '2', '3', '4', '5',
+                '6', '7', '8', '9', 'a', 'b',
+                'c', 'd', 'e', 'f', 'g', 'h',
+                'i', 'j', 'k', 'l', 'm', 'n',
+                'o', 'p', 'q', 'r', 's', 't',
+                'u', 'v', 'w', 'x', 'y', 'z'
         };
 
         /**
@@ -3666,7 +3826,7 @@ public class S {
          * the buffer backwards starting with the least significant
          * digit at the specified index (exclusive), and working
          * backwards from there.
-         *
+         * <p>
          * Will fail if i == Integer.MIN_VALUE
          */
         static void getChars(int i, int index, char[] buf) {
@@ -3685,31 +3845,31 @@ public class S {
                 // really: r = i - (q * 100);
                 r = i - ((q << 6) + (q << 5) + (q << 2));
                 i = q;
-                buf [--charPos] = DigitOnes[r];
-                buf [--charPos] = DigitTens[r];
+                buf[--charPos] = DigitOnes[r];
+                buf[--charPos] = DigitTens[r];
             }
 
             // Fall thru to fast mode for smaller numbers
             // assert(i <= 65536, i);
-            for (;;) {
-                q = (i * 52429) >>> (16+3);
+            for (; ; ) {
+                q = (i * 52429) >>> (16 + 3);
                 r = i - ((q << 3) + (q << 1));  // r = i-(q*10) ...
-                buf [--charPos] = digits [r];
+                buf[--charPos] = digits[r];
                 i = q;
                 if (i == 0) break;
             }
             if (sign != 0) {
-                buf [--charPos] = sign;
+                buf[--charPos] = sign;
             }
         }
 
         // Requires positive x
         static int stringSize(long x) {
             long p = 10;
-            for (int i=1; i<19; i++) {
+            for (int i = 1; i < 19; i++) {
                 if (x < p)
                     return i;
-                p = 10*p;
+                p = 10 * p;
             }
             return 19;
         }
@@ -3721,7 +3881,7 @@ public class S {
          * the buffer backwards starting with the least significant
          * digit at the specified index (exclusive), and working
          * backwards from there.
-         *
+         * <p>
          * Will fail if i == Long.MIN_VALUE
          */
         static void getChars(long i, int index, char[] buf) {
@@ -3739,7 +3899,7 @@ public class S {
             while (i > Integer.MAX_VALUE) {
                 q = i / 100;
                 // really: r = i - (q * 100);
-                r = (int)(i - ((q << 6) + (q << 5) + (q << 2)));
+                r = (int) (i - ((q << 6) + (q << 5) + (q << 2)));
                 i = q;
                 buf[--charPos] = DigitOnes[r];
                 buf[--charPos] = DigitTens[r];
@@ -3747,7 +3907,7 @@ public class S {
 
             // Get 2 digits/iteration using ints
             int q2;
-            int i2 = (int)i;
+            int i2 = (int) i;
             while (i2 >= 65536) {
                 q2 = i2 / 100;
                 // really: r = i2 - (q * 100);
@@ -3759,8 +3919,8 @@ public class S {
 
             // Fall thru to fast mode for smaller numbers
             // assert(i2 <= 65536, i2);
-            for (;;) {
-                q2 = (i2 * 52429) >>> (16+3);
+            for (; ; ) {
+                q2 = (i2 * 52429) >>> (16 + 3);
                 r = i2 - ((q2 << 3) + (q2 << 1));  // r = i2-(q2*10) ...
                 buf[--charPos] = digits[r];
                 i2 = q2;
@@ -3773,8 +3933,183 @@ public class S {
 
         static void toSurrogates(int codePoint, char[] dst, int index) {
             // We write elements "backwards" to guarantee all-or-nothing
-            dst[index+1] = lowSurrogate(codePoint);
+            dst[index + 1] = lowSurrogate(codePoint);
             dst[index] = highSurrogate(codePoint);
         }
+    }
+
+    public static class Binary extends $.T2<String, String> {
+        public Binary(String _1, String _2) {
+            super(_1, _2);
+        }
+
+        public Binary($.T2<String, String> t2) {
+            super(t2._1, t2._2);
+        }
+    }
+
+    public static class T2 extends Binary {
+        public T2(String _1, String _2) {
+            super(_1, _2);
+        }
+
+        public T2(Osgl.T2<String, String> t2) {
+            super(t2);
+        }
+    }
+
+    public static class Triple extends $.T3<String, String, String> {
+        public Triple(String _1, String _2, String _3) {
+            super(_1, _2, _3);
+        }
+        public Triple($.Triple<String, String, String> t3) {
+            super(t3._1, t3._2, t3._3);
+        }
+    }
+
+    public static class T3 extends Triple {
+        public T3(String _1, String _2, String _3) {
+            super(_1, _2, _3);
+        }
+
+        public T3(Osgl.Triple<String, String, String> t3) {
+            super(t3);
+        }
+    }
+
+
+    public static class Quadruple extends $.T4<String, String, String, String> {
+        public Quadruple(String _1, String _2, String _3, String _4) {
+            super(_1, _2, _3, _4);
+        }
+        public Quadruple($.Quadruple<String, String, String, String> t4) {
+            super(t4._1, t4._2, t4._3, t4._4);
+        }
+    }
+
+    public static class T4 extends Quadruple {
+        public T4(String _1, String _2, String _3, String _4) {
+            super(_1, _2, _3, _4);
+        }
+
+        public T4(Osgl.Quadruple<String, String, String, String> t4) {
+            super(t4);
+        }
+    }
+
+    public static class Quintuple extends $.T5<String, String, String, String, String> {
+        public Quintuple(String _1, String _2, String _3, String _4, String _5) {
+            super(_1, _2, _3, _4, _5);
+        }
+        public Quintuple($.Quintuple<String, String, String, String, String> t5) {
+            super(t5._1, t5._2, t5._3, t5._4, t5._5);
+        }
+    }
+
+    public static class T5 extends Quintuple {
+        public T5(String _1, String _2, String _3, String _4, String _5) {
+            super(_1, _2, _3, _4, _5);
+        }
+
+        public T5(Osgl.Quintuple<String, String, String, String, String> t5) {
+            super(t5);
+        }
+    }
+
+    public interface List extends C.List<String> {
+    }
+
+    public static class Val extends $.Val<String> implements List {
+        public Val(String value) {
+            super(value);
+        }
+    }
+
+    public static class Var extends $.Var<String> implements List {
+        public Var(String value) {
+            super(value);
+        }
+    }
+
+    /**
+     * Returns an empty immutable list
+     *
+     * @return the empty list
+     */
+    public static List list() {
+        return new Nil.EmptyStringList();
+    }
+
+    public static List list(String s) {
+        return val(s);
+    }
+
+    public static List list(String s1, String s2) {
+        return ImmutableStringList.of(new String[]{s1, s2});
+    }
+
+    public static List list(String s1, String s2, String ... sa) {
+        return ImmutableStringList.of($.concat(new String[]{s1, s2}, sa));
+    }
+
+    public static List list(Iterable<String> iterable) {
+        return ImmutableStringList.of(iterable);
+    }
+
+    public static List listOf(String... sa) {
+        return ImmutableStringList.of(sa);
+    }
+
+    public static List newList() {
+        return new DelegatingStringList(10);
+    }
+
+    public static List newList(Iterable<String> iterable) {
+        return new DelegatingStringList(iterable);
+    }
+
+    public static List newList(String string) {
+        List list = new DelegatingStringList(10);
+        list.add(string);
+        return list;
+    }
+
+    public static List newList(String s1, String s2) {
+        List list = new DelegatingStringList(10);
+        list.add(s1);
+        list.add(s2);
+        return list;
+    }
+
+    public static List newList(String s1, String s2, String s3) {
+        List list = new DelegatingStringList(10);
+        list.add(s1);
+        list.add(s2);
+        list.add(s3);
+        return list;
+    }
+
+    public static List newList(String s1, String s2, String s3, String... sa) {
+        List list = newList(s1, s2, s3);
+        for (String s : sa) {
+            list.add(s);
+        }
+        return list;
+    }
+
+    public static List newListOf(String[] sa) {
+        List list = new DelegatingStringList(sa.length);
+        for (String s : sa) {
+            list.add(s);
+        }
+        return list;
+    }
+
+    public static Var var(String s) {
+        return new Var(s);
+    }
+
+    public static Val val(String s) {
+        return new Val(s);
     }
 }

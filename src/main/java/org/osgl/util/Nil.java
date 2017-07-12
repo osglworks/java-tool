@@ -681,7 +681,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public boolean isEmpty() {
+        public final boolean isEmpty() {
             return true;
         }
 
@@ -689,6 +689,21 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         public Osgl.T2<C.List<T>, C.List<T>> split(Osgl.Function<? super T, Boolean> predicate) {
             C.List<T> empty = this;
             return $.T2(empty, empty);
+        }
+
+        // Preserves singleton property
+        private Object readResolve() {
+            return INSTANCE;
+        }
+    }
+
+    static class EmptyStringList extends EmptyList<String> implements S.List {
+        private static final long serialVersionUID = 2142813031316831811L;
+        private static final EmptyStringList INSTANCE = new EmptyStringList();
+
+        @SuppressWarnings("unchecked")
+        protected EmptyStringList singleton() {
+            return INSTANCE;
         }
 
         // Preserves singleton property

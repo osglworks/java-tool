@@ -1102,3 +1102,38 @@ class ImmutableSubList<T> extends RandomAccessSubList<T> {
     }
 
 }
+
+class ImmutableStringList extends ImmutableList<String> implements S.List {
+
+    public ImmutableStringList(String[] data) {
+        super(data);
+    }
+
+    static S.List of(String[] data) {
+        E.NPE(data);
+        int len = data.length;
+        if (len == 0) {
+            return new Nil.EmptyStringList();
+        } else if (len == 1) {
+            return S.val(data[0]);
+        } else {
+            return new ImmutableStringList(data);
+        }
+    }
+
+    static S.List of(java.util.Collection<String> strings) {
+        return of(strings.toArray(new String[strings.size()]));
+    }
+
+    static S.List of(Iterable<String> strings) {
+        if (strings instanceof S.List) {
+            return $.cast(strings);
+        }
+        if (strings instanceof Collection) {
+            return of((Collection) strings);
+        }
+        return of(C.list(strings));
+    }
+
+
+}

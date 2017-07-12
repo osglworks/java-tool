@@ -757,6 +757,9 @@ public class N {
      * @return `true` if `s` is numeric or `false` otherwise
      */
     public static boolean isNumeric(String s) {
+        if (isInt(s)) {
+            return true;
+        }
         try {
             Double.parseDouble(s);
             return true;

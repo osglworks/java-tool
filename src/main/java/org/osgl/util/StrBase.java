@@ -1523,11 +1523,9 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
         return append(str);
     }
 
-
     public final C.List<T> split(String regex) {
         return split(regex, 0);
     }
-
 
     public final T toLowerCase() {
         return toLowerCase(Locale.getDefault());

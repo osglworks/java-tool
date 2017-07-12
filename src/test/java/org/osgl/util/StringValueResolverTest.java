@@ -52,7 +52,7 @@ public abstract class StringValueResolverTest extends TestBase {
     public static class CharResolverTest extends PredefinedTest {
 
         public CharResolverTest() {
-            super(char.class, Character.class, ' ');
+            super(char.class, Character.class, '\0');
         }
 
         @Test
@@ -70,7 +70,7 @@ public abstract class StringValueResolverTest extends TestBase {
             verify('林', "林");
         }
 
-        @Test
+        @Test(expected = IllegalArgumentException.class)
         public void testMultiCharStr() {
             verify('H', "Hello");
         }

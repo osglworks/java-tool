@@ -50,13 +50,13 @@ implements RandomAccess, Serializable {
         buf = (T[]) new Object[initialCapacity];
     }
 
-    private void checkState() {
+    protected void checkState() {
         if (null == buf) {
             throw new IllegalStateException("ListBuilder is consumed");
         }
     }
 
-    private void trimToSize() {
+    protected void trimToSize() {
         modCount++;
         int oldCapacity = buf.length;
         if (size < oldCapacity) {

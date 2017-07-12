@@ -103,12 +103,12 @@ public class NTest extends TestBase {
 
         @Test
         public void testFloatByInt() {
-            eq(float1 / int1, func.apply(float1, int1).floatValue());
+            yes((float1 / int1 - func.apply(float1, int1).floatValue()) < 0.0001);
         }
 
         @Test
         public void testFloatByLong() {
-            eq(float1 / long1, func.apply(float1, long1).floatValue());
+            yes((float1 / long1 - func.apply(float1, long1).floatValue()) < 0.0001);
         }
 
         @Test

@@ -2580,6 +2580,30 @@ public class Osgl implements Serializable {
             return false;
         }
 
+        public final A left() {
+            return _1;
+        }
+
+        public final B right() {
+            return _2;
+        }
+
+        public A first() {return _1;}
+
+        public B second() {return _2;}
+
+        public B last() {
+            return _2;
+        }
+
+        public T2<A, B> set1(A a) {
+            return T2(a, _2);
+        }
+
+        public T2<A, B> set2(B b) {
+            return T2(_1, b);
+        }
+
         @Override
         public int hashCode() {
             return hc(_1, _2);
@@ -2626,12 +2650,28 @@ public class Osgl implements Serializable {
         }
     }
 
-    @SuppressWarnings("unused")
-    public static <P1, P2> Tuple<P1, P2> Tuple(P1 a, P2 b) {
-        return new Tuple<P1, P2>(a, b);
+    /**
+     * Alias of {@link Tuple}
+     * @param <LEFT> the left side element type
+     * @param <RIGHT> the right side element type
+     */
+    public static class Binary<LEFT, RIGHT> extends Tuple<LEFT, RIGHT> {
+        public Binary(LEFT _1, RIGHT _2) {
+            super(_1, _2);
+        }
     }
 
-    public static class T2<A, B> extends Tuple<A, B> {
+    @SuppressWarnings("unused")
+    public static <P1, P2> Binary<P1, P2> Tuple(P1 a, P2 b) {
+        return new T2<>(a, b);
+    }
+
+    /**
+     * Alias of {@link Binary}
+     * @param <A> the left hand side element type
+     * @param <B> the right hand side element type
+     */
+    public static class T2<A, B> extends Binary<A, B> {
 
         public T2(A _1, B _2) {
             super(_1, _2);
@@ -2643,16 +2683,31 @@ public class Osgl implements Serializable {
         return new T2<A, B>(a, b);
     }
 
-    public static class T3<A, B, C> {
-
+    /**
+     * A tuple with three elements
+     * @param <A> the first element type
+     * @param <B> the second element type
+     * @param <C> the third element type
+     */
+    public static class Triple<A, B, C> {
         final public A _1;
         final public B _2;
         final public C _3;
 
-        public T3(A _1, B _2, C _3) {
+        public Triple(A _1, B _2, C _3) {
             this._1 = _1;
             this._2 = _2;
             this._3 = _3;
+        }
+
+        public A first() {return _1;}
+
+        public B second() {return _2;}
+
+        public C third() {return _3;}
+
+        public C last() {
+            return _3;
         }
 
         public T3<A, B, C> set1(A a) {
@@ -2670,8 +2725,8 @@ public class Osgl implements Serializable {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o instanceof T3) {
-                T3 that = (T3) o;
+            if (o instanceof Triple) {
+                Triple that = (Triple) o;
                 return Osgl.eq(that._1, _1) && Osgl.eq(that._2, _2) && Osgl.eq(that._3, _3);
             }
             return false;
@@ -2688,29 +2743,63 @@ public class Osgl implements Serializable {
         }
     }
 
+    public static class T3<A, B, C> extends Triple<A, B, C> {
+        public T3(A _1, B _2, C _3) {
+            super(_1, _2, _3);
+        }
+    }
+
     public static <A, B, C> T3<A, B, C> T3(A a, B b, C c) {
         return new T3<A, B, C>(a, b, c);
     }
 
-    public static class T4<A, B, C, D> {
+    public static class Quadruple<A, B, C, D> {
 
         final public A _1;
         final public B _2;
         final public C _3;
         final public D _4;
 
-        public T4(A _1, B _2, C _3, D _4) {
+        public Quadruple(A _1, B _2, C _3, D _4) {
             this._1 = _1;
             this._2 = _2;
             this._3 = _3;
             this._4 = _4;
         }
 
+        public A first() {return _1;}
+
+        public B second() {return _2;}
+
+        public C third() {return _3;}
+
+        public D forth() {return _4;}
+
+        public D last() {
+            return _4;
+        }
+
+        public T4<A, B, C, D> set1(A x) {
+            return T4(x, _2, _3, _4);
+        }
+
+        public T4<A, B, C, D> set2(B x) {
+            return T4(_1, x, _3, _4);
+        }
+
+        public T4<A, B, C, D> set3(C x) {
+            return T4(_1, _2, x, _4);
+        }
+
+        public T4<A, B, C, D> set4(D x) {
+            return T4(_1, _2, _3, x);
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o instanceof T4) {
-                T4 that = (T4) o;
+            if (o instanceof Quadruple) {
+                Quadruple that = (Quadruple) o;
                 return Osgl.eq(that._1, _1) && Osgl.eq(that._2, _2) && Osgl.eq(that._3, _3) && Osgl.eq(that._4, _4);
             }
             return false;
@@ -2727,12 +2816,18 @@ public class Osgl implements Serializable {
         }
     }
 
+    public static class T4<A, B, C, D> extends Quadruple<A, B, C, D> {
+        public T4(A _1, B _2, C _3, D _4) {
+            super(_1, _2, _3, _4);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public static <A, B, C, D> T4<A, B, C, D> T4(A a, B b, C c, D d) {
         return new T4<A, B, C, D>(a, b, c, d);
     }
 
-    public static class T5<A, B, C, D, E> {
+    public static class Quintuple<A, B, C, D, E> {
 
         final public A _1;
         final public B _2;
@@ -2740,7 +2835,7 @@ public class Osgl implements Serializable {
         final public D _4;
         final public E _5;
 
-        public T5(A _1, B _2, C _3, D _4, E _5) {
+        public Quintuple(A _1, B _2, C _3, D _4, E _5) {
             this._1 = _1;
             this._2 = _2;
             this._3 = _3;
@@ -2748,11 +2843,47 @@ public class Osgl implements Serializable {
             this._5 = _5;
         }
 
+        public A first() {return _1;}
+
+        public B second() {return _2;}
+
+        public C third() {return _3;}
+
+        public D forth() {return _4;}
+
+        public E fifth() {
+            return _5;
+        }
+
+        public E last() {
+            return _5;
+        }
+
+        public T5<A, B, C, D, E> set1(A x) {
+            return T5(x, _2, _3, _4, _5);
+        }
+
+        public T5<A, B, C, D, E> set2(B x) {
+            return T5(_1, x, _3, _4, _5);
+        }
+
+        public T5<A, B, C, D, E> set3(C x) {
+            return T5(_1, _2, x, _4, _5);
+        }
+        
+        public T5<A, B, C, D, E> set4(D x) {
+            return T5(_1, _2, _3, x, _5);
+        }
+
+        public T5<A, B, C, D, E> set5(E x) {
+            return T5(_1, _2, _3, _4, x);
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o instanceof T5) {
-                T5 that = (T5) o;
+            if (o instanceof Quintuple) {
+                Quintuple that = (Quintuple) o;
                 return Osgl.eq(that._1, _1) && Osgl.eq(that._2, _2) && Osgl.eq(that._3, _3) && Osgl.eq(that._4, _4) && Osgl.eq(that._5, _5);
             }
             return false;
@@ -2766,6 +2897,12 @@ public class Osgl implements Serializable {
         @Override
         public String toString() {
             return "T5(_1: " + _1 + ", _2: " + _2 + ", _3:" + _3 + ", _4:" + _4 + ", _5:" + _5 + ")";
+        }
+    }
+
+    public static class T5<A, B, C, D, E> extends Quintuple<A, B, C, D, E> {
+        public T5(A _1, B _2, C _3, D _4, E _5) {
+            super(_1, _2, _3, _4, _5);
         }
     }
 
@@ -3961,7 +4098,7 @@ public class Osgl implements Serializable {
         }
     }
 
-    public static final class Val<T> extends Var<T> {
+    public static class Val<T> extends Var<T> {
         public Val(T value) {
             super(value);
         }

@@ -18,7 +18,7 @@ public class UtilTestBase extends TestBase {
         return IteratorSeq.of(Arrays.asList(a).iterator());
     }
 
-    protected void eq(Iterable<?> t1, Iterable<?> t2) {
+    public static void eq(Iterable<?> t1, Iterable<?> t2) {
         Iterator<?> i1 = t1.iterator();
         Iterator<?> i2 = t2.iterator();
         while (i1.hasNext() && i2.hasNext()) {
