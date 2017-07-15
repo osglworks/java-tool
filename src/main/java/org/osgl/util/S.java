@@ -309,11 +309,11 @@ public class S {
     }
 
     /**
-     * Split string by separator into two parts and return in a {@link T2()} object
-     * <p>
+     * Split string by separator into two parts and return in a {@link T2} object
+     *
      * **Note** this will only check the first position of the separator, anything after that will
      * be put into the second element of the `T2` instance, including the following separator char
-     * <p>
+     *
      * **Note** it will put the entire string into the first element of the return object if
      * no separator is found in the string and leave the second element to be an empty string
      *
@@ -330,7 +330,7 @@ public class S {
     }
 
     /**
-     * Split string by separator into three parts and return in a {@link T3()} object
+     * Split string by separator into three parts and return in a {@link T3} object
      * <p>
      *
      * **Note** this will only check the first two positions of the separator, anything after that will

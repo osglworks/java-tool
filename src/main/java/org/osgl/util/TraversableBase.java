@@ -22,7 +22,7 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
      * Iterate through this traversal and apply the visitor function specified
      * to each element iterated
      *
-     * @param visitor
+     * @param visitor the visitor
      */
     public TraversableBase<T> forEach($.Function<? super T, ?> visitor) {
         C.forEach(this, visitor);
