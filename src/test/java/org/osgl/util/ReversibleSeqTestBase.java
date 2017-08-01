@@ -71,7 +71,7 @@ public abstract class ReversibleSeqTestBase extends SequenceTestBase {
     public void testAcceptRight() {
         data = prepareData(1, 2, 3, 4, 5);
         final $.Var<Integer> bag = $.var(0);
-        data().acceptRight(bag.f.updater(N.F.addTwo(Integer.class)));
+        data().acceptRight($.visitor(bag.f.updater(N.F.addTwo(Integer.class))));
 //        data().acceptRight(new _.Visitor<Integer>() {
 //            @Override
 //            public void visit(Integer integer) throws _.Break {

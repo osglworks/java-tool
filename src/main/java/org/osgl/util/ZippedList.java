@@ -13,7 +13,7 @@ import java.util.ListIterator;
  * Time: 8:40 PM
  * To change this template use File | Settings | File Templates.
  */
-class ZippedList<A, B> extends ListBase<$.T2<A, B>> {
+class ZippedList<A, B> extends ListBase<$.Binary<A, B>> {
     private List<A> a;
     private List<B> b;
     private $.Option<A> defA = $.none();
@@ -53,11 +53,11 @@ class ZippedList<A, B> extends ListBase<$.T2<A, B>> {
     }
 
     @Override
-    public ListIterator<$.T2<A, B>> listIterator(int index) {
+    public ListIterator<$.Binary<A, B>> listIterator(int index) {
         if (defA.isDefined()) {
-            return new ZippedListIterator<A, B>(a.listIterator(), b.listIterator(), defA.get(), defB.get());
+            return new ZippedListIterator<>(a.listIterator(), b.listIterator(), defA.get(), defB.get());
         }
-        return new ZippedListIterator<A, B>(a.listIterator(), b.listIterator());
+        return new ZippedListIterator<>(a.listIterator(), b.listIterator());
     }
 
 

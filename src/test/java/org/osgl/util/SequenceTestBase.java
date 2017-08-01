@@ -176,7 +176,7 @@ public abstract class SequenceTestBase extends TraversableTestBase {
 //                bag[0] = bag[0] + integer;
 //            }
 //        });
-        data().acceptLeft(var.f.updater(N.F.addTwo(Integer.class)));
+        data().acceptLeft($.visitor(var.f.updater(N.F.addTwo(Integer.class))));
         eq(5 * 6 / 2, var.get());
     }
 

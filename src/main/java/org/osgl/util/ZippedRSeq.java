@@ -11,7 +11,7 @@ import java.util.Iterator;
  * Time: 8:03 PM
  * To change this template use File | Settings | File Templates.
  */
-class ZippedRSeq<A, B> extends ReversibleSeqBase<$.T2<A, B>> {
+class ZippedRSeq<A, B> extends ReversibleSeqBase<$.Binary<A, B>> {
 
     private C.ReversibleSequence<A> a;
     private C.ReversibleSequence<B> b;
@@ -38,24 +38,24 @@ class ZippedRSeq<A, B> extends ReversibleSeqBase<$.T2<A, B>> {
     }
 
     @Override
-    public Iterator<$.T2<A, B>> iterator() {
+    public Iterator<$.Binary<A, B>> iterator() {
         final Iterator<A> ia = a.iterator();
         final Iterator<B> ib = b.iterator();
         if (defA.isDefined()) {
-            return new ZippedIterator<A, B>(ia, ib, defA.get(), defB.get());
+            return new ZippedIterator<>(ia, ib, defA.get(), defB.get());
         } else {
-            return new ZippedIterator<A, B>(ia, ib);
+            return new ZippedIterator<>(ia, ib);
         }
     }
 
     @Override
-    public Iterator<$.T2<A, B>> reverseIterator() {
+    public Iterator<$.Binary<A, B>> reverseIterator() {
         final Iterator<A> ia = a.reverseIterator();
         final Iterator<B> ib = b.reverseIterator();
         if (defA.isDefined()) {
-            return new ZippedIterator<A, B>(ia, ib, defA.get(), defB.get());
+            return new ZippedIterator<>(ia, ib, defA.get(), defB.get());
         } else {
-            return new ZippedIterator<A, B>(ia, ib);
+            return new ZippedIterator<>(ia, ib);
         }
     }
 }

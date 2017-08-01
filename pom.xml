@@ -15,6 +15,10 @@
   ~ under the License.  
   -->
 <!-- history
+1.5.0
+* #26 Add method to generate Map from List
+* #11 Make API accept Visitor be real Visitor
+
 1.4.0
 * #25 Add alias to Osgl Tuple types
 * #24 Add more getter method to Osgl tuple types
@@ -206,7 +210,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.4.1-SNAPSHOT</version>
+  <version>1.5.0-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>

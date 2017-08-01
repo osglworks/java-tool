@@ -64,22 +64,22 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public SequenceBase<T> accept($.Function<? super T, ?> visitor) {
+    public SequenceBase<T> accept($.Visitor<? super T> visitor) {
         C.forEach(this, visitor);
         return this;
     }
 
     @Override
-    public SequenceBase<T> forEach($.Function<? super T, ?> visitor) {
+    public SequenceBase<T> forEach($.Visitor<? super T> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public C.Sequence<T> each($.Function<? super T, ?> visitor) {
+    public C.Sequence<T> each($.Visitor<? super T> visitor) {
         return accept(visitor);
     }
 
-    protected void forEachLeft($.Function<? super T, ?> visitor) {
+    protected void forEachLeft($.Visitor<? super T> visitor) {
         forEach(visitor);
     }
 
@@ -95,7 +95,7 @@ extends TraversableBase<T> implements C.Sequence<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public C.Sequence<T> acceptLeft($.Function<? super T, ?> visitor) {
+    public C.Sequence<T> acceptLeft($.Visitor<? super T> visitor) {
         forEachLeft(visitor);
         return this;
     }
@@ -270,18 +270,18 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
-    public <T2> C.Sequence<$.T2<T, T2>> zip(Iterable<T2> iterable) {
+    public <T2> C.Sequence<$.Binary<T, T2>> zip(Iterable<T2> iterable) {
         return new ZippedSeq<T, T2>(this, iterable);
     }
 
     @Override
-    public <T2> C.Sequence<$.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2) {
-        return new ZippedSeq<T, T2>(this, iterable, def1, def2);
+    public <T2> C.Sequence<$.Binary<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2) {
+        return new ZippedSeq<>(this, iterable, def1, def2);
     }
 
     @Override
-    public C.Sequence<$.T2<T, Integer>> zipWithIndex() {
-        return new ZippedSeq<T, Integer>(this, new IndexIterable(this));
+    public C.Sequence<$.Binary<T, Integer>> zipWithIndex() {
+        return new ZippedSeq<>(this, new IndexIterable(this));
     }
 
     @Override

@@ -1183,7 +1183,7 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
             return Nil.list();
         }
         ListBuilder<R> lb = new ListBuilder<R>(sz);
-        forEach($.f1(mapper).andThen(C.F.addTo(lb)));
+        forEach($.visitor($.f1(mapper).andThen(C.F.addTo(lb))));
         return lb.toList();
     }
 
@@ -1203,19 +1203,19 @@ implements RandomAccess, CharSequence, java.io.Serializable, Comparable<T> {
     }
 
     @Override
-    public T accept($.Function<? super Character, ?> visitor) {
+    public T accept($.Visitor<? super Character> visitor) {
         super.accept(visitor);
         return me();
     }
 
     @Override
-    public T acceptLeft($.Function<? super Character, ?> visitor) {
+    public T acceptLeft($.Visitor<? super Character> visitor) {
         super.acceptLeft(visitor);
         return me();
     }
 
     @Override
-    public T acceptRight($.Function<? super Character, ?> visitor) {
+    public T acceptRight($.Visitor<? super Character> visitor) {
         super.acceptRight(visitor);
         return me();
     }

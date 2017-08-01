@@ -214,7 +214,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
     }
 
     @Override
-    public Nil<T> accept($.Function<? super T, ?> visitor) {
+    public Nil<T> accept($.Visitor<? super T> visitor) {
         return this;
     }
 
@@ -290,12 +290,12 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptySequence<T> acceptLeft($.Function<? super T, ?> visitor) {
+        public EmptySequence<T> acceptLeft($.Visitor<? super T> visitor) {
             return this;
         }
 
         @Override
-        public EmptySequence<T> accept($.Function<? super T, ?> visitor) {
+        public EmptySequence<T> accept($.Visitor<? super T> visitor) {
             return this;
         }
 
@@ -470,18 +470,18 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptyReversibleSequence<T> accept($.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> accept($.Visitor<? super T> visitor) {
             return this;
         }
 
 
         @Override
-        public EmptyReversibleSequence<T> each($.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> each($.Visitor<? super T> visitor) {
             return this;
         }
 
         @Override
-        public EmptyReversibleSequence<T> forEach($.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> forEach($.Visitor<? super T> visitor) {
             return this;
         }
 
@@ -511,7 +511,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptyReversibleSequence<T> acceptLeft($.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> acceptLeft($.Visitor<? super T> visitor) {
             return this;
         }
 
@@ -531,7 +531,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptyReversibleSequence<T> acceptRight($.Function<? super T, ?> visitor) {
+        public EmptyReversibleSequence<T> acceptRight($.Visitor<? super T> visitor) {
             return this;
         }
 
@@ -556,15 +556,15 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public <T2> C.ReversibleSequence<$.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
+        public <T2> C.ReversibleSequence<$.Binary<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
             return rseq();
         }
 
         @Override
-        public <T2> C.ReversibleSequence<$.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, final T def1, final T2 def2) {
-            return rseq.map(new $.F1<T2, $.T2<T, T2>>() {
+        public <T2> C.ReversibleSequence<$.Binary<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, final T def1, final T2 def2) {
+            return rseq.map(new $.F1<T2, $.Binary<T, T2>>() {
                 @Override
-                public $.T2<T, T2> apply(T2 t) throws NotAppliedException, $.Break {
+                public $.Binary<T, T2> apply(T2 t) throws NotAppliedException, $.Break {
                     return $.T2(def1, t);
                 }
             });
@@ -611,27 +611,27 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptyRange<T> accept($.Function<? super T, ?> visitor) {
+        public EmptyRange<T> accept($.Visitor<? super T> visitor) {
             return this;
         }
 
         @Override
-        public EmptyRange<T> forEach($.Function<? super T, ?> visitor) {
+        public EmptyRange<T> forEach($.Visitor<? super T> visitor) {
             return this;
         }
 
         @Override
-        public EmptyRange<T> each($.Function<? super T, ?> visitor) {
+        public EmptyRange<T> each($.Visitor<? super T> visitor) {
             return this;
         }
 
         @Override
-        public EmptyRange<T> acceptLeft($.Function<? super T, ?> visitor) {
+        public EmptyRange<T> acceptLeft($.Visitor<? super T> visitor) {
             return this;
         }
 
         @Override
-        public C.Range<T> acceptRight($.Function<? super T, ?> visitor) {
+        public C.Range<T> acceptRight($.Visitor<? super T> visitor) {
             return this;
         }
 
@@ -747,7 +747,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public EmptySet<T> accept($.Function<? super T, ?> visitor) {
+        public EmptySet<T> accept($.Visitor<? super T> visitor) {
             return this;
         }
 
@@ -812,17 +812,17 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public Empty<T> accept($.Function<? super T, ?> visitor) {
+        public Empty<T> accept($.Visitor<? super T> visitor) {
             return this;
         }
 
         @Override
-        public Empty<T> each($.Function<? super T, ?> visitor) {
+        public Empty<T> each($.Visitor<? super T> visitor) {
             return this;
         }
 
         @Override
-        public Empty<T> forEach($.Function<? super T, ?> visitor) {
+        public Empty<T> forEach($.Visitor<? super T> visitor) {
             return this;
         }
 

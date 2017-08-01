@@ -43,20 +43,20 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
                 return Nil.set();
             }
             ListBuilder<T> lb = new ListBuilder<T>(sz);
-            forEach($.predicate(predicate).ifThen(C.F.addTo(lb)));
+            forEach($.visitor($.predicate(predicate).ifThen(C.F.addTo(lb))));
             return lb.toSet();
         } else {
             if (0 == sz) {
                 return C.newSet();
             }
             C.Set<T> set = C.newSet();
-            forEach($.predicate(predicate).ifThen(C.F.addTo(set)));
+            forEach($.visitor($.predicate(predicate).ifThen(C.F.addTo(set))));
             return set;
         }
     }
 
     @Override
-    public SetBase<T> accept($.Function<? super T, ?> visitor) {
+    public SetBase<T> accept($.Visitor<? super T> visitor) {
         return forEach(visitor);
     }
 
@@ -68,15 +68,15 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
             if (0 == sz) {
                 return Nil.set();
             }
-            ListBuilder<R> lb = new ListBuilder<R>(sz);
-            forEach($.f1(mapper).andThen(C.F.addTo(lb)));
+            ListBuilder<R> lb = new ListBuilder<>(sz);
+            forEach($.visitor($.f1(mapper).andThen(C.F.addTo(lb))));
             return C.set(lb.toList());
         } else {
             if (0 == sz) {
                 return C.newSet();
             }
             C.List<R> l = C.newSizedList(sz);
-            forEach($.f1(mapper).andThen(C.F.addTo(l)));
+            forEach($.visitor($.f1(mapper).andThen(C.F.addTo(l))));
             return C.set(l);
         }
     }
@@ -149,7 +149,7 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
      * @param visitor the visitor
      * @throws $.Break if visitor needs to terminate the iteration
      */
-    public SetBase<T> forEach($.Function<? super T, ?> visitor) throws $.Break {
+    public SetBase<T> forEach($.Visitor<? super T> visitor) throws $.Break {
         for (T t : this) {
             try {
                 visitor.apply(t);
@@ -161,7 +161,7 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     }
 
     @Override
-    public SetBase<T> each($.Function<? super T, ?> visitor) {
+    public SetBase<T> each($.Visitor<? super T> visitor) {
         return forEach(visitor);
     }
 

@@ -346,21 +346,21 @@ public enum C {
          * @return this {@code Traversable} instance for chained call
          * @since 0.2
          */
-        Traversable<T> accept($.Function<? super T, ?> visitor);
+        Traversable<T> accept($.Visitor<? super T> visitor);
 
         /**
-         * Alias of {@link #accept(Osgl.Function)}
+         * Alias of {@link #accept(Osgl.Visitor)}
          * @param visitor the visitor to tranverse the elements
          * @return this {@code Traversable} instance
          */
-        Traversable<T> each($.Function<? super T, ?> visitor);
+        Traversable<T> each($.Visitor<? super T> visitor);
 
         /**
-         * Alias of {@link #accept(Osgl.Function)}
+         * Alias of {@link #accept(Osgl.Visitor)}
          * @param visitor the visitor function
          * @return this {@code Traversable} instance
          */
-        Traversable<T> forEach($.Function<? super T, ?> visitor);
+        Traversable<T> forEach($.Visitor<? super T> visitor);
     }
 
     public interface Sequence<T>
@@ -776,11 +776,11 @@ public enum C {
          */
         $.Option<T> findFirst($.Function<? super T, Boolean> predicate);
 
-        Sequence<T> accept($.Function<? super T, ?> visitor);
+        Sequence<T> accept($.Visitor<? super T> visitor);
 
-        Sequence<T> each($.Function<? super T, ?> visitor);
+        Sequence<T> each($.Visitor<? super T> visitor);
 
-        Sequence<T> forEach($.Function<? super T, ?> visitor);
+        Sequence<T> forEach($.Visitor<? super T> visitor);
 
         /**
          * Iterate through this sequence from head to tail with
@@ -788,11 +788,11 @@ public enum C {
          *
          * @param visitor the function to visit elements in this sequence
          * @return this sequence
-         * @see Traversable#accept(Osgl.Function)
-         * @see ReversibleSequence#acceptRight(Osgl.Function)
+         * @see Traversable#accept(Osgl.Visitor)
+         * @see ReversibleSequence#acceptRight(Osgl.Visitor)
          * @since 0.2
          */
-        Sequence<T> acceptLeft($.Function<? super T, ?> visitor);
+        Sequence<T> acceptLeft($.Visitor<? super T> visitor);
 
         /**
          * Returns a sequence formed from this sequence and another iterable
@@ -807,7 +807,7 @@ public enum C {
          * The length of the returned collection is the
          * minimum of the lengths of this sequence and that.
          */
-        <T2> Sequence<$.T2<T, T2>> zip(Iterable<T2> iterable);
+        <T2> Sequence<? extends $.Binary<T, T2>> zip(Iterable<T2> iterable);
 
         /**
          * Returns a sequence formed from this sequence and another iterable
@@ -827,7 +827,7 @@ public enum C {
          * The length of the returned collection is the
          * maximum of the lengths of this sequence and that.
          */
-        <T2> Sequence<$.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2);
+        <T2> Sequence<? extends $.Binary<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2);
 
         /**
          * Zip this sequence with its indices
@@ -837,7 +837,7 @@ public enum C {
          * Indices start at 0.
          */
         @SuppressWarnings("unused")
-        Sequence<$.T2<T, Integer>> zipWithIndex();
+        Sequence<? extends $.Binary<T, Integer>> zipWithIndex();
 
         /**
          * Count the element occurence in this sequence
@@ -1109,14 +1109,14 @@ public enum C {
         @Override
         <R> ReversibleSequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper);
 
-        ReversibleSequence<T> accept($.Function<? super T, ?> visitor);
+        ReversibleSequence<T> accept($.Visitor<? super T> visitor);
 
 
-        ReversibleSequence<T> each($.Function<? super T, ?> visitor);
+        ReversibleSequence<T> each($.Visitor<? super T> visitor);
 
-        ReversibleSequence<T> forEach($.Function<? super T, ?> visitor);
+        ReversibleSequence<T> forEach($.Visitor<? super T> visitor);
 
-        ReversibleSequence<T> acceptLeft($.Function<? super T, ?> visitor);
+        ReversibleSequence<T> acceptLeft($.Visitor<? super T> visitor);
 
         /**
          * Iterate through this sequence from tail to head with the visitor function
@@ -1124,16 +1124,16 @@ public enum C {
          *
          * @param visitor the function to visit elements in this sequence
          * @return this sequence
-         * @see Traversable#accept(Osgl.Function)
-         * @see Sequence#acceptLeft(Osgl.Function)
+         * @see Traversable#accept(Osgl.Visitor)
+         * @see Sequence#acceptLeft(Osgl.Visitor)
          * @since 0.2
          */
-        ReversibleSequence<T> acceptRight($.Function<? super T, ?> visitor);
+        ReversibleSequence<T> acceptRight($.Visitor<? super T> visitor);
 
-        <T2> C.ReversibleSequence<$.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq);
+        <T2> C.ReversibleSequence<$.Binary<T, T2>> zip(C.ReversibleSequence<T2> rseq);
 
         @SuppressWarnings("unused")
-        <T2> C.ReversibleSequence<$.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2);
+        <T2> C.ReversibleSequence<$.Binary<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2);
 
     }
 
@@ -1172,6 +1172,23 @@ public enum C {
         @Override
         public int size() throws UnsupportedOperationException {
             return data.length;
+        }
+
+        public boolean isEmpty() {
+            return 0 == size();
+        }
+
+        public boolean isNotEmpty() {
+            return 0 < size();
+        }
+
+        public T get(int idx) {
+            return data[idx];
+        }
+
+        public Array<T> set(int idx, T val) {
+            data[idx] = val;
+            return this;
         }
 
         @Override
@@ -1230,16 +1247,25 @@ public enum C {
             return of(newData);
         }
 
+        public C.List<T> asList() {
+            return C.listOf(data);
+        }
+
+        public C.List<T> asNewList() {
+            return C.newListOf(data);
+        }
+
         public static <T> Array<T> of(T[] data) {
-            return new Array<T>(data);
+            return new Array<>(data);
         }
 
         public static <T> Array<T> copyOf(T[] data) {
             int len = data.length;
             T[] newData = $.newArray(data, len);
             System.arraycopy(data, 0, newData, 0, len);
-            return new Array<T>(newData);
+            return new Array<>(newData);
         }
+
     }
 
     /**
@@ -1359,13 +1385,13 @@ public enum C {
          * @since 0.2
          */
         @Override
-        Range<ELEMENT> accept($.Function<? super ELEMENT, ?> visitor);
+        Range<ELEMENT> accept($.Visitor<? super ELEMENT> visitor);
 
         @Override
-        Range<ELEMENT> each($.Function<? super ELEMENT, ?> visitor);
+        Range<ELEMENT> each($.Visitor<? super ELEMENT> visitor);
 
         @Override
-        Range<ELEMENT> forEach($.Function<? super ELEMENT, ?> visitor);
+        Range<ELEMENT> forEach($.Visitor<? super ELEMENT> visitor);
 
         /**
          * {@inheritDoc}
@@ -1375,7 +1401,7 @@ public enum C {
          * @since 0.2
          */
         @Override
-        Range<ELEMENT> acceptLeft($.Function<? super ELEMENT, ?> visitor);
+        Range<ELEMENT> acceptLeft($.Visitor<? super ELEMENT> visitor);
 
         /**
          * iterate through the range from tail to head
@@ -1385,7 +1411,7 @@ public enum C {
          * @since 0.2
          */
         @SuppressWarnings("unused")
-        Range<ELEMENT> acceptRight($.Function<? super ELEMENT, ?> visitor);
+        Range<ELEMENT> acceptRight($.Visitor<? super ELEMENT> visitor);
     }
 
     /**
@@ -1924,19 +1950,19 @@ public enum C {
         List<T> without(T element, T... elements);
 
         @Override
-        List<T> accept($.Function<? super T, ?> visitor);
+        List<T> accept($.Visitor<? super T> visitor);
 
         @Override
-        List<T> each($.Function<? super T, ?> visitor);
+        List<T> each($.Visitor<? super T> visitor);
 
         @Override
-        List<T> forEach($.Function<? super T, ?> visitor);
+        List<T> forEach($.Visitor<? super T> visitor);
 
         @Override
-        List<T> acceptLeft($.Function<? super T, ?> visitor);
+        List<T> acceptLeft($.Visitor<? super T> visitor);
 
         @Override
-        List<T> acceptRight($.Function<? super T, ?> visitor);
+        List<T> acceptRight($.Visitor<? super T> visitor);
 
         /**
          * Loop through the list and for each element, call on the
@@ -1944,21 +1970,21 @@ public enum C {
          * @param indexedVisitor the function to be called on each element along with the index
          * @return this list
          */
-        List<T> accept($.Func2<Integer, ? super T, ?> indexedVisitor);
+        List<T> accept($.IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
-         * Alias of {@link #accept(Osgl.Func2)}
+         * Alias of {@link #accept(Osgl.Visitor)}
          * @param indexedVisitor the function to be called on each element along with the index
          * @return this list
          */
-        List<T> each($.Func2<Integer, ? super T, ?> indexedVisitor);
+        List<T> each($.IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
-         * Alias of {@link #accept(Osgl.Func2)}
+         * Alias of {@link #accept(Osgl.Visitor)}
          * @param indexedVisitor the function to be called on each element along with the index
          * @return this list
          */
-        List<T> forEach($.Func2<Integer, ? super T, ?> indexedVisitor);
+        List<T> forEach($.IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
          * Loop through the list from {@code 0} to {@code size - 1}. Call the indexedVisitor function
@@ -1967,7 +1993,7 @@ public enum C {
          * @return this list
          */
         @SuppressWarnings("unused")
-        List<T> acceptLeft($.Func2<Integer, ? super T, ?> indexedVisitor);
+        List<T> acceptLeft($.IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
          * Loop through the list from {@code size() - 1} to {@code 0}. Call the indexedVisitor function
@@ -1976,7 +2002,7 @@ public enum C {
          * @return this list
          */
         @SuppressWarnings("unused")
-        List<T> acceptRight($.Func2<Integer, ? super T, ?> indexedVisitor);
+        List<T> acceptRight($.IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
          * Returns a list formed from this list and another iterable
@@ -1991,7 +2017,7 @@ public enum C {
          * The length of the returned collection is the
          * minimum of the lengths of this sequence and that.
          */
-        <T2> List<$.T2<T, T2>> zip(java.util.List<T2> list);
+        <T2> List<$.Binary<T, T2>> zip(java.util.List<T2> list);
 
         /**
          * Returns a list formed from this list and another iterable
@@ -2011,7 +2037,7 @@ public enum C {
          * The length of the returned collection is the
          * maximum of the lengths of this list and that.
          */
-        <T2> List<$.T2<T, T2>> zipAll(java.util.List<T2> list, T def1, T2 def2);
+        <T2> List<$.Binary<T, T2>> zipAll(java.util.List<T2> list, T def1, T2 def2);
 
         /**
          * Zip this sequence with its indices
@@ -2020,7 +2046,33 @@ public enum C {
          * elements of this list paired with their index.
          * Indices start at 0.
          */
-        Sequence<$.T2<T, Integer>> zipWithIndex();
+        Sequence<$.Binary<T, Integer>> zipWithIndex();
+
+
+        /**
+         * Create a {@link Map} from this list using a key computer function.
+         *
+         * The key computer will take the element stored in this list and calculate a key,
+         * and then store the element being used along with the key calculated into the map
+         * to be returned.
+         *
+         * @param keyComputer the function that generate map key from the element in this list
+         * @param <K> the generic type of key in the map
+         * @return a map that indexed by key generated by the function from the element in this list
+         */
+        <K> Map<K, T> toMapByVal($.Function<? super T, ? extends K> keyComputer);
+
+        /**
+         * Create a {@link Map} from this list using a value computer function.
+         *
+         * The value computer will take the element stored in this list and calculate a value,
+         * and then store the element as the key along with the outcome as the value
+         *
+         * @param valComputer the function that generate map value from the element in this list
+         * @param <V> the generic type of value in the map
+         * @return a map that stores the value calculated along with the corresponding element as the key
+         */
+        <V> Map<T, V> toMapByKey($.Function<? super T, ? extends V> valComputer);
     }
 
 //    /**
@@ -2290,13 +2342,13 @@ public enum C {
         Set<T> filter($.Function<? super T, Boolean> predicate);
 
         @Override
-        Set<T> accept($.Function<? super T, ?> visitor);
+        Set<T> accept($.Visitor<? super T> visitor);
 
         @Override
-        Set<T> each($.Function<? super T, ?> visitor);
+        Set<T> each($.Visitor<? super T> visitor);
 
         @Override
-        Set<T> forEach($.Function<? super T, ?> visitor);
+        Set<T> forEach($.Visitor<? super T> visitor);
 
         /**
          * Returns a set contains all elements in the {@code col}
@@ -2365,13 +2417,13 @@ public enum C {
         ListOrSet<T> eager();
 
         @Override
-        ListOrSet<T> accept($.Function<? super T, ?> visitor);
+        ListOrSet<T> accept($.Visitor<? super T> visitor);
 
         @Override
-        ListOrSet<T> each($.Function<? super T, ?> visitor);
+        ListOrSet<T> each($.Visitor<? super T> visitor);
 
         @Override
-        ListOrSet<T> forEach($.Function<? super T, ?> visitor);
+        ListOrSet<T> forEach($.Visitor<? super T> visitor);
 
         @Override
         ListOrSet<T> filter($.Function<? super T, Boolean> predicate);
@@ -3009,7 +3061,7 @@ public enum C {
     }
 
     public static <T> List<T> newListOf(T[] ts) {
-        return new DelegatingList<T>(C.listOf(ts));
+        return new DelegatingList<>(C.listOf(ts));
     }
 
     /**
@@ -3360,7 +3412,7 @@ public enum C {
      * @throws $.Break break the loop
      */
     //TODO: implement forEach iteration in parallel
-    public static <T> void forEach(Iterable<? extends T> iterable, $.Function<? super T, ?> visitor) throws $.Break {
+    public static <T> void forEach(Iterable<? extends T> iterable, $.Visitor<? super T> visitor) throws $.Break {
         for (T t : iterable) {
             try {
                 visitor.apply(t);
@@ -3380,7 +3432,7 @@ public enum C {
      * @param visitor the function applied on the element
      * @param <T> the generic type of the element
      */
-    public static <T> void forEach(Iterator<? extends T> iterator, $.Function<? super T, ?> visitor) {
+    public static <T> void forEach(Iterator<? extends T> iterator, $.Visitor<? super T> visitor) {
         while (iterator.hasNext()) {
             T t = iterator.next();
             visitor.apply(t);
@@ -3951,7 +4003,7 @@ public enum C {
          * @see C#forEach(Iterable, Osgl.Function)
          */
         @SuppressWarnings("unused")
-        public static <T> $.F1<Iterable<? extends T>, Void> forEachIterable(final $.Function<? super T, ?> visitor) {
+        public static <T> $.F1<Iterable<? extends T>, Void> forEachIterable(final $.Visitor<? super T> visitor) {
             return new $.F1<Iterable<? extends T>, Void>() {
                 @Override
                 public Void apply(Iterable<? extends T> iterable) throws NotAppliedException, $.Break {

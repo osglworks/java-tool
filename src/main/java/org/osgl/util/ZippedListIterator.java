@@ -5,14 +5,7 @@ import org.osgl.$;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 10/11/13
- * Time: 9:55 PM
- * To change this template use File | Settings | File Templates.
- */
-public class ZippedListIterator<A, B> implements ListIterator<$.T2<A, B>> {
+public class ZippedListIterator<A, B> implements ListIterator<$.Binary<A, B>> {
     private ListIterator<A> a;
     private ListIterator<B> b;
     private $.Option<A> defA = $.none();
@@ -115,12 +108,12 @@ public class ZippedListIterator<A, B> implements ListIterator<$.T2<A, B>> {
     }
 
     @Override
-    public void set($.T2<A, B> abt2) {
+    public void set($.Binary<A, B> abt2) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void add($.T2<A, B> abt2) {
+    public void add($.Binary<A, B> abt2) {
         throw new UnsupportedOperationException();
     }
 

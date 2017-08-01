@@ -43,12 +43,12 @@ class ReverseList<T> extends DelegatingList<T> implements C.List<T> {
     }
 
     @Override
-    protected void forEachLeft($.Function<? super T, ?> visitor) throws $.Break {
+    protected void forEachLeft($.Visitor<? super T> visitor) throws $.Break {
         data().acceptRight(visitor);
     }
 
     @Override
-    protected void forEachRight($.Function<? super T, ?> visitor) throws $.Break {
+    protected void forEachRight($.Visitor<? super T> visitor) throws $.Break {
         data().acceptLeft(visitor);
     }
 

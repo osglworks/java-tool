@@ -2171,10 +2171,7 @@ public class Osgl implements Serializable {
      * @since 0.2
      */
     @SuppressWarnings({"unused", "unchecked"})
-    public static <T> Predicate<T> generalPredicate(final Function<? super T, ?> f) {
-        if (f instanceof Predicate) {
-            return (Predicate<T>) f;
-        }
+    public static <T> Predicate<T> generalPredicate(final $.Visitor<? super T> f) {
         return new Predicate<T>() {
             @Override
             public boolean test(T t) {
@@ -2295,7 +2292,7 @@ public class Osgl implements Serializable {
      * @since 0.2
      */
     @SuppressWarnings("unchecked")
-    public static <T> Visitor<T> visitor(final Function<? super T, ?> f) {
+    public static <T> Visitor<T> visitor(final $.Function<? super T, ?> f) {
         if (f instanceof Visitor) {
             return (Visitor<T>) f;
         }
@@ -2316,7 +2313,7 @@ public class Osgl implements Serializable {
      * @return the composed function
      */
     public static <T> Visitor<T>
-    guardedVisitor(final Function<? super T, Boolean> predicate, final Function<? super T, ?> visitor) {
+    guardedVisitor(final Function<? super T, Boolean> predicate, final $.Visitor<? super T> visitor) {
         return new Visitor<T>() {
             @Override
             public void visit(T t) throws Break {
@@ -2680,7 +2677,7 @@ public class Osgl implements Serializable {
     }
 
     public static <A, B> T2<A, B> T2(A a, B b) {
-        return new T2<A, B>(a, b);
+        return new T2<>(a, b);
     }
 
     /**
@@ -3042,7 +3039,7 @@ public class Osgl implements Serializable {
             return isDefined() ? get() : other.apply();
         }
 
-        public final void runWith(Function<? super T, ?> consumer) {
+        public final void runWith($.Visitor<? super T> consumer) {
             if (isDefined()) {
                 consumer.apply(get());
             }
@@ -3223,14 +3220,14 @@ public class Osgl implements Serializable {
             }
 
             /**
-             * Returns a function that when applied, run {@link Osgl.Option#runWith(Osgl.Function)}
+             * Returns a function that when applied, run {@link Osgl.Option#runWith(Osgl.Visitor)}
              * on this {@code Option}
              *
              * @param consumer the function that consumes the element in this Option
              * @return a function that apply to {@code consumer} function if this Option is defined
              */
             @SuppressWarnings("unused")
-            public final F0<Void> runWith(final Function<? super T, ?> consumer) {
+            public final F0<Void> runWith(final $.Visitor<? super T> consumer) {
                 return new F0<Void>() {
                     @Override
                     public Void apply() throws NotAppliedException, Break {
@@ -3414,18 +3411,18 @@ public class Osgl implements Serializable {
         }
 
         @Override
-        public Var<T> accept(Function<? super T, ?> visitor) {
+        public Var<T> accept($.Visitor<? super T> visitor) {
             visitor.apply(v);
             return this;
         }
 
         @Override
-        public Var<T> each(Function<? super T, ?> visitor) {
+        public Var<T> each($.Visitor<? super T> visitor) {
             return accept(visitor);
         }
 
         @Override
-        public Var<T> forEach(Function<? super T, ?> visitor) {
+        public Var<T> forEach($.Visitor<? super T> visitor) {
             return accept(visitor);
         }
 
@@ -3435,7 +3432,7 @@ public class Osgl implements Serializable {
         }
 
         @Override
-        public Var<T> acceptLeft(Function<? super T, ?> visitor) {
+        public Var<T> acceptLeft($.Visitor<? super T> visitor) {
             visitor.apply(v);
             return this;
         }
@@ -3515,22 +3512,22 @@ public class Osgl implements Serializable {
         @Override
         public <R> C.List<R> flatMap(Function<? super T, ? extends Iterable<? extends R>> mapper) {
             ListBuilder<R> lb = new ListBuilder<R>(3);
-            forEach(Osgl.f1(mapper).andThen(C.F.addAllTo(lb)));
+            forEach($.visitor(f1(mapper).andThen(C.F.addAllTo(lb))));
             return lb.toList();
         }
 
         @Override
-        public <E> C.List<Osgl.T2<T, E>> zip(Iterable<E> iterable) {
+        public <E> C.List<? extends Binary<T, E>> zip(Iterable<E> iterable) {
             Iterator<E> itr = iterable.iterator();
             if (itr.hasNext()) {
-                return new Var<Osgl.T2<T, E>>(Osgl.T2(v, itr.next()));
+                return new Var<>(Osgl.T2(v, itr.next()));
             }
             return C.list();
         }
 
         @Override
-        public C.Sequence<T2<T, Integer>> zipWithIndex() {
-            return new Var<T2<T, Integer>>(T2(v, 0));
+        public C.Sequence<Binary<T, Integer>> zipWithIndex() {
+            return new Var<>((Binary<T, Integer>)T2(v, 0));
         }
 
         @Override
@@ -3825,41 +3822,41 @@ public class Osgl implements Serializable {
         }
 
         @Override
-        public C.List<T> acceptRight(Function<? super T, ?> visitor) {
+        public C.List<T> acceptRight($.Visitor<? super T> visitor) {
             return accept(visitor);
         }
 
         @Override
-        public C.List<T> acceptRight(Func2<Integer, ? super T, ?> indexedVisitor) {
+        public C.List<T> acceptRight($.IndexedVisitor<Integer, ? super T> indexedVisitor) {
             return accept(indexedVisitor);
         }
 
         @Override
-        protected void forEachLeft(Function<? super T, ?> visitor) throws Break {
+        protected void forEachLeft($.Visitor<? super T> visitor) throws Break {
             visitor.apply(v);
         }
 
         @Override
-        protected void forEachLeft(Func2<Integer, ? super T, ?> indexedVisitor) throws Break {
+        protected void forEachLeft($.IndexedVisitor<Integer, ? super T> indexedVisitor) throws Break {
             indexedVisitor.apply(0, v);
         }
 
         @Override
-        protected void forEachRight(Function<? super T, ?> visitor) throws Break {
+        protected void forEachRight($.Visitor<? super T> visitor) throws Break {
             visitor.apply(v);
         }
 
         @Override
-        protected void forEachRight(Func2<Integer, ? super T, ?> indexedVisitor) throws Break {
+        protected void forEachRight($.IndexedVisitor<Integer, ? super T> indexedVisitor) throws Break {
             indexedVisitor.apply(0, v);
         }
 
         @Override
-        public <B> C.List<T2<T, B>> zip(List<B> list) {
+        public <B> C.List<Binary<T, B>> zip(List<B> list) {
             if (list.size() == 0) {
                 return C.list();
             }
-            return C.list(T2(v, list.get(0)));
+            return C.list((Binary<T, B>)T2(v, list.get(0)));
         }
 
         @Override

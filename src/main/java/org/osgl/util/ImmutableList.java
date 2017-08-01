@@ -264,7 +264,7 @@ implements C.List<T>, RandomAccess, Serializable {
         }
         int sz = size();
         ListBuilder<R> lb = new ListBuilder<R>(sz);
-        forEach($.f1(mapper).andThen(C.F.addTo(lb)));
+        forEach($.visitor($.f1(mapper).andThen(C.F.addTo(lb))));
         return lb.toList();
     }
 
@@ -274,7 +274,7 @@ implements C.List<T>, RandomAccess, Serializable {
         // TODO: handle lazy operation
         int sz = size();
         ListBuilder<R> lb = new ListBuilder<R>(sz * 3);
-        forEach($.f1(mapper).andThen(C.F.addAllTo(lb)));
+        forEach($.visitor($.f1(mapper).andThen(C.F.addAllTo(lb))));
         return lb.toList();
     }
 
@@ -766,6 +766,7 @@ implements C.List<T>, RandomAccess, Serializable {
         public Cursor<T> append(T t) {
             throw new UnsupportedOperationException();
         }
+
     }
 
     @Override
@@ -885,7 +886,7 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    protected void forEachLeft($.Function<? super T, ?> visitor) throws $.Break {
+    protected void forEachLeft($.Visitor<? super T> visitor) throws $.Break {
         int sz = size();
         T[] data = data_;
         for (int i = 0; i < sz; ++i) {
@@ -899,7 +900,7 @@ implements C.List<T>, RandomAccess, Serializable {
     }
 
     @Override
-    protected void forEachRight($.Function<? super T, ?> visitor) throws $.Break {
+    protected void forEachRight($.Visitor<? super T> visitor) throws $.Break {
         int sz = size();
         T[] data = data_;
         for (int i = sz - 1; i >= 0; --i) {
@@ -1010,7 +1011,7 @@ implements C.List<T>, RandomAccess, Serializable {
         } else if (len == 1) {
             return $.val(data[0]);
         } else {
-            return new ImmutableList<T>(data);
+            return new ImmutableList<>(data);
         }
     }
 

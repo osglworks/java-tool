@@ -24,7 +24,7 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
      *
      * @param visitor the visitor
      */
-    public TraversableBase<T> forEach($.Function<? super T, ?> visitor) {
+    public TraversableBase<T> forEach($.Visitor<? super T> visitor) {
         C.forEach(this, visitor);
         return this;
     }
@@ -174,12 +174,12 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
     }
 
     @Override
-    public C.Traversable<T> accept($.Function<? super T, ?> visitor) {
+    public C.Traversable<T> accept($.Visitor<? super T> visitor) {
         return forEach(visitor);
     }
 
     @Override
-    public C.Traversable<T> each($.Function<? super T, ?> visitor) {
+    public C.Traversable<T> each($.Visitor<? super T> visitor) {
         return forEach(visitor);
     }
 

@@ -1,5 +1,9 @@
 package org.osgl.util;
 
+import org.junit.Test;
+
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: luog
@@ -21,5 +25,21 @@ public class ImmutableListTest extends ListTestBase {
     @Override
     protected <T> C.List<T> prepareTypedData(T... ta) {
         return C.listOf(ta);
+    }
+
+    @Test
+    public void testToMapByKey() {
+        String keys = "abcd,xyz,funny";
+        Map<String, Integer> map = S.fastSplit(keys, ",").toMapByKey(S.F.LENGTH);
+        eq(3, map.size());
+        eq(5, map.get("funny"));
+    }
+
+    @Test
+    public void testToMapByVal() {
+        String keys = "abcd,xyz,funny";
+        Map<Integer, String> map = S.fastSplit(keys, ",").toMapByVal(S.F.LENGTH);
+        eq(3, map.size());
+        eq("funny", map.get(5));
     }
 }

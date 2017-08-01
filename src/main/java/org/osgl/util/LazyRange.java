@@ -229,29 +229,29 @@ implements C.Range<ELEMENT>, Serializable {
     }
 
     @Override
-    public LazyRange<ELEMENT> accept($.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> accept($.Visitor<? super ELEMENT> visitor) {
         super.accept(visitor);
         return this;
     }
 
     @Override
-    public LazyRange<ELEMENT> forEach($.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> forEach($.Visitor<? super ELEMENT> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public LazyRange<ELEMENT> each($.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> each($.Visitor<? super ELEMENT> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public LazyRange<ELEMENT> acceptLeft($.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> acceptLeft($.Visitor<? super ELEMENT> visitor) {
         super.acceptLeft(visitor);
         return this;
     }
 
     @Override
-    public LazyRange<ELEMENT> acceptRight($.Function<? super ELEMENT, ?> visitor) {
+    public LazyRange<ELEMENT> acceptRight($.Visitor<? super ELEMENT> visitor) {
         reverse().acceptLeft(visitor);
         return this;
     }

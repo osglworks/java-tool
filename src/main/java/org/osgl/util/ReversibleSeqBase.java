@@ -4,13 +4,6 @@ import org.osgl.$;
 
 import java.util.NoSuchElementException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: luog
- * Date: 15/11/13
- * Time: 6:41 AM
- * To change this template use File | Settings | File Templates.
- */
 abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.ReversibleSequence<T> {
     @Override
     public C.ReversibleSequence<T> lazy() {
@@ -37,23 +30,23 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
     }
 
     @Override
-    public ReversibleSeqBase<T> accept($.Function<? super T, ?> visitor) {
+    public ReversibleSeqBase<T> accept($.Visitor<? super T> visitor) {
         super.accept(visitor);
         return this;
     }
 
     @Override
-    public ReversibleSeqBase<T> each($.Function<? super T, ?> visitor) {
+    public ReversibleSeqBase<T> each($.Visitor<? super T> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public ReversibleSeqBase<T> forEach($.Function<? super T, ?> visitor) {
+    public ReversibleSeqBase<T> forEach($.Visitor<? super T> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public C.ReversibleSequence<T> acceptLeft($.Function<? super T, ?> visitor) {
+    public C.ReversibleSequence<T> acceptLeft($.Visitor<? super T> visitor) {
         super.acceptLeft(visitor);
         return this;
     }
@@ -194,17 +187,17 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
     }
 
     @Override
-    public C.ReversibleSequence<T> acceptRight($.Function<? super T, ?> visitor) {
+    public C.ReversibleSequence<T> acceptRight($.Visitor<? super T> visitor) {
         return reverse().acceptLeft(visitor);
     }
 
     @Override
-    public <T2> C.ReversibleSequence<$.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
-        return new ZippedRSeq<T, T2>(this, rseq);
+    public <T2> C.ReversibleSequence<$.Binary<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
+        return new ZippedRSeq<>(this, rseq);
     }
 
     @Override
-    public <T2> C.ReversibleSequence<$.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2) {
-        return new ZippedRSeq<T, T2>(this, rseq, def1, def2);
+    public <T2> C.ReversibleSequence<$.Binary<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2) {
+        return new ZippedRSeq<>(this, rseq, def1, def2);
     }
 }

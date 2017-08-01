@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
  * Time: 8:07 PM
  * To change this template use File | Settings | File Templates.
  */
-class ZippedIterator<A, B> implements Iterator<$.T2<A, B>> {
+class ZippedIterator<A, B> implements Iterator<$.Binary<A, B>> {
     private Iterator<A> a;
     private Iterator<B> b;
     private $.Option<A> defA = $.none();

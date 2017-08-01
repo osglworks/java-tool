@@ -29,7 +29,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         return !isImmutable() && !isReadOnly();
     }
 
-    protected void forEachLeft($.Function<? super T, ?> visitor) throws $.Break {
+    protected void forEachLeft($.Visitor<? super T> visitor) throws $.Break {
         for (T t : this) {
             try {
                 visitor.apply(t);
@@ -39,7 +39,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
     }
 
-    protected void forEachLeft($.Func2<Integer, ? super T, ?> indexedVisitor) throws $.Break {
+    protected void forEachLeft($.IndexedVisitor<Integer, ? super T> indexedVisitor) throws $.Break {
         for (int i = 0, j = size(); i < j; ++i) {
             try {
                 indexedVisitor.apply(i, get(i));
@@ -49,7 +49,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
     }
 
-    protected void forEachRight($.Function<? super T, ?> visitor) throws $.Break {
+    protected void forEachRight($.Visitor<? super T> visitor) throws $.Break {
         Iterator<T> itr = reverseIterator();
         while (itr.hasNext()) {
             try {
@@ -60,7 +60,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
         }
     }
 
-    protected void forEachRight($.Func2<Integer, ? super T, ?> indexedVisitor) throws $.Break {
+    protected void forEachRight($.IndexedVisitor<Integer, ? super T> indexedVisitor) throws $.Break {
         for (int i = size() - 1; i >= 0; --i) {
             try {
                 indexedVisitor.apply(i, get(i));
@@ -501,14 +501,14 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 return Nil.list();
             }
             ListBuilder<T> lb = new ListBuilder<T>(sz);
-            forEach($.predicate(predicate).elseThen(C.F.addTo(lb)));
+            forEach($.visitor($.predicate(predicate).elseThen(C.F.addTo(lb))));
             return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
             }
             C.List<T> l = C.newSizedList(sz);
-            forEach($.predicate(predicate).elseThen(C.F.addTo(l)));
+            forEach($.visitor($.predicate(predicate).elseThen(C.F.addTo(l))));
             return l;
         }
     }
@@ -525,14 +525,14 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 return Nil.list();
             }
             ListBuilder<R> lb = new ListBuilder<R>(sz);
-            forEach($.f1(mapper).andThen(C.F.addTo(lb)));
+            forEach($.visitor($.f1(mapper).andThen(C.F.addTo(lb))));
             return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
             }
             C.List<R> l = C.newSizedList(sz);
-            forEach($.f1(mapper).andThen(C.F.addTo(l)));
+            forEach($.visitor($.f1(mapper).andThen(C.F.addTo(l))));
             return l;
         }
     }
@@ -548,14 +548,14 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 return Nil.list();
             }
             ListBuilder<R> lb = new ListBuilder<R>(sz * 3);
-            forEach($.f1(mapper).andThen(C.F.addAllTo(lb)));
+            forEach($.visitor($.f1(mapper).andThen(C.F.addAllTo(lb))));
             return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
             }
             C.List<R> l = C.newSizedList(sz * 3);
-            forEach($.f1(mapper).andThen(C.F.addAllTo(l)));
+            forEach($.visitor($.f1(mapper).andThen(C.F.addAllTo(l))));
             return l;
         }
     }
@@ -570,14 +570,14 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
                 return Nil.list();
             }
             ListBuilder<T> lb = new ListBuilder<T>(sz);
-            forEach($.predicate(predicate).ifThen(C.F.addTo(lb)));
+            forEach($.visitor($.predicate(predicate).ifThen(C.F.addTo(lb))));
             return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newList();
             }
             C.List<T> l = C.newSizedList(sz);
-            forEach($.predicate(predicate).ifThen(C.F.addTo(l)));
+            forEach($.visitor($.predicate(predicate).ifThen(C.F.addTo(l))));
             return l;
         }
     }
@@ -802,57 +802,57 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
-    public C.List<T> accept($.Function<? super T, ?> visitor) {
+    public C.List<T> accept($.Visitor<? super T> visitor) {
         forEachLeft(visitor);
         return this;
     }
 
     @Override
-    public C.List<T> each($.Function<? super T, ?> visitor) {
+    public C.List<T> each($.Visitor<? super T> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public C.List<T> forEach($.Function<? super T, ?> visitor) {
+    public C.List<T> forEach($.Visitor<? super T> visitor) {
         return accept(visitor);
     }
 
     @Override
-    public C.List<T> acceptLeft($.Function<? super T, ?> visitor) {
+    public C.List<T> acceptLeft($.Visitor<? super T> visitor) {
         forEachLeft(visitor);
         return this;
     }
 
     @Override
-    public C.List<T> acceptRight($.Function<? super T, ?> visitor) {
+    public C.List<T> acceptRight($.Visitor<? super T> visitor) {
         forEachRight(visitor);
         return this;
     }
 
     @Override
-    public C.List<T> accept($.Func2<Integer, ? super T, ?> indexedVisitor) {
+    public C.List<T> accept($.IndexedVisitor<Integer, ? super T> indexedVisitor) {
         forEachLeft(indexedVisitor);
         return this;
     }
 
     @Override
-    public C.List<T> each($.Func2<Integer, ? super T, ?> indexedVisitor) {
+    public C.List<T> each($.IndexedVisitor<Integer, ? super T> indexedVisitor) {
         return accept(indexedVisitor);
     }
 
     @Override
-    public C.List<T> forEach($.Func2<Integer, ? super T, ?> indexedVisitor) {
+    public C.List<T> forEach($.IndexedVisitor<Integer, ? super T> indexedVisitor) {
         return accept(indexedVisitor);
     }
 
     @Override
-    public C.List<T> acceptLeft($.Func2<Integer, ? super T, ?> indexedVisitor) {
+    public C.List<T> acceptLeft($.IndexedVisitor<Integer, ? super T> indexedVisitor) {
         forEachLeft(indexedVisitor);
         return this;
     }
 
     @Override
-    public C.List<T> acceptRight($.Func2<Integer, ? super T, ?> indexedVisitor) {
+    public C.List<T> acceptRight($.IndexedVisitor<Integer, ? super T> indexedVisitor) {
         forEachRight(indexedVisitor);
         return this;
     }
@@ -906,7 +906,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             if (iterable instanceof Collection) {
                 addAll((Collection<? extends T>) iterable);
             } else {
-                C.forEach(iterable, C.F.addTo(this));
+                C.forEach(iterable, $.visitor(C.F.addTo(this)));
             }
             return this;
         }
@@ -925,7 +925,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     private C.List<T> unLazyAppend(Iterator<? extends T> iterator) {
         if (isMutable()) {
-            C.forEach(iterator, C.F.addTo(this));
+            C.forEach(iterator, $.visitor(C.F.addTo(this)));
             return this;
         }
         ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
@@ -935,7 +935,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
     private C.List<T> unLazyAppend(Enumeration<? extends T> enumeration) {
         if (isMutable()) {
-            C.forEach(new EnumerationIterator<T>(enumeration), C.F.addTo(this));
+            C.forEach(new EnumerationIterator<T>(enumeration), $.visitor(C.F.addTo(this)));
             return this;
         }
         ListBuilder<T> lb = new ListBuilder<T>(size() * 2);
@@ -1270,50 +1270,50 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
-    public <T2> C.List<$.T2<T, T2>> zip(List<T2> list) {
-        return new ZippedList<T, T2>(this, list);
+    public <T2> C.List<$.Binary<T, T2>> zip(List<T2> list) {
+        return new ZippedList<>(this, list);
     }
 
     @Override
-    public <T2> C.List<$.T2<T, T2>> zipAll(List<T2> list, T def1, T2 def2) {
-        return new ZippedList<T, T2>(this, list, def1, def2);
+    public <T2> C.List<$.Binary<T, T2>> zipAll(List<T2> list, T def1, T2 def2) {
+        return new ZippedList<>(this, list, def1, def2);
     }
 
     @Override
-    public C.Sequence<$.T2<T, Integer>> zipWithIndex() {
-        return new ZippedSeq<T, Integer>(this, new IndexIterable(this));
+    public C.Sequence<$.Binary<T, Integer>> zipWithIndex() {
+        return new ZippedSeq<>(this, new IndexIterable(this));
     }
 
     @Override
-    public <T2> C.Sequence<$.T2<T, T2>> zip(Iterable<T2> iterable) {
+    public <T2> C.Sequence<? extends $.Binary<T, T2>> zip(Iterable<T2> iterable) {
         if (iterable instanceof List) {
             return zip((List<T2>) iterable);
         }
-        return new ZippedSeq<T, T2>(this, iterable);
+        return new ZippedSeq<>(this, iterable);
     }
 
     @Override
-    public <T2> C.Sequence<$.T2<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2) {
+    public <T2> C.Sequence<? extends $.Binary<T, T2>> zipAll(Iterable<T2> iterable, T def1, T2 def2) {
         if (iterable instanceof List) {
             return zipAll((List<T2>) iterable, def1, def2);
         }
-        return new ZippedSeq<T, T2>(this, iterable, def1, def2);
+        return new ZippedSeq<>(this, iterable, def1, def2);
     }
 
     @Override
-    public <T2> C.ReversibleSequence<$.T2<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
+    public <T2> C.ReversibleSequence<$.Binary<T, T2>> zip(C.ReversibleSequence<T2> rseq) {
         if (rseq instanceof C.List) {
             return zip((java.util.List<T2>) rseq);
         }
-        return new ZippedRSeq<T, T2>(this, rseq);
+        return new ZippedRSeq<>(this, rseq);
     }
 
     @Override
-    public <T2> C.ReversibleSequence<$.T2<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2) {
+    public <T2> C.ReversibleSequence<$.Binary<T, T2>> zipAll(C.ReversibleSequence<T2> rseq, T def1, T2 def2) {
         if (rseq instanceof C.List) {
             return zipAll((java.util.List<T2>) rseq, def1, def2);
         }
-        return new ZippedRSeq<T, T2>(this, rseq, def1, def2);
+        return new ZippedRSeq<>(this, rseq, def1, def2);
     }
 
     @Override
@@ -1334,6 +1334,24 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             return n;
         }
         return SequenceBase.count(this, t);
+    }
+
+    @Override
+    public <K> C.Map<K, T> toMapByVal(Osgl.Function<? super T, ? extends K> keyComputer) {
+        C.Map<K, T> map = C.newMap();
+        for (T v : this) {
+            map.put(keyComputer.apply(v), v);
+        }
+        return map;
+    }
+
+    @Override
+    public <V> C.Map<T, V> toMapByKey(Osgl.Function<? super T, ? extends V> valComputer) {
+        C.Map<T, V> map = C.newMap();
+        for (T v : this) {
+            map.put(v, valComputer.apply(v));
+        }
+        return map;
     }
 
     int modCount() {
