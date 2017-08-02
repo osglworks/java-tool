@@ -3402,7 +3402,7 @@ public enum C {
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> map(Object... args) {
         if (null == args || args.length == 0) {
-            return C.map();
+            return Nil.EMPTY_MAP;
         }
         return new Map(true, args);
     }
