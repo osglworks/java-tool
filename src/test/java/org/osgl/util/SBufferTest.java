@@ -1,9 +1,22 @@
 package org.osgl.util;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.osgl.TestBase;
 
 public class SBufferTest extends TestBase {
+
+    @Before
+    public void reset() {
+        S.buffer().reset();
+    }
+
+    @Test
+    public void itShallNotReuseUnconsumedBuffer() {
+        S.Buffer sb = S.buffer("abc");
+        S.Buffer sb2 = S.buffer("123");
+        assertNotSame(sb, sb2);
+    }
 
     @Test
     public void itShallReuseConsumedBuffer() {
@@ -13,13 +26,6 @@ public class SBufferTest extends TestBase {
         assertSame(sb, sb2);
         eq("123", sb2.toString());
         assertSame(sb, sb2);
-    }
-
-    @Test
-    public void itShallNotReuseUnconsumedBuffer() {
-        S.Buffer sb = S.buffer("abc");
-        S.Buffer sb2 = S.buffer("123");
-        assertNotSame(sb, sb2);
     }
 
     @Test

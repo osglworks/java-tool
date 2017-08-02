@@ -1337,19 +1337,28 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
     }
 
     @Override
-    public <K> C.Map<K, T> toMapByVal(Osgl.Function<? super T, ? extends K> keyComputer) {
-        C.Map<K, T> map = C.newMap();
+    public <K, V> C.Map<K, V> toMap(Osgl.Function<? super T, ? extends K> keyExtractor, Osgl.Function<? super T, ? extends V> valExtractor) {
+        C.Map<K, V> map = C.newMap();
         for (T v : this) {
-            map.put(keyComputer.apply(v), v);
+            map.put(keyExtractor.apply(v), valExtractor.apply(v));
         }
         return map;
     }
 
     @Override
-    public <V> C.Map<T, V> toMapByKey(Osgl.Function<? super T, ? extends V> valComputer) {
+    public <K> C.Map<K, T> toMapByVal(Osgl.Function<? super T, ? extends K> keyExtractor) {
+        C.Map<K, T> map = C.newMap();
+        for (T v : this) {
+            map.put(keyExtractor.apply(v), v);
+        }
+        return map;
+    }
+
+    @Override
+    public <V> C.Map<T, V> toMapByKey(Osgl.Function<? super T, ? extends V> valExtractor) {
         C.Map<T, V> map = C.newMap();
         for (T v : this) {
-            map.put(v, valComputer.apply(v));
+            map.put(v, valExtractor.apply(v));
         }
         return map;
     }
