@@ -3814,11 +3814,18 @@ public class Osgl implements Serializable {
         }
 
         @Override
-        public C.Set<T> withIn(Collection<T> col) {
-            if (col.contains(v)) {
-                return this;
-            }
-            return C.empty();
+        public C.Set<T> with(Collection<? extends T> col) {
+            return C.set(v).with(col);
+        }
+
+        @Override
+        public C.Set<T> with(T element) {
+            return C.set(v, element);
+        }
+
+        @Override
+        public C.Set<T> with(T element, T... elements) {
+            return C.set(v).with(element, elements);
         }
 
         @Override
@@ -4029,6 +4036,11 @@ public class Osgl implements Serializable {
             return listIterator();
         }
 
+        @Override
+        public C.Set<T> withIn(Collection<? extends T> col) {
+            return col.contains(v) ? this : C.<T>set();
+        }
+
         public Var<T> update(Function<T, T> changer) {
             v = changer.apply(v);
             return this;
@@ -4128,7 +4140,7 @@ public class Osgl implements Serializable {
     }
 
     public static <T> Const<T> constant(T t) {
-        return Const.<T>of(t);
+        return Const.of(t);
     }
 
     public static <T> Const<T> constant() {

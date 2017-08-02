@@ -38,6 +38,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
     public static final Empty EMPTY = Empty.INSTANCE;
     private static final long serialVersionUID = -5058901899659394002L;
     public static EmptySet SET = EmptySet.INSTANCE;
+    public static final C.Map EMPTY_MAP = new C.Map(true);
 
     //    public static final EmptySet SET = EmptySet.INSTANCE;
 //
@@ -54,6 +55,10 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 //    }
 //
     private Nil() {
+    }
+
+    public static <K, V> Map<K, V> emptyMap() {
+        return $.cast(EMPTY_MAP);
     }
 
     @SuppressWarnings("unchecked")
@@ -757,13 +762,28 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public C.Set<T> withIn(Collection<T> col) {
+        public C.Set<T> withIn(Collection<? extends T> col) {
             return this;
         }
 
         @Override
         public C.Set<T> without(Collection<? super T> col) {
             return this;
+        }
+
+        @Override
+        public C.Set<T> with(Collection<? extends T> col) {
+            return C.set(col);
+        }
+
+        @Override
+        public C.Set<T> with(T element) {
+            return C.set(element);
+        }
+
+        @Override
+        public C.Set<T> with(T element, T... elements) {
+            return C.set(element, elements);
         }
 
         @Override
@@ -842,12 +862,27 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public Empty<T> onlyIn(Collection<? extends T> col) {
-            return this;
+        public C.Set<T> with(Collection<? extends T> col) {
+            return C.set(col);
         }
 
         @Override
-        public Empty<T> withIn(Collection<T> col) {
+        public C.Set<T> with(T element) {
+            return C.set(element);
+        }
+
+        @Override
+        public C.Set<T> with(T element, T... elements) {
+            return C.set(element, elements);
+        }
+
+        @Override
+        public C.Set<T> onlyIn(Collection<? extends T> col) {
+            return C.set(col);
+        }
+
+        @Override
+        public Empty<T> withIn(Collection<? extends T> col) {
             return this;
         }
 

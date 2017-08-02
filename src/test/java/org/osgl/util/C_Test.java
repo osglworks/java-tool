@@ -2,7 +2,9 @@ package org.osgl.util;
 
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class C_Test extends UtilTestBase {
 
@@ -104,6 +106,15 @@ public class C_Test extends UtilTestBase {
 
         List<Integer> fooIdList = C.extract(barList, "foo.id");
         eq(C.list(0, 1), fooIdList);
+    }
+
+    @Test
+    public void testWrapJdkMap() {
+        Map<String, Integer> jdkMap = new HashMap<>();
+        jdkMap.put("abc", 3);
+        jdkMap.put("ab", 2);
+        C.Map<String, Integer> osglMap = C.map(jdkMap);
+        eq(3, osglMap.get("abc"));
     }
 
 }

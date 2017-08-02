@@ -21,7 +21,6 @@ package org.osgl.util;
 
 import org.osgl.$;
 import org.osgl.Osgl;
-import org.osgl.cache.CacheService;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.Algorithms;
 
@@ -2295,7 +2294,7 @@ public enum C {
          * @param indexedVisitor the function that takes argument of (key, value) pair
          * @return this map
          */
-        public Map<K, V> forEach($.Func2<? super K, ? super V, ?> indexedVisitor) {
+        public Map<K, V> forEach($.IndexedVisitor<? super K, ? super V> indexedVisitor) {
             for (java.util.Map.Entry<K, V> entry: entrySet()) {
                 try {
                     indexedVisitor.apply(entry.getKey(), entry.getValue());
@@ -2307,22 +2306,54 @@ public enum C {
         }
 
         /**
-         * Alias of {@link #forEach(Osgl.Func2)}
+         * Alias of {@link #forEach(Osgl.IndexedVisitor)}
          * @param indexedVisitor the visitor that can be applied on Key/Value pair stored in this Map
          * @return this map
          */
-        public Map<K, V> each($.Func2<? super K, ? super V, ?> indexedVisitor) {
+        public Map<K, V> each($.IndexedVisitor<? super K, ? super V> indexedVisitor) {
             return forEach(indexedVisitor);
         }
 
 
         /**
-         * Alias of {@link #forEach(Osgl.Func2)}
+         * Alias of {@link #forEach(Osgl.IndexedVisitor)}
          * @param indexedVisitor the visitor that can be applied on Key/Value pair stored in this Map
          * @return this map
          */
-        public Map<K, V> accept($.Func2<? super K, ? super V, ?> indexedVisitor) {
+        public Map<K, V> accept($.IndexedVisitor<? super K, ? super V> indexedVisitor) {
             return forEach(indexedVisitor);
+        }
+
+        public <NV> Map<K, NV> transformValues($.Function<V, NV> valueTransformer) {
+            Map<K, NV> newMap = C.newMap();
+            for (java.util.Map.Entry<K, V> entry : entrySet()) {
+                newMap.put(entry.getKey(), valueTransformer.apply(entry.getValue()));
+            }
+            return newMap;
+        }
+
+        public <NK> Map<NK, V> transformKeys($.Function<K, NK> keyTransformer) {
+            Map<NK, V> newMap = C.newMap();
+            for (java.util.Map.Entry<K, V> entry : entrySet()) {
+                newMap.put(keyTransformer.apply(entry.getKey()), entry.getValue());
+            }
+            return newMap;
+        }
+
+        public <NK, NV> Map<NK, NV> transform($.Function<K, NK> keyTransformer, $.Function<V, NV> valueTransformer) {
+            Map<NK, NV> newMap = C.newMap();
+            for (java.util.Map.Entry<K, V> entry : entrySet()) {
+                newMap.put(keyTransformer.apply(entry.getKey()), valueTransformer.apply(entry.getValue()));
+            }
+            return newMap;
+        }
+
+        public Set<$.Binary<K, V>> zip() {
+            C.Set<$.Binary<K, V>> zipped = C.newSet();
+            for (java.util.Map.Entry<K, V> entry : entrySet()) {
+                zipped.add($.T2(entry.getKey(), entry.getValue()));
+            }
+            return zipped;
         }
 
         private void writeObject(java.io.ObjectOutputStream s) throws IOException {
@@ -2388,7 +2419,7 @@ public enum C {
          *            be included from the result set
          * @return a set contains elements in both col and this set
          */
-        Set<T> withIn(Collection<T> col);
+        Set<T> withIn(Collection<? extends T> col);
 
 
         /**
@@ -2400,6 +2431,35 @@ public enum C {
          * @return a set contains elements only in this set
          */
         Set<T> without(Collection<? super T> col);
+
+        /**
+         * Returns a set contains all elements in this set and all
+         * elements in the {@code col} collection specified
+         *
+         * @param col the collection in which elements should be
+         *            included in the result set
+         * @return a set contains elements in both this set and the collection
+         */
+        Set<T> with(Collection<? extends T> col);
+
+        /**
+         * Returns a set contains all elements in this set plus the element
+         * specified
+         *
+         * @param element the new element that will be contained in the returning set
+         * @return a set as described above
+         */
+        Set<T> with(T element);
+
+        /**
+         * Returns a set contains all elements in this set plus all the elements
+         * specified in the parameter list
+         *
+         * @param element the first element to be added into the returning set
+         * @param elements rest elements to be added into the returning set
+         * @return a set as described above
+         */
+        Set<T> with(T element, T... elements);
 
         /**
          * Returns a set contains all elements in the set except the
@@ -2716,7 +2776,7 @@ public enum C {
     @SuppressWarnings("unused")
     public static final Set EMPTY_SET = Nil.set();
     @SuppressWarnings("unused")
-    public static final java.util.Map EMPTY_MAP = Collections.EMPTY_MAP;
+    public static final Map EMPTY_MAP = Nil.EMPTY_MAP;
     public static final ListOrSet EMPTY = Nil.EMPTY;
 
     @SuppressWarnings("unchecked")
@@ -3288,11 +3348,39 @@ public enum C {
      * @see #set(Collection)
      */
     public static <T> Set<T> newSet(Collection<? extends T> col) {
-        return new DelegatingSet<T>(col);
+        return new DelegatingSet<>(col);
+    }
+
+    public static <T> Set<T> unionOf(Collection<? extends T> col1, Collection<? extends T> col2) {
+        return C.set(col1).with(col2);
+    }
+
+    public static <T> Set<T> unionOf(Collection<? extends T> col1, Collection<? extends T> col2, Collection<? extends T> col3, Collection<? extends T> ... otherCols) {
+        Set<T> union = C.newSet(col1);
+        union.addAll(col2);
+        union.addAll(col3);
+        for (Collection<? extends T> col : otherCols) {
+            union.addAll(col);
+        }
+        return C.set(union);
+    }
+
+    public static <T> Set<T> intercectionOf(Collection<? extends T> col1, Collection<? extends T> col2) {
+        return C.set(col1).withIn(col2);
+    }
+
+    public static <T> Set<T> interceptionOf(Collection<? extends T> col1, Collection<? extends T> col2, Collection<? extends T> col3, Collection<? extends T>... otherCols) {
+        Set<T> interception = C.newSet(col1);
+        interception.retainAll(col2);
+        interception.retainAll(col3);
+        for (Collection<? extends T> col : otherCols) {
+            interception.retainAll(col);
+        }
+        return C.set(interception);
     }
 
     /**
-     * Create a immutable {@link java.util.Map} from elements specified in an array.
+     * Create a immutable {@link Map} from elements specified in an array.
      * <p>Example</p>
      * <pre>
      *     Map&lt;String, Integer&gt; scores = C.map("Tom", 80, "Peter", 93, ...);
@@ -3312,11 +3400,19 @@ public enum C {
      * @see #newMap(Object...)
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> java.util.Map<K, V> map(Object... args) {
+    public static <K, V> Map<K, V> map(Object... args) {
         if (null == args || args.length == 0) {
-            return Collections.EMPTY_MAP;
+            return C.map();
         }
         return new Map(true, args);
+    }
+
+    public static <K, V> Map<K, V> map(Collection<$.Tuple<K, V>> kvCol) {
+        Map<K, V> map = C.newMap();
+        for ($.Tuple<K, V> entry : kvCol) {
+            map.put(entry._1, entry._2);
+        }
+        return map;
     }
 
     /**
@@ -3326,25 +3422,11 @@ public enum C {
      * @param <V> the value type
      * @return an immutable map of the existing map
      */
-    public static <K, V> java.util.Map<K, V> map(java.util.Map<? extends K, ? extends V> map) {
+    public static <K, V> Map<K, V> map(java.util.Map<? extends K, ? extends V> map) {
         if (null == map) {
-            return Collections.emptyMap();
+            return Nil.EMPTY_MAP;
         }
-        return Collections.unmodifiableMap(map);
-    }
-
-    /**
-     * Create an immutable {@link java.util.Map} from existing {@link Map}
-     * @param map the map from which entries will be put into the new immutable map
-     * @param <K> the key type
-     * @param <V> the value type
-     * @return an immutable map of the existing map
-     */
-    public static <K, V> java.util.Map<K, V> map(Map<? extends K, ? extends V> map) {
-        if (null == map) {
-            return Collections.emptyMap();
-        }
-        return Collections.unmodifiableMap(map);
+        return new Map(true, map);
     }
 
     /**
@@ -3494,7 +3576,7 @@ public enum C {
      * @param <V> the generic type of Value
      * @throws $.Break the {@link org.osgl.Osgl.Break} with payload throwed out by indexedVisitor function to break to loop
      */
-    public static <K, V> void forEach(java.util.Map<K, V> map, $.Func2<? super K, ? super V, ?> indexedVisitor) throws $.Break {
+    public static <K, V> void forEach(java.util.Map<K, V> map, $.IndexedVisitor<? super K, ? super V> indexedVisitor) throws $.Break {
         for (java.util.Map.Entry<K, V> entry : map.entrySet()) {
             try {
                 indexedVisitor.apply(entry.getKey(), entry.getValue());
@@ -4043,7 +4125,7 @@ public enum C {
          * @param visitor the function to be used to loop through the argument
          * @param <T> the element type
          * @return the function as described
-         * @see C#forEach(Iterable, Osgl.Function)
+         * @see C#forEach(Iterable, Osgl.Visitor)
          */
         @SuppressWarnings("unused")
         public static <T> $.F1<Iterable<? extends T>, Void> forEachIterable(final $.Visitor<? super T> visitor) {

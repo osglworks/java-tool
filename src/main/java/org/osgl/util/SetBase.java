@@ -176,7 +176,7 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     }
 
     @Override
-    public C.Set<T> withIn(Collection<T> col) {
+    public C.Set<T> withIn(Collection<? extends T> col) {
         C.Set<T> others = C.newSet(col);
         others.retainAll(this);
         if (isImmutable()) {
@@ -192,6 +192,31 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
         if (isImmutable()) {
             return ImmutableSet.of(copy);
         }
+        return copy;
+    }
+
+    @Override
+    public C.Set<T> with(Collection<? extends T> col) {
+        C.Set<T> copy = C.newSet(this);
+        copy.addAll(col);
+        if (isImmutable()) {
+            return ImmutableSet.of(copy);
+        }
+        return copy;
+    }
+
+    @Override
+    public C.Set<T> with(T element) {
+        C.Set<T> copy = C.newSet(this);
+        copy.add(element);
+        return copy;
+    }
+
+    @Override
+    public C.Set<T> with(T element, T... elements) {
+        C.Set<T> copy = C.newSet(this);
+        copy.add(element);
+        copy.addAll(C.listOf(elements));
         return copy;
     }
 
