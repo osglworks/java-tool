@@ -1,29 +1,22 @@
 package org.osgl.util;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.osgl.TestBase;
 
 public class SBufferTest extends TestBase {
-
-    @Before
-    public void reset() {
-        System.out.println("reset...");
-
-        S.buffer().reset();
-    }
 
     @Test
     public void itShallNotReuseUnconsumedBuffer() {
         S.Buffer sb = S.buffer("abc");
         S.Buffer sb2 = S.buffer("123");
         assertNotSame(sb, sb2);
+        // we need to consume the buffer to avoid
+        // break of next test case
+        sb.toString();
+        sb2.toString();
     }
 
     @Test
-    @Ignore
-    //TODO: fix me!!
     public void itShallReuseConsumedBuffer() {
         S.Buffer sb = S.buffer("abc");
         eq("abc", sb.toString());
