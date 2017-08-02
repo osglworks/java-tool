@@ -32,6 +32,24 @@ public class S {
      */
     public static final String[] EMPTY_ARRAY = new String[0];
 
+    public static final Binary PARENTHESES = binary("(", ")");
+
+    public static final Binary BRACKETS = binary("[", "]");
+
+    public static final Binary BRACES = binary("{", "}");
+
+    public static final Binary DIAMOND = binary("<", ">");
+
+    public static final Binary ANGLE_BRACKETS = DIAMOND;
+
+    public static final Binary SINGLE_ANGLE_QUOTATION_MARK = binary("‹", "›");
+
+    public static final Binary DOUBLE_ANGLE_QUOTATION_MARK = binary("«", "»");
+
+    public static final Binary 书名号 = binary("《", "》");
+
+    public static final Binary SHU_MING_HAO = 书名号;
+
     public static String getCommonSep() {
         return COMMON_SEP;
     }
@@ -494,20 +512,81 @@ public class S {
         return buf.toString();
     }
 
+    public static class _Is {
+        private String s;
+        private _Is(Object object) {
+            this.s = string(object);
+        }
+        public boolean empty() {
+            return s.isEmpty();
+        }
+        public boolean blank() {
+            return s.trim().isEmpty();
+        }
+        public boolean contain(CharSequence content) {
+            return s.contains(content);
+        }
+        public boolean startWith(String prefix, int toffset) {
+            return s.startsWith(prefix, toffset);
+        }
+        public boolean startWith(String prefix) {
+            return s.startsWith(prefix);
+        }
+        public boolean endWith(String suffix) {
+            return s.endsWith(suffix);
+        }
+        public boolean equalTo(CharSequence content) {
+            return s.contentEquals(content);
+        }
+        public boolean numeric() {
+            return N.isNumeric(s);
+        }
+        public boolean integer() {
+            return N.isInt(s);
+        }
+    }
+
+    public static _Is is(Object content) {
+        return new _Is(content);
+    }
+
     public static boolean endsWith(String string, String suffix) {
-        return string.endsWith(suffix);
+        return string(string).endsWith(suffix);
     }
 
     public static boolean endsWith(String string, char suffix) {
-        return string.charAt(string.length() - 1) == suffix;
+        return string(string).charAt(string.length() - 1) == suffix;
     }
 
     public static boolean startsWith(String string, String prefix) {
-        return string.startsWith(prefix);
+        return string(string).startsWith(prefix);
     }
 
     public static boolean startsWith(String string, char prefix) {
-        return string.charAt(0) == prefix;
+        return string(string).charAt(0) == prefix;
+    }
+
+    public static class _Ensure {
+        private String s;
+        private _Ensure(Object object) {
+            this.s = string(object);
+        }
+        public String startWith(String prefix) {
+            return ensureStartsWith(s, prefix);
+        }
+        public String startWith(char prefix) {
+            return ensureStartsWith(s, prefix);
+        }
+        public String endWith(String suffix) {
+            return ensureEndsWith(s, suffix);
+        }
+        public String endWith(char suffix) {
+            return ensureEndsWith(s, suffix);
+        }
+    }
+
+    public static _Ensure ensure(Object object) {
+        return new _Ensure(object);
     }
 
     public static String ensureStartsWith(String string, String prefix) {
@@ -607,6 +686,97 @@ public class S {
         return sb.toString();
     }
 
+    public static _IterableJoiner join(Iterable<?> iterable) {
+        return new _IterableJoiner(iterable);
+    }
+
+    public static class _IterableJoiner {
+        private Iterable<?> iterable;
+        private String separator;
+        private String prefix;
+        private String suffix;
+        private $.Tuple<String, String> wrapper;
+        private boolean separateFix;
+        private _IterableJoiner(Iterable<?> iterable) {
+            this.iterable = $.notNull(iterable);
+        }
+
+        public _IterableJoiner by(String separator) {
+            this.separator = separator;
+            return this;
+        }
+
+        public _IterableJoiner withPrefix(String prefix) {
+            this.prefix = prefix;
+            return this;
+        }
+
+        public _IterableJoiner withSuffix(String suffix) {
+            this.suffix = suffix;
+            return this;
+        }
+
+        public _IterableJoiner wrapElementWith(String wrapper) {
+            this.wrapper = binary(wrapper, wrapper);
+            return this;
+        }
+
+        public _IterableJoiner wrapElementWith(String left, String right) {
+            this.wrapper = binary(left, right);
+            return this;
+        }
+
+        public _IterableJoiner wrapElementWith($.Tuple<String, String> wrapper) {
+            this.wrapper = wrapper;
+            return this;
+        }
+
+        public _IterableJoiner separatorWithPrefixAndSuffix() {
+            this.separateFix = true;
+            return this;
+        }
+
+        public String get() {
+            return toString();
+        }
+
+        public String join() {
+            return toString();
+        }
+
+        @Override
+        public String toString() {
+            S.Buffer sb = buffer();
+
+            if (null != prefix) {
+                sb.append(prefix);
+                if (separateFix)
+                    sb.append(separator);
+            }
+
+            Iterator<?> itr = iterable.iterator();
+
+            if (itr.hasNext()) {
+                sb.append(wrap(itr.next(), wrapper._1, wrapper._2));
+            }
+
+            while (itr.hasNext()) {
+                sb.append(separator).append(wrap(itr.next(), wrapper._1, wrapper._2));
+            }
+
+            if (null != suffix) {
+                if (separateFix)
+                    sb.append(separator);
+                sb.append(suffix);
+            }
+            return sb.toString();
+        }
+    }
+
+    public static _StringRepeater repeat(String content) {
+        return new _StringRepeater(content);
+    }
+
     /**
      * Join an array of strings into a string
      *
@@ -624,6 +794,56 @@ public class S {
         }
 
         return sb.toString();
+    }
+
+    public static class _StringRepeater {
+        private String content;
+        private String separator;
+        private $.Tuple<String, String> wrapper;
+        private _StringRepeater(String content) {
+            this.content = content;
+        }
+        public _StringRepeater joinedBy(String separator) {
+            this.separator = separator;
+            return this;
+        }
+        public _StringRepeater wrapWith($.Tuple<String, String> wrapper) {
+            this.wrapper = wrapper;
+            return this;
+        }
+        public _StringRepeater wrapWith(String wrapper) {
+            this.wrapper = binary(wrapper, wrapper);
+            return this;
+        }
+        public _StringRepeater wrapWith(String left, String right) {
+            this.wrapper = binary(left, right);
+            return this;
+        }
+        public String times(int times) {
+            String content = null == wrapper ? this.content : wrap(this.content, wrapper);
+            return null == separator ? S.times(content, times) : S.join(separator, content, times);
+        }
+        public String x(int times) {
+            return times(times);
+        }
+        public String forOneTime() {
+            return content;
+        }
+        public String forTwoTimes() {
+            return x(2);
+        }
+        public String forThreeTimes() {
+            return x(3);
+        }
+        public String forFourTimes() {
+            return x(4);
+        }
+        public String forFiveTimes() {
+            return x(5);
+        }
+        public String forTimes(int times) {
+            return x(times);
+        }
     }
 
     /**
@@ -689,6 +909,41 @@ public class S {
         return join(s, times);
     }
 
+    public static _CharRepeater repeat(char c) {
+        return new _CharRepeater(c);
+    }
+
+    public static class _CharRepeater {
+        private char c;
+        private _CharRepeater(char c) {
+            this.c = c;
+        }
+        public String times(int times) {
+            return S.times(c, times);
+        }
+        public String x(int times) {
+            return S.times(c, times);
+        }
+        public String forOneTime() {
+            return String.valueOf(c);
+        }
+        public String forTwoTimes() {
+            return x(2);
+        }
+        public String forThreeTimes() {
+            return x(3);
+        }
+        public String forFourTimes() {
+            return x(4);
+        }
+        public String forFiveTimes() {
+            return x(5);
+        }
+        public String forTimes(int times) {
+            return x(times);
+        }
+    }
+
     /**
      * Return a string composed of `times` of char `c`
      *
@@ -704,18 +959,178 @@ public class S {
         return new String(ca);
     }
 
-    public static String quote(String s, char quote) {
-        if (null == s) {
-            return String.valueOf(new char[]{quote, quote});
+    public static class _WrapStringBuilder {
+        private String content;
+        private _WrapStringBuilder(String content) {
+            this.content = content;
         }
-        return S.sizedBuffer(s.length() + 2).append(quote).append(s).append(quote).toString();
+        private _WrapStringBuilder(Object content) {
+            this.content = string(content);
+        }
+
+        public String with(String wrapper) {
+            return wrap(content, wrapper);
+        }
+
+        public String with($.Tuple<String, String> wrapper) {
+            return wrap(content, wrapper);
+        }
+
+        @Override
+        public String toString() {
+            return content;
+        }
     }
 
-    public static String quote(String s, String quote) {
-        if (null == s) {
-            return times(quote, 2);
+    public static _WrapStringBuilder wrap(Object content) {
+        return new _WrapStringBuilder(string(content));
+    }
+
+    public static _WrapStringBuilder wrap(String content) {
+        return new _WrapStringBuilder(content);
+    }
+
+    public static String wrap(Object content, char symbol) {
+        return wrap(content, symbol, symbol);
+    }
+
+    public static String wrap(String text, char symbol) {
+        return wrap(text, symbol, symbol);
+    }
+
+    public static String wrap(Object content, char left, char right) {
+        return wrap(string(content), left, right);
+    }
+
+    public static String wrap(String text, char left, char right) {
+        if (null == text) {
+            return String.valueOf(new char[]{left, right});
         }
-        return S.concat(quote, s, quote);
+        int textLen = text.length();
+        char[] ca = new char[textLen + 2];
+        ca[0] = left; ca[textLen + 1] = right;
+        System.arraycopy(text.toCharArray(), 0, ca, 1, textLen);
+        return String.valueOf(ca);
+    }
+
+    public static String wrap(Object content, String left, String right) {
+        return wrap(string(content), left, right);
+    }
+
+    public static String wrap(String text, String left, String right) {
+        return S.concat(left, text, right);
+    }
+
+    public static String wrap(Object content, $.Tuple<String, String> wrapper) {
+        return concat(wrapper._1, content, wrapper._2);
+    }
+
+    public static String wrap(String text, $.Tuple<String, String> wrapper) {
+        return concat(wrapper._1, text, wrapper._2);
+    }
+
+    public static String wrap(Object content, String wrapper) {
+        return wrap(string(content), wrapper);
+    }
+
+    public static String wrap(String text, String wrapper) {
+        return quote(text, wrapper);
+    }
+
+    /**
+     * This method is deprecated. Please use {@link #wrap(Object, char)}
+     * instead
+     *
+     * @param content the content object
+     * @param mark the quotation mark
+     * @return a string that wrap the content string with quotation mark
+     */
+    @Deprecated
+    public static String quote(Object content, char mark) {
+        return quote(string(content), mark);
+    }
+
+    /**
+     * This method is deprecated. Please use {@link #wrap(String, char)}
+     * instead
+     *
+     * @param content the content object
+     * @param mark the quotation mark
+     * @return a string that wrap the content string with quotation mark
+     */
+    @Deprecated
+    public static String quote(String content, char mark) {
+        if (null == content) {
+            return String.valueOf(new char[]{mark, mark});
+        }
+        return S.sizedBuffer(content.length() + 2).append(mark).append(content).append(mark).toString();
+    }
+
+    /**
+     * This method is deprecated. Please use {@link #wrap(Object, char)}
+     * instead
+     *
+     * @param content the content object
+     * @param mark the quotation mark
+     * @return a string that wrap the content string with quotation mark
+     */
+    @Deprecated
+    public static String quote(Object content, String mark) {
+        return quote(string(content), mark);
+    }
+
+    /**
+     * This method is deprecated. Please use {@link #wrap(String, char)}
+     * instead
+     *
+     * @param s the content string
+     * @param mark the quotation mark
+     * @return a string that wrap the content string with quotation mark
+     */
+    @Deprecated
+    public static String quote(String s, String mark) {
+        if (null == s) {
+            return times(mark, 2);
+        }
+        return S.concat(mark, s, mark);
+    }
+
+    public static class _Cut {
+        private String s;
+        private _Cut(Object object) {
+            s = string(object);
+        }
+        public String by(int chars) {
+            return maxLength(s, chars);
+        }
+        public String first(int chars) {
+            return maxLength(s, chars);
+        }
+        public String last(int chars) {
+            return S.last(s, chars);
+        }
+        public String before(String search) {
+            return S.before(s, search);
+        }
+        public String beforeFirst(String search) {
+            return S.before(s, search, false);
+        }
+        public String beforeLast(String search) {
+            return S.before(s, search, true);
+        }
+        public String after(String search) {
+            return S.after(s, search);
+        }
+        public String afterFirst(String search) {
+            return S.after(s, search, true);
+        }
+        public String afterLast(String search) {
+            return S.after(s, search, false);
+        }
+    }
+
+    public static _Cut cut(Object object) {
+        return new _Cut(object);
     }
 
     /**
@@ -1379,7 +1794,8 @@ public class S {
      * @return the string representation of object
      */
     public final static String string(Object o, boolean quoted) {
-        return quoted ? String.format("\"%s\"", o) : null == o ? "" : o.toString();
+        String s = string(o);
+        return quoted ? wrap(s, '"') : s;
     }
 
     public static String string(Object o) {
@@ -1631,6 +2047,10 @@ public class S {
 
     public static Binary binary($.T2<String, String> t2) {
         return new Binary(t2);
+    }
+
+    public static Binary binary(String left, String right) {
+        return new Binary(left, right);
     }
 
     /**

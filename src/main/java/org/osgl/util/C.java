@@ -21,6 +21,7 @@ package org.osgl.util;
 
 import org.osgl.$;
 import org.osgl.Osgl;
+import org.osgl.cache.CacheService;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.Algorithms;
 
@@ -3087,11 +3088,35 @@ public enum C {
         return IteratorSeq.of(new EnumerationIterator<T>(enumeration));
     }
 
-    public static <T, R> Sequence<R> map(Sequence<T> seq, $.Function<? super T, ? extends R> mapper) {
+
+    public static <PROPERTY> C.List<PROPERTY> extract(java.util.Collection<?> collection, final String propertyPath) {
+        if (collection.isEmpty()) {
+            return C.list();
+        }
+        $.Transformer<Object, PROPERTY> extractor = new $.Transformer<Object, PROPERTY>() {
+            @Override
+            public PROPERTY transform(Object element) {
+                return (PROPERTY)$.getProperty(element, propertyPath);
+            }
+        };
+        return C.list(collection).map(extractor);
+    }
+
+    public static <PROPERTY> Sequence<PROPERTY> lazyExtract(Iterable<?> iterable, final String propertyPath) {
+        $.Transformer<Object, PROPERTY> extractor = new $.Transformer<Object, PROPERTY>() {
+            @Override
+            public PROPERTY transform(Object element) {
+                return (PROPERTY)$.getProperty(element, propertyPath);
+            }
+        };
+        return map(iterable, extractor);
+    }
+
+    public static <T, R> Sequence<R> map(Iterable<T> seq, $.Function<? super T, ? extends R> mapper) {
         if (seq instanceof ReversibleSequence) {
             return map((ReversibleSequence<T>) seq, mapper);
         }
-        return new MappedSeq<T, R>(seq, mapper);
+        return new MappedSeq<>(seq, mapper);
     }
 
     public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, $.Function<? super T, ? extends R> mapper
