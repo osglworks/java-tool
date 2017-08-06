@@ -15,6 +15,9 @@
   ~ under the License.  
   -->
 <!-- history
+1.4.1
+* #30 $.invokeMethod shall handle `InvocationTargetException` properly
+
 1.4.0
 * #25 Add alias to Osgl Tuple types
 * #24 Add more getter method to Osgl tuple types

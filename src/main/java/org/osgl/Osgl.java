@@ -5968,8 +5968,10 @@ public class Osgl implements Serializable {
                 return (R) m.invoke(o, pa);
             }
             throw new UnexpectedNoSuchMethodException(c, methodName);
-        } catch (UnexpectedNoSuchMethodException e) {
+        } catch (RuntimeException e) {
             throw e;
+        } catch (InvocationTargetException e) {
+            throw UnexpectedMethodInvocationException.handle(e);
         } catch (Exception e) {
             throw new UnexpectedMethodInvocationException(e);
         }

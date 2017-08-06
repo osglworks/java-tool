@@ -9,20 +9,28 @@ import java.lang.reflect.InvocationTargetException;
  * invoking a method by Java reflection
  */
 public class UnexpectedMethodInvocationException extends UnexpectedException {
-    public UnexpectedMethodInvocationException(Exception cause) {
+    public UnexpectedMethodInvocationException(Throwable cause) {
         super(triage(cause));
     }
 
-    public UnexpectedMethodInvocationException(Exception cause, String message, Object... args) {
+    public UnexpectedMethodInvocationException(Throwable cause, String message, Object... args) {
         super(triage(cause), message, args);
     }
 
-    private static Throwable triage(Exception cause) {
+    private static Throwable triage(Throwable cause) {
         E.NPE(cause);
         if (cause instanceof InvocationTargetException) {
             return ((InvocationTargetException) cause).getTargetException();
         } else {
             return cause;
         }
+    }
+
+    public static RuntimeException handle(InvocationTargetException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+            return (RuntimeException) cause;
+        }
+        return new UnexpectedMethodInvocationException(cause);
     }
 }
