@@ -5835,8 +5835,12 @@ public class Osgl implements Serializable {
     public static <R> R invokeStatic(Method method, Object ... pa) {
         try {
             return (R) method.invoke(null, pa);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (InvocationTargetException e) {
+            throw UnexpectedMethodInvocationException.handle(e);
         } catch (Exception e) {
-            throw new UnexpectedMethodInvocationException(e);
+            throw UnexpectedMethodInvocationException.handle(e);
         }
     }
 
@@ -5888,8 +5892,12 @@ public class Osgl implements Serializable {
         E.NPE(o);
         try {
             return (R) method.invoke(o, pa);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (InvocationTargetException e){
+            throw UnexpectedMethodInvocationException.handle(e);
         } catch (Exception e) {
-            throw new UnexpectedMethodInvocationException(e);
+            throw UnexpectedMethodInvocationException.handle(e);
         }
     }
 

@@ -26,6 +26,16 @@ public class UnexpectedMethodInvocationException extends UnexpectedException {
         }
     }
 
+    public static RuntimeException handle(Exception e) {
+        if (e instanceof RuntimeException) {
+            return (RuntimeException) e;
+        } else if (e instanceof InvocationTargetException) {
+            return handle((InvocationTargetException) e);
+        } else {
+            return new UnexpectedMethodInvocationException(e);
+        }
+    }
+
     public static RuntimeException handle(InvocationTargetException e) {
         Throwable cause = e.getCause();
         if (cause instanceof RuntimeException) {
