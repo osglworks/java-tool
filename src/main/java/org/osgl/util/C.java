@@ -2138,6 +2138,23 @@ public enum C {
             }
         }
 
+        public class _Builder {
+            private K key;
+            private _Builder(K key) {
+                this.key = $.notNull(key);
+            }
+            public Map<K, V> to(V val) {
+                Map<K, V> me = Map.this;
+                if (me.ro) {
+                    Map<K, V> mapBuffer = C.newMap(me);
+                    mapBuffer.put(key, val);
+                    return C.map(mapBuffer);
+                }
+                Map.this.put(key, val);
+                return Map.this;
+            }
+        }
+
         private java.util.Map<K, V> _m;
 
         private boolean ro;
@@ -2205,21 +2222,25 @@ public enum C {
 
         @Override
         public V put(K key, V value) {
+            E.unsupportedIf(ro, "The map is read only");
             return _m.put(key, value);
         }
 
         @Override
         public V remove(Object key) {
+            E.unsupportedIf(ro, "The map is read only");
             return _m.remove(key);
         }
 
         @Override
         public void putAll(java.util.Map<? extends K, ? extends V> m) {
+            E.unsupportedIf(ro, "The map is read only");
             _m.putAll(m);
         }
 
         @Override
         public void clear() {
+            E.unsupportedIf(ro, "The map is read only");
             _m.clear();
         }
 
@@ -2275,6 +2296,10 @@ public enum C {
         }
 
         // --- extensions
+        public _Builder map(K key) {
+            return new _Builder(key);
+        }
+
         @SuppressWarnings("unused")
         public boolean readOnly() {
             return ro;
@@ -2283,7 +2308,7 @@ public enum C {
         @SuppressWarnings("unused")
         public Map<K, V> readOnly(boolean readOnly) {
             if (ro ^ readOnly) {
-                return new Map<K, V>(readOnly, _m);
+                return new Map<>(readOnly, _m);
             } else {
                 return this;
             }
@@ -3380,6 +3405,17 @@ public enum C {
     }
 
     /**
+     * This method is deprecated. please use {@link #Map(Object...)} instead
+     */
+    @Deprecated
+    public static <K, V> Map<K, V> map(Object... args) {
+        if (null == args || args.length == 0) {
+            return Nil.EMPTY_MAP;
+        }
+        return new Map(true, args);
+    }
+
+    /**
      * Create a immutable {@link Map} from elements specified in an array.
      * <p>Example</p>
      * <pre>
@@ -3399,20 +3435,31 @@ public enum C {
      * @return an immutable map contains of specified entries
      * @see #newMap(Object...)
      */
-    @SuppressWarnings("unchecked")
-    public static <K, V> Map<K, V> map(Object... args) {
+    public static <K, V> Map<K, V> Map(Object... args) {
         if (null == args || args.length == 0) {
             return Nil.EMPTY_MAP;
         }
-        return new Map(true, args);
+        return new Map<>(true, args);
     }
 
+    /**
+     * This method is deprecated, please use {@link #Map(Collection)} instead
+     */
+    @Deprecated
     public static <K, V> Map<K, V> map(Collection<$.Tuple<K, V>> kvCol) {
         Map<K, V> map = C.newMap();
         for ($.Tuple<K, V> entry : kvCol) {
             map.put(entry._1, entry._2);
         }
         return map;
+    }
+
+    public static <K, V> Map<K, V> Map(Collection<$.Tuple<K, V>> kvCol) {
+        Map<K, V> map = C.newMap();
+        for ($.Tuple<K, V> entry : kvCol) {
+            map.put(entry._1, entry._2);
+        }
+        return new Map<>(true, map);
     }
 
     /**
@@ -3587,6 +3634,11 @@ public enum C {
     }
 
     // --- eof utility methods ---
+
+    // --- Mutable collection/map constructors
+    public enum Mutable {
+
+    }
 
     /**
      * the namespace of function definitions relevant to Collection manipulation
