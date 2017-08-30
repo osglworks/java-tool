@@ -163,7 +163,9 @@ public class Generics {
                 }
             }
             superClass = (Class) pSuperType.getRawType();
-            if ($.eq(superClass, rootClass)) {
+            // We don't compare class directly to workaround some rare case when same class loaded by
+            // different class loaders
+            if ($.eq(superClass.getName(), rootClass.getName())) {
                 return nextList;
             }
             return typeParamImplementations(superClass, rootClass, nextList);
