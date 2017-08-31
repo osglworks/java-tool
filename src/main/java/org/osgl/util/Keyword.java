@@ -62,6 +62,9 @@ public final class Keyword implements Comparable<Keyword> {
             }
         },
 
+        /**
+         * `javaVariableStyle`
+         */
         JAVA_VARIABLE() {
             @Override
             protected CharSequence processToken(FastStr token, int seq) {
@@ -109,6 +112,26 @@ public final class Keyword implements Comparable<Keyword> {
                     return token.capFirst();
                 }
                 return token;
+            }
+        },
+
+        /**
+         * `Header Style`
+         */
+        HEADER(SEP_SPACE) {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return token.capFirst();
+            }
+        },
+
+        /**
+         * `text style`
+         */
+        TEXT(SEP_SPACE) {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return token.toLowerCase();
             }
         };
 
@@ -172,6 +195,14 @@ public final class Keyword implements Comparable<Keyword> {
 
     public String readable() {
         return Style.READABLE.toString(this);
+    }
+
+    public String header() {
+        return Style.HEADER.toString(this);
+    }
+
+    public String text() {
+        return Style.TEXT.toString(this);
     }
 
     public List<String> tokens() {

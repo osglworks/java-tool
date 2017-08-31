@@ -22,6 +22,8 @@ public class KeywordTest extends TestBase {
         verify("Camel, Case");
         verify("camel:case");
         verify("CAMEL_CASE");
+        verify("camelCase");
+        verify("Camel Case");
     }
 
     @Test
@@ -55,6 +57,8 @@ public class KeywordTest extends TestBase {
         eq("CAMEL_CASE", keyword.constantName());
         eq("Camel-Case", keyword.httpHeader());
         eq("camelCase", keyword.javaVariable());
+        eq("Camel Case", keyword.header());
+        eq("camel case", keyword.text());
         eq(C.listOf("camel", "case"), keyword.tokens());
     }
 
