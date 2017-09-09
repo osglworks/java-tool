@@ -1486,13 +1486,20 @@ public class S {
 
     /**
      * Returns a {@link Buffer} instance. If the thread local instance is consumed already
-     * then return it. Otherwise, return an new `Buffer` instance
+     * then return it. Otherwise, return an new `Buffer` instance and set the new instance
+     * to thread local storage
      *
      * @return a `Buffer` instance as described above
      */
     public static Buffer buffer() {
         Buffer sb = _buf.get();
-        return sb.consumed() ? sb.reset() : new Buffer();
+        if (sb.consumed) {
+            sb.reset();
+        } else {
+            sb = new Buffer();
+            _buf.set(sb);
+        }
+        return sb;
     }
 
     public static Buffer buffer(boolean o) {
@@ -1997,6 +2004,8 @@ public class S {
          */
         private boolean consumed;
 
+        private String id = S.random();
+
         /**
          * The count is the number of characters used.
          */
@@ -2020,6 +2029,18 @@ public class S {
         public Buffer(int capacity) {
             value = new char[capacity];
             consumed = true;
+        }
+
+        String debug() {
+            return id + ":" + (consumed ? "consumed":"new");
+        }
+
+        String debug(Object key) {
+            return "[" + key +"]" + debug();
+        }
+
+        String id() {
+            return id;
         }
 
         public boolean consumed() {

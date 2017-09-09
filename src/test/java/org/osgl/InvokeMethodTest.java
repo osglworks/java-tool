@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 /**
  * Test `invokeXxx` method on {@link Osgl} class
  */
-public class InvokeMethodTest extends TestBase {
+public class InvokeMethodTest extends OsglToolTestBase {
 
     private static class Foo {
 

@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.S;
 
-public class F1Test extends TestBase {
+public class F1Test extends OsglToolTestBase {
 
     private $.F1<String, String> toLowerCase = new $.F1<String, String>() {
         @Override

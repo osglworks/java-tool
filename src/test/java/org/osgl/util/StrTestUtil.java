@@ -22,10 +22,10 @@ package org.osgl.util;
 
 import org.junit.Before;
 import org.junit.Ignore;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
 @Ignore
-public abstract class StrTestUtil<T extends StrBase<T>> extends TestBase {
+public abstract class StrTestUtil<T extends StrBase<T>> extends OsglToolTestBase {
     protected T aaa;
     protected T abc;
     protected T abc2;

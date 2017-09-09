@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class PropertyTest extends TestBase {
+public class PropertyTest extends OsglToolTestBase {
 
     public static enum Color {
         R, G, B

@@ -21,12 +21,12 @@ package org.osgl.util;
  */
 
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
 import java.io.*;
 import java.util.Map;
 
-public class MapTest extends TestBase {
+public class MapTest extends OsglToolTestBase {
 
     @Test
     public void testSerialize() throws Exception {

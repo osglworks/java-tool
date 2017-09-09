@@ -28,7 +28,7 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.List;
 
-public class OsglTest extends TestBase {
+public class OsglTest extends OsglToolTestBase {
 
     @Test
     public void testToString2() {

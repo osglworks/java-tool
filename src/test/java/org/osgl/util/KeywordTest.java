@@ -21,12 +21,12 @@ package org.osgl.util;
  */
 
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
 /**
  * Test {@link Keyword}
  */
-public class KeywordTest extends TestBase {
+public class KeywordTest extends OsglToolTestBase {
 
     private Keyword keyword;
 

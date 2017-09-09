@@ -30,7 +30,7 @@ import org.junit.rules.TestRule;
  * direct method invocation
  */
 @BenchmarkOptions(warmupRounds = 1, benchmarkRounds = 10)
-public class BenchmarkBase extends TestBase {
+public class BenchmarkBase extends OsglToolTestBase {
     @Rule
     public TestRule benchmarkRun = new BenchmarkRule();
 

@@ -27,7 +27,7 @@ import org.osgl.util.E;
 /**
  * Test `newInstance(...)` method of {@link Osgl} class
  */
-public class NewInstanceTest extends TestBase {
+public class NewInstanceTest extends OsglToolTestBase {
 
     private static class Foo {
         public Foo() {}

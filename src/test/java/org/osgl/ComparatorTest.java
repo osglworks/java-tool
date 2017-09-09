@@ -26,7 +26,7 @@ import org.osgl.util.E;
 
 import java.util.Comparator;
 
-public class ComparatorTest extends TestBase {
+public class ComparatorTest extends OsglToolTestBase {
 
     protected static class Foo extends $.T2<Integer, String> {
         public Foo(int _1, String _2) {

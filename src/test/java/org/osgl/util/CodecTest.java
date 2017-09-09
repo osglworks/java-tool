@@ -22,9 +22,9 @@ package org.osgl.util;
 
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
-public class CodecTest extends TestBase {
+public class CodecTest extends OsglToolTestBase {
 
     @Test
     public void test() {

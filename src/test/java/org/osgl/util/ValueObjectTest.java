@@ -21,13 +21,13 @@ package org.osgl.util;
  */
 
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ValueObjectTest extends TestBase {
+public class ValueObjectTest extends OsglToolTestBase {
 
     @Test
     public void testBoolean() {

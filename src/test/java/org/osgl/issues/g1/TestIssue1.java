@@ -21,7 +21,7 @@ package org.osgl.issues.g1;
  */
 
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 import org.osgl.util.C;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Created by luog on 17/03/14.
  */
-public class TestIssue1 extends TestBase {
+public class TestIssue1 extends OsglToolTestBase {
     @Test
     public void test() {
         List<Foo> foos = C.newList();

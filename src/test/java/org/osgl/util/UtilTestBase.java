@@ -20,7 +20,7 @@ package org.osgl.util;
  * #L%
  */
 
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -32,7 +32,7 @@ import java.util.Iterator;
  * Time: 9:22 AM
  * To change this template use File | Settings | File Templates.
  */
-public class UtilTestBase extends TestBase {
+public class UtilTestBase extends OsglToolTestBase {
 
     protected <T> C.Sequence<T> seqOf(T... a) {
         return IteratorSeq.of(Arrays.asList(a).iterator());

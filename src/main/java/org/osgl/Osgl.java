@@ -20,6 +20,7 @@ package org.osgl;
  * #L%
  */
 
+import org.osgl.bootstrap.Version;
 import org.osgl.cache.CacheService;
 import org.osgl.concurrent.ContextLocal;
 import org.osgl.exception.*;
@@ -87,6 +88,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Osgl implements Serializable {
 
     public static final Osgl INSTANCE = new Osgl();
+
+    public static final Version VERSION = Version.of(Osgl.class);
 
     protected Osgl() {
     }

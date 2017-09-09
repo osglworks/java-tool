@@ -21,9 +21,9 @@ package org.osgl.util;
  */
 
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
-public class CryptoTest extends TestBase {
+public class CryptoTest extends OsglToolTestBase {
     @Test
     public void testGenRandomDigits() {
         for (int i = 1; i < 100; ++i) {

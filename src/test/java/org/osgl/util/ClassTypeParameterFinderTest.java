@@ -21,7 +21,7 @@ package org.osgl.util;
  */
 
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Test {@link Generics#typeParamImplementations(Class, Class)}
  */
-public class ClassTypeParameterFinderTest extends TestBase {
+public class ClassTypeParameterFinderTest extends OsglToolTestBase {
 
     private static class C1<A, B, C> implements I1<B> {}
 

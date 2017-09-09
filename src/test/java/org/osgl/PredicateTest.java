@@ -23,7 +23,7 @@ package org.osgl;
 import org.junit.Test;
 import org.osgl.util.N;
 
-public class PredicateTest extends TestBase {
+public class PredicateTest extends OsglToolTestBase {
 
     private class ReturnPreSetBool extends $.Predicate {
 

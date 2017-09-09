@@ -21,11 +21,11 @@ package org.osgl.issues.g1;
  */
 
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 import org.osgl.$;
 import org.osgl.util.C;
 
-public class RandomIssue extends TestBase {
+public class RandomIssue extends OsglToolTestBase {
     @Test
     public void testRandomIssue() {
         int lower = 50;

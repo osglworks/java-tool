@@ -22,7 +22,7 @@ package org.osgl;
 
 import org.junit.Test;
 
-public class BreakTest extends TestBase {
+public class BreakTest extends OsglToolTestBase {
 
     @Test
     public void testGetPayload() {

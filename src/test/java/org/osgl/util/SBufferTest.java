@@ -20,26 +20,32 @@ package org.osgl.util;
  * #L%
  */
 
+import org.junit.Before;
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
-public class SBufferTest extends TestBase {
+public class SBufferTest extends OsglToolTestBase {
+
+    @Before
+    public void resetBuf() {
+        S.buffer().toString();
+    }
 
     @Test
     public void itShallReuseConsumedBuffer() {
         S.Buffer sb = S.buffer("abc");
         eq("abc", sb.toString());
         S.Buffer sb2 = S.buffer("123");
-        assertSame(sb, sb2);
+        same(sb, sb2);
         eq("123", sb2.toString());
-        assertSame(sb, sb2);
+        same(sb, sb2);
     }
 
     @Test
     public void itShallNotReuseUnconsumedBuffer() {
-        S.Buffer sb = S.buffer("abc");
-        S.Buffer sb2 = S.buffer("123");
-        assertNotSame(sb, sb2);
+        S.Buffer sb = S.buffer("xyz");
+        S.Buffer sb2 = S.buffer("456");
+        notSame(sb, sb2);
     }
 
     @Test

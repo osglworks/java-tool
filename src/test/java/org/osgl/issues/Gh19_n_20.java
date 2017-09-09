@@ -23,7 +23,7 @@ package org.osgl.issues;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgl.$;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 import org.osgl.util.C;
 
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Test https://github.com/osglworks/java-tool/issues/19
  */
-public class Gh19_n_20 extends TestBase {
+public class Gh19_n_20 extends OsglToolTestBase {
 
     static class Bar {
         int n;

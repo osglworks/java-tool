@@ -20,10 +20,9 @@ package org.osgl.util;
  * #L%
  */
 
-import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
-public class UnsafeTest extends TestBase {
+public class UnsafeTest extends OsglToolTestBase {
     private String _short;
     private String _mid;
     private String _long;

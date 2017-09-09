@@ -21,11 +21,11 @@ package org.osgl.util;
  */
 
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
 import static org.osgl.util.StringValueResolver.predefined;
 
-public abstract class StringValueResolverTest extends TestBase {
+public abstract class StringValueResolverTest extends OsglToolTestBase {
 
     public abstract static class PredefinedTest {
         private final StringValueResolver _p;

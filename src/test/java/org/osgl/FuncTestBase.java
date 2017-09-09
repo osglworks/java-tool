@@ -26,7 +26,7 @@ import org.osgl.util.N;
 import org.osgl.util.S;
 
 @Ignore
-public class FuncTestBase extends TestBase {
+public class FuncTestBase extends OsglToolTestBase {
 
     protected final double RAND_1 = N.randDouble();
     protected final double RAND_2 = N.randDouble();

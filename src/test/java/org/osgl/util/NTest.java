@@ -23,13 +23,13 @@ package org.osgl.util;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 import org.osgl.$;
 
 /**
  * Created by luog on 8/06/2014.
  */
-public class NTest extends TestBase {
+public class NTest extends OsglToolTestBase {
 
     @Test
     public void testRandIntWithRandSymbol() {
@@ -45,7 +45,7 @@ public class NTest extends TestBase {
     }
 
     @Ignore
-    public static class FuncTestBase extends TestBase {
+    public static class FuncTestBase extends OsglToolTestBase {
 
         protected int int1, int2;
         protected long long1, long2;
@@ -108,7 +108,7 @@ public class NTest extends TestBase {
 
         @Test
         public void testLongByFloat() {
-            eq(long1 / float1, func.apply(long1, float1).floatValue());
+            eq(long1 / float1, func.apply(long1, float1).floatValue(), 0.001f);
         }
 
         @Test

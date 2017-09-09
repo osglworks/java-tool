@@ -20,10 +20,9 @@ package org.osgl.util;
  * #L%
  */
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.osgl.TestBase;
+import org.osgl.OsglToolTestBase;
 
 import java.io.StringReader;
 import java.util.List;
@@ -31,7 +30,7 @@ import java.util.List;
 /**
  * Test {@link IO} utilities
  */
-public class IOTest extends TestBase {
+public class IOTest extends OsglToolTestBase {
 
     protected static String content;
     protected static C.List<String> lines;

@@ -27,7 +27,7 @@ import org.osgl.util.S;
 /**
  * Created by luog on 20/05/2014.
  */
-public class F0Test extends TestBase {
+public class F0Test extends OsglToolTestBase {
 
     protected $.F0<String> notApplied = new $.F0<String>() {
         @Override
