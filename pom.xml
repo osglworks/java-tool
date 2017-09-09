@@ -16,195 +16,6 @@
   -->
 <!-- history
 
-1.4.2
-* #35 Add Header style to `Keyword`
-
-1.4.1
-* #30 $.invokeMethod shall handle `InvocationTargetException` properly
-
-1.4.0
-* #25 Add alias to Osgl Tuple types
-* #24 Add more getter method to Osgl tuple types
-* #23 Add fast split APIs in `S` util
-
-1.3.1
-* catch up 1.2.3 update
-
-1.3
-* #21 Add a method to detect if a string is an integer
-
-1.2.3
-* #22 `Osgl.findPropertyParameterizedType` method shall treat array as List
-
-1.2.2
-* #20 `Osgl.getProperty` shall pickup the first element in an iterable if index not provided
-* #19 `Osgl.getProperty` API shall handle array like a list
-
-1.2.1
-* #18 Treat `Locale` as simple type
-* #17 Performance issue with `S.concat(...)` API
-
-1.2.0
-* #16 Add `Osgl.fill(element, array)` API methods
-* #15 Add `IO.readLines(URL)` method
-* #14 Add `N.isNumeric(String)` utility method
-* #13 Add `N.isNegative(BigDecimal)`,`N.isNegative(BigNumber)` ... methods
-* #12 Add `S.padLeft` and `S.padRight` methods
-
-1.1.0
-* #6 - Add new corresponding API for Osgl.asEnum(Class, String) and make it support case sensitive enum evaluation
-* #9 - Add `S.dos2unix(String)` and `S.unix2dos(String)` method
-* #10 - Add `S.concat(Object ...)` methods
-
-1.0.3
-* Fix issue #8 NPE on Generics.typeParamImplementations when passed in class is an interface
-
-1.0.2
-* Fix issue #7 - FastStr.contentEquals failed when begin cursor is greater than size
-
-1.0.1
-* Fix issue #5 - Osgl.asEnum(Class, String) API should be null safe
-
-1.0
-* base line from 0.11
-
-0.11
-* S.builder() APIs now reuse StringBuilder instance through ThreadLocal
-* S.buffer() APIs is created to replace S.builder() APIs
-* Added Osgl.asEnum(Class<? extends Enum>, String) API
-* Add S.concat(String ...) API
-* Add S.ensureEndsWith and S.ensureStartsWith API
-* Add S.pathConcat API
-* Add S.quote API
-* Remove commons-codec from dependencies
-* Add Codec.UTF_8 constant
-* Add C.empty(Map) APIs
-* Use ThreadLocalRandom to replace new Random
-* Add Generics.buildTypeParamImplLookup(Class) API
-
-0.10
-* IO.copy now returns the number of bytes copied
-* S.lowerFirst(String) API
-
-0.9
-* Provide better support for Iterator and Enumeration
-* Move CacheService interface from osgl-cache to osgl-tool
-* #2: add C.List.split(Predicate) function
-* #3: Add KVStore.toMap() method
-* Add IO.loadProperties(File) method
-* Add IO.loadProperties(InputStream) method
-* Add IO.loadProperties(String) method
-* Add IO.loadProperties(Reader) method
-* Add BigDecimalValueObjectCodec
-* Fix ValueObject.toJSONString() issue when type is String and content contains illegal character, .e.g (")
-* Fix issue in S.COMMON_SEP, change "[,;:\\s]" to "[,;:\\s]+"
-* Add $.F.identity(Class) method
-* Add Keyword utility
-* Add N.isPerfectSquare(long) method
-* Add $.IS_SERVER flag
-* Add $.IS_64 flag
-* Add FastStr.of(byte[], String) factory method
-* Add IO.readLine(xxx, int limit) APIs to allow read limit lines from file/inputstream/reader
-* Crypto encrypt and decrypt methods now accept byte[] as key and salt
-* Add $.fieldOf(Class, String, Boolean) method
-* Make Const class implement Serializable
-* Add $.getMethod(Class, String, Class[]) method
-* Add KV interface (implemented by KVStore)
-* Add FastJsonKvCodec (fastjson serialize/deserialize KV) and FastJsonObjectCodec (convert JSONObject to/from ValueObject)
-* Add Osgl.F.propertyExtractor API
-
-0.8
-* Rename "_" to "O" as "$" will be an illegal identifier after Java 8
-* Increase unit test coverage
-* Improve JavaDoc quality
-
-0.7.0-SNAPSHOT
-* _.newInstance(String) now will pass the Caller's class loader
-* rename C.List.sort to C.List.sorted to avoid conflict with Java 8 List.sort
-* rename StrBase.chars - StrBase.charArray to avoid conflict with Java 8 CharSequence.chars
-* Add static T NPE(T) to osgl (_) class
-* Add encodeUrlSafeBase64 and decodeUrlSafeBase64 method to Codec
-* Add genSecret, genRandomDigit, genRandomStr to Crypto
-
-0.7.1-SNAPSHOT
-* Fix issue _.newInstance(...) failure when there are overloaded constructor with first parameter type is the same
-* Add T _.async(_.F0<T>, long)
-* Add N.round(float, int) and N.round(double, int) method
-* Add C.Sequence.count(T) method
-
-0.6.0-SNAPSHOT
-* Add S.uuid() method
-* Add new reader() and is() method to IO class dealing with URL and InputStreamReader
-* Add eq2(Object, Object) to _, to allow do equal matching against two arrays
-* Add asPrimitive() method set to _, to allow convert Object array to primitive array
-* Add toString2() to _ to output array type object in a good format
-* Add COMMON_SEP to S; add SPLIT and split(String) to S.F
-* Better handling of primitive types in S.newInstance and S.classForName
-* S.builder now accept primitive types and object types as constructor; original S.builder(int) semantic is now expressed in S.sizedBuilder(int)
-* Add append(String) and prepend(String) functor to S.F
-* Add reverse(array) methods to _
-* add doFillInStackTrace to FastRuntimeException
-* Fix issue: S.capFirst() throw StringIndexOutfBoundsException when parameter is empty string
-* C.List.insert() now accept negative number to count the insert position from tail to head
-* Add _.nil() method
-
-0.5.5-SNAPSHOT
-* Add C.List.unique(Comparator<T>) method
-
-0.5.4-SNAPSHOT
-* support primitives in _.forClassName and _.newInstace methods
-
-0.5.3-SNAPSHOT
-* add CONTAINS and contains to S.F
-
-0.5.2-SNAPSHOT
-* add random(List list) to _
-
-0.5.1-SNAPSHOT
-* Enhance Crypto encrypt/decrypt algorithm
-
-0.5.0-SNAPSHOT
-* _.Var implements _.Func0 so we can use it to implement "constant function" that
-  takes a value and returns it when needed
-
-0.4.5-SNAPSHOT
-* ListBase.unique not working as expected
-
-0.4.4-SNAPSHOT
-* C.list(List) shouldn't sort the list
-* Add S.F.IS_BLANK function
-* Add S.F.NULL_SAFE function
-
-0.4.3-SNAPSHOT
-* Fix FeatureBase::setFeature NPE issue
-
-0.4.2-SNAPSHOT
-* Add "unique" to "C.List"
-* remove "generalVisitor(final Function<? super T, ?> f)" from "_".
-  "_.visitor(final Function<? super T, ?> f)" should be used instead
-
-0.4.1-SNAPSHOT
-* Add "public static ISObject zip(ISObject... objects)" method to IO utiltiy class
-
-0.4-SNAPSHOT
-* S.empty(String) now do not trim the string being passed in,
-* Added S.blank(String) with the same semantic of previous S.empty(String)
-* Fixed FastStr trim issue when begin, end pointer is not at default position
-* FastStr now works with Java 6
-* Unsafe now works with Java 6
-* C enhancements:
-** Set: add withIn, without, onlyIn for set operations
-** added new set() method allows passing an collection to prepopulate the set
-* OSGL updates:
-** new classForName method allows passing class loader to load the class
-* Iterators now is public class
-* ListBuilder's new factor method allows passing initial capacity parameter
-
-0.3.1-SNAPSHOT
-* Added: ContextLocal, FastStr, Unsafe
-
-0.3-SNAPSHOT
-* base version when history log started
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -218,6 +29,12 @@
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
   <url>http://java-tool.osgl.org/</url>
+  <inceptionYear>2014</inceptionYear>
+
+  <organization>
+    <name>OSGL (Open Source General Library)</name>
+    <url>http://osgl.org</url>
+  </organization>
 
   <parent>
     <groupId>org.sonatype.oss</groupId>
@@ -225,20 +42,32 @@
     <version>7</version>
   </parent>
 
-  <scm>
-    <connection>scm:git:git://github.com/osglworks/java-tool.git</connection>
-    <developerConnection>scm:git:git@github.com:osglworks/java-tool.git</developerConnection>
-    <url>git://github.com/osglworks/java-tool.git</url>
-  </scm>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-    <maven.test.skip>false</maven.test.skip>
+    <scm.url>git://github.com/osglworks/java-tool.git</scm.url>
+
+    <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+    <maven-javadoc-plugin.version>3.0.0-M1</maven-javadoc-plugin.version>
+    <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+
+    <buildnumber-maven-plugin.version>1.4</buildnumber-maven-plugin.version>
+    <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
+    <errorpone-core.version>2.1.1</errorpone-core.version>
+    <markdown-doclet.version>1.4</markdown-doclet.version>
+    <plexus-compiler-javac-errorprone.version>2.8.2</plexus-compiler-javac-errorprone.version>
+
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
-    <fastjson.version>1.2.33</fastjson.version>
+    <fastjson.version>1.2.38</fastjson.version>
+    <osgl-bootstrap.version>1.0.0-BETA-7</osgl-bootstrap.version>
+    <osgl-ut.version>1.0.0-BETA-4</osgl-ut.version>
   </properties>
+
+  <scm>
+    <connection>scm:git:${scm.url}</connection>
+    <developerConnection>scm:git:${scm.url}</developerConnection>
+    <url>${scm.url}</url>
+  </scm>
 
   <licenses>
     <license>
@@ -255,46 +84,147 @@
         <filtering>true</filtering>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <compilerId>javac-with-errorprone</compilerId>
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          <source>7</source>
+          <target>7</target>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-compiler-javac-errorprone</artifactId>
+            <version>${plexus-compiler-javac-errorprone.version}</version>
+          </dependency>
+          <!-- override plexus-compiler-javac-errorprone's dependency on
+               Error Prone with the latest version -->
+          <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_core</artifactId>
+            <version>${errorpone-core.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>${cobertura-maven-plugin.version}</version>
+        <configuration>
+          <formats>
+            <format>html</format>
+            <format>xml</format>
+          </formats>
+          <check />
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.17</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>8.1</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <failOnViolation>true</failOnViolation>
+          <configLocation>checkstyle.xml</configLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <id>checkstyle</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.13</version>
+        <configuration>
+          <licenseName>apache_v2</licenseName>
+          <verbose>false</verbose>
+        </configuration>
+        <executions>
+          <execution>
+            <id>first</id>
+            <goals>
+              <goal>update-file-header</goal>
+            </goals>
+            <phase>process-sources</phase>
+            <configuration>
+              <roots>
+                <root>src/main/java</root>
+                <root>src/test</root>
+              </roots>
+              <excludes>
+                <exclude>**/README</exclude>
+                <exclude>src/test/resources/**</exclude>
+                <exclude>src/main/resources/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>${buildnumber-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <shortRevisionLength>4</shortRevisionLength>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
 
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.3</version>
-          <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
-            <encoding>UTF-8</encoding>
-            <debuglevel>lines,vars,source</debuglevel>
-          </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-compiler-eclipse</artifactId>
-              <version>1.8.4</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.1.2</version>
-          <configuration>
-            <includePom>true</includePom>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
   <dependencies>
 
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.10</version>
+      <groupId>org.osgl</groupId>
+      <artifactId>osgl-ut</artifactId>
+      <version>${osgl-ut.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgl</groupId>
+      <artifactId>osgl-bootstrap</artifactId>
+      <version>${osgl-bootstrap.version}</version>
     </dependency>
 
     <dependency>
@@ -339,70 +269,22 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.3</version>
-            <extensions>true</extensions>
-            <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.2</version>
-            <configuration>
-              <descriptors>
-                <descriptor>${basedir}/assembly-dist.xml</descriptor>
-              </descriptors>
-              <tarLongFileMode>gnu</tarLongFileMode>
-            </configuration>
-            <executions>
-              <execution>
-                <id>make-assembly</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <descriptors>
-                    <descriptor>${basedir}/assembly-dist.xml</descriptor>
-                  </descriptors>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9</version>
+            <version>${maven-javadoc-plugin.version}</version>
             <configuration>
               <stylesheetfile>src/etc/javadoc.css</stylesheetfile>
-              <quiet />
-              <additionalparam>-Xdoclint:none</additionalparam>
-              <doclet>ch.raffael.doclets.pegdown.PegdownDoclet</doclet>
+              <doclet>ch.raffael.mddoclet.MarkdownDoclet</doclet>
               <docletArtifact>
-                <groupId>ch.raffael.pegdown-doclet</groupId>
-                <artifactId>pegdown-doclet</artifactId>
-                <version>1.1</version>
+                <groupId>ch.raffael.markdown-doclet</groupId>
+                <artifactId>markdown-doclet</artifactId>
+                <version>${markdown-doclet.version}</version>
               </docletArtifact>
               <useStandardDocletOptions>true</useStandardDocletOptions>
+              <links>
+                <link>http://javax-inject.github.io/javax-inject/api/</link>
+                <link>https://docs.oracle.com/javaee/7/api/</link>
+              </links>
             </configuration>
             <executions>
               <execution>
@@ -411,40 +293,14 @@
                 <goals>
                   <goal>javadoc</goal>
                 </goals>
-                <configuration>
-                  <failOnError>false</failOnError>
-                </configuration>
               </execution>
               <execution>
                 <id>attach-javadocs</id>
                 <goals>
                   <goal>jar</goal>
                 </goals>
-                <configuration> <!-- add this to disable checking -->
-                  <failOnError>false</failOnError>
-                  <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>
               </execution>
             </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>com.mycila.maven-license-plugin</groupId>
-            <artifactId>maven-license-plugin</artifactId>
-            <configuration>
-              <header>src/etc/header.txt</header>
-            </configuration>
           </plugin>
         </plugins>
       </build>
