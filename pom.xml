@@ -24,7 +24,7 @@
   <groupId>org.osgl</groupId>
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.4.3</version>
+  <version>1.4.3-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
@@ -47,7 +47,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
-    <scm.url>git://github.com/osglworks/java-tool.git</scm.url>
+    <scm.url>git@github.com:osglworks/java-tool.git</scm.url>
 
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
     <maven-javadoc-plugin.version>3.0.0-M1</maven-javadoc-plugin.version>
