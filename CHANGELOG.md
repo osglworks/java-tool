@@ -1,5 +1,8 @@
 # OSGL Tool CHANGELOG
 
+1.4.4
+* Check if string is empty or null on `S.startsWith()` and `S.endsWith()` methods #38
+
 1.4.3
 * Improve maven build process #37
 * Wrong logic in $.anyNull implementation #36

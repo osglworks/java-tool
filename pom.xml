@@ -61,8 +61,8 @@
 
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
     <fastjson.version>1.2.38</fastjson.version>
-    <osgl-bootstrap.version>1.0.0-BETA-7</osgl-bootstrap.version>
-    <osgl-ut.version>1.0.0-BETA-4</osgl-ut.version>
+    <osgl-bootstrap.version>1.0.0</osgl-bootstrap.version>
+    <osgl-ut.version>1.0.1</osgl-ut.version>
   </properties>
 
   <scm>

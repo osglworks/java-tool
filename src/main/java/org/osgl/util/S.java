@@ -515,18 +515,30 @@ public class S {
     }
 
     public static boolean endsWith(String string, String suffix) {
+        if (isEmpty(string)) {
+            return false;
+        }
         return string.endsWith(suffix);
     }
 
     public static boolean endsWith(String string, char suffix) {
+        if (isEmpty(string)) {
+            return false;
+        }
         return string.charAt(string.length() - 1) == suffix;
     }
 
     public static boolean startsWith(String string, String prefix) {
+        if (isEmpty(string)) {
+            return false;
+        }
         return string.startsWith(prefix);
     }
 
     public static boolean startsWith(String string, char prefix) {
+        if (S.empty(string)) {
+            return false;
+        }
         return string.charAt(0) == prefix;
     }
 
