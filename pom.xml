@@ -16,6 +16,12 @@
   -->
 <!-- history
 1.5.0
+* Enhance `CacheService` - incr/decr API #40
+* `NullPointerException` on `N.isNumeric(var)` and `S.isNumeric(var)` when `var` is `null` #39
+* Add filter method to `C.Map` #33
+* Improve `C.Set` and `C.Map` API #29
+* Add extract method to C #28
+* Improve S API #27
 * #26 Add method to generate Map from List
 * #11 Make API accept Visitor be real Visitor
 

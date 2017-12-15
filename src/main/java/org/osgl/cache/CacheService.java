@@ -61,6 +61,54 @@ public interface CacheService {
     <T> T get(String key);
 
     /**
+     * Increase an number type value associated with key `key` by `1`
+     *
+     * If the value cached is not found or not of number type it is
+     * up to the implementation to decide whether throw out a
+     * runtime exception or silently drop the request.
+     *
+     * @param key
+     *      the key index the numeric value
+     */
+    void incr(String key);
+
+    /**
+     * Increase an number type value associated with key `key` by `offset`
+     *
+     * If the value cached is not found or not of number type it is
+     * up to the implementation to decide whether throw out a
+     * runtime exception or silently drop the request.
+     *
+     * @param key
+     *      the key index the numeric value
+     */
+    void incr(String key, int offset);
+
+    /**
+     * Decrease an number type value associated with key `key` by `1`
+     *
+     * If the value cached is not found or not of number type it is
+     * up to the implementation to decide whether throw out a
+     * runtime exception or silently drop the request.
+     *
+     * @param key
+     *      the key index the numeric value
+     */
+    void decr(String key);
+
+    /**
+     * Decrease an number type value associated with key `key` by `offset`
+     *
+     * If the value cached is not found or not of number type it is
+     * up to the implementation to decide whether throw out a
+     * runtime exception or silently drop the request.
+     *
+     * @param key
+     *      the key index the numeric value
+     */
+    void decr(String key, int offset);
+
+    /**
      * Remove all cached items
      */
     void clear();

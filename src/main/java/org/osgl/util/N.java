@@ -740,7 +740,7 @@ public class N {
      * @return `true` if s represents an int or `false` otherwise
      */
     public static boolean isInt(String s, int radix) {
-        if(s.isEmpty()) return false;
+        if(S.isBlank(s)) return false;
         for(int i = 0; i < s.length(); i++) {
             if(i == 0 && s.charAt(i) == '-') {
                 if(s.length() == 1) return false;
@@ -757,6 +757,9 @@ public class N {
      * @return `true` if `s` is numeric or `false` otherwise
      */
     public static boolean isNumeric(String s) {
+        if (S.isBlank(s)) {
+            return false;
+        }
         if (isInt(s)) {
             return true;
         }

@@ -152,6 +152,26 @@ public class PropertyTest extends TestBase {
             }
 
             @Override
+            public void incr(String key) {
+
+            }
+
+            @Override
+            public void incr(String key, int offset) {
+
+            }
+
+            @Override
+            public void decr(String key) {
+
+            }
+
+            @Override
+            public void decr(String key, int offset) {
+
+            }
+
+            @Override
             public void setDefaultTTL(int ttl) {
 
             }

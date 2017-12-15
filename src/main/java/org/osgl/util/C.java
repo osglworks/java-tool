@@ -2349,6 +2349,18 @@ public enum C {
             return forEach(indexedVisitor);
         }
 
+        public Map<K, V> filter($.Function<K, Boolean> predicate) {
+            java.util.Map<K, V> map = new HashMap<>();
+            for (java.util.Map.Entry<K, V> entry : entrySet()) {
+                K k = entry.getKey();
+                if (predicate.apply(k)) {
+                    map.put(k, entry.getValue());
+                }
+            }
+            Map<K, V> filtered = new Map<>(readOnly(), map);
+            return filtered;
+        }
+
         public <NV> Map<K, NV> transformValues($.Function<V, NV> valueTransformer) {
             Map<K, NV> newMap = C.newMap();
             for (java.util.Map.Entry<K, V> entry : entrySet()) {
