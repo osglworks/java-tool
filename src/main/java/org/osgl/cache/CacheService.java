@@ -63,14 +63,16 @@ public interface CacheService {
     /**
      * Increase an number type value associated with key `key` by `1`
      *
-     * If the value cached is not found or not of number type it is
+     * If the value cached is not found or not of int type it is
      * up to the implementation to decide whether throw out a
      * runtime exception or silently drop the request.
      *
      * @param key
      *      the key index the numeric value
+     * @return
+     *      the int value before increment operation happening.
      */
-    void incr(String key);
+    int incr(String key);
 
     /**
      * Increase an number type value associated with key `key` by `offset`
@@ -81,8 +83,10 @@ public interface CacheService {
      *
      * @param key
      *      the key index the numeric value
+     * @return
+     *      the int value before increment operation happening.
      */
-    void incr(String key, int offset);
+    int incr(String key, int offset);
 
     /**
      * Decrease an number type value associated with key `key` by `1`
@@ -93,8 +97,10 @@ public interface CacheService {
      *
      * @param key
      *      the key index the numeric value
+     * @return
+     *      the int value before decrement operation happening.
      */
-    void decr(String key);
+    int decr(String key);
 
     /**
      * Decrease an number type value associated with key `key` by `offset`
@@ -105,8 +111,10 @@ public interface CacheService {
      *
      * @param key
      *      the key index the numeric value
+     * @return
+     *      the int value before decrement operation happening.
      */
-    void decr(String key, int offset);
+    int decr(String key, int offset);
 
     /**
      * Remove all cached items

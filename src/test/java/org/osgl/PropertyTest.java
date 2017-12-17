@@ -152,23 +152,23 @@ public class PropertyTest extends TestBase {
             }
 
             @Override
-            public void incr(String key) {
-
+            public int incr(String key) {
+                return 0;
             }
 
             @Override
-            public void incr(String key, int offset) {
-
+            public int incr(String key, int offset) {
+                return 0;
             }
 
             @Override
-            public void decr(String key) {
-
+            public int decr(String key) {
+                return 0;
             }
 
             @Override
-            public void decr(String key, int offset) {
-
+            public int decr(String key, int offset) {
+                return 0;
             }
 
             @Override
