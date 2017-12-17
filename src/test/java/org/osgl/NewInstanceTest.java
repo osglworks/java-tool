@@ -48,8 +48,8 @@ public class NewInstanceTest extends TestBase {
         try {
             $.newInstance(FOO_CLASS, -3);
             fail("It shall throw out UnexpectedNewInstanceException");
-        } catch (UnexpectedNewInstanceException e) {
-            yes(e.getCause() instanceof IllegalArgumentException);
+        } catch (IllegalArgumentException e) {
+            // pass
         }
     }
 }
