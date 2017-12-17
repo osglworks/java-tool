@@ -63,9 +63,8 @@ public interface CacheService {
     /**
      * Increase an number type value associated with key `key` by `1`
      *
-     * If the value cached is not found or not of int type it is
-     * up to the implementation to decide whether throw out a
-     * runtime exception or silently drop the request.
+     * If no value is associated with the key, then it will associate
+     * number `1` to `key` and return `0`.
      *
      * @param key
      *      the key index the numeric value
@@ -75,25 +74,25 @@ public interface CacheService {
     int incr(String key);
 
     /**
-     * Increase an number type value associated with key `key` by `offset`
+     * Increase an number type value associated with key `key` with expires specified
      *
-     * If the value cached is not found or not of number type it is
-     * up to the implementation to decide whether throw out a
-     * runtime exception or silently drop the request.
+     * If no value is associated with the key, then it will associate
+     * number `1` to `key` and return `0`.
      *
      * @param key
      *      the key index the numeric value
+     * @param ttl
+     *      the number of seconds the key to expire
      * @return
      *      the int value before increment operation happening.
      */
-    int incr(String key, int offset);
+    int incr(String key, int ttl);
 
     /**
      * Decrease an number type value associated with key `key` by `1`
      *
-     * If the value cached is not found or not of number type it is
-     * up to the implementation to decide whether throw out a
-     * runtime exception or silently drop the request.
+     * If no value is associated with the key, then it will associate
+     * number `-1` to `key` and return `0`.
      *
      * @param key
      *      the key index the numeric value
@@ -103,18 +102,20 @@ public interface CacheService {
     int decr(String key);
 
     /**
-     * Decrease an number type value associated with key `key` by `offset`
+     * Decrease an number type value associated with key `key` by `1`
+     * with expires specified
      *
-     * If the value cached is not found or not of number type it is
-     * up to the implementation to decide whether throw out a
-     * runtime exception or silently drop the request.
+     * If no value is associated with the key, then it will associate
+     * number `-1` to `key` and return `0`.
      *
      * @param key
      *      the key index the numeric value
+     * @param ttl
+     *      the number of seconds the key to expire
      * @return
      *      the int value before decrement operation happening.
      */
-    int decr(String key, int offset);
+    int decr(String key, int ttl);
 
     /**
      * Remove all cached items

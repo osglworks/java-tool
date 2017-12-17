@@ -5456,6 +5456,15 @@ public class Osgl implements Serializable {
             Constructor<T> ct = c.getDeclaredConstructor();
             ct.setAccessible(true);
             return ct.newInstance();
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof RuntimeException) {
+                throw ((RuntimeException) t);
+            } else {
+                throw new UnexpectedNewInstanceException(e);
+            }
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new UnexpectedNewInstanceException(e);
         }
@@ -5475,7 +5484,14 @@ public class Osgl implements Serializable {
                 return ct.newInstance(p1);
             }
             throw new UnexpectedNewInstanceException("constructor not found");
-        } catch (UnexpectedNewInstanceException e) {
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof RuntimeException) {
+                throw ((RuntimeException) t);
+            } else {
+                throw new UnexpectedNewInstanceException(e);
+            }
+        } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new UnexpectedNewInstanceException(e);
@@ -5499,7 +5515,14 @@ public class Osgl implements Serializable {
                 return ct.newInstance(p1, p2);
             }
             throw new UnexpectedNewInstanceException("constructor not found");
-        } catch (UnexpectedNewInstanceException e) {
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof RuntimeException) {
+                throw ((RuntimeException) t);
+            } else {
+                throw new UnexpectedNewInstanceException(e);
+            }
+        } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new UnexpectedNewInstanceException(e);
@@ -5526,7 +5549,14 @@ public class Osgl implements Serializable {
                 return ct.newInstance(p1, p2, p3);
             }
             throw new UnexpectedNewInstanceException("constructor not found");
-        } catch (UnexpectedNewInstanceException e) {
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof RuntimeException) {
+                throw ((RuntimeException) t);
+            } else {
+                throw new UnexpectedNewInstanceException(e);
+            }
+        } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new UnexpectedNewInstanceException(e);
@@ -5556,7 +5586,14 @@ public class Osgl implements Serializable {
                 return ct.newInstance(p1, p2, p3, p4);
             }
             throw new UnexpectedNewInstanceException("constructor not found");
-        } catch (UnexpectedNewInstanceException e) {
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof RuntimeException) {
+                throw ((RuntimeException) t);
+            } else {
+                throw new UnexpectedNewInstanceException(e);
+            }
+        } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new UnexpectedNewInstanceException(e);
@@ -5589,7 +5626,14 @@ public class Osgl implements Serializable {
                 return ct.newInstance(p1, p2, p3, p4, p5);
             }
             throw new UnexpectedNewInstanceException("constructor not found");
-        } catch (UnexpectedNewInstanceException e) {
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof RuntimeException) {
+                throw ((RuntimeException) t);
+            } else {
+                throw new UnexpectedNewInstanceException(e);
+            }
+        } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new UnexpectedNewInstanceException(e);
@@ -5641,7 +5685,14 @@ public class Osgl implements Serializable {
                 return ct.newInstance(oa);
             }
             throw new UnexpectedNewInstanceException("constructor not found");
-        } catch (UnexpectedNewInstanceException e) {
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof RuntimeException) {
+                throw ((RuntimeException) t);
+            } else {
+                throw new UnexpectedNewInstanceException(e);
+            }
+        } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new UnexpectedNewInstanceException(e);
