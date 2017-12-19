@@ -37,7 +37,7 @@ abstract class StatefulIterator<T> extends ReadOnlyIterator<T> {
 
     /**
      * If there are still elements, then return the an option describing the next element,
-     * otherwise return {@link $.Option#NONE}
+     * otherwise return {@link Osgl.Option#NONE}
      *
      * @return either next element or none if no element in the iterator
      */

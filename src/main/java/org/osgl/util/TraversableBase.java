@@ -52,7 +52,7 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
     /**
      * Sub class can override this method to provide more efficient algorithm to
      * generate hash code. The default implementation use
-     * {@link $#iterableHashCode(Iterable)} to generate the hash code
+     * {@link Osgl#iterableHashCode(Iterable)} to generate the hash code
      *
      * @return hash code of this traversal
      */
@@ -137,8 +137,8 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
     /**
      * Iterate through the traversal to apply the accumulator to
      * the result of previous application and the element being iterated.
-     * If the traversal is empty then return {@link $.Option#NONE},
-     * otherwise an {@link $.Option} wrapping the accumulated result
+     * If the traversal is empty then return {@link Osgl.Option#NONE},
+     * otherwise an {@link Osgl.Option} wrapping the accumulated result
      * is returned
      *
      * @param accumulator the function the combine two values
@@ -162,7 +162,7 @@ TraversableBase<T> extends FeaturedBase implements C.Traversable<T> {
      * Iterate the traversal to check if any element applied to the predicate
      * the iteration process stop when the element is found and return
      * an option describing the element. If no element applied to the predicate
-     * then {@link $.Option#NONE} is returned
+     * then {@link Osgl.Option#NONE} is returned
      *
      * @param predicate the function map element to Boolean
      * @return an option describing the element match the predicate or none

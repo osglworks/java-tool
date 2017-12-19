@@ -302,7 +302,7 @@ public enum C {
          * @param accumulator the function takes previous accumulating
          *                    result and the current element being
          *                    iterated
-         * @return an option describing the accumulating result or {@link $#none()} if
+         * @return an option describing the accumulating result or {@link Osgl#none()} if
          * the structure is empty
          * @since 0.2
          */
@@ -348,7 +348,7 @@ public enum C {
          *
          * @param predicate the function map element to Boolean
          * @return an element in this traversal that matches the predicate or
-         * {@link $#NONE} if no element matches
+         * {@link Osgl#NONE} if no element matches
          * @since 0.2
          */
         $.Option<T> findOne($.Function<? super T, Boolean> predicate);
@@ -423,8 +423,8 @@ public enum C {
         T first() throws NoSuchElementException;
 
         /**
-         * Returns an {@link $.Option} of the first element in the
-         * {@code Sequence} or {@link $#NONE} if the {@code Sequence} is empty
+         * Returns an {@link Osgl.Option} of the first element in the
+         * {@code Sequence} or {@link Osgl#NONE} if the {@code Sequence} is empty
          *
          * @return the first element from the {@code Sequence}
          * @throws NoSuchElementException if the {@code Sequence} is empty
@@ -777,7 +777,7 @@ public enum C {
          * </pre>
          *
          * @param accumulator the function accumulate each element to the final result
-         * @return an {@link $.Option} describing the accumulating result
+         * @return an {@link Osgl.Option} describing the accumulating result
          * @since 0.2
          */
         $.Option<T> reduceLeft($.Func2<T, T, T> accumulator);
@@ -785,13 +785,13 @@ public enum C {
         /**
          * Apply the predicate specified to the element of this sequence
          * from head to tail. Stop at the element that returns {@code true},
-         * and returns an {@link $.Option} describing the element. If none
+         * and returns an {@link Osgl.Option} describing the element. If none
          * of the element applications in the sequence returns {@code true}
-         * then {@link $#none()} is returned
+         * then {@link Osgl#none()} is returned
          *
          * @param predicate the function map the element to Boolean
          * @return an option describe the first element matches the
-         * predicate or {@link $#none()}
+         * predicate or {@link Osgl#none()}
          * @since 0.2
          */
         $.Option<T> findFirst($.Function<? super T, Boolean> predicate);
@@ -1095,7 +1095,7 @@ public enum C {
          * </pre>
          *
          * @param accumulator the function accumulate each element to the final result
-         * @return an {@link $.Option} describing the accumulating result
+         * @return an {@link Osgl.Option} describing the accumulating result
          * @since 0.2
          */
         $.Option<T> reduceRight($.Func2<T, T, T> accumulator);
@@ -1104,13 +1104,13 @@ public enum C {
         /**
          * Apply the predicate specified to the element of this sequence
          * from tail to head. Stop at the element that returns {@code true},
-         * and returns an {@link $.Option} describing the element. If none
+         * and returns an {@link Osgl.Option} describing the element. If none
          * of the element applications in the sequence returns {@code true}
-         * then {@link $#none()} is returned
+         * then {@link Osgl#none()} is returned
          *
          * @param predicate the function map the element to Boolean
          * @return an option describe the first element matches the
-         * predicate or {@link $#none()}
+         * predicate or {@link Osgl#none()}
          * @since 0.2
          */
         $.Option<T> findLast($.Function<? super T, Boolean> predicate);
@@ -1333,7 +1333,7 @@ public enum C {
         boolean containsAll(Range<ELEMENT> r2);
 
         /**
-         * Returns a {@link $.Func2} function that takes two elements in the range domain and returns an integer to
+         * Returns a {@link Osgl.Func2} function that takes two elements in the range domain and returns an integer to
          * determine the order of the two elements. See {@link java.util.Comparator#compare(Object, Object)} for
          * semantic of the function.
          * <p>If any one of the element applied is {@code null} the function should throw out
@@ -1345,7 +1345,7 @@ public enum C {
         Comparator<ELEMENT> order();
 
         /**
-         * Returns a {@link $.Func2} function that applied to an element in this {@code Range} and
+         * Returns a {@link Osgl.Func2} function that applied to an element in this {@code Range} and
          * an integer {@code n} indicate the number of steps. The result of the function is an element in
          * the range or the range domain after moving {@code n} steps based on the element.
          * <p>If the element apply is {@code null}, the function should throw out
@@ -1797,8 +1797,8 @@ public enum C {
          * Split this list into two list based on the predicate specified.
          * <p>
          *     The function use the predicate to test all elements in this list. If test passed
-         *     then it add the element into {@link $.T2#_1 left side list}, otherwise the
-         *     element will be added into {@link $.T2#_2 right side list}. The result
+         *     then it add the element into {@link Osgl.T2#_1 left side list}, otherwise the
+         *     element will be added into {@link Osgl.T2#_2 right side list}. The result
          *     is returned as a {@link org.osgl.Osgl.Tuple tuple} contains the left and
          *     right side lift
          * </p>
