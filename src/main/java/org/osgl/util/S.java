@@ -20,17 +20,20 @@ package org.osgl.util;
  * #L%
  */
 
+import static java.lang.Character.highSurrogate;
+import static java.lang.Character.lowSurrogate;
+
 import org.osgl.$;
 import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static java.lang.Character.highSurrogate;
-import static java.lang.Character.lowSurrogate;
 
 /**
  * String utilities
@@ -575,7 +578,8 @@ public class S {
     }
 
     public static boolean endsWith(String string, char suffix) {
-        return string(string).charAt(string.length() - 1) == suffix;
+        String s = string(string);
+        return !s.isEmpty() && s.charAt(string.length() - 1) == suffix;
     }
 
     public static boolean startsWith(String string, String prefix) {
@@ -583,7 +587,8 @@ public class S {
     }
 
     public static boolean startsWith(String string, char prefix) {
-        return string(string).charAt(0) == prefix;
+        String s = string(string);
+        return !s.isEmpty() && s.charAt(0) == prefix;
     }
 
     public static class _Ensure {
