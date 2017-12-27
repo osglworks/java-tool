@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.5.1 28/Dec/2017
+* `java.lang.StringIndexOutOfBoundsException` with `S.ensureStartsWith()` #41
+
 1.5.0
 * Update build process - use osgl-maven-parent
 * Enhance `CacheService` - incr/decr API #40
