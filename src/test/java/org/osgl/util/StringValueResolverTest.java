@@ -20,10 +20,10 @@ package org.osgl.util;
  * #L%
  */
 
+import static org.osgl.util.StringValueResolver.predefined;
+
 import org.junit.Test;
 import org.osgl.TestBase;
-
-import static org.osgl.util.StringValueResolver.predefined;
 
 public abstract class StringValueResolverTest extends TestBase {
 
@@ -178,6 +178,11 @@ public abstract class StringValueResolverTest extends TestBase {
         }
 
         @Test
+        public void testWithTimesOperator() {
+            verify(600, "60 * 10");
+        }
+
+        @Test
         public void testInvalidStr() {
             verifyException(IllegalArgumentException.class, "$14");
         }
@@ -197,6 +202,11 @@ public abstract class StringValueResolverTest extends TestBase {
         @Test
         public void testNegative() {
             verify(-1l, "-1");
+        }
+
+        @Test
+        public void testWithTimesOperator() {
+            verify(600l, "60 * 10");
         }
 
         @Test
@@ -221,6 +231,11 @@ public abstract class StringValueResolverTest extends TestBase {
         }
 
         @Test
+        public void testWithTimesOperator() {
+            verify(10f, "1.25 * 8");
+        }
+
+        @Test
         public void testInvalidStr() {
             verifyException(NumberFormatException.class, "ac3d");
         }
@@ -239,6 +254,11 @@ public abstract class StringValueResolverTest extends TestBase {
         @Test
         public void testNegative() {
             verify(-32.120d, "-32.120");
+        }
+
+        @Test
+        public void testWithTimesOperator() {
+            verify(10d, "1.25 * 8");
         }
 
         @Test

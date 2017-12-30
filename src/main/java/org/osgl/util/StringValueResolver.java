@@ -172,7 +172,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return Boolean.parseBoolean(value);
         }
     };
-    private static final Map<String, Character> PREDEFINED_CHARS = new HashMap<String, Character>();
+    private static final Map<String, Character> PREDEFINED_CHARS = new HashMap<>();
 
     static {
         PREDEFINED_CHARS.put("\\b", '\b');
@@ -310,9 +310,17 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
     };
 
     private static int _int(String s) {
+        s = s.trim();
         if (s.contains(".")) {
             float f = Float.valueOf(s);
             return Math.round(f);
+        } else if (s.contains("*")) {
+            List<String> factors = S.fastSplit(s, "*");
+            int n = 1;
+            for (String factor : factors) {
+                n *= _int(factor);
+            }
+            return n;
         } else {
             return Integer.valueOf(s);
         }
@@ -342,7 +350,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             if (S.blank(value)) {
                 return 0l;
             }
-            return Long.valueOf(value);
+            return _long(value);
         }
     };
     private static final StringValueResolver<Long> _Long = new StringValueResolver<Long>() {
@@ -351,16 +359,33 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             if (S.blank(value)) {
                 return null;
             }
-            return Long.valueOf(value);
+            return _long(value);
         }
     };
+
+    private static long _long(String s) {
+        s = s.trim();
+        if (s.contains(".")) {
+            double d = Double.valueOf(s);
+            return Math.round(d);
+        } else if (s.contains("*")) {
+            List<String> factors = S.fastSplit(s, "*");
+            long n = 1l;
+            for (String factor : factors) {
+                n *= _long(factor);
+            }
+            return n;
+        } else {
+            return Long.valueOf(s);
+        }
+    }
     private static final StringValueResolver<Float> _float = new StringValueResolver<Float>() {
         @Override
         public Float resolve(String value) {
             if (S.blank(value)) {
                 return 0f;
             }
-            float n = Float.valueOf(value);
+            float n = _float(value);
             if (Float.isInfinite(n) || Float.isNaN(n)) {
                 throw new IllegalArgumentException("float value out of scope: " + value);
             }
@@ -373,20 +398,34 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             if (S.blank(value)) {
                 return null;
             }
-            float n = Float.valueOf(value);
+            float n = _float(value);
             if (Float.isInfinite(n) || Float.isNaN(n)) {
                 throw new IllegalArgumentException("float value out of scope: " + value);
             }
             return n;
         }
     };
+
+    private static float _float(String s) {
+        s = s.trim();
+        if (s.contains("*")) {
+            List<String> factors = S.fastSplit(s, "*");
+            float n = 1f;
+            for (String factor : factors) {
+                n *= _float(factor);
+            }
+            return n;
+        } else {
+            return Float.valueOf(s);
+        }
+    }
     private static final StringValueResolver<Double> _double = new StringValueResolver<Double>() {
         @Override
         public Double resolve(String value) {
             if (S.blank(value)) {
                 return 0d;
             }
-            double n = Double.valueOf(value);
+            double n = _double(value);
             if (Double.isInfinite(n) || Double.isNaN(n)) {
                 throw new IllegalArgumentException("double value out of scope: " + value);
             }
@@ -399,13 +438,27 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             if (S.blank(value)) {
                 return null;
             }
-            double n = Double.valueOf(value);
+            double n = _double(value);
             if (Double.isInfinite(n) || Double.isNaN(n)) {
                 throw new IllegalArgumentException("double value out of scope: " + value);
             }
             return n;
         }
     };
+
+    private static double _double(String s) {
+        s = s.trim();
+        if (s.contains("*")) {
+            List<String> factors = S.fastSplit(s, "*");
+            double n = 1d;
+            for (String factor : factors) {
+                n *= _double(factor);
+            }
+            return n;
+        } else {
+            return Double.valueOf(s);
+        }
+    }
     private static final StringValueResolver<String> _String = wrap($.F.<String>identity(), String.class);
     private static final StringValueResolver<Str> _Str = new StringValueResolver<Str>() {
         @Override
