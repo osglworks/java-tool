@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.6.0 16/Jan/2017
+* Improve exception handling of Osgl.invokeXxx methods #44
+
 1.5.2 31/Dec/2017
 * String value resolver: support `*` in numeric type value #42
 

@@ -21,7 +21,6 @@ package org.osgl;
  */
 
 import org.junit.Test;
-import org.osgl.exception.UnexpectedMethodInvocationException;
 import org.osgl.exception.UnexpectedNoSuchMethodException;
 import org.osgl.util.E;
 
@@ -67,14 +66,9 @@ public class InvokeMethodTest extends TestBase {
         $.invokeVirtual(new Foo(), "xx");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testInvokeMethodThrowsOutException() {
-        try {
-            $.invokeVirtual(new Foo(), "v", 1, 2);
-            fail("Expected UnexpectedMethodInvocationException here");
-        } catch (UnexpectedMethodInvocationException e) {
-            yes(e.getCause() instanceof IllegalArgumentException);
-        }
+        $.invokeVirtual(new Foo(), "v", 1, 2);
     }
 
     @Test

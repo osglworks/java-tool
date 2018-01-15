@@ -5919,7 +5919,7 @@ public class Osgl implements Serializable {
         try {
             return (R) method.invoke(null, pa);
         } catch (Exception e) {
-            throw new UnexpectedMethodInvocationException(e);
+            throw UnexpectedMethodInvocationException.triage(e);
         }
     }
 
@@ -5971,8 +5971,10 @@ public class Osgl implements Serializable {
         E.NPE(o);
         try {
             return (R) method.invoke(o, pa);
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnexpectedMethodInvocationException(e);
+            throw UnexpectedMethodInvocationException.triage(e);
         }
     }
 
@@ -6054,7 +6056,7 @@ public class Osgl implements Serializable {
         } catch (UnexpectedNoSuchMethodException e) {
             throw e;
         } catch (Exception e) {
-            throw new UnexpectedMethodInvocationException(e);
+            throw UnexpectedMethodInvocationException.triage(e);
         }
     }
 
