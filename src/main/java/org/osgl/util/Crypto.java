@@ -39,14 +39,18 @@ package org.osgl.util;
  * #L%
  */
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 /**
  * Cryptography utils. Comes from play!framework under apache license
@@ -151,6 +155,33 @@ public enum Crypto {
             MessageDigest m = MessageDigest.getInstance(hashType.toString());
             byte[] out = m.digest(input.getBytes());
             return new String(Base64.encode(out));
+        } catch (NoSuchAlgorithmException e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    /**
+     * Create a password hash using the default hashing algorithm
+     *
+     * @param input The password
+     * @return The password hash
+     */
+    public static char[] passwordHash(char[] input) {
+        return passwordHash(input, DEFAULT_HASH_TYPE);
+    }
+
+    /**
+     * Create a password hash using specific hashing algorithm
+     *
+     * @param input    The password
+     * @param hashType The hashing algorithm
+     * @return The password hash
+     */
+    public static char[] passwordHash(char[] input, HashType hashType) {
+        try {
+            MessageDigest m = MessageDigest.getInstance(hashType.toString());
+            byte[] out = m.digest(toByte(input));
+            return Base64.encode(out);
         } catch (NoSuchAlgorithmException e) {
             throw E.unexpected(e);
         }
@@ -462,6 +493,16 @@ public enum Crypto {
         SecureRandom random = new SecureRandom();
         int len = random.nextInt(12) + 4;
         return genRandomStr(len);
+    }
+
+    private static byte[] toByte(char[] chars) {
+        CharBuffer charBuffer = CharBuffer.wrap(chars);
+        ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+        byte[] bytes = Arrays.copyOfRange(byteBuffer.array(),
+                byteBuffer.position(), byteBuffer.limit());
+        Arrays.fill(charBuffer.array(), '\u0000'); // clear sensitive data
+        Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
+        return bytes;
     }
 
 }

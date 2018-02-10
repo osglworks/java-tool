@@ -5262,6 +5262,22 @@ public class Osgl implements Serializable {
         return obj;
     }
 
+    /**
+     * Get value of an object field.
+     * @param obj the object
+     * @param field the field
+     * @param <T> the field type
+     * @return the value of the field in the object
+     */
+    public static <T> T getFieldValue(Object obj, Field field) {
+        try {
+            field.setAccessible(true);
+            return (T) field.get(obj);
+        } catch (IllegalAccessException e) {
+            throw E.unexpected(e);
+        }
+    }
+
     private static Map<Object, Class> __primitiveTypes = new HashMap<Object, Class>();
 
     static {

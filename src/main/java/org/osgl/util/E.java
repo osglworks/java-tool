@@ -130,6 +130,10 @@ public class E {
         }
     }
 
+    public static void unexpectedIfNot(boolean tester, String msg, Object... args) {
+        unexpectedIf(!tester, msg, args);
+    }
+
 
     public static UnexpectedIOException ioException(IOException cause) {
         throw new UnexpectedIOException(cause);
@@ -225,11 +229,30 @@ public class E {
         }
     }
 
+    public static void unsupportedIf(boolean test, String msg) {
+        if (test) {
+            msg = S.fmt(msg);
+            throw new UnsupportedException(msg);
+        }
+    }
+
     public static void unsupportedIf(boolean test, String msg, Object ... args) {
         if (test) {
             msg = S.fmt(msg, args);
             throw new UnsupportedException(msg);
         }
+    }
+
+    public static void unsupportedIfNot(boolean test) {
+        unsupportedIf(!test);
+    }
+
+    public static void unsupportedIfNot(boolean test, String msg) {
+        unsupportedIf(!test, msg);
+    }
+
+    public static void unsupportedIfNot(boolean test, String msg, Object ... args) {
+        unsupportedIf(!test, msg, args);
     }
 
     public static void illegalArgumentIf(boolean test) {
@@ -250,6 +273,18 @@ public class E {
         }
     }
 
+    public static void illegalArgumentIfNot(boolean test) {
+        illegalArgumentIf(test);
+    }
+
+    public static void illegalArgumentIfNot(boolean test, String msg) {
+        illegalArgumentIf(!test, msg);
+    }
+
+    public static void illegalArgumentIfNot(boolean test, String msg, Object... args) {
+        illegalArgumentIf(!test, msg, args);
+    }
+
     public static void illegalStateIf(boolean test) {
         if (test) {
             throw new IllegalStateException();
@@ -266,6 +301,18 @@ public class E {
         if (test) {
             throw new IllegalStateException(S.fmt(msg, args));
         }
+    }
+
+    public static void illegalStateIfNot(boolean test) {
+        illegalStateIf(!test);
+    }
+
+    public static void illegalStateIfNot(boolean test, String msg) {
+        illegalStateIf(!test, msg);
+    }
+
+    public static void illegalStateIfNot(boolean test, String msg, Object... args) {
+        illegalStateIf(test, msg, args);
     }
 
     public static String stackTrace(Throwable t) {

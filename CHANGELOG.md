@@ -1,5 +1,13 @@
 # OSGL Tool Change Log
 
+* 1.6.1
+* Add `Crypto.passwordHash(char[])` method
+* Add `$.getFieldValue(Object, Field)` method
+* New methods in `E` utility:
+    - `E.illegalArgumentIfNot(...)`
+    - `E.illegalStateIfNot(...)`
+    - `E.unsupportedIfNot(...)`
+
 1.6.0 16/Jan/2017
 * Improve exception handling of Osgl.invokeXxx methods #44
 
