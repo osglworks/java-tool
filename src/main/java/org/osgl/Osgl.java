@@ -5376,6 +5376,16 @@ public class Osgl implements Serializable {
         return String.class == c || __wrapperToPrmitives.containsKey(c) || __primitiveToWrappers.containsKey(c) || Enum.class.isAssignableFrom(c) || Locale.class == c;
     }
 
+    /**
+     * Check if a given class is a primitive type
+     *
+     * @param c the class
+     * @return `true` if `c` is primitive type
+     */
+    public static boolean isPrimitive(Class<?> c) {
+        return __primitiveToWrappers.containsKey(c);
+    }
+
     public static Class wrapperClassOf(Class c) {
         if (c.isPrimitive()) {
             return __primitiveToWrappers.get(c);

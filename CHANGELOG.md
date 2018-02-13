@@ -2,6 +2,7 @@
 
 * 1.6.1
 * Add `char[]` StringValueResolver implementation #45
+* Add `Osgl.isPrimitive(Class)` method
 * Add `Crypto.passwordHash(char[])` method
 * Add `$.getFieldValue(Object, Field)` method
 * New methods in `E` utility:
