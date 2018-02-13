@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 * 1.6.1
+* Codec.encodeUrlSafeBase64 shall not use `.` to pad #46
 * Add `char[]` StringValueResolver implementation #45
 * Add `Osgl.isPrimitive(Class)` method
 * Add `Crypto.passwordHash(char[])` method

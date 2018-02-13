@@ -41,19 +41,21 @@ package org.osgl.util;
 
 import org.osgl.exception.UnexpectedException;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.UUID;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Utility class for encoding and decoding
  * <p>Part of the code comes from play!framework under apache license</p>
  */
 public class Codec {
+
+    public static final char URL_SAFE_BASE64_PADDING_CHAR = UrlSafeBase64.CHAR_PADDING;
 
     /**
      * @return an UUID String

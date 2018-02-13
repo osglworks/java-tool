@@ -48,6 +48,10 @@ package org.osgl.util;
  */
 class UrlSafeBase64 {
 
+    static final char CHAR_PADDING = '~';
+    static final char CHAR_PLUS_REPLACEMENT = '-';
+    static final char CHAR_FORWARD_SLASH_REPLACEMENT = '_';
+
     // Mapping table from 6-bit nibbles to Base64 characters.
     private static final char[] map1 = new char[64];
 
@@ -58,8 +62,8 @@ class UrlSafeBase64 {
         for (char c = '0'; c <= '9'; c++) map1[i++] = c;
         // map1[i++] = '+';
         // map1[i++] = '/';
-        map1[i++] = '-';
-        map1[i++] = '_';
+        map1[i++] = CHAR_PLUS_REPLACEMENT;
+        map1[i++] = CHAR_FORWARD_SLASH_REPLACEMENT;
     }
 
     // Mapping table from Base64 characters to 6-bit nibbles.
@@ -108,9 +112,9 @@ class UrlSafeBase64 {
             int o3 = i2 & 0x3F;
             out[op++] = map1[o0];
             out[op++] = map1[o1];
-            out[op] = op < oDataLen ? map1[o2] : '.';
+            out[op] = op < oDataLen ? map1[o2] : CHAR_PADDING;
             op++;
-            out[op] = op < oDataLen ? map1[o3] : '.';
+            out[op] = op < oDataLen ? map1[o3] : CHAR_PADDING;
             op++;
         }
         return out;
@@ -185,7 +189,7 @@ class UrlSafeBase64 {
     public static byte[] decode(char[] in, int iOff, int iLen) {
         if (iLen % 4 != 0)
             throw new IllegalArgumentException("Length of Base64 encoded input string is not a multiple of 4.");
-        while (iLen > 0 && in[iOff + iLen - 1] == '.') iLen--;
+        while (iLen > 0 && in[iOff + iLen - 1] == CHAR_PADDING) iLen--;
         int oLen = (iLen * 3) / 4;
         byte[] out = new byte[oLen];
         int ip = iOff;
