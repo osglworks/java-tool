@@ -272,6 +272,13 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
         }
     };
 
+    private static final StringValueResolver<char[]> _charArray = new StringValueResolver<char[]>() {
+        @Override
+        public char[] resolve(String value) {
+            return value.toCharArray();
+        }
+    };
+
     private static final StringValueResolver<Byte> _byte = new StringValueResolver<Byte>() {
         @Override
         public Byte resolve(String value) {
@@ -506,6 +513,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             Locale.class, _Locale,
             Str.class, _Str,
             FastStr.class, _FastStr,
+            char[].class, _charArray,
             BigInteger.class, new BigIntegerValueObjectCodec(),
             BigDecimal.class, new BigDecimalValueObjectCodec(),
             Keyword.class, new KeywordValueObjectCodec()

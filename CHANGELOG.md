@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 * 1.6.1
+* Add `char[]` StringValueResolver implementation #45
 * Add `Crypto.passwordHash(char[])` method
 * Add `$.getFieldValue(Object, Field)` method
 * New methods in `E` utility:
@@ -17,7 +18,7 @@
 1.5.1 28/Dec/2017
 * `java.lang.StringIndexOutOfBoundsException` with `S.ensureStartsWith()` #41
 
-1.5.0
+1.5.0   
 * Update build process - use osgl-maven-parent
 * Enhance `CacheService` - incr/decr API #40
 * `NullPointerException` on `N.isNumeric(var)` and `S.isNumeric(var)` when `var` is `null` #39
