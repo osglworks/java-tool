@@ -275,7 +275,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
     private static final StringValueResolver<char[]> _charArray = new StringValueResolver<char[]>() {
         @Override
         public char[] resolve(String value) {
-            return value.toCharArray();
+            return null == value ? new char[0] : value.toCharArray();
         }
     };
 

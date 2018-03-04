@@ -28,10 +28,10 @@ import java.util.Iterator;
 /**
  * Bridge from {@link java.util.Enumeration} to {@link java.util.Iterator}
  */
-class EnumerationIterator<T> implements Iterator<T> {
+public class EnumerationIterator<T> implements Iterator<T> {
     private Enumeration<? extends T> e;
 
-    EnumerationIterator(Enumeration<? extends T> enumeration) {
+    public EnumerationIterator(Enumeration<? extends T> enumeration) {
         e = $.notNull(enumeration);
     }
 

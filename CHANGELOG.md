@@ -1,5 +1,16 @@
 # OSGL Tool Change Log
 
+1.7.0
+* Potential memory leak with `S.buffer()` #50
+    - `S.buffer` set maximum threadlocal buffer instance size to be `512` bytes
+* Add `Output` interface #49
+* Add `IO.flush` methods #48
+* `E.illegalArgumentIfNot` implement logic error #47
+
+
+1.6.2
+* Fix `StringValueResolver` NPE issue for `char[]` type
+
 * 1.6.1
 * Codec.encodeUrlSafeBase64 shall not use `.` to pad #46
 * Add `char[]` StringValueResolver implementation #45

@@ -27,8 +27,12 @@ import org.osgl.$;
 import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
@@ -1913,6 +1917,11 @@ public class S {
      */
     public static Buffer buffer() {
         Buffer sb = _buf.get();
+        if (sb.value.length > 512) {
+            sb = new Buffer();
+            _buf.set(sb);
+            return sb;
+        }
         return sb.consumed() ? sb.reset() : new Buffer();
     }
 
@@ -2405,17 +2414,17 @@ public class S {
      * the state of the instance, i.e. decide whether the
      * constructor's buffer has been consumed (via {@link #toString()}
      * method.
-     * <p>
+     *
      * **Note** when buffer is consumed (i.e. the `toString()`) method
      * is called, the length of the buffer will be reset to `0`. However
      * the internal char array will be leave as it is.
-     * <p>
+     *
      * **Note** this class is **NOT** thread safe
-     * <p>
+     *
      * **Note** Unlike {@link StringBuilder} when appending `null`
      * it will **NOT** change the state of this object.
      */
-    public static class Buffer implements Appendable, CharSequence {
+    public static class Buffer implements Output, Appendable, CharSequence {
 
         /**
          * track if {@link #toString()} method is called
@@ -3181,6 +3190,26 @@ public class S {
             System.arraycopy(str, offset, value, count, len);
             count += len;
             return this;
+        }
+
+        @Override
+        public Buffer append(byte[] bytes) {
+            return append(ByteBuffer.wrap(bytes));
+        }
+
+        @Override
+        public Buffer append(byte[] bytes, int start, int end) {
+            return append(ByteBuffer.wrap(bytes, start, end));
+        }
+
+        @Override
+        public Buffer append(byte b) {
+            return append((char) (b & 0xFF));
+        }
+
+        @Override
+        public Buffer append(ByteBuffer buffer) {
+            return append(buffer.asCharBuffer());
         }
 
         /**
@@ -4184,6 +4213,65 @@ public class S {
                     }
                 }
             }
+        }
+
+        @Override
+        public void open() {
+        }
+
+        @Override
+        public void close() {
+            consume();
+        }
+
+        @Override
+        public void flush() {
+        }
+
+        @Override
+        public OutputStream asOutputStream() {
+            E.illegalStateIf(consumed());
+            return new OutputStream() {
+                @Override
+                public void write(int b) {
+                    append((byte) b);
+                }
+
+                @Override
+                public void write(byte[] b) {
+                    append(b);
+                }
+
+                @Override
+                public void write(byte[] b, int off, int len) {
+                    append(b, off, len);
+                }
+
+                @Override
+                public void close() {
+                    S.Buffer.this.close();
+                }
+            };
+        }
+
+        @Override
+        public Writer asWriter() {
+            E.illegalStateIf(consumed());
+            return new Writer() {
+                @Override
+                public void write(char[] cbuf, int off, int len) {
+                    Buffer.this.append(cbuf, off, len);
+                }
+
+                @Override
+                public void flush() throws IOException {
+                }
+
+                @Override
+                public void close() throws IOException {
+                    Buffer.this.close();
+                }
+            };
         }
 
         /**

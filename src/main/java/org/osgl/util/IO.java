@@ -70,6 +70,22 @@ public class IO {
         }
     }
 
+    public static void flush(Flushable flushable) {
+        try {
+            flushable.flush();
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    public static void flush(ObjectOutput oo) {
+        try {
+            oo.flush();
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
     public static File child(File file, String fn) {
         return new File(file, fn);
     }
@@ -544,23 +560,47 @@ public class IO {
     }
 
     /**
-     * Write String content to a file (always use utf-8)
+     * Write String content to a file (always use utf-8).
+     *
+     * This method is deprecated. Please use {@link #write(CharSequence, File)} instead
      *
      * @param content The content to write
      * @param file    The file to write
      */
+    @Deprecated
     public static void writeContent(CharSequence content, File file) {
-        writeContent(content, file, "utf-8");
+        write(content, file, "utf-8");
     }
 
     /**
-     * Write String content to a file (always use utf-8)
+     * Write string content to a file with UTF-8 encoding.
+     * @param content
+     *      the content to be written to the file
+     * @param file
+     *      the file to which the content be written to
+     */
+    public static void write(CharSequence content, File file) {
+        write(content, file, "utf-8");
+    }
+
+    /**
+     * Write string content to a file with encoding specified.
+     *
+     * This is deprecated. Please use {@link #write(CharSequence, File, String)} instead
+     */
+    @Deprecated
+    public static void writeContent(CharSequence content, File file, String encoding) {
+        write(content, file, encoding);
+    }
+
+    /**
+     * Write String content to a file with encoding specified
      *
      * @param content The content to write
      * @param file    The file to write
      * @param encoding encoding used to write the content to file
      */
-    public static void writeContent(CharSequence content, File file, String encoding) {
+    public static void write(CharSequence content, File file, String encoding) {
         OutputStream os = null;
         try {
             os = new FileOutputStream(file);
@@ -575,7 +615,30 @@ public class IO {
         }
     }
 
+    public static void write(char c, Writer writer) {
+        try {
+            writer.write(c);
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    /**
+     * Write content into a writer.
+     *
+     * This method is deprecated. Please use {@link #write(CharSequence, Writer)} instead.
+     */
+    @Deprecated
     public static void writeContent(CharSequence content, Writer writer) {
+    }
+
+    /**
+     * Write content into a writer.
+     *
+     * @param content the content to be written to the writer
+     * @param writer to where the content be written
+     */
+    public static void write(CharSequence content, Writer writer) {
         try {
             PrintWriter printWriter = new PrintWriter(writer);
             printWriter.println(content);
@@ -644,6 +707,14 @@ public class IO {
         try {
             return copy(is, new BufferedOutputStream(new FileOutputStream(f)));
         } catch (FileNotFoundException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    public static void write(byte b, OutputStream os) {
+        try {
+            os.write(b);
+        } catch (IOException e) {
             throw E.ioException(e);
         }
     }
