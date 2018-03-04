@@ -1,6 +1,6 @@
 # OSGL Tool Change Log
 
-1.7.0
+1.7.0 - 4/Mar/2018
 * Potential memory leak with `S.buffer()` #50
     - `S.buffer` set maximum threadlocal buffer instance size to be `512` bytes
 * Add `Output` interface #49
