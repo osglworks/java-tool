@@ -31,6 +31,18 @@ import java.util.List;
 public class OsglTest extends TestBase {
 
     @Test
+    public void testAnyNull() {
+        yes($.anyNull("", 5, null));
+        no($.anyNull("", 5));
+    }
+
+    @Test
+    public void testNoneNull() {
+        no($.noneNull("", 5, null));
+        yes($.noneNull("", 5));
+    }
+
+    @Test
     public void testToString2() {
         String[][] sa = {{"foo", "bar"}, {"1", "2"}};
         eq("[[foo, bar], [1, 2]]", $.toString2(sa));

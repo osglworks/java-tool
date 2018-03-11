@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.7.1 - 9/Mar/2018
+* `Osgl.anyNull` logic error #52
+
 1.7.0 - 4/Mar/2018
 * Potential memory leak with `S.buffer()` #50
     - `S.buffer` set maximum threadlocal buffer instance size to be `512` bytes

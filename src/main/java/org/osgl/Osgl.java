@@ -4683,9 +4683,9 @@ public class Osgl implements Serializable {
      * @return {@code true} if any one of the argument is {@code null}
      */
     public static boolean anyNull(Object o, Object... oa) {
-        if (!isNull(o)) return true;
+        if (isNull(o)) return true;
         for (int i = oa.length - 1; i >= 0; --i) {
-            if (!isNull(oa[i])) return true;
+            if (isNull(oa[i])) return true;
         }
         return false;
     }
