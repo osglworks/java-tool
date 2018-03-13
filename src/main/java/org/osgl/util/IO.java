@@ -630,6 +630,7 @@ public class IO {
      */
     @Deprecated
     public static void writeContent(CharSequence content, Writer writer) {
+        write(content, writer);
     }
 
     /**

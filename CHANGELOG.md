@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.7.2 - 13/Mar/2018
+* The deprecated `IO.writeContent(String, Writer)` has empty method body #53
+
 1.7.1 - 9/Mar/2018
 * `Osgl.anyNull` logic error #52
 
