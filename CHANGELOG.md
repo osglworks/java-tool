@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.7.3 - 15/Mar/2018
+* Make crypto be null safe #54
+
 1.7.2 - 13/Mar/2018
 * The deprecated `IO.writeContent(String, Writer)` has empty method body #53
 

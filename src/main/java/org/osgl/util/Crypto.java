@@ -209,6 +209,9 @@ public enum Crypto {
      * @return An hexadecimal encrypted string
      */
     public static String encryptAES(String value, byte[] privateKey) {
+        if (null == value) {
+            return null;
+        }
         try {
             if (null != svc) return svc.encrypt(value, privateKey);
             MessageDigest md = MessageDigest.getInstance("SHA-384");
@@ -259,6 +262,9 @@ public enum Crypto {
      * @return An hexadecimal encrypted string
      */
     public static String encryptAES(String value, byte[] privateKey, byte[] salt) {
+        if (null == value) {
+            return null;
+        }
         try {
             if (null != svc) return svc.encrypt(value, privateKey, salt);
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -303,6 +309,9 @@ public enum Crypto {
      * @return The decrypted String
      */
     public static String decryptAES(String value, byte[] privateKey) {
+        if (null == value) {
+            return null;
+        }
         try {
             if (null != svc) return svc.decrypt(value, privateKey);
             byte[] ba0 = Codec.hexStringToByte(value);
@@ -350,6 +359,9 @@ public enum Crypto {
      * @return The decrypted String
      */
     public static String decryptAES(String value, byte[] privateKey, byte[] salt) {
+        if (null == value) {
+            return null;
+        }
         try {
             if (null != svc) return svc.decrypt(value, privateKey, salt);
             byte[] baVal = Codec.hexStringToByte(value);
