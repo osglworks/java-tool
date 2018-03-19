@@ -498,7 +498,7 @@ public enum Crypto {
 
     /**
      * Generate random string with random length from 4 to 12 inclusive
-     * @return the string genrated
+     * @return the string generated
      * @see #genRandomStr(int)
      */
     public static String genRandomStr() {

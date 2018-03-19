@@ -44,6 +44,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class S {
 
+    S() {}
+
     /**
      * The invisible separator used by program: "\u0000"
      */
@@ -794,8 +796,9 @@ public class S {
             }
 
             if (null != suffix) {
-                if (separateFix)
+                if (separateFix) {
                     sb.append(separator);
+                }
                 sb.append(suffix);
             }
             return sb.toString();
@@ -1905,9 +1908,13 @@ public class S {
     private static final ThreadLocal<Buffer> _buf = new ThreadLocal<Buffer>() {
         @Override
         protected Buffer initialValue() {
-            return new Buffer();
+            Buffer buf = new Buffer();
+            buf.consume();
+            return buf;
         }
     };
+
+    static int BUFFER_RETENTION_LIMIT = 1024;
 
     /**
      * Returns a {@link Buffer} instance. If the thread local instance is consumed already
@@ -1917,7 +1924,7 @@ public class S {
      */
     public static Buffer buffer() {
         Buffer sb = _buf.get();
-        if (sb.value.length > 512) {
+        if (sb.value.length > BUFFER_RETENTION_LIMIT) {
             sb = new Buffer();
             _buf.set(sb);
             return sb;
@@ -2427,9 +2434,9 @@ public class S {
     public static class Buffer implements Output, Appendable, CharSequence {
 
         /**
-         * track if {@link #toString()} method is called
+         * The value is used for character storage.
          */
-        private boolean consumed;
+        private char[] value;
 
         /**
          * The count is the number of characters used.
@@ -2437,9 +2444,9 @@ public class S {
         private int count;
 
         /**
-         * The value is used for character storage.
+         * track if {@link #toString()} method is called
          */
-        private char[] value;
+        private boolean consumed;
 
         /**
          * This no-arg constructor is necessary for serialization of subclasses.
@@ -2453,7 +2460,7 @@ public class S {
          */
         public Buffer(int capacity) {
             value = new char[capacity];
-            consumed = true;
+            consumed = false;
         }
 
         public boolean consumed() {
@@ -2466,8 +2473,8 @@ public class S {
         }
 
         public Buffer reset() {
-            this.consumed = false;
             this.setLength(0);
+            this.consumed = false;
             return this;
         }
 

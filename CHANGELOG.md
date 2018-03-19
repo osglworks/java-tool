@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.7.3 - 15/Mar/2018
+* `S.Buffer.reset()` semantic inconsistent with constructor #55
+* Make S.Buffer thread local instance retention size be configurable #56
 * Make crypto be null safe #54
 
 1.7.2 - 13/Mar/2018
