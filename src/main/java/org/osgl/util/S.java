@@ -2490,6 +2490,18 @@ public class S {
         }
 
         /**
+         * Check if the buffer is empty. Calling this method is essentially equivalent to calling
+         *
+         * ```java
+         * 0 == length()
+         * ```
+         * @return `true` if this buffer is empty or `false` otherwise
+         */
+        public boolean isEmpty() {
+            return 0 == count;
+        }
+
+        /**
          * Returns the current capacity. The capacity is the amount of storage
          * available for newly inserted characters, beyond which an allocation
          * will occur.

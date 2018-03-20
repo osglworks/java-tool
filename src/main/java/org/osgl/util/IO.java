@@ -46,6 +46,8 @@ import org.osgl.storage.impl.SObject;
 
 import java.io.*;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -285,6 +287,47 @@ public class IO {
             return (BufferedReader)r;
         } else {
             return new BufferedReader(r);
+        }
+    }
+
+    /**
+     * Returns checksum of a file.
+     *
+     * @param file the file
+     * @return the checksum of the file
+     */
+    public static String checksum(File file) {
+        return checksum(is(file));
+    }
+
+    /**
+     * Returns checksum from an input stream.
+     *
+     * @param is the inputstream
+     * @return the checksum of the content from the inputstream
+     */
+    public static String checksum(InputStream is) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            byte[] dataBytes = new byte[1024];
+
+            int nread;
+
+            while ((nread = is.read(dataBytes)) != -1) {
+                md.update(dataBytes, 0, nread);
+            }
+
+            byte[] mdbytes = md.digest();
+
+            S.Buffer sb = S.buffer();
+            for (int i = 0; i < mdbytes.length; i++) {
+                sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw E.unexpected("SHA1 algorithm not found");
+        } catch (IOException e) {
+            throw E.ioException(e);
         }
     }
 
@@ -634,12 +677,31 @@ public class IO {
     }
 
     /**
-     * Write content into a writer.
+     * write content into a writer without closing the writer when finished.
+     * @param content the content to be written to the writer
+     * @param writer to where the content be written
+     */
+    public static void append(CharSequence content, Writer writer) {
+        write(content, writer, false);
+    }
+
+    /**
+     * Write content into a writer and close the writer.
      *
      * @param content the content to be written to the writer
      * @param writer to where the content be written
      */
     public static void write(CharSequence content, Writer writer) {
+        write(content, writer, true);
+    }
+
+    /**
+     * Write content into a writer.
+     *
+     * @param content the content to be written to the writer
+     * @param writer to where the content be written
+     */
+    public static void write(CharSequence content, Writer writer, boolean closeOs) {
         try {
             PrintWriter printWriter = new PrintWriter(writer);
             printWriter.println(content);
@@ -648,7 +710,9 @@ public class IO {
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
-            close(writer);
+            if (closeOs) {
+                close(writer);
+            }
         }
     }
 

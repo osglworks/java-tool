@@ -1,5 +1,10 @@
 # OSGL Tool Change Log
 
+1.8.0 -
+* Add `WriterOutput` and `OutputStreamOutput` #59
+* Add `BufferedOutput` utility class #58
+* Add `IO.checksum` utility methods #57
+
 1.7.3 - 15/Mar/2018
 * `S.Buffer.reset()` semantic inconsistent with constructor #55
 * Make S.Buffer thread local instance retention size be configurable #56
