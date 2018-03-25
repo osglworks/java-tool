@@ -1,6 +1,9 @@
 # OSGL Tool Change Log
 
-1.8.0 -
+1.8.1 - 25/Mar/2018
+* fix fastjson dependency version error
+
+1.8.0 - 25/Mar/2018
 * update fastjson to 1.2.47
 * Enhacements to `S` namespace #62
 * Add converter framework #61
