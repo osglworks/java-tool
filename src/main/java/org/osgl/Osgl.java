@@ -32,8 +32,9 @@ public class Osgl extends Lang {
     // Note if you get `Illegal group reference` issue then make sure
     // you do not have `$` in the `{@link}` tag
     public static void main(String[] args) throws Exception {
-        // run `mvn javadoc:javadoc -Prelease -Ddebug=true` to generate options and packages file
         args = new String[]{"@target/site/apidocs/options", "@target/site/apidocs/packages"};
-        com.sun.tools.javadoc.Main.execute(args);
+        // uncomment the following line and
+        // run `mvn javadoc:javadoc -Prelease -Ddebug=true` to generate options and packages file
+        //com.sun.tools.javadoc.Main.execute(args);
     }
 }
