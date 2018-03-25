@@ -21,13 +21,32 @@ package org.osgl;
  */
 
 import org.osgl.util.UtilConfig;
+import org.osgl.util.algo.StringReplace;
+import org.osgl.util.algo.StringSearch;
 
 public class OsglConfig {
+    // String manipulation
+
+    /**
+     * Default string search logic
+     */
+    public static StringSearch DEF_STRING_SEARCH = new StringSearch.SimpleStringSearch();
+
+    /**
+     * Default string replace logic
+     */
+    public static StringReplace DEF_STRING_REPLACE = new StringReplace.SimpleStringReplace();
+
+    
     public static void setStringBufferRententionLimit(int limit) {
         UtilConfig.setStringBufferRententionLimit(limit);
     }
 
     public static int getStringBufferRententionLimit() {
         return UtilConfig.getStringBufferRententionLimit();
+    }
+
+    public static void setStringBufferInitSize(int size) {
+
     }
 }

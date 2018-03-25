@@ -1,4 +1,4 @@
-package org.osgl;
+package org.osgl.util.algo;
 
 /*-
  * #%L
@@ -20,11 +20,13 @@ package org.osgl;
  * #L%
  */
 
+import org.osgl.$;
+
 /**
- * Alias of {@link Lang}.
- *
- * This class is deprecated. Please use {@link Lang} or {@link $} instead
+ * Encapsulate a preprocessed String search which contains
+ * 1. A preprocessed {@link StringSearchPattern pattern}
+ * 2. The corresponding algorithm
  */
-@Deprecated
-public class Osgl extends Lang {
+public abstract class PreprocessedStringSearch extends $.F1<char[], Integer> {
+
 }

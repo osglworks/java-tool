@@ -20,28 +20,11 @@ package org.osgl.util;
  * #L%
  */
 
-public class UtilConfig {
-
-    public static void setStringBufferRententionLimit(int limit) {
-        if (limit < 256) {
-            limit = 256;
-        } else if (limit < S.BUFFER_INIT_SIZE) {
-            limit = S.BUFFER_INIT_SIZE;
-        }
-        S.BUFFER_RETENTION_LIMIT = limit;
-    }
-
-    public static int getStringBufferRententionLimit() {
-        return S.BUFFER_RETENTION_LIMIT;
-    }
-
-    public static void setStringBufferInitSize(int size) {
-        if (size < 64) {
-            size = 64;
-        } else if (size > S.BUFFER_RETENTION_LIMIT) {
-            size = S.BUFFER_RETENTION_LIMIT;
-        }
-        S.BUFFER_INIT_SIZE = size;
-    }
-
+/**
+ * String utility namespace.
+ *
+ * Alias of {@link S}
+ */
+public class StringNS extends S {
+    private StringNS() {}
 }

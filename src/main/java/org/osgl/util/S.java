@@ -25,19 +25,24 @@ import static java.lang.Character.lowSurrogate;
 
 import org.osgl.$;
 import org.osgl.Osgl;
+import org.osgl.OsglConfig;
 import org.osgl.exception.NotAppliedException;
+import org.osgl.util.algo.StringReplace;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 
 /**
  * String utilities
@@ -46,10 +51,32 @@ public class S {
 
     S() {}
 
+    // ---- CONSTANTS DEFINITION ----
+
+    /**
+     * An empty string array constant
+     */
+    public static final String[] EMPTY_ARRAY = new String[0];
+
     /**
      * The invisible separator used by program: "\u0000"
      */
     public static final String HSEP = "\u0000";
+
+    /**
+     * Alias of {@link #HSEP}
+     */
+    public static final String HIDDEN_SEPARATOR = HSEP;
+
+    /**
+     * The invisible separator char `'\u0000'`
+     */
+    public static final char HSEP_CHAR = '\u0000';
+
+    /**
+     * Alias of {@link #HSEP_CHAR}
+     */
+    public static final char HIDDEN_SEPARATOR_CHAR = HSEP_CHAR;
 
     /**
      * A commonly used separator: [,;:\\s]+
@@ -57,27 +84,86 @@ public class S {
     public static final String COMMON_SEP = "[,;:\\s]+";
 
     /**
-     * An empty string array constant
+     * A precompiled {@link Pattern} of {@link #COMMON_SEP}
      */
-    public static final String[] EMPTY_ARRAY = new String[0];
+    public static final Pattern PATTERN_COMMON_SEP = Pattern.compile(COMMON_SEP);
 
-    public static final Binary PARENTHESES = binary("(", ")");
+    /**
+     * The {@link File#separator}
+     */
+    public static final String FILE_SEP = File.separator;
 
-    public static final Binary BRACKETS = binary("[", "]");
+    /**
+     * The {@link File#separatorChar}
+     */
+    public static final char FILE_SEP_CHAR = File.separatorChar;
 
-    public static final Binary BRACES = binary("{", "}");
+    /**
+     * The {@link File#pathSeparator}
+     */
+    public static final String PATH_SEP = File.pathSeparator;
 
-    public static final Binary DIAMOND = binary("<", ">");
+    /**
+     * The {@link File#pathSeparatorChar
+     */
+    public static final char PATH_SEP_CHAR = File.pathSeparatorChar;
 
-    public static final Binary ANGLE_BRACKETS = DIAMOND;
+    /**
+     * A pair of parentheses: `(` and `)`
+     */
+    public static final Pair PARENTHESES = pair("(", ")");
 
-    public static final Binary SINGLE_ANGLE_QUOTATION_MARK = binary("‹", "›");
+    /**
+     * A pair of brackets: `[` and `]`
+     */
+    public static final Pair BRACKETS = pair("[", "]");
 
-    public static final Binary DOUBLE_ANGLE_QUOTATION_MARK = binary("«", "»");
+    /**
+     * Alias of {@link #BRACKETS}
+     */
+    public static final Pair SQUARE_BRACKETS = BRACKETS;
 
-    public static final Binary 书名号 = binary("《", "》");
+    /**
+     * A pair of braces: `{` and `}`
+     */
+    public static final Pair BRACES = pair("{", "}");
 
-    public static final Binary SHU_MING_HAO = 书名号;
+    /**
+     * Alias of {@link #BRACES}
+     */
+    public static final Pair CURLY_BRACES = BRACES;
+
+    /**
+     * A pair of angle brackets: `<` and `>`
+     */
+    public static final Pair DIAMOND = pair("<", ">");
+
+    /**
+     * Alias of {@link #DIAMOND}
+     */
+    public static final Pair ANGLE_BRACKETS = DIAMOND;
+
+    /**
+     * A pair of single angle quotation mark: `‹` (`u2039`) and `›` (`u203a`)
+     */
+    public static final Pair SINGLE_ANGLE_QUOTATION_MARK = pair("‹", "›");
+
+    /**
+     * A pair of double angle quotation mark: `\u00ab` (`u00ab`) and `\u00bb` (`u00bb`)
+     */
+    public static final Pair DOUBLE_ANGLE_QUOTATION_MARK = pair("«", "»");
+
+    /**
+     * A pair of 书名号 (ShuMingHao, a Chevron-like symbol): `\u300a` (`u300a`) and `\u300b` (`u300b`)
+     */
+    public static final Pair 书名号 = pair("《", "》");
+
+    /**
+     * Alias of {@link #书名号}
+     */
+    public static final Pair SHU_MING_HAO = 书名号;
+
+    // ---- EOF CONSTANTS DEFINITION ----
 
     public static String getCommonSep() {
         return COMMON_SEP;
@@ -97,6 +183,29 @@ public class S {
     public final static String fmt(String tmpl, Object... args) {
         if (0 == args.length) return tmpl;
         return String.format(tmpl, args);
+    }
+
+
+    /**
+     * Returns the template or `""` if template is `null`
+     * @param template a string
+     * @return the template or `""` if template is `null`
+     */
+    public static String msgFmt(String template) {
+        return S.string(template);
+    }
+
+    /**
+     * A handy alias for {@link MessageFormat#format(String, Object...)}
+     *
+     * @param template the message template
+     * @param args the message arguments
+     * @return the formatted string or `""` if template is `null`
+     */
+    public static String msgFmt(String template, Object... args) {
+        if (0 == args.length) return template;
+        if (null == template) return "";
+        return MessageFormat.format(template, args);
     }
 
     /**
@@ -322,6 +431,34 @@ public class S {
      */
     public static boolean isNumeric(String s) {
         return N.isNumeric(s);
+    }
+
+    /**
+     * Throw IllegalArgumentException if the string specified
+     * {@link #isBlank(String) is blank}, otherwise return
+     * the string specified
+     *
+     * @param s the string to be tested
+     * @return the string if it is not blank
+     * @throws IllegalArgumentException if the string `s` is blank
+     */
+    public static String requireNotBlank(String s) {
+        E.illegalArgumentIf(isBlank(s));
+        return s;
+    }
+
+    /**
+     * Throw IllegalArgumentException if the string specified
+     * {@link #isEmpty(String)}  is empty}, otherwise return
+     * the string specified
+     *
+     * @param s the string to be tested
+     * @return the string if it is not empty
+     * @throws IllegalArgumentException if the string `s` is empty
+     */
+    public static String requireNotEmpty(String s) {
+        E.illegalArgumentIf(isEmpty(s));
+        return s;
     }
 
     /**
@@ -573,6 +710,13 @@ public class S {
         public boolean integer() {
             return N.isInt(s);
         }
+        public boolean wrappedWith(String left, String right) {
+            return s.length() >= (left.length() + right.length()) && s.startsWith(left) && s.endsWith(right);
+        }
+        public boolean wrappedWith($.Tuple<String, String> wrapper) {
+            is("foo").wrappedWith(BRACKETS);
+            return wrappedWith(wrapper.left(), wrapper.right());
+        }
     }
 
     public static _Is is(Object content) {
@@ -614,6 +758,24 @@ public class S {
         public String endWith(char suffix) {
             return ensureEndsWith(s, suffix);
         }
+        public String wrappedWith(String left, String right) {
+            return ensureWrappedWith(s, left, right);
+        }
+        public String wrappedWith(String wrapper) {
+            return ensureWrappedWith(s, wrapper, wrapper);
+        }
+        public String wrappedWith($.Tuple<String, String> wrapper) {
+            return ensureWrappedWith(s, wrapper);
+        }
+        public String strippedOff(String left, String right) {
+            return ensureStrippedOff(s, left, right);
+        }
+        public String strippedOff(String wrapper) {
+            return ensureStrippedOff(s, wrapper, wrapper);
+        }
+        public String strippedOff($.Tuple<String, String> wrapper) {
+            return ensureStrippedOff(s, wrapper);
+        }
     }
 
     public static _Ensure ensure(Object object) {
@@ -634,6 +796,273 @@ public class S {
 
     public static String ensureEndsWith(String string, char suffix) {
         return endsWith(string, suffix) ? string : newSizedBuffer(string.length() + 1).append(string).append(suffix).toString();
+    }
+
+    public static String ensureWrappedWith(String string, String left, String right) {
+        String retVal = string(string);
+        if (!retVal.startsWith(left)) {
+            retVal = left + retVal;
+        }
+        if (!retVal.endsWith(right)) {
+            retVal = retVal + right;
+        }
+        return retVal;
+    }
+
+    public static String ensureWrappedWith(String string, $.Tuple<String, String> wrapper) {
+        return ensureWrappedWith(string, wrapper.left(), wrapper.right());
+    }
+
+    public static String ensureStrippedOff(String string, String left, String right) {
+        String retVal = string(string);
+        if (retVal.startsWith(left)) {
+            retVal = retVal.substring(left.length());
+        }
+        if (retVal.endsWith(right)) {
+            retVal = retVal.substring(0, retVal.length() - right.length());
+        }
+        return retVal;
+    }
+
+    public static String ensureStrippedOff(String string, $.Tuple<String, String> wrapper) {
+        return ensureStrippedOff(string, wrapper.left(), wrapper.right());
+    }
+
+    public static class _Replace2 {
+        private String replacement;
+        private $.Function<String, String> replacementFunction;
+        protected String keyword;
+        protected Pattern pattern;
+        private StringReplace replacer = OsglConfig.DEF_STRING_REPLACE;
+
+        private _Replace2(String keyword, String replacement) {
+            this.keyword = keyword;
+            this.replacement = replacement;
+        }
+
+        private _Replace2(Pattern pattern, String replacement) {
+            this.pattern = pattern;
+            this.replacement = replacement;
+        }
+
+        private _Replace2(String keyword, $.Function<String, String> replacement) {
+            this.keyword = keyword;
+            this.replacementFunction = replacement;
+        }
+
+        public _Replace2 usingRegEx() {
+            this.pattern = Pattern.compile(keyword);
+            return this;
+        }
+
+        public _Replace2 replacer($.Func4<char[], char[], char[], Integer, char[]> replacer) {
+            this.replacer = StringReplace.wrap(replacer);
+            return this;
+        }
+
+        public String in(String text) {
+            if (null != replacementFunction) {
+                E.illegalStateIf(null != pattern, "Replace with function doesnot support regex search");
+                replacement = replacementFunction.apply(keyword);
+            }
+            if (null != pattern) {
+                return pattern.matcher(text).replaceAll(replacement);
+            }
+            if (text.length() < keyword.length()) {
+                return text;
+            }
+            int firstId = text.indexOf(this.keyword);
+            if (firstId < 0) {
+                return text;
+            }
+            char[] textArray = Unsafe.bufOf(text);
+            char[] target = this.keyword.toCharArray();
+            char[] replace = replacement.toCharArray();
+            char[] result = this.replacer.replace(textArray, target, replace, firstId);
+            return (result == textArray) ? text : Unsafe.stringOf(result);
+        }
+    }
+
+    public static class _Replace {
+        private String text;
+        protected String keyword;
+        protected Pattern pattern;
+        private StringReplace replacer = OsglConfig.DEF_STRING_REPLACE;
+
+        private _Replace(String text, String keyword) {
+            this.text = text;
+            this.keyword = keyword;
+        }
+
+        private _Replace(String text, Pattern pattern) {
+            this.text = text;
+            this.pattern = pattern;
+        }
+
+        public _Replace usingRegEx() {
+            this.pattern = Pattern.compile(keyword);
+            return this;
+        }
+
+        public _Replace replacer($.Func4<char[], char[], char[], Integer, char[]> replacer) {
+            this.replacer = StringReplace.wrap(replacer);
+            return this;
+        }
+
+        public String with($.Function<String, String> replacement) {
+            E.illegalStateIf(null != pattern, "Replace with function doesnot support regex search");
+            return with(replacement.apply(this.keyword));
+        }
+
+        public String with(String replacement) {
+            if (null != pattern) {
+                return pattern.matcher(text).replaceAll(replacement);
+            } else {
+                if (text.length() < keyword.length()) {
+                    return text;
+                }
+                int firstId = this.text.indexOf(this.keyword);
+                if (firstId < 0) {
+                    return this.text;
+                }
+                char[] text = Unsafe.bufOf(this.text);
+                char[] target = this.keyword.toCharArray();
+                char[] replace = replacement.toCharArray();
+                char[] result = this.replacer.replace(text, target, replace, firstId);
+                return (result == text) ? this.text : Unsafe.stringOf(result);
+            }
+        }
+    }
+
+    public static class _WrapReplace extends _Replace {
+        public _WrapReplace(String text, String keyword) {
+            super(text, keyword);
+        }
+        public String with($.Tuple<String, String> wrapper) {
+            return with(F.wrapper(wrapper));
+        }
+
+        public String with(String left, String right) {
+            return with(F.wrapper(left, right));
+        }
+
+        public String with($.Function<String, String> replacement) {
+            E.illegalStateIf(null != pattern, "Replace with function doesnot support regex search");
+            return super.with(replacement.apply(this.keyword));
+        }
+
+        public String with(String wrapper) {
+            return with(wrapper, wrapper);
+        }
+    }
+
+    public static class _ReplaceChar {
+        private String text;
+        private char toBeReplaced;
+        private _ReplaceChar(String s, char toBeReplaced) {
+            this.text = string(s);
+            this.toBeReplaced = toBeReplaced;
+        }
+        public String with(char replacement) {
+            return text.replace(toBeReplaced, replacement);
+        }
+    }
+
+    public static class _ReplaceCharStage {
+        private char search;
+        private char replacement;
+
+        public _ReplaceCharStage(char search) {
+            this.search = search;
+        }
+
+        public _ReplaceCharStage with(char replacement) {
+            this.replacement = replacement;
+            return this;
+        }
+
+        public String in(String text) {
+            return text.replace(search, replacement);
+        }
+    }
+
+    public static class _ReplaceStage {
+        private String keyword;
+        private Pattern pattern;
+        private _ReplaceStage(String keyword) {
+            this.keyword = keyword;
+        }
+        private _ReplaceStage(Pattern pattern) {
+            this.pattern = pattern;
+        }
+        public _Replace in(String text) {
+            return null == pattern ? new _Replace(text, keyword) : new _Replace(text, pattern);
+        }
+        public _Replace2 with(String replacement) {
+            return null == pattern ? new _Replace2(keyword, replacement) : new _Replace2(pattern, replacement);
+        }
+    }
+
+    public static class _Have {
+        private String s;
+        private _Have(Object s) {
+            this.s = string(s);
+        }
+        private _Have(String s) {
+            this.s = null == s ? "" : s;
+        }
+        public _Replace replace(String literal) {
+            return new _Replace(s, literal);
+        }
+        public _Replace replace(Pattern pattern) {
+            return new _Replace(s, pattern);
+        }
+        public _ReplaceChar replace(char c) {
+            return new _ReplaceChar(s, c);
+        }
+    }
+
+    public static _Have have(Object o) {
+        return new _Have(o);
+    }
+
+    public static _Have have(String s) {
+        return new _Have(s);
+    }
+
+    public static _Have take(Object o) {
+        return new _Have(o);
+    }
+
+    public static _Have take(String s) {
+        return new _Have(s);
+    }
+
+    public static _Have given(Object o) {
+        return new _Have(o);
+    }
+
+    public static _Have given(String s) {
+        return new _Have(s);
+    }
+
+    public static _ReplaceStage replace(Pattern pattern) {
+        return new _ReplaceStage(pattern);
+    }
+
+    public static _ReplaceStage replace(Object keyword) {
+        if (keyword instanceof Pattern) {
+            return new _ReplaceStage((Pattern) keyword);
+        }
+        return new _ReplaceStage(string(keyword));
+    }
+
+    public static _ReplaceStage replace(String keyword) {
+        return new _ReplaceStage(null == keyword ? "" : keyword);
+    }
+
+    public static _ReplaceCharStage replace(char c) {
+        return new _ReplaceCharStage(c);
     }
 
     public static String pathConcat(String prefix, char sep, String suffix) {
@@ -1915,6 +2344,7 @@ public class S {
     };
 
     static int BUFFER_RETENTION_LIMIT = 1024;
+    static int BUFFER_INIT_SIZE = 512;
 
     /**
      * Returns a {@link Buffer} instance. If the thread local instance is consumed already
@@ -1924,12 +2354,18 @@ public class S {
      */
     public static Buffer buffer() {
         Buffer sb = _buf.get();
-        if (sb.value.length > BUFFER_RETENTION_LIMIT) {
-            sb = new Buffer();
+        if (sb.capacity() > BUFFER_RETENTION_LIMIT) {
+            sb = new Buffer(BUFFER_INIT_SIZE);
             _buf.set(sb);
             return sb;
         }
-        return sb.consumed() ? sb.reset() : new Buffer();
+        if (sb.consumed()) {
+            sb.reset();
+        } else {
+            sb = new Buffer(BUFFER_INIT_SIZE);
+            _buf.set(sb);
+        }
+        return sb;
     }
 
     public static Buffer buffer(boolean o) {
@@ -2086,12 +2522,20 @@ public class S {
         return new StringBuilder(capacity);
     }
 
-    public static Binary binary($.T2<String, String> t2) {
-        return new Binary(t2);
+    public static T2 pair($.T2<String, String> t2) {
+        return new T2(t2);
     }
 
-    public static Binary binary(String left, String right) {
-        return new Binary(left, right);
+    public static T2 pair(String left, String right) {
+        return new T2(left, right);
+    }
+
+    public static T2 binary($.T2<String, String> t2) {
+        return new T2(t2);
+    }
+
+    public static T2 binary(String left, String right) {
+        return new T2(left, right);
     }
 
     /**
@@ -2107,7 +2551,7 @@ public class S {
      * @param targetCount  count of the target string.
      * @param fromIndex    the index to begin searching from.
      */
-    static int indexOf(char[] source, int sourceOffset, int sourceCount,
+    public static int indexOf(char[] source, int sourceOffset, int sourceCount,
                        char[] target, int targetOffset, int targetCount,
                        int fromIndex) {
         if (fromIndex >= sourceCount) {
@@ -2411,6 +2855,23 @@ public class S {
                     return S.newBuilder(prependix).append(s).toString();
                 }
             };
+        }
+
+        public static $.Transformer<String, String> wrapper(final String left, final String right) {
+            return new $.Transformer<String, String>() {
+                @Override
+                public String transform(String s) throws $.Break, NotAppliedException {
+                    return left + s + right;
+                }
+            };
+        }
+
+        public static $.Transformer<String, String> wrapper(String wrapper) {
+            return wrapper(wrapper, wrapper);
+        }
+
+        public static $.Transformer<String, String> wrapper(final $.Tuple<String, String> wrapper) {
+            return wrapper(wrapper.left(), wrapper.right());
         }
 
     }
@@ -4495,12 +4956,22 @@ public class S {
             super(_1, _2);
         }
 
-        public Binary($.T2<String, String> t2) {
+        public Binary($.Tuple<String, String> t2) {
             super(t2._1, t2._2);
         }
     }
 
-    public static class T2 extends Binary {
+    public static class Pair extends Binary {
+        public Pair(String _1, String _2) {
+            super(_1, _2);
+        }
+
+        public Pair($.Tuple<String, String> tuple) {
+            super(tuple);
+        }
+    }
+
+    public static class T2 extends Pair {
         public T2(String _1, String _2) {
             super(_1, _2);
         }

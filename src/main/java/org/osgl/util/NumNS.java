@@ -1,10 +1,10 @@
-package org.osgl;
+package org.osgl.util;
 
 /*-
  * #%L
  * Java Tool
  * %%
- * Copyright (C) 2014 - 2018 OSGL (Open Source General Library)
+ * Copyright (C) 2014 - 2017 OSGL (Open Source General Library)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ package org.osgl;
  */
 
 /**
- * Alias of {@link Lang}.
+ * Number utility namespace.
  *
- * This class is deprecated. Please use {@link Lang} or {@link $} instead
+ * Alias of {@link org.osgl.util.N}
  */
-@Deprecated
-public class Osgl extends Lang {
+public class NumNS extends N {
+    private NumNS() {}
 }

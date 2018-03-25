@@ -1,6 +1,9 @@
 # OSGL Tool Change Log
 
 1.8.0 -
+* Enhacements to `S` namespace #62
+* Add converter framework #61
+* Add Image Utilities #60
 * Add `WriterOutput` and `OutputStreamOutput` #59
 * Add `BufferedOutput` utility class #58
 * Add `IO.checksum` utility methods #57

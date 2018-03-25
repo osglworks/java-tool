@@ -51,6 +51,8 @@ import java.io.UnsupportedEncodingException;
  */
 public class E {
 
+    E() {}
+
     /**
      * Throws out an {@link InvalidStateException}.
      */

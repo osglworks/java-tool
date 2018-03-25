@@ -1,4 +1,4 @@
-package org.osgl.util;
+package org.osgl.util.algo;
 
 /*-
  * #%L
@@ -21,8 +21,7 @@ package org.osgl.util;
  */
 
 /**
- * Alias of {@link S}
+ * Defines String search pattern that can encapsulate preprocess result
  */
-public class StringUtil extends S {
-    private StringUtil() {}
+public abstract class StringSearchPattern {
 }

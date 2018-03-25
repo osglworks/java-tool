@@ -51,9 +51,10 @@ import java.util.*;
 /**
  * The namespace for OSGL collection utilities
  */
-public enum C {
+public class C {
 
-    INSTANCE;
+    C() {
+    }
 
     /**
      * The character enum for a data structure

@@ -1,10 +1,10 @@
-package org.osgl.util;
+package org.osgl.util.algo;
 
 /*-
  * #%L
  * Java Tool
  * %%
- * Copyright (C) 2014 - 2017 OSGL (Open Source General Library)
+ * Copyright (C) 2014 - 2018 OSGL (Open Source General Library)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,8 @@ package org.osgl.util;
  * #L%
  */
 
-/**
- * Alias of {@link org.osgl.util.N}
- */
-public class Num extends N {
-    private Num() {}
+public class SimpleStringSearchTest extends StringSearchTestBase<StringSearch.SimpleStringSearch> {
+    public SimpleStringSearchTest() {
+        super(new StringSearch.SimpleStringSearch());
+    }
 }

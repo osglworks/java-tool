@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.imageio.stream.ImageInputStream;
 
 /**
  * IO utilities
@@ -85,6 +86,17 @@ public class IO {
             oo.flush();
         } catch (IOException e) {
             throw E.ioException(e);
+        }
+    }
+
+    public static void flush(ImageInputStream flushable) {
+        if (null == flushable) {
+            return;
+        }
+        try {
+            flushable.flush();
+        } catch (IOException e) {
+            // ignore
         }
     }
 
@@ -120,10 +132,23 @@ public class IO {
     }
 
     /**
-     * Returns a byte array output stream
+     * Returns a byte array output stream.
+     *
+     * This method is deprecated. Please use {@link #baos()} instead
+     *
      * @return an output stream
      */
+    @Deprecated
     public static OutputStream os() {
+        return new ByteArrayOutputStream();
+    }
+
+    /**
+     * Returns a byte array output stream
+     *
+     * @return an output stream
+     */
+    public static ByteArrayOutputStream baos() {
         return new ByteArrayOutputStream();
     }
 

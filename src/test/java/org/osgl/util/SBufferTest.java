@@ -26,6 +26,11 @@ import org.osgl.TestBase;
 public class SBufferTest extends TestBase {
 
     @Test
+    public void resetThreadLocalBuffer() {
+
+    }
+
+    @Test
     public void itShallNotReuseUnconsumedBuffer() {
         S.Buffer sb = S.buffer("abc");
         S.Buffer sb2 = S.buffer("123");

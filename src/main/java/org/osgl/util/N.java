@@ -20,6 +20,8 @@ package org.osgl.util;
  * #L%
  */
 
+import static org.osgl.util.E.illegalArgumentIf;
+
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
@@ -27,16 +29,48 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The namespace under which number relevant structures, functions and logics are
  * defined
  */
 public class N {
+
+
+    /**
+     * An empty `byte[]`
+     */
+    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
+    /**
+     * An empty `short[]`
+     */
+    public static final short[] EMPTY_SHORT_ARRAY = new short[0];
+
+    /**
+     * An empty `int[]`
+     */
+    public static final int[] EMPTY_INT_ARRAY = new int[0];
+
+    /**
+     * An empty `float[]`
+     */
+    public static final float[] EMPTY_FLOAT_ARRAY = new float[0];
+
+    /**
+     * An empty `long[]`
+     */
+    public static final long[] EMPTY_LONG_ARRAY = new long[0];
+
+    /**
+     * An empty `double[]`
+     */
+    public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
+
+    private static Random random = new Random();
 
     N() {
     }
@@ -592,6 +626,67 @@ public class N {
         }
     }
 
+
+    public static class Pair extends $.T2<Integer, Integer> {
+        public Pair(Integer _1, Integer _2) {
+            super(_1, _2);
+        }
+    }
+
+    public static class WH extends Dimension {
+        public WH(Integer width, Integer height) {
+            super(width, height);
+        }
+    }
+
+    public static class Dimension extends Pair {
+        public Dimension(Integer width, Integer height) {
+            super(width, height);
+        }
+        public int width() {
+            return left();
+        }
+        public int height() {
+            return right();
+        }
+        public int w() {
+            return width();
+        }
+        public int h() {
+            return height();
+        }
+    }
+
+    public static class Coordinate2D extends Pair {
+        public Coordinate2D(Integer x, Integer y) {
+            super(x, y);
+        }
+        public int x() {
+            return _1;
+        }
+        public int y() {
+            return _2;
+        }
+    }
+
+    public static class XY extends Coordinate2D {
+        public XY(Integer x, Integer y) {
+            super(x, y);
+        }
+    }
+
+    public static XY xy(int x, int y) {
+        return new XY(x, y);
+    }
+
+    public static WH dimension(int width, int height) {
+        return new WH(width, height);
+    }
+
+    public static WH wh(int w, int h) {
+        return new WH(w, h);
+    }
+
     private static Map<Class<? extends Number>, Type> _m;
 
     static {
@@ -633,6 +728,119 @@ public class N {
      * diameter.
      */
     public static final double PI = 3.14159265358979323846;
+
+    public static int requirePositive(int n) {
+        illegalArgumentIf(n < 1, "positive int required");
+        return n;
+    }
+
+    public static int requirePositive(int n, String err, Object ... errArgs) {
+        illegalArgumentIf(n < 1, err, errArgs);
+        return n;
+    }
+
+    public static float requirePositive(float n) {
+        illegalArgumentIf(n <= 0.0f, "positive float required");
+        return n;
+    }
+
+    public static int requireNonNegative(int n) {
+        illegalArgumentIf(n < 0, "non negative int required");
+        return n;
+    }
+
+    public static int requireNegative(int n) {
+        illegalArgumentIf(n > -1, "negative int required");
+        return n;
+    }
+
+    public static class _IntRequire {
+        private int n;
+        private _IntRequire(int n) {
+            this.n = n;
+        }
+        public int positive() {
+            return requirePositive(n);
+        }
+        public int positive(String err, Object ... errArgs) {
+            return requirePositive(n, err, errArgs);
+        }
+        public int negative() {
+            return requireNegative(n);
+        }
+        public int nonNegative() {
+            return requireNonNegative(n);
+        }
+        public int equalTo(int x) {
+            illegalArgumentIf(n == x, "n[%s] should be equal to %s", n, x);
+            return n;
+        }
+        public int eq(int x) {
+            return equalTo(x);
+        }
+        public int notEqualTo(int x) {
+            illegalArgumentIf(n != x, "n[%s] should not be equal to %s", n, x);
+            return n;
+        }
+        public int neq(int x) {
+            return notEqualTo(x);
+        }
+        public int greaterThan(int x) {
+            illegalArgumentIf(n <= x, "n[%s] should be greater than %s", n, x);
+            return n;
+        }
+        public int gt(int x) {
+            return greaterThan(x);
+        }
+        public int greaterThanOrEqualTo(int x) {
+            illegalArgumentIf(n < x, "n[%s] should be greater than or equal to %s", n, x);
+            return n;
+        }
+        public int gte(int x) {
+            return greaterThan(x);
+        }
+        public int lessThan(int x) {
+            illegalArgumentIf(n >= x, "n[%s] should be less than %s", n, x);
+            return n;
+        }
+        public int lt(int x) {
+            return lessThan(x);
+        }
+        public int lessThanOrEqualTo(int x) {
+            illegalArgumentIf(n > x, "n[%s] should be less than or equal to %s", n, x);
+            return n;
+        }
+        public int lte(int x) {
+            return lessThan(x);
+        }
+    }
+
+    public static _IntRequire require(int n) {
+        return new _IntRequire(n);
+    }
+
+    /**
+     * Image alpha float range is 0.0f to 1.0f inclusive
+     * @param f the float number to be tested
+     * @return the float number if fall in image alpha float rage
+     * @throws IllegalArgumentException if the number is beyond the range
+     */
+    public static float requireAlpha(float f) {
+        illegalArgumentIf(f > 1 || f < 0, "f [%s] should be between 0 and 1 inclusive", f);
+        return f;
+    }
+
+    public static float requireNotNaN(float f) {
+        illegalArgumentIf(Float.isNaN(f), "f shall not be NaN");
+        return f;
+    }
+
+    public static class _FloatRequire {
+        private float f;
+        private _FloatRequire(float f) {
+            this.f = f;
+        }
+    }
 
     public static double exp(double a) {
         return StrictMath.exp(a); // default impl. delegates to StrictMath
@@ -951,6 +1159,10 @@ public class N {
         return (a.doubleValue() - b.doubleValue()) <= Double.MIN_NORMAL;
     }
 
+    public static final boolean neq(Number a, Number b) {
+        return !eq(a, b);
+    }
+
     public static final boolean lt(Number a, Number b) {
         return a.doubleValue() < b.doubleValue();
     }
@@ -975,6 +1187,20 @@ public class N {
             return new Num(Integer.parseInt(s));
         }
     }
+
+    public static final List<Class<? extends Number>> NUMBER_CLASSES = $.cast(C.list(
+            Byte.class,
+            Short.class,
+            Integer.class,
+            Float.class,
+            Long.class,
+            Double.class,
+            AtomicInteger.class,
+            AtomicLong.class,
+            BigInteger.class,
+            BigDecimal.class,
+            Num.class
+    ));
 
     public final static class F {
 

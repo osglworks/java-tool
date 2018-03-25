@@ -44,7 +44,7 @@ import java.io.ObjectStreamException;
 /**
  * Alias of {@link Osgl}
  */
-public final class $ extends Osgl {
+public final class $ extends Lang {
 
     public static final $ INSTANCE = new $();
 
