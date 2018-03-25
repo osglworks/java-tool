@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.8.0 -
+* update fastjson to 1.2.47
 * Enhacements to `S` namespace #62
 * Add converter framework #61
 * Add Image Utilities #60
