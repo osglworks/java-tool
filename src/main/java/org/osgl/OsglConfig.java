@@ -25,7 +25,6 @@ import org.osgl.util.algo.StringReplace;
 import org.osgl.util.algo.StringSearch;
 
 public class OsglConfig {
-    // String manipulation
 
     /**
      * Default string search logic
@@ -37,16 +36,36 @@ public class OsglConfig {
      */
     public static StringReplace DEF_STRING_REPLACE = new StringReplace.SimpleStringReplace();
 
-    
-    public static void setStringBufferRententionLimit(int limit) {
-        UtilConfig.setStringBufferRententionLimit(limit);
+
+    public static void setThreadLocalCharBufferLimit(int limit) {
+        UtilConfig.setThreadLocalCharBufferLimit(limit);
     }
 
-    public static int getStringBufferRententionLimit() {
-        return UtilConfig.getStringBufferRententionLimit();
+    public static int getThreadLocalCharBufferLimit() {
+        return UtilConfig.getThreadLocalCharBufferLimit();
     }
 
-    public static void setStringBufferInitSize(int size) {
+    public static void setThreadLocalCharBufferInitSize(int size) {
+        UtilConfig.setThreadLocalCharBufferInitSize(size);
+    }
 
+    public static int getThreadLocalCharBufferInitSize() {
+        return UtilConfig.getThreadLocalCharBufferInitSize();
+    }
+
+    public static void setThreadLocalByteArrayBufferLimit(int limit) {
+        UtilConfig.setThreadLocalByteArrayBufferLimit(limit);
+    }
+
+    public static int getThreadLocalByteArrayBufferLimit() {
+        return UtilConfig.getThreadLocalByteArrayBufferLimit();
+    }
+
+    public static void setThreadLocalByteArrayBufferInitSize(int size) {
+        UtilConfig.setThreadLocalByteArrayBufferInitSize(size);
+    }
+
+    public static int getThreadLocalByteArrayBufferInitSize() {
+        return UtilConfig.getThreadLocalByteArrayBufferInitSize();
     }
 }

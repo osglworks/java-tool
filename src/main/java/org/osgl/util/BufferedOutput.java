@@ -27,15 +27,41 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 
+/**
+ * This class implements a buffered output. By setting up such
+ * an output, an application can write to the underline output
+ * necessarily causing a call to the underlying system for each
+ * char or byte written.
+ *
+ * Note it is highly recommend to use `BufferedOutput` in a
+ * single thread context in order to reuse the thread local
+ * allocated buffer space.
+ *
+ * This class is not thread safe.
+ */
 public class BufferedOutput implements Output {
+    /**
+     * The target output
+     */
     private Output sink;
-    private S.Buffer buffer;
-    private int limit;
+
+    /**
+     * The character based buffer
+     */
+    private S.Buffer charBuf;
+
+    /**
+     * The byte buffer
+     */
+    private ByteArrayBuffer byteBuf;
+
+    private int charBufLimit;
+    private int byteBufLimit;
 
     private BufferedOutput(Output output) {
-        sink = $.notNull(output);
-        buffer = S.buffer();
-        limit = OsglConfig.getStringBufferRententionLimit();
+        sink = $.requireNotNull(output);
+        charBufLimit = OsglConfig.getThreadLocalCharBufferLimit();
+        byteBufLimit = OsglConfig.getThreadLocalByteArrayBufferLimit();
     }
 
     @Override
@@ -55,10 +81,10 @@ public class BufferedOutput implements Output {
         if (0 == size) {
             return this;
         }
-        if (buffer.length() + size >= limit) {
+        if (charBuf().length() + size >= charBufLimit) {
             flush();
         }
-        buffer.append(csq);
+        charBuf().append(csq);
         return this;
     }
 
@@ -78,29 +104,32 @@ public class BufferedOutput implements Output {
         if (size == 0) {
             return this;
         }
-        if (buffer.length() + size >= limit) {
+        if (charBuf().length() + size >= charBufLimit) {
             flush();
         }
-        buffer.append(chars, start, end);
+        charBuf().append(chars, start, end);
         return this;
     }
 
     @Override
     public Output append(char c) {
-        if (buffer.length() + 1 >= limit) {
+        if (charBuf().length() + 1 >= charBufLimit) {
             flush();
         }
-        buffer.append(c);
+        charBuf().append(c);
         return this;
     }
 
     @Override
     public Output append(byte[] bytes) {
         int size = bytes.length;
-        if (buffer.length() + size >= limit) {
+        if (0 == size) {
+            return this;
+        }
+        if (byteBuf().length() + size >= byteBufLimit) {
             flush();
         }
-        buffer.append(bytes);
+        byteBuf().append(bytes);
         return this;
     }
 
@@ -116,26 +145,28 @@ public class BufferedOutput implements Output {
         if (0 == size) {
             return this;
         }
-        if (buffer.length() + size >= limit) {
+        if (byteBuf().length() + size >= byteBufLimit) {
             flush();
         }
-        buffer.append(bytes, start, end);
+        byteBuf().append(bytes, start, end);
         return this;
     }
 
     @Override
     public Output append(byte b) {
-        if (buffer.length() + 1 >= limit) {
+        if (byteBuf().length() + 1 >= byteBufLimit) {
             flush();
         }
-        buffer.append(b);
+        byteBuf().append(b);
         return this;
     }
 
     @Override
     public Output append(ByteBuffer buffer) {
-        flush();
-        sink.append(buffer);
+        if (byteBuf().length() + buffer.remaining() >= byteBufLimit) {
+            flush();
+        }
+        byteBuf().append(buffer);
         return this;
     }
 
@@ -185,20 +216,51 @@ public class BufferedOutput implements Output {
     }
 
     public void flush() {
-        if (buffer.isEmpty()) {
+        flushCharBuf();
+        flushByteBuf();
+    }
+
+    private void flushCharBuf() {
+        if (null == charBuf || charBuf.isEmpty()) {
             return;
         }
-        String s = buffer.toString();
+        String s = charBuf.toString();
+        charBuf.reset();
         sink.append(s);
-        buffer.reset();
+    }
+
+    private void flushByteBuf() {
+        if (null == byteBuf || byteBuf.isEmpty()) {
+            return;
+        }
+        byte[] bytes = byteBuf.consume();
+        byteBuf.reset();
+        sink.append(bytes);
+    }
+
+    private S.Buffer charBuf() {
+        E.illegalStateIf(null != byteBuf, "This buffered output has already been used to output byte stream");
+        if (null == this.charBuf) {
+            this.charBuf = S.buffer();
+        }
+        return this.charBuf;
+    }
+
+    private ByteArrayBuffer byteBuf() {
+        E.illegalStateIf(null != charBuf, "This buffered output has already been used to output char stream");
+        if (null == this.byteBuf) {
+            this.byteBuf = ByteArrayBuffer.buffer();
+        }
+        return this.byteBuf;
     }
 
     public static Output wrap(Output output) {
-        int limit = OsglConfig.getStringBufferRententionLimit();
+        int limit = OsglConfig.getThreadLocalCharBufferLimit();
         if (limit <= 2048) {
             // buffer too small (less than FastJSON SerializeWriter's internal buffer), no need to wrap it
             return output;
         }
         return new BufferedOutput(output);
     }
+
 }

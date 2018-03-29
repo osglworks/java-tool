@@ -196,6 +196,71 @@ public interface Output extends Appendable, Closeable, Flushable {
      */
     Writer asWriter();
 
+    class Buffer implements Output {
+        private ByteBuffer byteBuf;
+        private S.Buffer strBuf;
+
+        @Override
+        public void open() {
+
+        }
+
+        @Override
+        public void close() {
+
+        }
+
+        @Override
+        public void flush() {
+
+        }
+
+        @Override
+        public Output append(CharSequence csq) {
+            return null;
+        }
+
+        @Override
+        public Output append(CharSequence csq, int start, int end) {
+            return null;
+        }
+
+        @Override
+        public Output append(char c) {
+            return null;
+        }
+
+        @Override
+        public Output append(byte[] bytes) {
+            return null;
+        }
+
+        @Override
+        public Output append(byte[] bytes, int start, int end) {
+            return null;
+        }
+
+        @Override
+        public Output append(byte b) {
+            return null;
+        }
+
+        @Override
+        public Output append(ByteBuffer buffer) {
+            return null;
+        }
+
+        @Override
+        public OutputStream asOutputStream() {
+            return null;
+        }
+
+        @Override
+        public Writer asWriter() {
+            return null;
+        }
+    }
+
     class Adaptors {
 
         public static Output of(final OutputStream os) {

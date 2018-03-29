@@ -23,51 +23,36 @@ package org.osgl.util;
 import org.junit.Test;
 import org.osgl.TestBase;
 
-public class SBufferTest extends TestBase {
+import java.nio.charset.StandardCharsets;
 
-    @Test
-    public void resetThreadLocalBuffer() {
+public class ByteArrayBufferTest extends TestBase {
 
-    }
+    private static final byte[] abc = "abc".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] ott = new byte[]{1, 2, 3};
 
     @Test
     public void itShallNotReuseUnconsumedBuffer() {
-        S.Buffer sb = S.buffer("abc");
-        S.Buffer sb2 = S.buffer("123");
+        ByteArrayBuffer sb = ByteArrayBuffer.buffer();
+        sb.append(abc);
+        ByteArrayBuffer sb2 = ByteArrayBuffer.buffer();
+        sb2.append(ott);
         assertNotSame(sb, sb2);
         // we need to consume the buffer to avoid
         // break of next test case
-        sb.toString();
-        sb2.toString();
+        sb.consume();
+        sb2.consume();
     }
 
     @Test
     public void itShallReuseConsumedBuffer() {
-        S.Buffer sb = S.buffer("abc");
-        eq("abc", sb.toString());
-        S.Buffer sb2 = S.buffer("123");
+        ByteArrayBuffer sb = ByteArrayBuffer.buffer();
+        sb.append(abc);
+        eq("abc", sb.consumeToString());
+        ByteArrayBuffer sb2 = ByteArrayBuffer.buffer();
+        sb.append(ott);
         assertSame(sb, sb2);
-        eq("123", sb2.toString());
+        assertArrayEquals(ott, sb2.consume());
         assertSame(sb, sb2);
-    }
-
-    @Test
-    public void testPrepend() {
-        S.Buffer sb = S.newBuffer("abc");
-        sb.prepend("1234");
-        eq("1234abc", sb.toString());
-        sb = S.newBuffer("abc");
-        sb.prepend(true);
-        eq("trueabc", sb.toString());
-        sb = S.newBuffer("abc");
-        sb.prepend(100);
-        eq("100abc", sb.toString());
-        sb = S.newBuffer("abc");
-        sb.prepend(Long.MAX_VALUE);
-        eq(S.builder(Long.MAX_VALUE).append("abc").toString(), sb.toString());
-        sb = S.newBuffer("abc");
-        sb.prepend(3.3f);
-        eq("3.3abc", sb.toString());
     }
 
 }

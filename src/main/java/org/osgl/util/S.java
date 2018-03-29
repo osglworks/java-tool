@@ -24,18 +24,13 @@ import static java.lang.Character.highSurrogate;
 import static java.lang.Character.lowSurrogate;
 
 import org.osgl.$;
-import org.osgl.Osgl;
 import org.osgl.OsglConfig;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.StringReplace;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.ByteBuffer;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -2354,17 +2349,12 @@ public class S {
      */
     public static Buffer buffer() {
         Buffer sb = _buf.get();
-        if (sb.capacity() > BUFFER_RETENTION_LIMIT) {
+        if (!sb.consumed() || sb.capacity() > BUFFER_RETENTION_LIMIT) {
             sb = new Buffer(BUFFER_INIT_SIZE);
             _buf.set(sb);
             return sb;
         }
-        if (sb.consumed()) {
-            sb.reset();
-        } else {
-            sb = new Buffer(BUFFER_INIT_SIZE);
-            _buf.set(sb);
-        }
+        sb.reset();
         return sb;
     }
 
@@ -2892,7 +2882,7 @@ public class S {
      * **Note** Unlike {@link StringBuilder} when appending `null`
      * it will **NOT** change the state of this object.
      */
-    public static class Buffer implements Output, Appendable, CharSequence {
+    public static class Buffer implements Appendable, CharSequence {
 
         /**
          * The value is used for character storage.
@@ -2924,7 +2914,7 @@ public class S {
             consumed = false;
         }
 
-        public boolean consumed() {
+        public final boolean consumed() {
             return consumed;
         }
 
@@ -3670,26 +3660,6 @@ public class S {
             System.arraycopy(str, offset, value, count, len);
             count += len;
             return this;
-        }
-
-        @Override
-        public Buffer append(byte[] bytes) {
-            return append(ByteBuffer.wrap(bytes));
-        }
-
-        @Override
-        public Buffer append(byte[] bytes, int start, int end) {
-            return append(ByteBuffer.wrap(bytes, start, end));
-        }
-
-        @Override
-        public Buffer append(byte b) {
-            return append((char) (b & 0xFF));
-        }
-
-        @Override
-        public Buffer append(ByteBuffer buffer) {
-            return append(buffer.asCharBuffer());
         }
 
         /**
@@ -4695,64 +4665,6 @@ public class S {
             }
         }
 
-        @Override
-        public void open() {
-        }
-
-        @Override
-        public void close() {
-            consume();
-        }
-
-        @Override
-        public void flush() {
-        }
-
-        @Override
-        public OutputStream asOutputStream() {
-            E.illegalStateIf(consumed());
-            return new OutputStream() {
-                @Override
-                public void write(int b) {
-                    append((byte) b);
-                }
-
-                @Override
-                public void write(byte[] b) {
-                    append(b);
-                }
-
-                @Override
-                public void write(byte[] b, int off, int len) {
-                    append(b, off, len);
-                }
-
-                @Override
-                public void close() {
-                    S.Buffer.this.close();
-                }
-            };
-        }
-
-        @Override
-        public Writer asWriter() {
-            E.illegalStateIf(consumed());
-            return new Writer() {
-                @Override
-                public void write(char[] cbuf, int off, int len) {
-                    Buffer.this.append(cbuf, off, len);
-                }
-
-                @Override
-                public void flush() throws IOException {
-                }
-
-                @Override
-                public void close() throws IOException {
-                    Buffer.this.close();
-                }
-            };
-        }
 
         /**
          * Returns a string representing the data in this sequence.
@@ -4976,7 +4888,7 @@ public class S {
             super(_1, _2);
         }
 
-        public T2(Osgl.T2<String, String> t2) {
+        public T2($.T2<String, String> t2) {
             super(t2);
         }
     }
@@ -4995,7 +4907,7 @@ public class S {
             super(_1, _2, _3);
         }
 
-        public T3(Osgl.Triple<String, String, String> t3) {
+        public T3($.Triple<String, String, String> t3) {
             super(t3);
         }
     }
@@ -5015,7 +4927,7 @@ public class S {
             super(_1, _2, _3, _4);
         }
 
-        public T4(Osgl.Quadruple<String, String, String, String> t4) {
+        public T4($.Quadruple<String, String, String, String> t4) {
             super(t4);
         }
     }
@@ -5034,7 +4946,7 @@ public class S {
             super(_1, _2, _3, _4, _5);
         }
 
-        public T5(Osgl.Quintuple<String, String, String, String, String> t5) {
+        public T5($.Quintuple<String, String, String, String, String> t5) {
             super(t5);
         }
     }

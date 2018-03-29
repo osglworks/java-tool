@@ -22,7 +22,12 @@ package org.osgl.util;
 
 public class UtilConfig {
 
-    public static void setStringBufferRententionLimit(int limit) {
+    public static void setThreadLocalBufferLimit(int limit) {
+        setThreadLocalByteArrayBufferLimit(limit);
+        setThreadLocalCharBufferLimit(limit);
+    }
+
+    public static void setThreadLocalCharBufferLimit(int limit) {
         if (limit < 256) {
             limit = 256;
         } else if (limit < S.BUFFER_INIT_SIZE) {
@@ -31,17 +36,47 @@ public class UtilConfig {
         S.BUFFER_RETENTION_LIMIT = limit;
     }
 
-    public static int getStringBufferRententionLimit() {
+    public static int getThreadLocalCharBufferLimit() {
         return S.BUFFER_RETENTION_LIMIT;
     }
 
-    public static void setStringBufferInitSize(int size) {
+    public static void setThreadLocalCharBufferInitSize(int size) {
         if (size < 64) {
             size = 64;
         } else if (size > S.BUFFER_RETENTION_LIMIT) {
             size = S.BUFFER_RETENTION_LIMIT;
         }
         S.BUFFER_INIT_SIZE = size;
+    }
+
+    public static int getThreadLocalCharBufferInitSize() {
+        return S.BUFFER_INIT_SIZE;
+    }
+
+    public static void setThreadLocalByteArrayBufferLimit(int limit) {
+        if (limit < 256) {
+            limit = 256;
+        } else if (limit < ByteArrayBuffer.BUFFER_INIT_SIZE) {
+            limit = ByteArrayBuffer.BUFFER_INIT_SIZE;
+        }
+        ByteArrayBuffer.BUFFER_RETENTION_LIMIT = limit;
+    }
+
+    public static int getThreadLocalByteArrayBufferLimit() {
+        return ByteArrayBuffer.BUFFER_RETENTION_LIMIT;
+    }
+
+    public static void setThreadLocalByteArrayBufferInitSize(int size) {
+        if (size < 64) {
+            size = 64;
+        } else if (size > ByteArrayBuffer.BUFFER_RETENTION_LIMIT) {
+            size = ByteArrayBuffer.BUFFER_RETENTION_LIMIT;
+        }
+        ByteArrayBuffer.BUFFER_INIT_SIZE = size;
+    }
+
+    public static int getThreadLocalByteArrayBufferInitSize() {
+        return ByteArrayBuffer.BUFFER_INIT_SIZE;
     }
 
 }

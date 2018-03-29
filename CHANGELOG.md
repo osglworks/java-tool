@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.9.0 - 30/Mar/2018
+* `BufferedOutput` cannot handle binary data properly #64
+*
+
 1.8.1 - 25/Mar/2018
 * fix fastjson dependency version error
 
