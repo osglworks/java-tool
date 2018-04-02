@@ -37,7 +37,7 @@
     <scm.url>git@github.com:osglworks/java-tool.git</scm.url>
     <commons-codec.version>1.11</commons-codec.version>
     <fastjson.version>1.2.47</fastjson.version>
-    <osgl-storage.version>1.5.0</osgl-storage.version>
+    <osgl-storage.version>1.5.2</osgl-storage.version>
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
   </properties>
 
@@ -55,15 +55,21 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>fastjson</artifactId>
-      <version>${fastjson.version}</version>
+      <groupId>org.osgl</groupId>
+      <artifactId>osgl-ut</artifactId>
+      <version>2.0.0-BETA-1</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.carrotsearch</groupId>
       <artifactId>junit-benchmarks</artifactId>
       <version>${junit-benchmarks.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>${fastjson.version}</version>
     </dependency>
     <dependency>
       <groupId>org.osgl</groupId>

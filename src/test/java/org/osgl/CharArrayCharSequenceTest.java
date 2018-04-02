@@ -4,7 +4,7 @@ package org.osgl;
  * #%L
  * Java Tool
  * %%
- * Copyright (C) 2014 - 2017 OSGL (Open Source General Library)
+ * Copyright (C) 2014 - 2018 OSGL (Open Source General Library)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,19 @@ package org.osgl;
  * #L%
  */
 
-import org.junit.runner.JUnitCore;
-import org.osgl.util.S;
+import org.junit.Test;
 
-import java.util.Random;
+public class CharArrayCharSequenceTest extends TestBase {
 
-/**
- * The test base case
- */
-public abstract class TestBase extends osgl.ut.TestBase {
+    private char[] chars = "012345".toCharArray();
 
-    protected static void run(Class<? extends TestBase> cls) {
-        new JUnitCore().run(cls);
-    }
-    
-    protected static void println(String tmpl, Object... args) {
-        System.out.println(String.format(tmpl, args));
+    public CharSequence csq = $.convert(chars).to(CharSequence.class);
+
+    @Test
+    public void test() {
+        eq("012345", csq.toString());
+        eq("1234", csq.subSequence(1, 5).toString());
+        eq("23", csq.subSequence(1, 5).subSequence(1, 3).toString());
     }
 
-    protected static String newRandStr() {
-        return S.random(new Random().nextInt(30) + 15);
-    }
 }

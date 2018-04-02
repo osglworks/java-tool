@@ -2333,7 +2333,7 @@ public class S {
         @Override
         protected Buffer initialValue() {
             Buffer buf = new Buffer();
-            buf.consume();
+            buf.consumed = true;
             return buf;
         }
     };
@@ -2926,6 +2926,11 @@ public class S {
         public Buffer reset() {
             this.setLength(0);
             this.consumed = false;
+            return this;
+        }
+
+        public Buffer clear() {
+            this.setLength(0);
             return this;
         }
 

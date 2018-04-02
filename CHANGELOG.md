@@ -1,8 +1,9 @@
 # OSGL Tool Change Log
 
 1.9.0 - 30/Mar/2018
-* `BufferedOutput` cannot handle binary data properly #64
+* Add fluent API to `org.osg.IO` class #66
 * Create a byte array buffer to support `BufferedOutput` to handle binary data #65
+* `BufferedOutput` cannot handle binary data properly #64
 * `S.Buffer` - append byte array is not properly implemented #63
 
 1.8.1 - 25/Mar/2018

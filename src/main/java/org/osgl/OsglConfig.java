@@ -36,6 +36,10 @@ public class OsglConfig {
      */
     public static StringReplace DEF_STRING_REPLACE = new StringReplace.SimpleStringReplace();
 
+    public static void setThreadLocalBufferLimit(int limit) {
+        UtilConfig.setThreadLocalBufferLimit(limit);
+    }
+
 
     public static void setThreadLocalCharBufferLimit(int limit) {
         UtilConfig.setThreadLocalCharBufferLimit(limit);

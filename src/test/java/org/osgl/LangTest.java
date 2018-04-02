@@ -20,7 +20,10 @@ package org.osgl;
  * #L%
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
 import org.osgl.util.C;
 import org.osgl.util.S;
 import org.osgl.util.converter.TypeConverterRegistry;
@@ -29,133 +32,10 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@RunWith(Enclosed.class)
 public class LangTest extends TestBase {
 
-    @Test
-    public void testAnyNull() {
-        yes($.anyNull("", 5, null));
-        no($.anyNull("", 5));
-    }
-
-    @Test
-    public void testNoneNull() {
-        no($.noneNull("", 5, null));
-        yes($.noneNull("", 5));
-    }
-
-    @Test
-    public void testToString2() {
-        String[][] sa = {{"foo", "bar"}, {"1", "2"}};
-        eq("[[foo, bar], [1, 2]]", $.toString2(sa));
-    }
-
-    @Test
-    public void testRandom() {
-        C.Range<Integer> r = C.range(10, 100);
-        for (int i = 0; i < 100; ++i) {
-            int n = $.random(r);
-            yes(n >= 10);
-            yes(n < 100);
-        }
-    }
-
-    @Test
-    public void testPredicateOr() {
-        C.List<String> l = C.list("a.xml", "b.html", "c.txt", "d.txt");
-        l = l.filter(S.F.endsWith(".xml").or(S.F.endsWith(".html")));
-        yes(l.contains("a.xml"));
-        yes(l.contains("b.html"));
-        no(l.contains("c.txt"));
-        no(l.contains("d.txt"));
-    }
-
-    private static class Foo {
-        private String f1;
-        private static String fs1;
-    }
-
-    private static class Bar extends Foo {
-        private String f1;
-        private int f2;
-    }
-
-    @Test
-    public void testFieldsOf() {
-        List<Field> fields = $.fieldsOf(Bar.class, false);
-        int jacocoFields = 0;
-        if (4 != fields.size()) {
-            // we are running with jacoco enhancement
-            for (Field f : fields) {
-                if (f.getName().contains("jacoco")) {
-                    jacocoFields++;
-                }
-            }
-        }
-        eq(4 + jacocoFields, fields.size());
-        eq(4 + jacocoFields, new HashSet<>(fields).size());
-        fields = $.fieldsOf(Bar.class, true);
-        eq(3, fields.size());
-        eq(3, new HashSet<>(fields).size());
-    }
-
-    enum Code {
-        AB, bc, Red;
-    }
-
-    @Test
-    public void testAsEnum() {
-        assertSame(Code.AB, $.asEnum(Code.class, "ab"));
-        assertSame(Code.bc, $.asEnum(Code.class, "bc"));
-        assertNull($.asEnum(Code.class, "abc"));
-        assertNull($.asEnum(Code.class, null));
-
-        assertSame(Code.AB, $.asEnum(Code.class, "AB", true));
-        assertNull($.asEnum(Code.class, "ab", true));
-    }
-
-
-    @Test
-    public void testConvert() {
-        int n = 600;
-        String s = "60";
-        eq((byte) 600, $.convert(n).to(Byte.class));
-        eq((byte) 60, $.convert(s).to(Byte.class));
-    }
-
-    @Test
-    public void testConvertEnum() {
-        eq(Code.AB, $.convert("AB").to(Code.class));
-        eq(Code.AB, $.convert("ab").caseInsensitivie().to(Code.class));
-    }
-
-    @Test
-    public void testConvertNullValue() {
-        eq(0, $.convert(null).toInt());
-        assertNull($.convert(null).toInteger());
-        assertNull($.convert(null).to(Date.class));
-    }
-
-    @Test
-    public void testConvertNullWithDef() {
-        eq(5, $.convert(null).defaultTo(5).toInt());
-        eq(2, $.convert("2").defaultTo(5).toInt());
-    }
-
-    @Test
-    public void testConvertDate() throws Exception {
-        Date date = new Date();
-        SimpleDateFormat format = new SimpleDateFormat();
-        Date expected = format.parse(format.format(date)); // calibrate the date
-        eq(expected, $.convert(format.format(date)).toDate());
-
-        String pattern = "yyyy-MM-dd";
-        format = new SimpleDateFormat(pattern);
-        String dateStr = format.format(date);
-        expected = format.parse(dateStr); // calibrate the date
-        eq(expected, $.convert(dateStr).hint(pattern).toDate());
-    }
-
-    public static class MyFrom {
+    private static class MyFrom {
         public String id;
 
         public MyFrom(String id) {
@@ -176,7 +56,7 @@ public class LangTest extends TestBase {
         }
     }
 
-    public static class MyTo {
+    private static class MyTo {
         public String id;
 
         public MyTo(String id) {
@@ -197,6 +77,7 @@ public class LangTest extends TestBase {
         }
     }
 
+    @Ignore
     static class MyConverter extends $.TypeConverter<MyFrom, MyTo> {
         @Override
         public MyTo convert(MyFrom myFrom) {
@@ -204,27 +85,189 @@ public class LangTest extends TestBase {
         }
     }
 
-
-    @Test
-    public void testConvertExtension() {
-        TypeConverterRegistry.INSTANCE.register(new MyConverter());
-        String id = S.random();
-        eq(new MyTo(id), $.convert(new MyFrom(id)).to(MyTo.class));
+    private static class Foo {
+        private String f1;
+        private static String fs1;
     }
 
-    @Test
-    public void testIs() {
-        List<String> list = new ArrayList<>(C.list("a", "b", "c"));
-        yes($.is(list).list());
-        no($.is(list).set());
-        no($.is(list).array());
-        no($.is(list).instanceOf(LinkedList.class));
-        yes($.is(list).public_());
-        yes($.is(List.class).abstract_());
-        yes($.is(List.class).interface_());
+    private static class Bar extends Foo {
+        private String f1;
+        private int f2;
+    }
 
-        List<Integer> list2 = new ArrayList<>();
-        yes($.is(list2).kindOf(list));
+    enum Code {
+        AB, bc, Red;
+    }
+
+    private interface I0 {}
+    private interface I0_1 extends I0 {}
+    private static class C0 implements I0_1 {}
+    private static class C1 extends C0 {}
+
+
+    // -------------- Tests -----------------------
+
+    public static class NullTest extends TestBase {
+        @Test
+        public void testAnyNull() {
+            yes($.anyNull("", 5, null));
+            no($.anyNull("", 5));
+        }
+
+        @Test
+        public void testNoneNull() {
+            no($.noneNull("", 5, null));
+            yes($.noneNull("", 5));
+        }
+    }
+
+    public static class ToStringTest extends TestBase {
+        @Test
+        public void testToString2() {
+            String[][] sa = {{"foo", "bar"}, {"1", "2"}};
+            eq("[[foo, bar], [1, 2]]", $.toString2(sa));
+        }
+    }
+
+    public static class RandomTest extends TestBase {
+        @Test
+        public void testRandom() {
+            C.Range<Integer> r = C.range(10, 100);
+            for (int i = 0; i < 100; ++i) {
+                int n = $.random(r);
+                yes(n >= 10);
+                yes(n < 100);
+            }
+        }
+    }
+
+    public static class FunctionTest {
+        @Test
+        public void testPredicateOr() {
+            C.List<String> l = C.list("a.xml", "b.html", "c.txt", "d.txt");
+            l = l.filter(S.F.endsWith(".xml").or(S.F.endsWith(".html")));
+            yes(l.contains("a.xml"));
+            yes(l.contains("b.html"));
+            no(l.contains("c.txt"));
+            no(l.contains("d.txt"));
+        }
+    }
+
+    public static class ReflectionTest extends TestBase {
+        @Test
+        public void testFieldsOf() {
+            List<Field> fields = $.fieldsOf(Bar.class, false);
+            int jacocoFields = 0;
+            if (4 != fields.size()) {
+                // we are running with jacoco enhancement
+                for (Field f : fields) {
+                    if (f.getName().contains("jacoco")) {
+                        jacocoFields++;
+                    }
+                }
+            }
+            eq(4 + jacocoFields, fields.size());
+            eq(4 + jacocoFields, new HashSet<>(fields).size());
+            fields = $.fieldsOf(Bar.class, true);
+            eq(3, fields.size());
+            eq(3, new HashSet<>(fields).size());
+        }
+
+        @Test
+        public void testInterfacesOf() {
+            Set<Class> interfaces = $.interfacesOf(C1.class);
+            yes(interfaces.contains(I0.class));
+            yes(interfaces.contains(I0_1.class));
+        }
+
+        @Test
+        public void testSuperClassesOf() {
+            List<Class> superClasses = $.superClassesOf(C1.class);
+            eq(2, superClasses.size());
+            eq(C0.class, superClasses.get(0));
+            eq(Object.class, superClasses.get(1));
+        }
+    }
+
+    public static class MiscTest {
+        @Test
+        public void testAsEnum() {
+            assertSame(Code.AB, $.asEnum(Code.class, "ab"));
+            assertSame(Code.bc, $.asEnum(Code.class, "bc"));
+            assertNull($.asEnum(Code.class, "abc"));
+            assertNull($.asEnum(Code.class, null));
+
+            assertSame(Code.AB, $.asEnum(Code.class, "AB", true));
+            assertNull($.asEnum(Code.class, "ab", true));
+        }
+    }
+
+
+    public static class ConvertTest {
+        @Test
+        public void testConvert() {
+            int n = 600;
+            String s = "60";
+            eq((byte) 600, $.convert(n).to(Byte.class));
+            eq((byte) 60, $.convert(s).to(Byte.class));
+        }
+
+        @Test
+        public void testConvertEnum() {
+            eq(Code.AB, $.convert("AB").to(Code.class));
+            eq(Code.AB, $.convert("ab").caseInsensitivie().to(Code.class));
+        }
+
+        @Test
+        public void testConvertNullValue() {
+            eq(0, $.convert(null).toInt());
+            assertNull($.convert(null).toInteger());
+            assertNull($.convert(null).to(Date.class));
+        }
+
+        @Test
+        public void testConvertNullWithDef() {
+            eq(5, $.convert(null).defaultTo(5).toInt());
+            eq(2, $.convert("2").defaultTo(5).toInt());
+        }
+
+        @Test
+        public void testConvertDate() throws Exception {
+            Date date = new Date();
+            SimpleDateFormat format = new SimpleDateFormat();
+            Date expected = format.parse(format.format(date)); // calibrate the date
+            eq(expected, $.convert(format.format(date)).toDate());
+
+            String pattern = "yyyy-MM-dd";
+            format = new SimpleDateFormat(pattern);
+            String dateStr = format.format(date);
+            expected = format.parse(dateStr); // calibrate the date
+            eq(expected, $.convert(dateStr).hint(pattern).toDate());
+        }
+
+        @Test
+        public void testConvertExtension() {
+            TypeConverterRegistry.INSTANCE.register(new MyConverter());
+            String id = S.random();
+            eq(new MyTo(id), $.convert(new MyFrom(id)).to(MyTo.class));
+        }
+    }
+
+    public static class FluentApiTest extends TestBase {
+        @Test
+        public void testIs() {
+            List<String> list = new ArrayList<>(C.list("a", "b", "c"));
+            yes($.is(list).list());
+            no($.is(list).set());
+            no($.is(list).array());
+            no($.is(list).instanceOf(LinkedList.class));
+            yes($.is(list).public_());
+            yes($.is(List.class).abstract_());
+            yes($.is(List.class).interface_());
+
+            List<Integer> list2 = new ArrayList<>();
+            yes($.is(list2).kindOf(list));
+        }
     }
 
 

@@ -202,12 +202,10 @@ public interface Output extends Appendable, Closeable, Flushable {
 
         @Override
         public void open() {
-
         }
 
         @Override
         public void close() {
-
         }
 
         @Override
@@ -285,13 +283,13 @@ public interface Output extends Appendable, Closeable, Flushable {
 
                 @Override
                 public Output append(CharSequence csq) {
-                    IO.writeContent(csq, w);
+                    IO.write(csq, w);
                     return this;
                 }
 
                 @Override
                 public Output append(CharSequence csq, int start, int end) {
-                    IO.writeContent(csq.subSequence(start, end), w);
+                    IO.write(csq.subSequence(start, end), w);
                     return this;
                 }
 
@@ -363,13 +361,13 @@ public interface Output extends Appendable, Closeable, Flushable {
 
                 @Override
                 public Output append(CharSequence csq) {
-                    IO.writeContent(csq, w);
+                    IO.write(csq, w);
                     return this;
                 }
 
                 @Override
                 public Output append(CharSequence csq, int start, int end) {
-                    IO.writeContent(csq.subSequence(start, end), w);
+                    IO.write(csq.subSequence(start, end), w);
                     return this;
                 }
 

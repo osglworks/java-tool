@@ -32,6 +32,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -2638,6 +2640,22 @@ public class Lang implements Serializable {
             toType = Generics.classOf(types.get(1));
         }
 
+        protected Charset charsetHint(Object hint) {
+            Charset charset = StandardCharsets.UTF_8;
+            if (hint instanceof Charset) {
+                charset = (Charset) hint;
+            } else if (hint instanceof String) {
+                try {
+                    charset = Charset.forName(S.string(hint));
+                } catch (Exception e) {
+                    throw E.unexpected("Unknown charset: " + hint);
+                }
+            } else if (null != hint) {
+                throw E.unexpected("Unknown charset: " + hint);
+            }
+            return charset;
+        }
+
 
         @Override
         public final TO transform(FROM from) {
@@ -2786,6 +2804,20 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<String, Reader> STRING_TO_READER = new TypeConverter<String, Reader>() {
+            @Override
+            public Reader convert(String s) {
+                return new StringReader(s);
+            }
+        };
+
+        public static TypeConverter<Reader, String> READER_TO_STRING = new TypeConverter<Reader, String>() {
+            @Override
+            public String convert(Reader reader) {
+                return IO.read(reader).toString();
+            }
+        };
+
         public static TypeConverter<Date, String> DATE_TO_STRING = new TypeConverter<Date, String>(Date.class, String.class) {
             private SimpleDateFormat format = new SimpleDateFormat();
             @Override
@@ -2897,6 +2929,164 @@ public class Lang implements Serializable {
                 return BigDecimal.valueOf(number.doubleValue());
             }
         };
+
+
+
+        public static TypeConverter<CharSequence, char[]> CHAR_SEQUENCE_TO_CHAR_ARRAY = new TypeConverter<CharSequence, char[]>() {
+            @Override
+            public char[] convert(CharSequence charSequence) {
+                return charSequence.toString().toCharArray();
+            }
+        };
+
+        public static TypeConverter<char[], CharSequence> CHAR_ARRAY_TO_CHAR_SEQUENCE = new TypeConverter<char[], CharSequence>() {
+            @Override
+            public CharSequence convert(final char[] chars) {
+                return convert(chars, 0, chars.length);
+            }
+
+            private CharSequence convert(final char[] chars, final int start, final int end) {
+                E.NPE(chars);
+                if (start < 0)
+                    throw new StringIndexOutOfBoundsException(start);
+                if (end > chars.length)
+                    throw new StringIndexOutOfBoundsException(end);
+                if (start > end)
+                    throw new StringIndexOutOfBoundsException(end - start);
+                final int length = end - start;
+                final int start0 = start;
+                final int end0 = end;
+                return new CharSequence() {
+                    @Override
+                    public int length() {
+                        return length;
+                    }
+
+                    @Override
+                    public char charAt(int index) {
+                        return chars[start + index];
+                    }
+
+                    @Override
+                    public CharSequence subSequence(int start, int end) {
+                        return convert(chars, start0 + start, start0 + end);
+                    }
+
+                    @Override
+                    public String toString() {
+                        char[] ca = new char[length];
+                        System.arraycopy(chars, start, ca, 0, length);
+                        return new String(ca);
+                    }
+                };
+            }
+        };
+
+        public static TypeConverter<byte[], InputStream> BYTES_TO_INPUT_STREAM = new TypeConverter<byte[], InputStream>() {
+            @Override
+            public InputStream convert(byte[] bytes) {
+                return new ByteArrayInputStream(bytes);
+            }
+        };
+
+        public static TypeConverter<InputStream, byte[]> INPUT_STREAM_TO_BYTES = new TypeConverter<InputStream, byte[]>() {
+            @Override
+            public byte[] convert(InputStream inputStream) {
+                return IO.read(inputStream).toByteArray();
+            }
+        };
+
+        public static TypeConverter<InputStream, Reader> INPUT_STREAM_TO_READER = new TypeConverter<InputStream, Reader>() {
+            @Override
+            public Reader convert(InputStream inputStream) {
+                return convert(inputStream, StandardCharsets.UTF_8);
+            }
+
+            @Override
+            public Reader convert(InputStream inputStream, Object hint) {
+                return new InputStreamReader(inputStream, charsetHint(hint));
+            }
+        };
+
+        public static TypeConverter<Reader, InputStream> READER_TO_INPUT_STREAM = new TypeConverter<Reader, InputStream>() {
+            @Override
+            public InputStream convert(Reader reader) {
+                return convert(reader, StandardCharsets.UTF_8);
+            }
+
+            @Override
+            public InputStream convert(Reader reader, Object hint) {
+                return new ReaderInputStream(reader, charsetHint(hint));
+            }
+        };
+
+        public static TypeConverter<OutputStream, Writer> OUTPUT_STREAM_TO_WRITER = new TypeConverter<OutputStream, Writer>() {
+            @Override
+            public Writer convert(OutputStream outputStream) {
+                return convert(outputStream, StandardCharsets.UTF_8);
+            }
+
+            @Override
+            public Writer convert(OutputStream outputStream, Object hint) {
+                return new OutputStreamWriter(outputStream, charsetHint(hint));
+            }
+        };
+
+        public static TypeConverter<Writer, OutputStream> WRITER_TO_OUTPUT_STREAM = new TypeConverter<Writer, OutputStream>() {
+            @Override
+            public OutputStream convert(Writer reader) {
+                return convert(reader, StandardCharsets.UTF_8);
+            }
+
+            @Override
+            public OutputStream convert(Writer reader, Object hint) {
+                return new WriterOutputStream(reader, charsetHint(hint));
+            }
+        };
+
+
+        public static TypeConverter<Appendable, Writer> APPENDABLE_TO_WRITER = new TypeConverter<Appendable, Writer>() {
+            @Override
+            public Writer convert(final Appendable appendable) {
+                return new Writer() {
+                    @Override
+                    public void write(char[] cbuf, int off, int len) throws IOException {
+                        appendable.append($.convert(cbuf).to(CharSequence.class), off, len);
+                    }
+
+                    @Override
+                    public void flush() throws IOException {
+                    }
+
+                    @Override
+                    public void close() throws IOException {
+                    }
+                };
+            }
+        };
+
+        public static TypeConverter<Appendable, Output> APPENDABLE_TO_OUTPUT = new TypeConverter<Appendable, Output>() {
+            @Override
+            public Output convert(Appendable appendable) {
+                return Output.Adaptors.of(appendable);
+            }
+        };
+
+        public static TypeConverter<Output, Writer> OUTPUT_TO_WRITER = new TypeConverter<Output, Writer>() {
+            @Override
+            public Writer convert(Output output) {
+                return output.asWriter();
+            }
+        };
+
+        public static TypeConverter<Writer, Output> WRITER_TO_OUTPUT = new TypeConverter<Writer, Output>() {
+            @Override
+            public Output convert(Writer writer) {
+                return Output.Adaptors.of(writer);
+            }
+        };
+
+
     }
 
     public static class _ConvertStage<FROM> {
@@ -5797,6 +5987,52 @@ public class Lang implements Serializable {
             return instanceOf(Set.class);
         }
 
+    }
+
+    /**
+     * Returns all implemented interfaces of a give type
+     * @param type a class
+     * @return all interfaces `type` implements
+     */
+    public static Set<Class> interfacesOf(Class<?> type) {
+        Set<Class> interfaces = new HashSet<>();
+        Class<?> parent = type.getSuperclass();
+        if (null != parent && Object.class != parent) {
+            interfaces.addAll(interfacesOf(parent));
+        }
+        for (Class intf : type.getInterfaces()) {
+            interfaces.addAll(interfacesOf(intf));
+            interfaces.add(intf);
+        }
+        return interfaces;
+    }
+
+    /**
+     * Returns all super classes of a given type ordered by affinity.
+     * The `Object.class` is always the last element in the list.
+     *
+     * @param type a class
+     * @return all super classes of `type`
+     */
+    public static List<Class> superClassesOf(Class<?> type) {
+        List<Class> superClasses = new ArrayList();
+        Class<?> parent = type.getSuperclass();
+        while (null != parent) {
+            superClasses.add(parent);
+            parent = parent.getSuperclass();
+        }
+        return superClasses;
+    }
+
+    /**
+     * Returns all types that
+     * @param type
+     * @return
+     */
+    public static Set<Class> allTypesOf(Class<?> type) {
+        Set<Class> allTypes = interfacesOf(type);
+        allTypes.addAll(superClassesOf(type));
+        return allTypes;
     }
 
 

@@ -21,47 +21,93 @@ package org.osgl.util;
  */
 
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
 import org.osgl.TestBase;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
 /**
  * Test {@link IO} utilities
  */
+@RunWith(Enclosed.class)
 public class IOTest extends TestBase {
 
-    protected static String content;
-    protected static C.List<String> lines;
-    protected static int lineNumber;
 
-    @BeforeClass
-    public static void prepareContent() {
-        lineNumber = 5 + N.randInt(10);
-        lines = C.newList();
-        for (int i = 0; i < lineNumber; ++i) {
-            lines.add(S.random());
+
+    @Ignore
+    public static class Base extends TestBase {
+
+        protected static String content;
+        protected static C.List<String> lines;
+        protected static int lineNumber;
+
+        @Before
+        public void prepareContent() {
+            lineNumber = 5 + N.randInt(10);
+            lines = C.newList();
+            for (int i = 0; i < lineNumber; ++i) {
+                lines.add(S.random());
+            }
+            content = S.join("\n", lines);
         }
-        content = S.join("\n", lines);
     }
 
-    @Test
-    public void readLineWithoutLimit() {
-        List<String> read = IO.readLines(new StringReader(content));
-        eq(lines, read);
+    public static class FluentIOTest extends Base {
+        @Test
+        public void testReadStringIntoLines() {
+            eq(lines, IO.read(content).toLines());
+        }
+
+        @Test
+        public void testWriteStringIntoOutputStream() {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IO.write(content).to(baos);
+            eq(content, new String(baos.toByteArray()));
+        }
+
+        @Test
+        public void testWriteByteArrayIntoOutputStream() {
+            byte[] ba = {1, 2, 3};
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IO.write(ba).to(baos);
+            eq(ba, baos.toByteArray());
+        }
+
+        @Test
+        public void testWriteByteArrayIntoFile() throws IOException  {
+            File file = File.createTempFile("osgl", ".tmp");
+            byte[] ba = {1, 2, 3};
+            IO.write(ba).to(file);
+            byte[] ba0 = IO.read(file).toByteArray();
+            eq(ba, ba0);
+        }
     }
 
-    @Test
-    public void readLinesWithLimitLargerThanContentLines() {
-        List<String> read = IO.readLines(new StringReader(content), lineNumber + 5);
-        eq(lines, read);
+    public static class MiscTests extends Base {
+        @Test
+        public void readLineWithoutLimit() {
+            List<String> read = IO.readLines(new StringReader(content));
+            eq(lines, read);
+        }
+
+        @Test
+        public void readLinesWithLimitLargerThanContentLines() {
+            List<String> read = IO.readLines(new StringReader(content), lineNumber + 5);
+            eq(lines, read);
+        }
+
+        @Test
+        public void readLinesWithLimitSmallerThanContentLines() {
+            List<String> read = IO.readLines(new StringReader(content), lineNumber - 3);
+            eq(lines.take(lineNumber - 3), read);
+        }
     }
 
-    @Test
-    public void readLinesWithLimitSmallerThanContentLines() {
-        List<String> read = IO.readLines(new StringReader(content), lineNumber - 3);
-        eq(lines.take(lineNumber - 3), read);
-    }
 }

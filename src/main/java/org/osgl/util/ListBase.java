@@ -20,13 +20,13 @@ package org.osgl.util;
  * #L%
  */
 
+import static org.osgl.util.C.Feature.SORTED;
+
 import org.osgl.$;
 import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.*;
-
-import static org.osgl.util.C.Feature.SORTED;
 
 public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
@@ -243,19 +243,6 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             unsetFeature(SORTED);
         }
         return modified;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-
-        if (o instanceof ListBase) {
-            return $.eq(features_, ((ListBase) o).features_) && super.equals(o);
-        }
-
-        return super.equals(o);
     }
 
     @Override

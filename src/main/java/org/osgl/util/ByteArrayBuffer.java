@@ -53,6 +53,11 @@ class ByteArrayBuffer extends ByteArrayOutputStream {
         this.consumed = false;
     }
 
+    public ByteArrayBuffer clear() {
+        super.reset();
+        return this;
+    }
+
     public final boolean isEmpty() {
         return count == 0;
     }
@@ -101,7 +106,7 @@ class ByteArrayBuffer extends ByteArrayOutputStream {
         @Override
         protected ByteArrayBuffer initialValue() {
             ByteArrayBuffer buf = new ByteArrayBuffer(BUFFER_INIT_SIZE);
-            buf.consume();
+            buf.consumed = true;
             return buf;
         }
     };

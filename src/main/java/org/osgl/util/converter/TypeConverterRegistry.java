@@ -64,6 +64,16 @@ public class TypeConverterRegistry {
         if (null == converter && Void.class == fromType) {
             return $.cast(NULL_CONVERTER);
         }
+        if (null == converter) {
+            Set<Class> types = $.allTypesOf(fromType);
+            for (Class c : types) {
+                $.TypeConverter converter1 = get(c, toType);
+                if (null != converter1) {
+                    register(converter1, fromType, toType);
+                    return converter1;
+                }
+            }
+        }
         return converter;
     }
 
@@ -75,6 +85,12 @@ public class TypeConverterRegistry {
         }
         buildPaths(typeConverter);
         return this;
+    }
+
+    private void register($.TypeConverter typeConverter, Class fromType, Class toType) {
+        $.Pair<Class, Class> key = $.Pair(fromType, toType);
+        addIntoPath(key, typeConverter);
+        buildPaths(typeConverter, fromType);
     }
 
     private void registerBuiltInConverters() {
@@ -119,15 +135,21 @@ public class TypeConverterRegistry {
         Set<$.Pair<Class, Class>> set = new HashSet<>();
         Class fromType = typeConverter.fromType;
         Class toType = typeConverter.toType;
-        do {
-            set.add($.Pair(fromType, toType));
-            toType = toType.getSuperclass();
-        } while (Object.class != toType && null != toType);
+        set.add($.Pair(fromType, toType));
+        for (Class intf : $.interfacesOf(toType)) {
+            set.add($.Pair(fromType, intf));
+        }
+        for (Class parent : $.superClassesOf(toType)) {
+            set.add($.Pair(fromType, parent));
+        }
         return set;
     }
 
     private void buildPaths($.TypeConverter typeConverter) {
-        Class fromType = typeConverter.fromType;
+        buildPaths(typeConverter, typeConverter.fromType);
+    }
+
+    private void buildPaths($.TypeConverter typeConverter, Class fromType) {
         Set<$.TypeConverter> upstreams = upstreams(fromType);
         for ($.TypeConverter upstream : upstreams) {
             $.TypeConverter chained = new ChainedConverter(upstream, typeConverter);

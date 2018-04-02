@@ -1,10 +1,10 @@
-package org.osgl;
+package org.osgl.util;
 
 /*-
  * #%L
  * Java Tool
  * %%
- * Copyright (C) 2014 - 2017 OSGL (Open Source General Library)
+ * Copyright (C) 2014 - 2018 OSGL (Open Source General Library)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,29 @@ package org.osgl;
  * #L%
  */
 
-import org.junit.runner.JUnitCore;
-import org.osgl.util.S;
+import org.osgl.$;
 
-import java.util.Random;
+import java.io.IOException;
+import java.io.Writer;
 
-/**
- * The test base case
- */
-public abstract class TestBase extends osgl.ut.TestBase {
+public class AppendableWriter extends Writer {
 
-    protected static void run(Class<? extends TestBase> cls) {
-        new JUnitCore().run(cls);
-    }
-    
-    protected static void println(String tmpl, Object... args) {
-        System.out.println(String.format(tmpl, args));
+    private Appendable appendable;
+
+    public AppendableWriter(Appendable appendable) {
+        this.appendable = $.requireNotNull(appendable);
     }
 
-    protected static String newRandStr() {
-        return S.random(new Random().nextInt(30) + 15);
+    @Override
+    public void write(char[] cbuf, int off, int len) throws IOException {
+        appendable.append($.convert(cbuf).to(CharSequence.class), off, len);
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public void close() {
     }
 }
