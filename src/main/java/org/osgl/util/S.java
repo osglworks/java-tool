@@ -748,7 +748,7 @@ public class S {
             return s.endsWith(suffix);
         }
         public boolean equalTo(CharSequence content) {
-            return s.contentEquals(content);
+            return null == content ? isEmpty(s) : s.contentEquals(content);
         }
         public boolean numeric() {
             return N.isNumeric(s);

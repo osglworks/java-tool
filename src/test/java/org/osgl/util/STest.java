@@ -231,6 +231,17 @@ public class STest extends UtilTestBase {
     }
 
     @Test
+    public void testFluentIs() {
+        yes(S.is(null).equalTo(null));
+        yes(S.is(null).equalTo(""));
+        no(S.is("foo").empty());
+        yes(S.is(" ").blank());
+        yes(S.is("abc").contain("b"));
+        yes(S.is("abc").startWith("ab"));
+        no(S.is("abc").startWith("b"));
+    }
+
+    @Test
     public void testIsNumber() {
         yes(S.isIntOrLong("134556324325252"));
         no(S.isIntOrLong("123.333"));
@@ -258,5 +269,8 @@ public class STest extends UtilTestBase {
         S.List list = S.list("abc", "xyz");
         eq(list, S.split("abc-xyz").by("-").get());
         eq(list, S.split("[abc]-[xyz]").by("-").stripElementWrapper(S.BRACKETS).get());
+        eq(C.list("abc", "xyz", "ijk"), S.split("abc1xyz23ijk", "[0-9]+"));
+        eq(C.list("tmp", "foo", "bar"), S.fastSplit("/tmp/foo/bar", "/"));
+        eq(C.list("tmp", "foo", "bar"), S.split("/tmp/foo/bar").by( "/").get());
     }
 }
