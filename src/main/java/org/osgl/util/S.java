@@ -214,6 +214,18 @@ public class S {
     }
 
     /**
+     * Alias of {@link #empty(CharSequence)}
+     *
+     * @param csq
+     *      the char sequence to be tested
+     * @return
+     *      `true` if the char sequence is `null` or empty
+     */
+    public static boolean isEmpty(CharSequence csq) {
+        return null == csq || 0 == csq.length();
+    }
+
+    /**
      * Determine if a string is empty or null
      *
      * @param s the string to be checked
@@ -221,6 +233,18 @@ public class S {
      */
     public static boolean empty(String s) {
         return (null == s || "".equals(s));
+    }
+
+    /**
+     * Check if a `CharSequence` is `null` or empty.
+     *
+     * @param csq
+     *      the char sequence to be checked.
+     * @return
+     *      `true` if the char sequence is `null` or empty
+     */
+    public static boolean empty(CharSequence csq) {
+        return null == csq || 0 == csq.length();
     }
 
     /**
@@ -537,9 +561,8 @@ public class S {
 
     /**
      * Split a string by separator literal and return a list of strings
-     * <p>
+     *
      * Note：
-     * <p>
      * * Unlike {@link String#split(String)} method, this will NOT do regex based split
      * * If there are consecutive separators they will be treated as a single separator
      * * Leading or ending separator will be trimmed
@@ -569,6 +592,34 @@ public class S {
             lastPos = pos + gap;
         }
         return ImmutableStringList.of(lb);
+    }
+
+    /**
+     * Split a char sequence by regex and return a list of strings
+     *
+     * @param csq
+     *      the target string to be split
+     * @param regex
+     *      the regex to split the string
+     * @return
+     *      a list of string
+     */
+    public static List split(CharSequence csq, String regex) {
+        return isEmpty(csq) ? list() : listOf(csq.toString().split(regex));
+    }
+
+    /**
+     * Split a char sequence by regex and return a list of strings
+     *
+     * @param csq
+     *      the target string to be split
+     * @param regex
+     *      the regex pattern to split the string
+     * @return
+     *      a list of string
+     */
+    public static List split(CharSequence csq, Pattern regex) {
+        return isEmpty(csq) ? list() : listOf(regex.split(csq));
     }
 
     /**
@@ -822,6 +873,74 @@ public class S {
     public static String ensureStrippedOff(String string, $.Tuple<String, String> wrapper) {
         return ensureStrippedOff(string, wrapper.left(), wrapper.right());
     }
+
+    public static class _SplitStage {
+        private CharSequence s;
+        private String separator;
+        private Pattern pattern;
+        private boolean useRegex;
+        private $.Tuple<String, String> elementWrapper;
+
+        private _SplitStage(CharSequence s) {
+            this.s = s;
+        }
+
+        public _SplitStage by(String separator) {
+            if (useRegex) {
+                this.pattern = Pattern.compile(separator);
+            } else {
+                this.separator = requireNotEmpty(separator);
+            }
+            return this;
+        }
+
+        public _SplitStage by(Pattern pattern) {
+            this.pattern = $.requireNotNull(pattern);
+            return this;
+        }
+
+        public _SplitStage stripElementWrapper($.Tuple<String, String> wrapper) {
+            this.elementWrapper = $.requireNotNull(wrapper);
+            return this;
+        }
+
+        public _SplitStage stripElementWrapper(String prefix, String suffix) {
+            this.elementWrapper = pair(prefix, suffix);
+            return this;
+        }
+
+        public _SplitStage useRegex() {
+            useRegex = true;
+            if (null == pattern && isNotEmpty(separator)) {
+                pattern = Pattern.compile(separator);
+            }
+            return this;
+        }
+
+        public C.List<String> get() {
+            if (S.isEmpty(s)) {
+                return list();
+            }
+            E.illegalStateIf($.allNull(separator, pattern));
+            C.List<String> list;
+            if (useRegex && null == pattern) {
+                pattern = Pattern.compile(separator);
+                list = split(s, pattern);
+            } else {
+                list = fastSplit(s.toString(), separator);
+            }
+            if (null != elementWrapper) {
+                list = list.map(F.strip(elementWrapper));
+            }
+            return list;
+        }
+
+    }
+
+    public static _SplitStage split(CharSequence csq) {
+        return new _SplitStage(csq);
+    }
+
 
     public static class _Replace2 {
         private String replacement;
@@ -1151,9 +1270,10 @@ public class S {
         private String prefix;
         private String suffix;
         private $.Tuple<String, String> wrapper;
+        private $.Predicate<String> filter;
         private boolean separateFix;
         private _IterableJoiner(Iterable<?> iterable) {
-            this.iterable = $.notNull(iterable);
+            this.iterable = $.requireNotNull(iterable);
         }
 
         public _IterableJoiner by(String separator) {
@@ -1186,6 +1306,16 @@ public class S {
             return this;
         }
 
+        public _IterableJoiner filter($.Predicate<String> filter) {
+            this.filter = $.requireNotNull(filter);
+            return this;
+        }
+
+        public _IterableJoiner ignoreEmptyElement() {
+            this.filter = F.NOT_EMPTY;
+            return this;
+        }
+
         public _IterableJoiner separatorWithPrefixAndSuffix() {
             this.separateFix = true;
             return this;
@@ -1212,11 +1342,11 @@ public class S {
             Iterator<?> itr = iterable.iterator();
 
             if (itr.hasNext()) {
-                sb.append(wrap(itr.next(), wrapper._1, wrapper._2));
+                append(sb, null, itr.next(), wrapper, filter);
             }
 
             while (itr.hasNext()) {
-                sb.append(separator).append(wrap(itr.next(), wrapper._1, wrapper._2));
+                append(sb, separator, itr.next(), wrapper, filter);
             }
 
             if (null != suffix) {
@@ -1227,6 +1357,24 @@ public class S {
             }
             return sb.toString();
         }
+
+        private void append(S.Buffer sb, String separator, Object o, $.Tuple<String, String> wrapper, $.Predicate<String> filter) {
+            String s = null == o ? null : o.toString();
+            if (null != filter && !filter.test(s)) {
+                return;
+            }
+            if (null != wrapper) {
+                s = wrap(s, wrapper._1, wrapper._2);
+                if (null != filter && !filter.test(s)) {
+                    return;
+                }
+            }
+            if (null != separator) {
+                sb.append(separator);
+            }
+            sb.append(s);
+        }
+
     }
 
     public static _StringRepeater repeat(String content) {
@@ -2016,10 +2164,15 @@ public class S {
     /**
      * Strip the prefix and suffix from an object's String representation and
      * return the result
-     * <p>For example: </p>
-     * <pre><code>Object o = "xxBByy";
-     * String s = S.strip(o, "xx", "yy")</code></pre>
-     * <p>At the end above code, <code>s</code> should be "BB"</p>
+     *
+     * For example:
+     *
+     * ```java
+     * Object o = "xxBByy";
+     * String s = S.strip(o, "xx", "yy")
+     * ```
+     *
+     * At the end above code, `s` should be "BB"
      *
      * @param o      the object to which string representation will be used
      * @param prefix the prefix
@@ -2035,6 +2188,22 @@ public class S {
         if (s.startsWith(prefix)) s = s.substring(prefix.length());
         if (s.endsWith(suffix)) s = s.substring(0, s.length() - suffix.length());
         return s;
+    }
+
+    /**
+     * Strip the prefix and suffix of an Object's string representation and return
+     * the result.
+     *
+     * @param o
+     *      the object to which string representation will be used
+     * @param wrapper
+     *      a pair of prefix and suffix
+     * @return
+     *      the String result as described above.
+     * @see #strip(Object, String, String)
+     */
+    public static String strip(Object o, $.Tuple<String, String> wrapper) {
+        return strip(o, wrapper.left(), wrapper.right());
     }
 
     /**
@@ -2862,6 +3031,23 @@ public class S {
 
         public static $.Transformer<String, String> wrapper(final $.Tuple<String, String> wrapper) {
             return wrapper(wrapper.left(), wrapper.right());
+        }
+
+        public static $.Transformer<String, String> strip(String wrapper) {
+            return strip(wrapper, wrapper);
+        }
+
+        public static $.Transformer<String, String> strip(final String left, final String right) {
+            return new $.Transformer<String, String>() {
+                @Override
+                public String transform(String s) {
+                    return S.strip(s, left, right);
+                }
+            };
+        }
+
+        public static $.Transformer<String, String> strip(final $.Tuple<String, String> wrapper) {
+            return strip(wrapper.left(), wrapper.right());
         }
 
     }
@@ -4971,13 +5157,15 @@ public class S {
         }
     }
 
+    public static final List EMPTY_LIST = new Nil.EmptyStringList();
+
     /**
      * Returns an empty immutable list
      *
      * @return the empty list
      */
     public static List list() {
-        return new Nil.EmptyStringList();
+        return EMPTY_LIST;
     }
 
     public static List list(String s) {

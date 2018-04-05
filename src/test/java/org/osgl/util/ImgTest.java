@@ -159,9 +159,16 @@ source(img1())
     }
     private static void testCustomizedProcessor() {
         // style A
-        new Sunglass(0.7f).process(img2()).pipeline().resize(0.5f).writeTo("/tmp/img2_sunglass_style_a.jpg");
+        new Sunglass(0.7f)
+                .process(img2())
+                .pipeline()
+                .resize(0.5f)
+                .writeTo("/tmp/img2_sunglass_style_a.jpg");
         // style B
-        source(img2()).resize(0.3f).pipeline(new Sunglass()).writeTo("/tmp/img2_sunglass_style_b.png");
+        source(img2())
+                .resize(0.3f)
+                .pipeline(new Sunglass())
+                .writeTo("/tmp/img2_sunglass_style_b.png");
     }
 
     private static class FluentSunglass extends Img.Processor<FluentSunglass, FluentSunglass.Stage> {

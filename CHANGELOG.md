@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.10.0 - 5/Apr/2018
+* Add fluent API for string split to `S` utility #68
+* NullPointerException with `S.join(Iterable).by(String).get()` #67
+
 1.9.0 - 30/Mar/2018
 * Add fluent API to `org.osg.IO` class #66
 * Create a byte array buffer to support `BufferedOutput` to handle binary data #65

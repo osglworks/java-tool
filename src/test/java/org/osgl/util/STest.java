@@ -222,4 +222,41 @@ public class STest extends UtilTestBase {
         eq(C.list("abc"), S.split("abc", '.'));
     }
 
+    @Test
+    public void testEmptyBlank() {
+        yes(S.isEmpty(""));
+        yes(S.isEmpty(null));
+        no(S.isEmpty("\t"));
+        yes(S.isBlank("\t"));
+    }
+
+    @Test
+    public void testIsNumber() {
+        yes(S.isIntOrLong("134556324325252"));
+        no(S.isIntOrLong("123.333"));
+        yes(S.isNumeric("343.000"));
+    }
+
+    @Test
+    public void testFormat() {
+        eq("Hello world", S.fmt("Hello %s", "world"));
+        eq("Hello world", S.msgFmt("Hello {0}", "world"));
+    }
+
+    @Test
+    public void testJoin() {
+        S.List list = S.list("abc", "xyz");
+        eq("abc-xyz", S.join(list).by("-").get());
+        eq("[abc]-[xyz]", S.join(list).by("-").wrapElementWith(S.SQUARE_BRACKETS).get());
+        list = S.list("abc", null, "xyz");
+        eq("abc--xyz", S.join(list).by("-").get());
+        eq("abc-xyz", S.join(list).by("-").ignoreEmptyElement().get());
+    }
+
+    @Test
+    public void testSplit() {
+        S.List list = S.list("abc", "xyz");
+        eq(list, S.split("abc-xyz").by("-").get());
+        eq(list, S.split("[abc]-[xyz]").by("-").stripElementWrapper(S.BRACKETS).get());
+    }
 }

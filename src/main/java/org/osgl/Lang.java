@@ -5358,10 +5358,20 @@ public class Lang implements Serializable {
      * Check if an object is {@code null} or {@link #NONE}
      *
      * @param o the object to test
-     * @return {@code true} if {@code o} is {@code null} or {@link #NONE}
+     * @return {@code true} if {@code o} is {@code null} or {@link #NONE}, or `false` otherwise
      */
     public static boolean isNull(Object o) {
         return null == o || NONE == o;
+    }
+
+    /**
+     * Check if an object is not `null` and not {@link #NONE}
+     *
+     * @param o the object to test
+     * @return `false` if `o` is `null` or {@link #NONE}, or `true` otherwise
+     */
+    public static boolean isNotNull(Object o) {
+        return !isNull(o);
     }
 
     /**
@@ -5377,6 +5387,23 @@ public class Lang implements Serializable {
             if (isNull(oa[i])) return true;
         }
         return false;
+    }
+
+    /**
+     * Check if all objects in the parameter list is null
+     *
+     * @param o  the first object to be checked
+     * @param oa the array of objects to be checked
+     * @return {@code false} if any one of the argument is not {@code null} and not {@link #NONE}
+     */
+    public static boolean allNull(Object o, Object... oa) {
+        if (isNotNull(o)) {
+            return false;
+        }
+        for (int i = oa.length - 1; i >= 0; --i) {
+            if (isNotNull(oa[i])) return false;
+        }
+        return true;
     }
 
     public static boolean noneNull(Object o, Object... oa) {
