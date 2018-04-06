@@ -9,9 +9,9 @@ package org.osgl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,6 +72,11 @@ public class LangTest extends TestBase {
         }
 
         @Override
+        public String toString() {
+            return id;
+        }
+
+        @Override
         public int hashCode() {
             return id != null ? id.hashCode() : 0;
         }
@@ -82,6 +87,14 @@ public class LangTest extends TestBase {
         @Override
         public MyTo convert(MyFrom myFrom) {
             return new MyTo(myFrom.id);
+        }
+    }
+
+    @Ignore
+    static class StringToMyFrom extends $.TypeConverter<String, MyFrom> {
+        @Override
+        public MyFrom convert(String s) {
+            return new MyFrom(s);
         }
     }
 
@@ -99,10 +112,17 @@ public class LangTest extends TestBase {
         AB, bc, Red;
     }
 
-    private interface I0 {}
-    private interface I0_1 extends I0 {}
-    private static class C0 implements I0_1 {}
-    private static class C1 extends C0 {}
+    private interface I0 {
+    }
+
+    private interface I0_1 extends I0 {
+    }
+
+    private static class C0 implements I0_1 {
+    }
+
+    private static class C1 extends C0 {
+    }
 
 
     // -------------- Tests -----------------------
@@ -206,10 +226,21 @@ public class LangTest extends TestBase {
     public static class ConvertTest {
         @Test
         public void testConvert() {
-            int n = 600;
             String s = "60";
-            eq((byte) 600, $.convert(n).to(Byte.class));
             eq((byte) 60, $.convert(s).to(Byte.class));
+            eq(255, $.convert("FF").hint(16).toInteger());
+            Date date = $.convert("06 Apr 2018").hint("dd MMM yyyy").toDate();
+            eq("2018-04-06", $.convert(date).hint("yyyy-MM-dd").toString());
+
+        }
+
+        @Test
+        public void testPipeline() {
+            final Date date = new Date();
+            byte[] ba1 = $.convert(date).pipeline(String.class).to(byte[].class);
+            byte[] ba2 = $.convert(date).to(byte[].class);
+            eq(ba1, ba2);
+            eq("2018-04-06", $.convert("06/Apr/2018").hint("dd/MMM/yyyy").pipeline(Date.class).hint("yyyy-MM-dd").toString());
         }
 
         @Test
@@ -227,8 +258,8 @@ public class LangTest extends TestBase {
 
         @Test
         public void testConvertNullWithDef() {
-            eq(5, $.convert(null).defaultTo(5).toInt());
-            eq(2, $.convert("2").defaultTo(5).toInt());
+            eq(5, $.convert(null).defaultTo(5).toInteger());
+            eq(2, $.convert("2").defaultTo(5).toInteger());
         }
 
         @Test
@@ -247,9 +278,10 @@ public class LangTest extends TestBase {
 
         @Test
         public void testConvertExtension() {
-            TypeConverterRegistry.INSTANCE.register(new MyConverter());
+            TypeConverterRegistry.INSTANCE.register(new MyConverter()).register(new StringToMyFrom());
             String id = S.random();
             eq(new MyTo(id), $.convert(new MyFrom(id)).to(MyTo.class));
+            eq("abc", $.convert("abc").to(MyTo.class).toString());
         }
     }
 

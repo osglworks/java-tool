@@ -9,9 +9,9 @@ package org.osgl.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -232,13 +232,26 @@ public class STest extends UtilTestBase {
 
     @Test
     public void testFluentIs() {
-        yes(S.is(null).equalTo(null));
-        yes(S.is(null).equalTo(""));
+        yes(S.is(null).equalsTo(null));
+        yes(S.is(null).equalsTo(""));
         no(S.is("foo").empty());
         yes(S.is(" ").blank());
-        yes(S.is("abc").contain("b"));
-        yes(S.is("abc").startWith("ab"));
-        no(S.is("abc").startWith("b"));
+        yes(S.is("abc").contains("b"));
+        yes(S.is("abc").startsWith("ab"));
+        no(S.is("abc").startsWith("b"));
+        yes(S.is("[abc]").wrappedWith("[", "]"));
+        yes(S.is("<abc>").wrappedWith(S.ANGLE_BRACKETS));
+    }
+
+    @Test
+    public void testEnsure() {
+        eq("[abc]", S.ensure("abc").wrappedWith(S.SQUARE_BRACKETS));
+        eq("[abc]", S.ensure("[abc").wrappedWith(S.SQUARE_BRACKETS));
+        eq("[abc]", S.ensure("[abc]").wrappedWith(S.SQUARE_BRACKETS));
+        eq("abc", S.ensure("abc").strippedOff(S.ANGLE_BRACKETS));
+        eq("abc", S.ensure("<abc>").strippedOff(S.ANGLE_BRACKETS));
+        eq("_abc", S.ensure("abc").startWith('_'));
+        eq("abc.html", S.ensure("abc").endWith(".html"));
     }
 
     @Test
@@ -271,6 +284,96 @@ public class STest extends UtilTestBase {
         eq(list, S.split("[abc]-[xyz]").by("-").stripElementWrapper(S.BRACKETS).get());
         eq(C.list("abc", "xyz", "ijk"), S.split("abc1xyz23ijk", "[0-9]+"));
         eq(C.list("tmp", "foo", "bar"), S.fastSplit("/tmp/foo/bar", "/"));
-        eq(C.list("tmp", "foo", "bar"), S.split("/tmp/foo/bar").by( "/").get());
+        eq(C.list("tmp", "foo", "bar"), S.split("/tmp/foo/bar").by("/").get());
+    }
+
+    @Test
+    public void testFluentReplace() {
+        eq("hello foo", S.replace("world").in("hello world").with("foo"));
+        eq("times [N]", S.replace("[0-9]+").with("[N]").usingRegEx().in("times 10"));
+        eq("hello foo", S.given("hello world").replace("world").with("foo"));
+    }
+
+    @Test
+    public void testRepeat() {
+        eq("aaa", S.repeat('a').times(3));
+        eq("aaa", S.repeat('a').x(3));
+        eq("aaaaa", S.repeat('a').forFiveTimes());
+        eq("foofoo", S.repeat("foo").times(2));
+        eq("foofoo", S.repeat("foo").x(2));
+    }
+
+    @Test
+    public void testWrap() {
+        eq("*abc*", S.wrap("abc").with("*"));
+        eq("[abc]", S.wrap("abc").with("[", "]"));
+        eq("[abc]", S.wrap("abc").with(S.BRACKETS));
+        eq("(abc)", S.wrap("abc").with(S.PARENTHESES));
+        eq("<abc>", S.wrap("abc").with(S.DIAMOND));
+        eq("<abc>", S.wrap("abc").with(S.ANGLE_BRACKETS));
+        eq("《abc》", S.wrap("abc").with(S.书名号));
+    }
+
+    @Test
+    public void testTrip() {
+        eq("abc", S.strip("[abc]").of(S.BRACKETS));
+        eq("abc", S.strip("<abc>").of(S.DIAMOND));
+        eq("abc", S.strip("*abc*").of("*"));
+        eq("abc", S.strip("111abc222").of("111", "222"));
+    }
+
+    @Test
+    public void testCut() {
+        eq("abc12", S.cut("abc123").by(5));
+        eq("ab", S.cut("abc123").first(2));
+        eq("23", S.cut("abc123").last(2));
+        eq("123", S.cut("abc123").after("abc"));
+        eq("abc", S.cut("abc123").before("123"));
+        eq("abc", S.cut("abc123abc123").before("123"));
+        eq("abc", S.cut("abc123abc123").beforeFirst("123"));
+        eq("abc123abc", S.cut("abc123abc123").beforeLast("123"));
+        eq("123", S.cut("abc123abc123").after("abc"));
+        eq("123", S.cut("abc123abc123").afterLast("abc"));
+        eq("123abc123", S.cut("abc123abc123").afterFirst("abc"));
+    }
+
+    @Test
+    public void testOthers() {
+        yes(S.eq("foo", "foo"));
+        yes(S.eq("foo", "Foo", S.IGNORECASE));
+        no(S.eq("foobar", " FooBar "));
+        yes(S.eq("foobar", " FooBar ", S.IGNORESPACE | S.IGNORECASE));
+        yes(S.eq(null, null));
+        no(S.eq(null, "foo"));
+
+        eq("", S.trim(null));
+        eq("abc", S.trim(" abc"));
+        eq("abc\nxyz", S.dos2unix("abc\n\rxyz"));
+        eq("abc\n\rxyz", S.unix2dos("abc\nxyz"));
+        eq("this...", S.maxLength("this is a long text", 4));
+        System.out.println(S.uuid());
+        System.out.println(S.random());
+        System.out.println(S.random(2));
+    }
+
+    @Test
+    public void testToken() {
+        final String s = "Hello World";
+        eq("HelloWorld", S.camelCase(s));
+        eq("hello_world", S.underscore(s));
+        eq("hello-world", S.dashed(s));
+        eq("Hello World", S.capFirst(s));
+        eq("hello World", S.lowerFirst(s));
+        eq("Hello-World", Keyword.of(s).httpHeader());
+        eq("helloWorld", Keyword.of(s).javaVariable());
+        eq("HELLO_WORLD", Keyword.of(s).constantName());
+        eq("Hello world", Keyword.of(s).readable());
+    }
+
+    @Test
+    public void testCount() {
+        final String s = "1011101111";
+        eq(3, S.count("11").in(s));
+        eq(5, S.count("11").withOverlap().in(s));
     }
 }

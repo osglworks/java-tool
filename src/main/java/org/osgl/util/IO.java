@@ -742,6 +742,20 @@ public class IO {
      *         the file to which the returned output stream can be used to write to
      * @return an output stream that can be used to write to file specified
      */
+    public static OutputStream outputStream(File file) {
+        return os(file);
+    }
+
+    /**
+     * Returns a file output stream.
+     *
+     * Use {@link #outputStream(File)} to replace this method.
+     *
+     * @param file
+     *         the file to which the returned output stream can be used to write to
+     * @return an output stream that can be used to write to file specified
+     */
+    @Deprecated
     public static OutputStream os(File file) {
         try {
             return new FileOutputStream(file);
@@ -779,6 +793,18 @@ public class IO {
      *
      * @return an empty input stream
      */
+    public static InputStream inputStream() {
+        return is();
+    }
+
+    /**
+     * Returns an empty input stream.
+     *
+     * Use {@link #inputStream()} to replace this method.
+     *
+     * @return an empty input stream
+     */
+    @Deprecated
     public static InputStream is() {
         byte[] ba = {};
         return new ByteArrayInputStream(ba);
@@ -791,6 +817,20 @@ public class IO {
      *         the file to be read
      * @return inputstream that read the file
      */
+    public static InputStream inputStream(File file) {
+        return is(file);
+    }
+
+    /**
+     * Returns a file input stream.
+     *
+     * Use {@link #inputStream(File)} to replace this method
+     *
+     * @param file
+     *         the file to be read
+     * @return inputstream that read the file
+     */
+    @Deprecated
     public static InputStream is(File file) {
         // workaround http://stackoverflow.com/questions/36880692/java-file-does-not-exists-but-file-getabsolutefile-exists
         if (!file.exists()) {
@@ -806,22 +846,69 @@ public class IO {
         }
     }
 
+    /**
+     * Create an input stream from given byte array.
+     * @param ba the byte array
+     * @return an input stream
+     */
+    public static InputStream inputStream(byte[] ba) {
+        return is(ba);
+    }
+
+    /**
+     * Use {@link #inputStream(byte[])} to replace this method
+     * @param ba
+     * @return
+     */
+    @Deprecated
     public static InputStream is(byte[] ba) {
         return new ByteArrayInputStream(ba);
     }
 
     /**
+     * Create an input stream from string content which
+     * will be encoded with UTF-8
+     *
+     * @param content
+     *      the string content
+     * @return
+     *      an new inputstream
+     */
+    public static InputStream inputStream(String content) {
+        return inputStream(content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
      * Returns an input stream from a string which will be encoded with
-     * CharSet.defaultCharset()
+     * CharSet.defaultCharset().
+     *
+     * use {@link #inputStream(String)} to replace this method.
      *
      * @param content
      *         the content to be read
      * @return input stream instance that read the content
      */
+    @Deprecated
     public static InputStream is(String content) {
         return is(content.getBytes());
     }
 
+    /**
+     * Create an input stream from a URL.
+     * @param url
+     *      the URL.
+     * @return
+     *      the new inputstream.
+     */
+    public static InputStream inputStream(URL url) {
+                return is(url);
+    }
+
+    /**
+     * Use {@link #inputStream(URL)} to replace this method.
+     * @param url
+     * @return
+     */
     public static InputStream is(URL url) {
         try {
             return url.openStream();

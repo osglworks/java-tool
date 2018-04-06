@@ -2664,7 +2664,7 @@ public class Lang implements Serializable {
 
         @Override
         public String toString() {
-            return fromType + " -> " + toType;
+            return fromType.getName() + " -> " + toType.getName();
         }
 
         @Override
@@ -2719,6 +2719,9 @@ public class Lang implements Serializable {
         public static TypeConverter<String, Byte> STRING_TO_BYTE = new TypeConverter<String, Byte>(String.class, Byte.class) {
             @Override
             public Byte convert(String s) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 return Byte.valueOf(s);
             }
         };
@@ -2733,6 +2736,9 @@ public class Lang implements Serializable {
         public static TypeConverter<String, Short> STRING_TO_SHORT = new TypeConverter<String, Short>(String.class, Short.class) {
             @Override
             public Short convert(String s) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 return Short.valueOf(s);
             }
         };
@@ -2740,13 +2746,27 @@ public class Lang implements Serializable {
         public static TypeConverter<String, Integer> STRING_TO_INTEGER = new TypeConverter<String, Integer>(String.class, Integer.class) {
             @Override
             public Integer convert(String s) {
-                return Integer.valueOf(s);
+                return S.isEmpty(s) ? null : Integer.valueOf(s);
+            }
+
+            @Override
+            public Integer convert(String s, Object hint) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
+                if (hint instanceof Integer) {
+                    return Integer.valueOf(s, (Integer) hint);
+                }
+                return convert(s);
             }
         };
 
         public static TypeConverter<String, Float> STRING_TO_FLOAT = new TypeConverter<String, Float>(String.class, Float.class) {
             @Override
             public Float convert(String s) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 return Float.valueOf(s);
             }
         };
@@ -2754,6 +2774,9 @@ public class Lang implements Serializable {
         public static TypeConverter<String, Long> STRING_TO_LONG = new TypeConverter<String, Long>(String.class, Long.class) {
             @Override
             public Long convert(String s) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 return Long.valueOf(s);
             }
         };
@@ -2761,6 +2784,9 @@ public class Lang implements Serializable {
         public static TypeConverter<String, Double> STRING_TO_DOUBLE = new TypeConverter<String, Double>(String.class, Double.class) {
             @Override
             public Double convert(String s) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 return Double.valueOf(s);
             }
         };
@@ -2768,6 +2794,9 @@ public class Lang implements Serializable {
         public static TypeConverter<String, BigInteger> STRING_TO_BIG_INT = new TypeConverter<String, BigInteger>(String.class, BigInteger.class) {
             @Override
             public BigInteger convert(String s) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 return new BigInteger(s);
             }
         };
@@ -2775,6 +2804,9 @@ public class Lang implements Serializable {
         public static TypeConverter<String, BigDecimal> STRING_TO_BIG_DEC = new TypeConverter<String, BigDecimal>(String.class, BigDecimal.class) {
             @Override
             public BigDecimal convert(String s) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 return new BigDecimal(s);
             }
         };
@@ -2788,6 +2820,9 @@ public class Lang implements Serializable {
 
             @Override
             public Date convert(String s, Object hint) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 if (null == hint) {
                     return convert(s);
                 }
@@ -2796,6 +2831,9 @@ public class Lang implements Serializable {
             }
 
             private Date convert(String s, DateFormat format) {
+                if (S.isEmpty(s)) {
+                    return null;
+                }
                 try {
                     return format.parse(s);
                 } catch (ParseException e) {
@@ -2931,7 +2969,6 @@ public class Lang implements Serializable {
         };
 
 
-
         public static TypeConverter<CharSequence, char[]> CHAR_SEQUENCE_TO_CHAR_ARRAY = new TypeConverter<CharSequence, char[]>() {
             @Override
             public char[] convert(CharSequence charSequence) {
@@ -2979,6 +3016,13 @@ public class Lang implements Serializable {
                         return new String(ca);
                     }
                 };
+            }
+        };
+
+        public static TypeConverter<String, Reader> STRING_TO_RADER = new TypeConverter<String, Reader>() {
+            @Override
+            public Reader convert(String s) {
+                return new StringReader(s);
             }
         };
 
@@ -3134,6 +3178,7 @@ public class Lang implements Serializable {
                     throw new IllegalArgumentException(S.fmt("Unable to find converter from %s to %s", fromType, toType));
                 }
             }
+
             TO to = null == hint ? converter.convert(from) : converter.convert(from, hint);
             return null == to ? (TO)defVal : to;
         }
@@ -3178,16 +3223,16 @@ public class Lang implements Serializable {
             return to(Short.class);
         }
 
-        public int toInt() {
-            return to(int.class);
-        }
-
         public int toIntegerPrimitive() {
             return toInt();
         }
 
         public Integer toInteger() {
             return to(Integer.class);
+        }
+
+        public int toInt() {
+            return defaultTo(0).toInteger();
         }
 
         public float toFloatPrimitive() {
@@ -3220,6 +3265,10 @@ public class Lang implements Serializable {
 
         public String toString() {
             return to(String.class);
+        }
+
+        public <NEW_FROM> _ConvertStage<NEW_FROM> pipeline(Class<NEW_FROM> newFromClass) {
+            return new _ConvertStage<>(to(newFromClass));
         }
 
     }

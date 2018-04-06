@@ -24,12 +24,10 @@ import org.osgl.$;
 import org.osgl.util.C;
 import org.osgl.util.E;
 import org.osgl.util.N;
+import org.osgl.util.S;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TypeConverterRegistry {
 
@@ -89,8 +87,12 @@ public class TypeConverterRegistry {
 
     private void register($.TypeConverter typeConverter, Class fromType, Class toType) {
         $.Pair<Class, Class> key = $.Pair(fromType, toType);
+        register(typeConverter, key);
+    }
+
+    private void register($.TypeConverter typeConverter, $.Pair<Class, Class> key) {
         addIntoPath(key, typeConverter);
-        buildPaths(typeConverter, fromType);
+        buildPaths(typeConverter, key.left(), key.right());
     }
 
     private void registerBuiltInConverters() {
@@ -146,10 +148,10 @@ public class TypeConverterRegistry {
     }
 
     private void buildPaths($.TypeConverter typeConverter) {
-        buildPaths(typeConverter, typeConverter.fromType);
+        buildPaths(typeConverter, typeConverter.fromType, typeConverter.toType);
     }
 
-    private void buildPaths($.TypeConverter typeConverter, Class fromType) {
+    private void buildPaths($.TypeConverter typeConverter, Class fromType, Class toType) {
         Set<$.TypeConverter> upstreams = upstreams(fromType);
         for ($.TypeConverter upstream : upstreams) {
             $.TypeConverter chained = new ChainedConverter(upstream, typeConverter);
@@ -157,9 +159,22 @@ public class TypeConverterRegistry {
             $.TypeConverter current = paths.get(key);
             if (null == current || isShorterPath(chained, current)) {
                 if (typeConverter.fromType.isAssignableFrom(upstream.fromType)){
-                    addIntoPath(key, typeConverter);
+                    register(typeConverter, key);
                 } else {
-                    addIntoPath(key, chained);
+                    register(chained, key);
+                }
+            }
+        }
+        Set<$.TypeConverter> downstreams = downstreams(toType);
+        for ($.TypeConverter downstream : downstreams) {
+            $.TypeConverter chained = new ChainedConverter(typeConverter, downstream);
+            $.Pair<Class, Class> key = keyOf(chained);
+            $.TypeConverter current = paths.get(key);
+            if (null == current || isShorterPath(chained, current)) {
+                if (downstream.toType.isAssignableFrom(typeConverter.toType)) {
+                    register(typeConverter, key);
+                } else {
+                    register(chained, key);
                 }
             }
         }
@@ -169,6 +184,16 @@ public class TypeConverterRegistry {
         Set<$.TypeConverter> set = new HashSet<>();
         for (Map.Entry<$.Pair<Class, Class>, $.TypeConverter> entry : paths.entrySet()) {
             if (toType.isAssignableFrom(entry.getKey().right())) {
+                set.add(entry.getValue());
+            }
+        }
+        return set;
+    }
+
+    private Set<$.TypeConverter> downstreams(Class fromType) {
+        Set<$.TypeConverter> set = new HashSet<>();
+        for (Map.Entry<$.Pair<Class, Class>, $.TypeConverter> entry : paths.entrySet()) {
+            if (entry.getKey().left().isAssignableFrom(fromType)) {
                 set.add(entry.getValue());
             }
         }
@@ -202,6 +227,11 @@ public class TypeConverterRegistry {
         public Object convert(Object o) {
             return downstream.convert(upstream.convert(o));
         }
+
+        @Override
+        public String toString() {
+            return S.concat(upstream, " | ", downstream);
+        }
     }
 
     private static boolean isShorterPath($.TypeConverter left, $.TypeConverter right) {
@@ -211,10 +241,31 @@ public class TypeConverterRegistry {
 
     private static int hops($.TypeConverter typeConverter) {
         if (!(typeConverter instanceof ChainedConverter)) {
-            return 1;
+            return distance(typeConverter);
         }
         ChainedConverter chainedConverter = $.cast(typeConverter);
         return hops(chainedConverter.upstream) + hops(chainedConverter.downstream);
+    }
+
+    private static int distance($.TypeConverter typeConverter) {
+        return distance(typeConverter.fromType) + distance(typeConverter.toType);
+    }
+
+    private static int distance(Class<?> type) {
+        if (type == Object.class) {
+            return 100;
+        }
+        if (type.isInterface()) {
+            Set<Class> interfaces = $.interfacesOf(type);
+            return 100 - interfaces.size();
+        }
+        if (type.isArray()) {
+            return distance(type.getComponentType());
+        }
+        if ($.isSimpleType(type)) {
+            return 0;
+        }
+        return distance(type.getSuperclass()) - 1;
     }
 
 }

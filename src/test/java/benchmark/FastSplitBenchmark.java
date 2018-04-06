@@ -1,4 +1,4 @@
-package org.osgl.util;
+package benchmark;
 
 /*-
  * #%L
@@ -23,6 +23,9 @@ package org.osgl.util;
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import org.junit.Test;
 import org.osgl.BenchmarkBase;
+import org.osgl.util.C;
+import org.osgl.util.S;
+import org.osgl.util.UtilTestBase;
 
 @BenchmarkOptions(warmupRounds = 100 * 100 * 5, benchmarkRounds = 100 * 100 * 100 * 5)
 public class FastSplitBenchmark extends BenchmarkBase {

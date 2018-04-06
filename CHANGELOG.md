@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.10.0 - 5/Apr/2018
+* Bulk fix to OSGL conversion framework
 * Add fluent API for string split to `S` utility #68
 * NullPointerException with `S.join(Iterable).by(String).get()` #67
 

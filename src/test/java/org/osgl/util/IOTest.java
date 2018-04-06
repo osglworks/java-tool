@@ -88,6 +88,12 @@ public class IOTest extends TestBase {
             byte[] ba0 = IO.read(file).toByteArray();
             eq(ba, ba0);
         }
+
+        @Test
+        public void testInputStreamAndReader() {
+            final String s = "ABC";
+            eq(IO.read(IO.inputStream(s)).toString(), IO.read(IO.reader(s)).toString());
+        }
     }
 
     public static class MiscTests extends Base {
@@ -108,6 +114,7 @@ public class IOTest extends TestBase {
             List<String> read = IO.readLines(new StringReader(content), lineNumber - 3);
             eq(lines.take(lineNumber - 3), read);
         }
+
     }
 
 }

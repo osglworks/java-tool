@@ -1,4 +1,4 @@
-package org.osgl.util;
+package benchmark;
 
 /*-
  * #%L
@@ -27,6 +27,7 @@ import com.carrotsearch.junitbenchmarks.annotation.BenchmarkMethodChart;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.osgl.util.S;
 
 @BenchmarkOptions(benchmarkRounds = 15000, warmupRounds = 1000, clock = Clock.NANO_TIME)
 @BenchmarkMethodChart(filePrefix = "map-types-benchmark-barchart")

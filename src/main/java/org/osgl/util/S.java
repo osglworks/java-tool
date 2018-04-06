@@ -735,19 +735,19 @@ public class S {
         public boolean blank() {
             return s.trim().isEmpty();
         }
-        public boolean contain(CharSequence content) {
+        public boolean contains(CharSequence content) {
             return s.contains(content);
         }
-        public boolean startWith(String prefix, int toffset) {
+        public boolean startsWith(String prefix, int toffset) {
             return s.startsWith(prefix, toffset);
         }
-        public boolean startWith(String prefix) {
+        public boolean startsWith(String prefix) {
             return s.startsWith(prefix);
         }
-        public boolean endWith(String suffix) {
+        public boolean endsWith(String suffix) {
             return s.endsWith(suffix);
         }
-        public boolean equalTo(CharSequence content) {
+        public boolean equalsTo(CharSequence content) {
             return null == content ? isEmpty(s) : s.contentEquals(content);
         }
         public boolean numeric() {
@@ -760,7 +760,6 @@ public class S {
             return s.length() >= (left.length() + right.length()) && s.startsWith(left) && s.endsWith(right);
         }
         public boolean wrappedWith($.Tuple<String, String> wrapper) {
-            is("foo").wrappedWith(BRACKETS);
             return wrappedWith(wrapper.left(), wrapper.right());
         }
     }
@@ -1576,6 +1575,10 @@ public class S {
             return wrap(content, wrapper);
         }
 
+        public String with(String left, String right) {
+            return wrap(content, left, right);
+        }
+
         public String with($.Tuple<String, String> wrapper) {
             return wrap(content, wrapper);
         }
@@ -1705,10 +1708,10 @@ public class S {
             s = string(object);
         }
         public String by(int chars) {
-            return maxLength(s, chars);
+            return first(chars);
         }
         public String first(int chars) {
-            return maxLength(s, chars);
+            return s.substring(0, chars);
         }
         public String last(int chars) {
             return S.last(s, chars);
@@ -1864,6 +1867,25 @@ public class S {
      */
     public static String trim(String s) {
         return null == s ? "" : s.trim();
+    }
+
+    public static class _CountStage {
+        private String search;
+        private boolean overlap;
+        private _CountStage(String search) {
+            this.search = requireNotEmpty(search);
+        }
+        public _CountStage withOverlap() {
+            this.overlap = true;
+            return this;
+        }
+        public int in(String text) {
+            return count(text, search, overlap);
+        }
+    }
+
+    public static _CountStage count(String search) {
+        return new _CountStage(search);
     }
 
     /**
@@ -2159,6 +2181,30 @@ public class S {
      */
     public static boolean isEqual(String s1, String s2, int modifier) {
         return equal(s1, s2, modifier);
+    }
+
+    public static class _StripStage {
+        private String content;
+        private _StripStage(Object o) {
+            content = S.string(o);
+        }
+
+        public String of($.Tuple<String, String> wrapper) {
+            return strip(content, wrapper);
+        }
+
+        public String of(String left, String right) {
+            return strip(content, left, right);
+        }
+
+        public String of(String wrapper) {
+            return strip(content, wrapper, wrapper);
+        }
+
+    }
+
+    public static _StripStage strip(Object o) {
+        return new _StripStage(o);
     }
 
     /**
