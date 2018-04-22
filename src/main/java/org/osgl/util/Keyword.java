@@ -71,7 +71,7 @@ public final class Keyword implements Comparable<Keyword> {
         Arrays.sort(SEPS);
     }
 
-    public static enum Style {
+    public enum Style {
         /**
          * `CamelCaseStyle`
          */
@@ -110,6 +110,11 @@ public final class Keyword implements Comparable<Keyword> {
         DASHED(SEP_DASH),
 
         /**
+         * `dotted.style`
+         */
+        DOTTED(SEP_DOT),
+
+        /**
          * `Http-Header-Style`
          */
         HTTP_HEADER(SEP_DASH) {
@@ -134,11 +139,11 @@ public final class Keyword implements Comparable<Keyword> {
 
         private String separator;
 
-        private Style() {
+        Style() {
             separator = null;
         }
 
-        private Style(char sep) {
+        Style(char sep) {
             separator = String.valueOf(sep);
         }
 
@@ -182,8 +187,24 @@ public final class Keyword implements Comparable<Keyword> {
         return Style.UNDERSCORE.toString(this);
     }
 
+    /**
+     * Alias of {@link #hyphenated()}
+     * @return hyphen separated string
+     */
     public String dashed() {
         return Style.DASHED.toString(this);
+    }
+
+    /**
+     * Alias of {@link #dashed()}
+     * @return hyphen separated string
+     */
+    public String hyphenated() {
+        return dashed();
+    }
+
+    public String dotted() {
+        return Style.DOTTED.toString(this);
     }
 
     public String httpHeader() {

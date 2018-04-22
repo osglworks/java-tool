@@ -5785,7 +5785,7 @@ public class Lang implements Serializable {
     public static void nil() {
     }
 
-    private static ConcurrentHashMap<Class<? extends Enum>, Map<String, Enum>> enumLookup = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Class<? extends Enum>, Map<Keyword, Enum>> enumLookup = new ConcurrentHashMap<>();
 
     /**
      * Return an enum value from code
@@ -5802,26 +5802,26 @@ public class Lang implements Serializable {
      * Return an enum value from code
      * @param enumClass the enum class
      * @param name the name of the enum value. `name` is case insensitive
-     * @param caseSensitive specify whether it should do case sensitive lookup or case insensitive lookup
+     * @param exactMatch specify whether it should do exact name lookup or keyword variable lookup
      * @param <T> the generic enum type
      * @return the enum value or `null` if there is no value has the name specified
      */
-    public static <T extends Enum<T>> T asEnum(final Class<T> enumClass, final String name, final boolean caseSensitive) {
+    public static <T extends Enum<T>> T asEnum(final Class<T> enumClass, final String name, final boolean exactMatch) {
         if (S.blank(name)) {
             return null;
         }
-        Map<String, Enum> map = enumLookup.get(enumClass);
+        Map<Keyword, Enum> map = enumLookup.get(enumClass);
         if (null == map) {
             T[] values = enumClass.getEnumConstants();
             map = new HashMap<>(values.length * 2);
             for (T value: values) {
-                map.put(value.name().toUpperCase(), value);
+                map.put(Keyword.of(value.name()), value);
             }
             enumLookup.putIfAbsent(enumClass, map);
         }
-        String key = name.toUpperCase();
+        Keyword key = Keyword.of(name);
         T retVal = (T) map.get(key);
-        return caseSensitive && !retVal.name().equals(name) ? null : retVal;
+        return (null == retVal || (exactMatch && !retVal.name().equals(name))) ? null : retVal;
     }
 
     /**

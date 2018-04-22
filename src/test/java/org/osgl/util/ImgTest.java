@@ -111,7 +111,6 @@ source(img1())
                 .writeTo("/tmp/img1_pipeline.png");
     }
 
-
     private static void testResizeByScale() {
         source(img2())
                 .resize(0.5f)

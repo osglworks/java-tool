@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.10.1
+* Add dotted style to `Keyword` #71
+* `Lang.asEnum` - support Keyword based variation non-exact matching #72
+
 1.10.0 - 5/Apr/2018
 * Bulk fix to OSGL conversion framework
 * Add fluent API for string split to `S` utility #68

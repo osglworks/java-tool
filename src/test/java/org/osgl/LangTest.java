@@ -109,7 +109,7 @@ public class LangTest extends TestBase {
     }
 
     enum Code {
-        AB, bc, Red;
+        AB, bc, RED_GREEN_BLUE
     }
 
     private interface I0 {
@@ -219,6 +219,11 @@ public class LangTest extends TestBase {
 
             assertSame(Code.AB, $.asEnum(Code.class, "AB", true));
             assertNull($.asEnum(Code.class, "ab", true));
+
+            assertSame(Code.RED_GREEN_BLUE, $.asEnum(Code.class, "redGreenBlue"));
+            assertSame(Code.RED_GREEN_BLUE, $.asEnum(Code.class, "Red.Green.Blue"));
+            assertSame(Code.RED_GREEN_BLUE, $.asEnum(Code.class, "Red Green Blue"));
+            assertNull($.asEnum(Code.class, "Red.Green.Blue", true));
         }
     }
 

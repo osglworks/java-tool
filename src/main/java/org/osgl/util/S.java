@@ -1263,6 +1263,34 @@ public class S {
         return new _IterableJoiner(iterable);
     }
 
+    public static _IterableJoiner join(byte[] array) {
+        return new _IterableJoiner(C.listOf(array));
+    }
+
+    public static _IterableJoiner join(short[] array) {
+        return new _IterableJoiner(C.listOf(array));
+    }
+
+    public static _IterableJoiner join(int[] array) {
+        return new _IterableJoiner(C.listOf(array));
+    }
+
+    public static _IterableJoiner join(long[] array) {
+        return new _IterableJoiner(C.listOf(array));
+    }
+
+    public static _IterableJoiner join(float[] array) {
+        return new _IterableJoiner(C.listOf(array));
+    }
+
+    public static _IterableJoiner join(double[] array) {
+        return new _IterableJoiner(C.listOf(array));
+    }
+
+    public static _IterableJoiner join(Object[] array) {
+        return new _IterableJoiner(C.listOf(array));
+    }
+
     public static class _IterableJoiner {
         private Iterable<?> iterable;
         private String separator;
@@ -1933,6 +1961,14 @@ public class S {
 
     public static String dashed(CharSequence s) {
         return Keyword.of(s).dashed();
+    }
+
+    public static String hyphenated(CharSequence s) {
+        return dashed(s);
+    }
+
+    public static String dotted(CharSequence s) {
+        return Keyword.of(s).dotted();
     }
 
     public static String capFirst(String s) {
@@ -5286,4 +5322,9 @@ public class S {
     public static Val val(String s) {
         return new Val(s);
     }
+
+    public static void main(String[] args) {
+        System.out.println(S.join(new int[]{1,2,3}).by("-").get());
+    }
+
 }
