@@ -376,4 +376,12 @@ public class STest extends UtilTestBase {
         eq(3, S.count("11").in(s));
         eq(5, S.count("11").withOverlap().in(s));
     }
+
+    @Test
+    public void testReversed() {
+        final String s1 = "abc";
+        eq("cba", S.reversed(s1));
+        final String s2 = "你好";
+        eq("好你", S.reversed(s2));
+    }
 }

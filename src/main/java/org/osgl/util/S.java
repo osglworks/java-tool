@@ -1121,6 +1121,9 @@ public class S {
         private _Have(Object s) {
             this.s = string(s);
         }
+        private _Have(char[] ca) {
+            this.s = new String(ca);
+        }
         private _Have(String s) {
             this.s = null == s ? "" : s;
         }
@@ -1133,6 +1136,10 @@ public class S {
         public _ReplaceChar replace(char c) {
             return new _ReplaceChar(s, c);
         }
+    }
+
+    public static _Have have(char[] ca) {
+        return new _Have(ca);
     }
 
     public static _Have have(Object o) {
@@ -2381,6 +2388,16 @@ public class S {
     }
 
     /**
+     * Reverse a String.
+     * @param s
+     *      the string to be reversed.
+     * @return reversed string
+     */
+    public static String reversed(String s) {
+        return S.buffer(s).reverse().toString();
+    }
+
+    /**
      * Decode Base64 encoded string
      *
      * @param str the string to be decoded
@@ -2641,8 +2658,27 @@ public class S {
         return buffer().append(o);
     }
 
+    public static Buffer buffer(char[] ca) {
+        return buffer().append(ca);
+    }
+
     public static Buffer buffer(Object o) {
-        return buffer().append(o);
+        if (null == o) {
+            return buffer();
+        }
+        Class<?> clz = o.getClass();
+        if (clz == char[].class) {
+            return buffer().append((char[]) o);
+        } else if (clz == Character[].class) {
+            Character[] ca = (Character[])o;
+            Buffer buf = buffer();
+            for (Character c : ca) {
+                buf.append(c);
+            }
+            return buf;
+        }  else {
+            return buffer().append(o);
+        }
     }
 
     public static Buffer buffer(String s) {
@@ -3579,7 +3615,7 @@ public class S {
          * @return a reference to this object.
          */
         public Buffer append(Object obj) {
-            return append(String.valueOf(obj));
+            return append(string(obj));
         }
 
         /**

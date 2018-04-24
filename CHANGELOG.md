@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.10.1
+* `S.buffer(char[])` error #74
+* Add `S.reversed(String)` method #73
 * Add dotted style to `Keyword` #71
 * `Lang.asEnum` - support Keyword based variation non-exact matching #72
 
