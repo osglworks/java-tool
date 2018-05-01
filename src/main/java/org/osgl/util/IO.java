@@ -641,6 +641,10 @@ public class IO {
         return read(new ByteArrayInputStream(bytes));
     }
 
+    public static UrlReadStage read(URL url) {
+        return new UrlReadStage(url);
+    }
+
     public static FileReadStage read(File file) {
         return new FileReadStage(file);
     }
