@@ -269,7 +269,7 @@ public class CopyTest extends TestBase {
     public void testInherited() {
         Foo2 from = new Foo2();
         Bar2 to = new Bar2();
-        $.copy(from, to);
+        $.copy(from).to(to);
         eq(from.getId(), to.getId());
         eq(from.getName(), to.getName());
         eq("135", S.join(to.list1).get());

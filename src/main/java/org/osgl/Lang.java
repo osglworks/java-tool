@@ -8401,7 +8401,10 @@ public class Lang implements Serializable {
         return properties;
     }
 
-    public static class _MapStage {
+    /**
+     * A stage of object for mapping operation
+     */
+    public static class _MappingStage {
         private Object from;
         private Function<Class, ?> instanceFactory = OsglConfig.INSTANCE_FACTORY;
         private Map<Class, Object> hints = C.EMPTY_MAP;
@@ -8412,52 +8415,73 @@ public class Lang implements Serializable {
         private Class<?> targetKeyType;
         private Class<?> targetComponentType;
 
-        private _MapStage(Object from) {
+        private _MappingStage(Object from) {
             this.from = $.requireNotNull(from);
         }
 
-        public _MapStage conversionHints(Map<Class, Object> conversionHints) {
+        public _MappingStage withConverter(TypeConverter converter, TypeConverter... otherConverters) {
+            if (null == converterRegistry) {
+                converterRegistry = new TypeConverterRegistry();
+            }
+            converterRegistry.register(converter);
+            for (TypeConverter other : otherConverters) {
+                converterRegistry.register(other);
+            }
+            return this;
+        }
+
+        public _MappingStage withConverter(Collection<TypeConverter> converters) {
+            if (null == converterRegistry) {
+                converterRegistry = new TypeConverterRegistry();
+            }
+            for (TypeConverter converter : converters) {
+                converterRegistry.register(converter);
+            }
+            return this;
+        }
+
+        public _MappingStage conversionHints(Map<Class, Object> conversionHints) {
             this.hints = ensureGet(conversionHints, C.EMPTY_MAP);
             return this;
         }
 
-        public _MapStage instanceFactory(Function<Class, ?> instanceFactory) {
+        public _MappingStage instanceFactory(Function<Class, ?> instanceFactory) {
             this.instanceFactory = instanceFactory;
             return this;
         }
 
-        public _MapStage targetMapComponentType(Class<?> mapKeyType, Class<?> mapValType) {
+        public _MappingStage targetMapComponentType(Class<?> mapKeyType, Class<?> mapValType) {
             this.targetKeyType = $.requireNotNull(mapKeyType);
             this.targetComponentType = $.requireNotNull(mapValType);
             return this;
         }
 
-        public _MapStage targetCollectionComponentType(Class<?> componentType) {
+        public _MappingStage targetCollectionComponentType(Class<?> componentType) {
             this.targetComponentType = $.requireNotNull(componentType);
             return this;
         }
 
-        public _MapStage strictNameMatching() {
+        public _MappingStage strictNameMatching() {
             this.rule = STRICT_NAME;
             return this;
         }
 
-        public _MapStage strictNameAndTypeMatching() {
+        public _MappingStage strictNameAndTypeMatching() {
             this.rule = STRICT_NAME_TYPE;
             return this;
         }
 
-        public _MapStage keywordMatching() {
+        public _MappingStage keywordMatching() {
             this.rule = KEYWORD_MATCHING;
             return this;
         }
 
-        public _MapStage filter(String filterSpec) {
+        public _MappingStage filter(String filterSpec) {
             this.filterSpec = filterSpec;
             return this;
         }
 
-        public _MapStage ignoreError() {
+        public _MappingStage ignoreError() {
             this.ignoreError = true;
             return this;
         }
@@ -8469,413 +8493,69 @@ public class Lang implements Serializable {
 
     }
 
-    public static _MapStage map(Object source) {
-        return new _MapStage(source);
+    /**
+     * Prepare a Mapping operation with {@link DataMapper.Rule#KEYWORD_MATCHING keyword matching}
+     *
+     * @param source
+     *      the source object
+     * @return a {@link _MappingStage}
+     */
+    public static _MappingStage map(Object source) {
+        return new _MappingStage(source);
     }
 
-    public static <T> T clone(T source) {
-        return clone(source, OsglConfig.INSTANCE_FACTORY);
+    /**
+     * Prepare a Mapping operation with {@link DataMapper.Rule#STRICT_NAME_TYPE strict name and type matching}
+     *
+     * @param source
+     *      the source object
+     * @return a {@link _MappingStage}
+     */
+    public static _MappingStage clone(Object source) {
+        return new _MappingStage(source).strictNameAndTypeMatching();
     }
 
-    public static <T> T clone(T source, Function<Class, ?> instanceFactory) {
+    /**
+     * Returns clone of a given `source` object.
+     *
+     * @param source
+     *      the object to be clone
+     * @param <T>
+     *      the type parameter of the object class
+     * @return
+     *      the clone of `source`
+     */
+    public static <T> T cloneOf(T source) {
+        return cloneOf(source, OsglConfig.INSTANCE_FACTORY);
+    }
+
+    /**
+     * Returns clone of a given `source` object.
+     *
+     * @param source
+     *      the object to be clone
+     * @param instanceFactory
+     *      A function that is used to create new instance of the clone
+     * @param <T>
+     *      the type parameter of the object class
+     * @return
+     *      the clone of `source`
+     */
+    public static <T> T cloneOf(T source, Function<Class, ?> instanceFactory) {
         Object target = instanceFactory.apply(source.getClass());
-        return (T) new _MapStage(source).strictNameAndTypeMatching().to(target);
-    }
-
-    public static _MapStage copy(Object from) {
-        return new _MapStage(from).strictNameMatching();
+        return (T) new _MappingStage(source).strictNameAndTypeMatching().to(target);
     }
 
     /**
-     * copy properties from `from` to `to` by name.
-     *
-     * The copy might involve type conversion if needed.
-     * If type cannot be convert then the target field
-     * will not be changed
+     * Prepare a Mapping operation with {@link DataMapper.Rule#STRICT_NAME strict name matching}
      *
      * @param from
-     *      the object from which properties will be copied
-     * @param to
-     *      the target object
+     *      the source object
+     * @return a {@link _MappingStage}
      */
-    public static void copy(Object from, Object to) {
-        copy(from, to, C.EMPTY_MAP, OsglConfig.INSTANCE_FACTORY);
+    public static _MappingStage copy(Object from) {
+        return new _MappingStage(from).strictNameMatching();
     }
-
-    /**
-     * copy properties from `from` to `to` by name.
-     *
-     * The copy might involve type conversion if needed.
-     * If type cannot be convert then the target field
-     * will not be changed
-     *
-     *
-     * @param from
-     *      the object from which properties will be copied
-     * @param to
-     *      the target object
-     * @param conversionHints
-     *      A map of conversion hints indexed by target type
-     */
-    public static void copy(Object from, Object to, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
-        Class<?> toClass = to.getClass();
-        E.illegalArgumentIf(isSimpleType(toClass), "cannot copy to a simple type");
-        Class<?> fromClass = from.getClass();
-        E.illegalArgumentIf(isSimpleType(fromClass), "cannot copy from a simple type");
-        if (Map.class.isAssignableFrom(fromClass)) {
-            if (Map.class.isAssignableFrom(toClass)) {
-                copy((Map) from, (Map) to, null, null, true, conversionHints, instanceFactory);
-            } else {
-                copy((Map) from, to, conversionHints, instanceFactory);
-            }
-        } else if (Collection.class.isAssignableFrom(fromClass)) {
-            Collection fromList = (Collection) from;
-            if (fromList.isEmpty()) {
-                return;
-            }
-            if (Collection.class.isAssignableFrom(toClass)) {
-                Collection toList = (Collection) to;
-                if (toList.isEmpty()) {
-                    toList.addAll(fromList);
-                } else {
-                    Class type = commonSuperTypeOf(toList);
-                    if (null == type) {
-                        toList.addAll(fromList);
-                    } else {
-                        copy(fromList, toList, type, conversionHints, instanceFactory);
-                    }
-                }
-                return;
-            }
-            Object e0 = null;
-            for (Object o: fromList) {
-                if (null != o) {
-                    e0 = o;
-                    break;
-                }
-            }
-            if (e0 instanceof Map) {
-                // Yaml load embedded object as List<Map<String, Object>>, let's handle it here
-                Map<String, Object> map = new HashMap<>();
-                for (Object e : fromList) {
-                    if (e instanceof Map) {
-                        Map<?, ?> em = (Map) e;
-                        if (em.size() != 1) {
-                            return;
-                        }
-                        Map.Entry entry = em.entrySet().iterator().next();
-                        map.put(entry.getKey().toString(), entry.getValue());
-                    }
-                }
-                copy(map, to, conversionHints, instanceFactory);
-            }
-        } else {
-            List<Field> fromFields = $.fieldsOf(fromClass);
-            List<Field> toFields = $.fieldsOf(toClass);
-            copy(from, fromFields, to, toFields, conversionHints, instanceFactory);
-        }
-    }
-
-    private static void copy(Iterable from, Collection to, Class<?> toElementType, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
-        Object hint = conversionHints.get(toElementType);
-        for (Object element : from) {
-            Object toElement = convert(element).hint(hint).to(toElementType);
-            if (null == toElement) {
-                try {
-                    toElement = instanceFactory.apply(toElementType);
-                    copy(element, toElement, conversionHints, instanceFactory);
-                } catch (Exception e) {
-                    // ignore error
-                }
-            }
-            if (null != toElement) {
-                to.add(toElement);
-            }
-        }
-    }
-
-    private static void copy(Map<Object, Object> from, Object to, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
-        Class<?> toClass = to.getClass();
-        if (Map.class.isAssignableFrom(toClass)) {
-            copy(from, (Map)to, null, null, true, conversionHints, instanceFactory);
-            return;
-        }
-        List<Field> toFields = fieldsOf(toClass);
-        for (Field toField : toFields) {
-            String name = toField.getName();
-            Object fromElement = from.get(name);
-            if (null != fromElement) {
-                Class fromElementType = fromElement.getClass();
-                fromElementType = fromElementType.isArray() ? fromElementType : wrapperClassOf(fromElementType);
-                Class<?> toFieldType = toField.getType();
-                toFieldType = toFieldType.isArray() ? toFieldType : wrapperClassOf(toFieldType);
-                if (isSimpleType(toFieldType)) {
-                    if (fromElementType == toFieldType || toFieldType.isAssignableFrom(fromElementType)) {
-                        setFieldValue(to, toField, fromElement);
-                    } else {
-                        try {
-                            Object toFieldValue = convert(fromElement)
-                                    .hint(conversionHints.get(toFieldType))
-                                    .to(toFieldType);
-                            if (null != toFieldValue) {
-                                setFieldValue(to, toField, toFieldValue);
-                            }
-                        } catch (Exception e) {
-                            // ignore type conversion error
-                        }
-                    }
-                } else {
-                    Object toFieldValue = null;
-                    if (isSimpleType(fromElement.getClass())) {
-                        toFieldValue = $.convert(fromElement).hint(conversionHints.get(toFieldType)).to(toFieldType);
-                        if (null != toFieldValue) {
-                            setFieldValue(to, toField, toFieldValue);
-                        }
-                        continue;
-                    }
-                    if (Map.class.isAssignableFrom(toFieldType) && Map.class.isAssignableFrom(fromElementType)) {
-                        toFieldValue = getFieldValue(to, toField);
-                        if (null == toFieldValue) {
-                            if (Map.class == toFieldType) {
-                                toFieldValue = new HashMap<>();
-                            } else if (SortedMap.class == toFieldType) {
-                                toFieldValue = new TreeMap();
-                            } else {
-                                toFieldValue = instanceFactory.apply(toFieldType);
-                            }
-                            setFieldValue(to, toField, toFieldValue);
-                        }
-                        Class keyType = null;
-                        Class valType = null;
-                        Type genericToFieldType = toField.getGenericType();
-                        if (genericToFieldType instanceof ParameterizedType) {
-                            ParameterizedType ptype = (ParameterizedType) genericToFieldType;
-                            Type[] params = ptype.getActualTypeArguments();
-                            if (params.length > 1) {
-                                keyType = (Class) params[0];
-                                valType = (Class) params[1];
-                            }
-                        }
-                        copy((Map) fromElement, (Map) toFieldValue, keyType, valType, true, conversionHints, instanceFactory);
-                        continue;
-                    }
-                    if (Collection.class.isAssignableFrom(toFieldType) && Iterable.class.isAssignableFrom(fromElementType)) {
-                        toFieldValue = getFieldValue(to, toField);
-                        if (null == toFieldValue) {
-                            if (toFieldType.isInterface()) {
-                                if (List.class == toFieldType) {
-                                    toFieldValue = new ArrayList();
-                                } else if (Set.class == toFieldType) {
-                                    toFieldValue = new HashSet();
-                                } else if (SortedSet.class == toFieldType) {
-                                    toFieldValue = new TreeSet();
-                                } else if (C.List.class == toFieldType) {
-                                    toFieldValue = C.newList();
-                                } else {
-                                    throw E.unexpected("Unknown collection type: " + toFieldType.getName());
-                                }
-                            } else {
-                                toFieldValue = instanceFactory.apply(toFieldType);
-                            }
-                            setFieldValue(to, toField, toFieldValue);
-                        }
-                        Type genericToFieldType = toField.getGenericType();
-                        if (genericToFieldType instanceof ParameterizedType) {
-                            Type listElementType = ((ParameterizedType) genericToFieldType).getActualTypeArguments()[0];
-                            if (listElementType instanceof Class) {
-                                copy((Iterable) fromElement, (Collection) toFieldValue, (Class) listElementType, conversionHints, instanceFactory);
-                            }
-                        }
-                        continue;
-                    }
-                    try {
-                        toFieldValue = convert(fromElement)
-                                .hint(conversionHints.get(toFieldType))
-                                .to(toFieldType);
-                        if (null != toFieldValue) {
-                            setFieldValue(to, toField, toFieldValue);
-                            continue;
-                        }
-                    } catch (Exception e) {
-                        // ignore type conversion error
-                    }
-                    if (null == toFieldValue) {
-                        toFieldValue = getFieldValue(to, toField);
-                        if (null == toFieldValue) {
-                            try {
-                                toFieldValue = instanceFactory.apply(toFieldType);
-                                setFieldValue(to, toField, toFieldValue);
-                            } catch (Exception e) {
-                                // ignore error
-                            }
-                        }
-                        if (null != toFieldValue) {
-                            copy(fromElement, toFieldValue, conversionHints, instanceFactory);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private static void copy(Map<Object, Object> from, Map<Object, Object> to, Class<?> toKeyType, Class<?> toValueType, boolean append, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
-        if (null == toValueType && !to.isEmpty()) {
-            // probe toValueType from `to` map
-            toValueType = commonSuperTypeOf(to.values());
-        }
-        if (null == toKeyType && !to.isEmpty()) {
-            // probe toKeyType from `to` map
-            toKeyType = commonSuperTypeOf(to.keySet());
-        }
-        Object valueHint = null == toValueType ? null : conversionHints.get(toValueType);
-        Object keyHint = null == toKeyType ? null : conversionHints.get(toKeyType);
-        for (Map.Entry<Object, Object> entry : from.entrySet()) {
-            Object fromValue = entry.getValue();
-            if (null == fromValue) {
-                continue;
-            }
-            Object fromKey = entry.getKey();
-            Object toKey = null == toKeyType ? fromKey : convert(fromKey).hint(keyHint).to(toKeyType);
-            Object toValue = to.get(toKey);
-            if (null == toValue && !append) {
-                continue;
-            }
-            if (null == toValue) {
-                toValue = convert(fromValue).hint(valueHint).to(toValueType);
-            } else {
-                copy(fromValue, to, conversionHints, instanceFactory);
-            }
-            to.put(toKey, toValue);
-        }
-    }
-
-    private static void copy(Object from, List<Field> fromFields, Object to, List<Field> toFields, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
-        Map<String, Field> fromFieldMap = new HashMap();
-        for (Field fromField : fromFields) {
-            fromFieldMap.put(fromField.getName(), fromField);
-        }
-        for (Field toField : toFields) {
-            String name = toField.getName();
-            Field fromField = fromFieldMap.get(name);
-            if (null == fromField) {
-                continue;
-            }
-            Object fromFieldValue = getFieldValue(from, fromField);
-            if (null == fromFieldValue) {
-                continue;
-            }
-            Class<?> toFieldType = toField.getType();
-            toFieldType = toFieldType.isArray() ? toFieldType : wrapperClassOf(toFieldType);
-            Class fromFieldType = fromField.getType();
-            fromFieldType = fromFieldType.isArray() ? fromFieldType : wrapperClassOf(fromFieldType);
-            if (isSimpleType(toFieldType)) {
-                if (toFieldType == fromFieldType || toFieldType.isAssignableFrom(fromFieldType)) {
-                    setFieldValue(to, toField, fromFieldValue);
-                } else {
-                    try {
-                        Object toFieldValue = $.convert(fromFieldValue)
-                                .hint(conversionHints.get(toFieldType))
-                                .to(toFieldType);
-                        if (null != toFieldValue) {
-                            setFieldValue(to, toField, toFieldValue);
-                        }
-                    } catch (Exception e) {
-                        // ignore conversion error
-                    }
-                }
-            } else {
-                Object toFieldValue = null;
-                if (isSimpleType(fromFieldType)) {
-                    toFieldValue = $.convert(fromFieldValue).hint(conversionHints.get(toFieldType)).to(toFieldType);
-                    if (null != toFieldValue) {
-                        setFieldValue(to, toField, toFieldValue);
-                    }
-                    continue;
-                }
-                if (Map.class.isAssignableFrom(toFieldType) && Map.class.isAssignableFrom(fromFieldType)) {
-                    toFieldValue = getFieldValue(to, toField);
-                    if (null == toFieldValue) {
-                        if (Map.class == toFieldType) {
-                            toFieldValue = new HashMap<>();
-                        } else if (SortedMap.class == toFieldType) {
-                            toFieldValue = new TreeMap();
-                        } else {
-                            toFieldValue = instanceFactory.apply(toFieldType);
-                        }
-                        setFieldValue(to, toField, toFieldValue);
-                    }
-                    Class keyType = null;
-                    Class valType = null;
-                    Type genericToFieldType = toField.getGenericType();
-                    if (genericToFieldType instanceof ParameterizedType) {
-                        ParameterizedType ptype = (ParameterizedType) genericToFieldType;
-                        Type[] params = ptype.getActualTypeArguments();
-                        if (params.length > 1) {
-                            keyType = (Class) params[0];
-                            valType = (Class) params[1];
-                        }
-                    }
-                    copy((Map) fromFieldValue, (Map) toFieldValue, keyType, valType, true, conversionHints, instanceFactory);
-                    continue;
-                }
-                if (Collection.class.isAssignableFrom(toFieldType) && Iterable.class.isAssignableFrom(fromFieldType)) {
-                    toFieldValue = getFieldValue(to, toField);
-                    if (null == toFieldValue) {
-                        if (toFieldType.isInterface()) {
-                            if (List.class == toFieldType) {
-                                toFieldValue = new ArrayList();
-                            } else if (Set.class == toFieldType) {
-                                toFieldValue = new HashSet();
-                            } else if (SortedSet.class == toFieldType) {
-                                toFieldValue = new TreeSet();
-                            } else if (C.List.class == toFieldType) {
-                                toFieldValue = C.newList();
-                            } else {
-                                throw E.unexpected("Unknown collection type: " + toFieldType.getName());
-                            }
-                        } else {
-                            toFieldValue = instanceFactory.apply(toFieldType);
-                        }
-                        setFieldValue(to, toField, toFieldValue);
-                    }
-                    Type genericToFieldType = toField.getGenericType();
-                    if (genericToFieldType instanceof ParameterizedType) {
-                        Type listElementType = ((ParameterizedType) genericToFieldType).getActualTypeArguments()[0];
-                        if (listElementType instanceof Class) {
-                            copy((Iterable) fromFieldValue, (Collection) toFieldValue, (Class) listElementType, conversionHints, instanceFactory);
-                        }
-                    }
-                    continue;
-                }
-                try {
-                    toFieldValue = $.convert(fromFieldValue)
-                            .hint(conversionHints.get(toFieldType))
-                            .to(toFieldType);
-                    if (null != toFieldValue) {
-                        setFieldValue(to, toField, toFieldValue);
-                        continue;
-                    }
-                } catch (Exception e) {
-                    // ignore conversion error
-                }
-                if (null == toFieldValue) {
-                    toFieldValue = getFieldValue(to, toField);
-                    if (null == toFieldValue) {
-                        try {
-                            toFieldValue = instanceFactory.apply(toFieldType);
-                            setFieldValue(to, toField, toFieldValue);
-                        } catch (Exception e) {
-                            // ignore error
-                        }
-                    }
-                    if (null != toFieldValue) {
-                        copy(fromFieldValue, toFieldValue, conversionHints, instanceFactory);
-                    }
-                }
-            }
-        }
-    }
-
 
 
     // --- eof common utilities

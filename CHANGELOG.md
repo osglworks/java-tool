@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.11.1
+* Clean unused copy code from Lang
+* Allow specify converter registry to _MapStage
+
 1.11.0
 * Provide a Mapping framework #75
 * OSGL conversion framework refactory #76
