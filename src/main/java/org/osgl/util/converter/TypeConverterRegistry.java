@@ -26,10 +26,206 @@ import org.osgl.util.E;
 import org.osgl.util.N;
 import org.osgl.util.S;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class TypeConverterRegistry {
+
+    private static class Node {
+        private Comparator<Node> nodeComparator = new Comparator<Node>() {
+            @Override
+            public int compare(Node o1, Node o2) {
+                return distanceTo(o1.type) - distanceTo(o2.type);
+            }
+
+            private int distanceTo(Class<?> target) {
+                return distanceBetween(type, target);
+            }
+        };
+        private Comparator<Link> linkComparator = new Comparator<Link>() {
+            @Override
+            public int compare(Link o1, Link o2) {
+                if (o1 == o2) {
+                    return 0;
+                }
+                int n = o1.converter.hops() - o2.converter.hops();
+                if (n != 0) {
+                    return n;
+                }
+                Node from1 = o1.from;
+                Node to1 = o1.to;
+                Node from2 = o2.from;
+                Node to2 = o2.to;
+                n = distanceBetween(from1.type, to1.type) - distanceBetween(from2.type, to2.type);
+                if (n != 0) {
+                    return n;
+                }
+                if (from1 == from2) {
+                    return to1.toString().compareTo(to2.toString());
+                } else if (to1 == to2) {
+                    return from1.toString().compareTo(from2.toString());
+                } else {
+                    return o1.toString().compareTo(o2.toString());
+                }
+            }
+        };
+        private Class<?> type;
+        private SortedSet<Node> superTypes = new TreeSet<>(nodeComparator);
+        private SortedSet<Node> subTypes = new TreeSet<>(nodeComparator);
+        private SortedSet<Link> fanIn = new TreeSet<>(linkComparator);
+        private HashMap<Node, Link> fanOut = new HashMap<>();
+
+        private Node(Class<?> type, TypeConverterRegistry registry) {
+            this.type = $.requireNotNull(type);
+            this.exploreSuperTypes(registry);
+        }
+
+        @Override
+        public String toString() {
+            return S.fmt("[%s]", type.getName());
+        }
+
+        private void addFanIn(Link link) {
+            fanIn.add(link);
+            for (Node superType : superTypes) {
+                superType.fanIn.add(link);
+            }
+        }
+
+        private void addFanOut(Link link) {
+            Link existing = fanOut.get(link.to);
+            if (null == existing || linkComparator.compare(link, existing) < 0) {
+                fanOut.put(link.to, link);
+                for (Node subType : subTypes) {
+                    existing = subType.fanOut.get(link.to);
+                    if (null == existing || linkComparator.compare(link, existing) < 0) {
+                        subType.fanOut.put(link.to, link);
+                    }
+                }
+            }
+        }
+
+        private List<Link> fanOutLinks() {
+            List<Link> links = new ArrayList<>();
+            links.addAll(fanOut.values());
+            Collections.sort(links, linkComparator);
+            return links;
+        }
+
+        private void exploreSuperTypes(TypeConverterRegistry registry) {
+            Set<Class> interfaces = $.interfacesOf(type);
+            for (Class intf : interfaces) {
+                if (intf == Serializable.class || intf == Comparable.class) {
+                    continue;
+                }
+                Node superNode = registry.nodeOf(intf);
+                superTypes.add(superNode);
+                superNode.subTypes.add(this);
+            }
+            Class<?> superType = type.getSuperclass();
+            while (superType != null && superType != Object.class) {
+                Node superNode = registry.nodeOf(superType);
+                superTypes.add(superNode);
+                superNode.subTypes.add(this);
+                superType = superType.getSuperclass();
+            }
+        }
+
+        private Link pathTo(Node target, TypeConverterRegistry registry, Set<Node> recursiveDetector) {
+            Link directLink = fanOut.get(target);
+            if (null != directLink) {
+                return directLink;
+            }
+            SortedSet<Link> candidates = new TreeSet<>(linkComparator);
+            exploreLinks(candidates, target, registry, recursiveDetector);
+            return candidates.isEmpty() ? null : candidates.iterator().next();
+        }
+
+        private void exploreLinks(Set<Link> linkJar, Node target, TypeConverterRegistry registry, Set<Node> recursiveDetector) {
+            Link direct = fanOut.get(target);
+            if (null != direct) {
+                linkJar.add(direct);
+                return;
+            }
+            for (Link link : fanOutLinks()) {
+                if (link.to == this || recursiveDetector.contains(link.to) || recursiveDetector.contains(link.from)) {
+                    continue;
+                }
+                recursiveDetector.add(link.to);
+                recursiveDetector.add(link.from);
+                Link downstream = link.to.pathTo(target, registry, recursiveDetector);
+                recursiveDetector.remove(link.to);
+                recursiveDetector.remove(link.from);
+                if (null != downstream) {
+                    linkJar.add(link.cascadeWith(downstream, registry));
+                }
+            }
+            for (Node superType : superTypes) {
+                superType.exploreLinks(linkJar, target, registry, recursiveDetector);
+            }
+        }
+
+    }
+
+    private static class Link {
+        private Node from;
+        private Node to;
+        private $.TypeConverter converter;
+        private Link($.TypeConverter converter, TypeConverterRegistry registry) {
+            this.from = registry.nodeOf(converter.fromType);
+            this.to = registry.nodeOf(converter.toType);
+            this.converter = converter;
+            this.from.addFanOut(this);
+            this.to.addFanIn(this);
+        }
+
+        @Override
+        public String toString() {
+            return S.fmt("%s => %s", from, to);
+        }
+
+        private Link cascadeWith(Link downstream, TypeConverterRegistry registry) {
+            E.unexpectedIfNot(downstream.isSource(this.to));
+            $.TypeConverter chained = new ChainedConverter(this.converter, downstream.converter);
+            return new Link(chained, registry);
+        }
+
+        private boolean isSource(Node node) {
+            if (node == from || from.subTypes.contains(node)) {
+                return true;
+            }
+            if (from.type.isAssignableFrom(node.type)) {
+                from.subTypes.add(node);
+                return true;
+            }
+            return false;
+        }
+
+        private boolean isTarget(Node node) {
+            return (node == to || node.superTypes.contains(to));
+        }
+    }
+
+    public static $.TypeConverter ME_TO_ME = new $.TypeConverter(false) {
+        @Override
+        public Object convert(Object o) {
+            return o;
+        }
+    };
+
+    private Map<Class, Node> nodeMap = new IdentityHashMap<>();
+
+    private Map<$.TypeConverter, Link> linkMap = new IdentityHashMap<>();
+
+    private synchronized Node nodeOf(Class<?> type) {
+        Node node = nodeMap.get(type);
+        if (null == node) {
+            node = new Node(type, this);
+            nodeMap.put(type, node);
+        }
+        return node;
+    }
 
     private static final Map<Class, Object> NULL_VALS = C.Map(
             boolean.class, false,
@@ -49,45 +245,65 @@ public class TypeConverterRegistry {
         }
     };
 
-    public static final TypeConverterRegistry INSTANCE = new TypeConverterRegistry();
+    public static final TypeConverterRegistry INSTANCE = new TypeConverterRegistry(true);
 
     private Map<$.Pair<Class, Class>, $.TypeConverter> paths = new HashMap<>();
 
+    private TypeConverterRegistry parent;
+
     public TypeConverterRegistry() {
-        registerBuiltInConverters();
+        this(false);
     }
 
-    public <FROM, TO> $.TypeConverter<FROM, TO> get(Class<FROM> fromType, Class<TO> toType) {
-        $.TypeConverter<FROM, TO> converter = $.cast(paths.get($.Pair(fromType, toType)));
-        if (null == converter && Void.class == fromType) {
-            return $.cast(NULL_CONVERTER);
+    private TypeConverterRegistry(boolean isGlobalInstance) {
+        if (isGlobalInstance) {
+            registerBuiltInConverters();
+        } else {
+            parent = INSTANCE;
+        }
+    }
+
+    public synchronized <FROM, TO> $.TypeConverter<FROM, TO> get(Class<FROM> fromType, Class<TO> toType) {
+        fromType = fromType.isArray() ? fromType : $.wrapperClassOf(fromType);
+        toType = toType.isArray() ? toType : $.wrapperClassOf(toType);
+        if (fromType == toType || fromType.isAssignableFrom(toType)) {
+            return ME_TO_ME;
+        }
+        $.Pair<Class, Class> key = keyOf(fromType, toType);
+        $.TypeConverter converter = paths.get(key);
+        if (null == converter) {
+            Node node = nodeOf(fromType);
+            Link link = node.pathTo(nodeOf(toType), this, new HashSet<Node>());
+            if (null != link) {
+                paths.put(key, link.converter);
+                return link.converter;
+            }
         }
         if (null == converter) {
-            Set<Class> types = $.allTypesOf(fromType);
-            for (Class c : types) {
-                $.TypeConverter converter1 = get(c, toType);
-                if (null != converter1) {
-                    register(converter1, fromType, toType);
-                    return converter1;
-                }
+            if (null != parent) {
+                converter = parent.get(fromType, toType);
+            } else if (String.class == toType) {
+                converter = $.TypeConverter.ANY_TO_STRING;
+                paths.put(key, converter);
+            } else if (Boolean.class == toType) {
+                converter = $.TypeConverter.ANY_TO_BOOLEAN;
+                paths.put(key, converter);
             }
         }
         return converter;
     }
 
-    public TypeConverterRegistry register($.TypeConverter typeConverter) {
-        for ($.Pair<Class, Class> key : allKeyOf(typeConverter)) {
-            if (!paths.containsKey(key)) {
-                addIntoPath(key, typeConverter);
-            }
+    public synchronized TypeConverterRegistry register($.TypeConverter typeConverter) {
+        if (!linkMap.containsKey(typeConverter)) {
+            linkMap.put(typeConverter, new Link(typeConverter, this));
+            $.Pair<Class, Class> key = keyOf(typeConverter);
+            addIntoPath(key, typeConverter);
         }
-        buildPaths(typeConverter);
         return this;
     }
 
-    private void register($.TypeConverter typeConverter, Class fromType, Class toType) {
-        $.Pair<Class, Class> key = $.Pair(fromType, toType);
-        register(typeConverter, key);
+    public int size() {
+        return paths.size();
     }
 
     private void register($.TypeConverter typeConverter, $.Pair<Class, Class> key) {
@@ -133,15 +349,21 @@ public class TypeConverterRegistry {
         return $.Pair(typeConverter.fromType, typeConverter.toType);
     }
 
-    private Set<$.Pair<Class, Class>> allKeyOf($.TypeConverter typeConverter) {
-        Set<$.Pair<Class, Class>> set = new HashSet<>();
+    private List<$.Pair<Class, Class>> allKeyOf($.TypeConverter typeConverter) {
+        List<$.Pair<Class, Class>> set = new ArrayList<>();
         Class fromType = typeConverter.fromType;
         Class toType = typeConverter.toType;
         set.add($.Pair(fromType, toType));
         for (Class intf : $.interfacesOf(toType)) {
+            if (intf == Comparable.class || intf == Serializable.class) {
+                continue;
+            }
             set.add($.Pair(fromType, intf));
         }
         for (Class parent : $.superClassesOf(toType)) {
+            if (parent == Object.class) {
+                continue;
+            }
             set.add($.Pair(fromType, parent));
         }
         return set;
@@ -201,6 +423,7 @@ public class TypeConverterRegistry {
     }
 
     private void addIntoPath($.Pair<Class, Class> key, $.TypeConverter converter) {
+        //System.out.println(S.fmt(">>>>> add [%s] into path", key));
         paths.put(key, converter);
         Class<?> toType = key.right();
         if (Number.class.isAssignableFrom(toType)) {
@@ -221,6 +444,11 @@ public class TypeConverterRegistry {
             super(upstream.fromType, downStream.toType);
             this.upstream = upstream;
             this.downstream = downStream;
+        }
+
+        @Override
+        public int hops() {
+            return upstream.hops() + downstream.hops();
         }
 
         @Override
@@ -266,6 +494,10 @@ public class TypeConverterRegistry {
             return 0;
         }
         return distance(type.getSuperclass()) - 1;
+    }
+
+    private static int distanceBetween(Class<?> source, Class<?> target) {
+        return Math.abs(distance(source) - distance(target));
     }
 
 }

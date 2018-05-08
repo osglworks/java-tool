@@ -34,35 +34,53 @@ import java.util.Iterator;
 public enum Iterators {
     ;
     public static <T> Iterator<T> filterIndex(Iterator<? extends T> itr, $.Function<Integer, Boolean> predicate) {
-        return new IndexFilteredIterator<T>(itr, predicate);
+        return new IndexFilteredIterator<>(itr, predicate);
     }
 
     public static <T> Iterator<T> filter(Iterator<? extends T> itr, $.Function<? super T, Boolean> predicate) {
-        return new FilteredIterator<T>(itr, predicate);
+        return new FilteredIterator<>(itr, predicate);
     }
 
     public static <T> Iterator<T> filterWhile(Iterator<? extends T> itr, $.Function<? super T, Boolean> predicate) {
-        return new FilteredIterator<T>(itr, predicate, FilteredIterator.Type.WHILE);
+        return new FilteredIterator<>(itr, predicate, FilteredIterator.Type.WHILE);
     }
 
     public static <T> Iterator<T> filterUntil(Iterator<? extends T> itr, $.Function<? super T, Boolean> predicate) {
-        return new FilteredIterator<T>(itr, predicate, FilteredIterator.Type.UNTIL);
+        return new FilteredIterator<>(itr, predicate, FilteredIterator.Type.UNTIL);
     }
 
     public static <T> Iterator<T> composite(Iterator<? extends T> i1, Iterator<? extends T> i2) {
-        return new CompositeIterator<T>(i1, i2);
+        return new CompositeIterator<>(i1, i2);
     }
 
-    public static <T> Iterator<T> of(T t) {
-        return new SingletonIterator<T>(t);
+    public static Iterator of(Object t) {
+        if (null == t) {
+            return new SingletonIterator<>(t);
+        }
+        Class type = t.getClass();
+        if (type.isArray()) {
+            return new ArrayObjectIterator(t);
+        }
+        if (Iterable.class.isAssignableFrom(type)) {
+            return ((Iterable) t).iterator();
+        }
+        return new SingletonIterator(t);
+    }
+
+    public static <T> Iterator<T> singleton(T t) {
+        return new SingletonIterator<>(t);
+    }
+
+    public static Iterator ofArray(Object array) {
+        return new ArrayObjectIterator(array);
     }
 
     public static <T, R> Iterator<R> map(Iterator<? extends T> itr, $.Function<? super T, ? extends R> mapper) {
-        return new MappedIterator<T, R>(itr, mapper);
+        return new MappedIterator<>(itr, mapper);
     }
 
     public static <T, R> Iterator<R> flatMap(Iterator<? extends T> itr, $.Function<? super T, ? extends Iterable<? extends R>> mapper) {
-        return new FlatMappedIterator<T, R>(itr, mapper);
+        return new FlatMappedIterator<>(itr, mapper);
     }
 
 }

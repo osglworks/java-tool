@@ -2388,6 +2388,58 @@ public class S {
     }
 
     /**
+     * Centers a String in a larger String of size size using the space character (' ').
+     *
+     * If the size is less than the String length, the String is returned.
+     * A null String is treated as empty string `""`.
+     * A negative size is treated as zero.
+     *
+     * Equivalent to `center(str, size, " ")`.
+     *
+     * @param s
+     *      the string to center
+     * @param length
+     *      the size of new string
+     * @return centered String
+     */
+    public static String center(String s, int length) {
+        return center(s, length, ' ');
+    }
+
+    /**
+     * Centers a String in a larger String of size size.
+     *
+     * Uses a supplied character as the value to pad the String with.
+     *
+     * If the size is less than the String length, the String is returned.
+     * A `null` String is treated as empty string`""`.
+     * A negative size is treated as zero.
+     *
+     * @param s
+     *      The string to center
+     * @param length
+     *      The size of the new string
+     * @param padChar
+     *       the character to pad the new String with
+     * @return centered String as described above
+     */
+    public static String center(String s, int length, char padChar) {
+        if (null == s) {
+            s = "";
+        }
+        if (length < 0) {
+            length = 0;
+        }
+        int sLen = s.length();
+        if (sLen >= length) {
+            return s;
+        }
+        int left = (length - sLen) / 2;
+        int right = length - sLen - left;
+        return S.concat(S.times(padChar, left), s, S.times(padChar, right));
+    }
+
+    /**
      * Reverse a String.
      * @param s
      *      the string to be reversed.
@@ -2527,6 +2579,30 @@ public class S {
             return "";
         }
         return o.toString();
+    }
+
+    public static String string(char c) {
+        return String.valueOf(c);
+    }
+
+    public static String string(char[] ca) {
+        return String.valueOf(ca);
+    }
+
+    public static String string(int n) {
+        return String.valueOf(n);
+    }
+
+    public static String string(long l) {
+        return String.valueOf(l);
+    }
+
+    public static String string(float f) {
+        return String.valueOf(f);
+    }
+
+    public static String string(double d) {
+        return String.valueOf(d);
     }
 
     public static Str str(Object o) {

@@ -220,6 +220,12 @@ public class E {
         }
     }
 
+    public static void unexpectedIf(boolean tester) {
+        if (tester) {
+            throw new UnexpectedException();
+        }
+    }
+
     /**
      * Throws out a {@link UnexpectedException} with message and cause specified when `tester`
      * is **not** evaluated to `true`.
@@ -235,6 +241,9 @@ public class E {
         unexpectedIf(!tester, msg, args);
     }
 
+    public static void unexpectedIfNot(boolean tester) {
+        unexpectedIf(!tester);
+    }
 
     /**
      * Wrap the {@link IOException} into {@link UnexpectedIOException} and throw it out.

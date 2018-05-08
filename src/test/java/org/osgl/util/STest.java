@@ -384,4 +384,14 @@ public class STest extends UtilTestBase {
         final String s2 = "你好";
         eq("好你", S.reversed(s2));
     }
+
+    @Test
+    public void testCenter() {
+        String s = "ab";
+        eq(" ab ", S.center(s, 4));
+        eq("*ab*", S.center(s, 4, '*'));
+        eq("ab", S.center(s, -1));
+        eq("ab ", S.center(s, 3));
+    }
+
 }

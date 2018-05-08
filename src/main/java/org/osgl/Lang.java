@@ -20,6 +20,13 @@ package org.osgl;
  * #L%
  */
 
+import static org.osgl.util.DataMapper.Rule.KEYWORD_MATCHING;
+import static org.osgl.util.DataMapper.Rule.STRICT_NAME;
+import static org.osgl.util.DataMapper.Rule.STRICT_NAME_TYPE;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.osgl.cache.CacheService;
 import org.osgl.concurrent.ContextLocal;
 import org.osgl.exception.*;
@@ -2618,6 +2625,16 @@ public class Lang implements Serializable {
     @SuppressWarnings("unused")
     public static abstract class TypeConverter<FROM, TO> extends Transformer<FROM, TO> {
 
+        /**
+         * When this hint is used, it forces enum converter to do exact name
+         * matching rather than keyword pattern matching.
+         */
+        public static final Object HINT_STRICT = new Object();
+
+        /**
+         * This hint is no longer used. Please refer to {@link #HINT_STRICT}
+         */
+        @Deprecated
         public static final Object HINT_CASE_INSENSITIVE = new Object();
 
         public Class<FROM> fromType;
@@ -2628,8 +2645,18 @@ public class Lang implements Serializable {
             this.toType = toType;
         }
 
+        public int hops() {
+            return 1;
+        }
+
         protected TypeConverter() {
-            exploreTypes();
+            this(true);
+        }
+
+        protected TypeConverter(boolean exploreType) {
+            if (exploreType) {
+                exploreTypes();
+            }
         }
 
         private void exploreTypes() {
@@ -2842,10 +2869,73 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<String, Class> STRING_TO_CLASS = new TypeConverter<String, Class>() {
+            @Override
+            public Class convert(String s) {
+                return classForName(s);
+            }
+
+            @Override
+            public Class convert(String s, Object hint) {
+                if (hint instanceof ClassLoader) {
+                    ClassLoader cl = (ClassLoader) hint;
+                    return classForName(s, cl);
+                }
+                return super.convert(s, hint);
+            }
+        };
+
+        public static TypeConverter<String, JSONObject> STRING_TO_JSON_OBJECT = new TypeConverter<String, JSONObject>() {
+            @Override
+            public JSONObject convert(String s) {
+                return JSON.parseObject(s);
+            }
+        };
+
+        public static TypeConverter<String, JSONArray> STRING_TO_JSON_ARRAY = new TypeConverter<String, JSONArray>() {
+            @Override
+            public JSONArray convert(String s) {
+                return JSON.parseArray(s);
+            }
+        };
+
         public static TypeConverter<String, Reader> STRING_TO_READER = new TypeConverter<String, Reader>() {
             @Override
             public Reader convert(String s) {
                 return new StringReader(s);
+            }
+        };
+
+        public static TypeConverter<Iterator, Iterable> ITERATOR_TO_ITERABLE = new TypeConverter<Iterator, Iterable>() {
+            @Override
+            public Iterable convert(final Iterator iterator) {
+                return new Iterable() {
+                    @Override
+                    public Iterator iterator() {
+                        return iterator;
+                    }
+                };
+            }
+        };
+
+        public static TypeConverter<Iterable, Iterator> ITERABLE_TO_ITERATOR = new TypeConverter<Iterable, Iterator>() {
+            @Override
+            public Iterator convert(Iterable iterable) {
+                return iterable.iterator();
+            }
+        };
+
+        public static TypeConverter<Enumeration, Iterator> ENUMERATION_TO_ITERATOR = new TypeConverter<Enumeration, Iterator>() {
+            @Override
+            public Iterator convert(Enumeration enumeration) {
+                return new EnumerationIterator(enumeration);
+            }
+        };
+
+        public static TypeConverter<Iterator, Enumeration> ITERATOR_TO_ENUMERATION = new TypeConverter<Iterator, Enumeration>() {
+            @Override
+            public Enumeration convert(Iterator iterator) {
+                return new IteratorEnumeration(iterator);
             }
         };
 
@@ -2877,21 +2967,56 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<Date, Long> DATE_TO_LONG = new TypeConverter<Date, Long>() {
+            @Override
+            public Long convert(Date date) {
+                return date.getTime();
+            }
+        };
+
+        public static TypeConverter<Long, Date> LONG_TO_DATE = new TypeConverter<Long, Date>() {
+            @Override
+            public Date convert(Long time) {
+                return null == time ? null : new Date(time);
+            }
+        };
+
+        public static TypeConverter<Date, java.sql.Date> DATE_TO_SQL_DATE = new TypeConverter<Date, java.sql.Date>() {
+            @Override
+            public java.sql.Date convert(Date date) {
+                return new java.sql.Date(date.getTime());
+            }
+        };
+
+        public static TypeConverter<Date, java.sql.Time> DATE_TO_SQL_TIME = new TypeConverter<Date, java.sql.Time>() {
+            @Override
+            public java.sql.Time convert(Date date) {
+                return new java.sql.Time(date.getTime());
+            }
+        };
+
+        public static TypeConverter<Date, java.sql.Timestamp> DATE_TO_SQL_TIMESTAMP = new TypeConverter<Date, java.sql.Timestamp>() {
+            @Override
+            public java.sql.Timestamp convert(Date date) {
+                return new java.sql.Timestamp(date.getTime());
+            }
+        };
+
         public static <ENUM extends Enum<ENUM>> TypeConverter<String, ENUM> stringToEnum(final Class<ENUM> enumClass) {
             return new TypeConverter<String, ENUM>(String.class, enumClass) {
                 @Override
                 public ENUM convert(String s) {
-                    return Enum.valueOf(enumClass, s);
+                    return convert(s, null);
                 }
 
                 @Override
                 public ENUM convert(String s, Object hint) {
-                    if (HINT_CASE_INSENSITIVE != hint) {
-                        return convert(s);
+                    if (HINT_STRICT == hint) {
+                        return Enum.valueOf(enumClass, s);
                     }
                     Enum[] enums = enumClass.getEnumConstants();
                     for (Enum e : enums) {
-                        if (e.name().equalsIgnoreCase(s)) {
+                        if (Keyword.of(e.name()).equals(Keyword.of(s))) {
                             return (ENUM)e;
                         }
                     }
@@ -3137,7 +3262,9 @@ public class Lang implements Serializable {
         private FROM from;
         private Object defVal;
         private Object hint;
+        private boolean reportError;
         private Class<?> fromType;
+        private TypeConverterRegistry converterRegistry = TypeConverterRegistry.INSTANCE;
 
         private _ConvertStage(FROM from) {
             this.from = from;
@@ -3150,12 +3277,22 @@ public class Lang implements Serializable {
         }
 
         public _ConvertStage hint(Object hint) {
-            this.hint = requireNotNull(hint);
+            this.hint = hint;
             return this;
         }
 
-        public _ConvertStage caseInsensitivie() {
-            return hint(TypeConverter.HINT_CASE_INSENSITIVE);
+        public _ConvertStage reportError() {
+            reportError = true;
+            return this;
+        }
+
+        public _ConvertStage strictMatching() {
+            return hint(TypeConverter.HINT_STRICT);
+        }
+
+        public _ConvertStage customTypeConverters(TypeConverterRegistry typeConverterRegistry) {
+            this.converterRegistry = $.requireNotNull(typeConverterRegistry);
+            return this;
         }
 
         public <TO> TO to(Class<TO> toType) {
@@ -3165,17 +3302,42 @@ public class Lang implements Serializable {
             if (null == from && null != defVal) {
                 return (TO) defVal;
             }
-            TypeConverterRegistry registry = TypeConverterRegistry.INSTANCE;
-            if (Enum.class.isAssignableFrom(toType)) {
-                TypeConverter<String, Enum> enumConverter = TypeConverter.stringToEnum((Class<Enum>)toType);
-                return (TO) enumConverter.convert(TypeConverter.ANY_TO_STRING.convert(from), hint);
-            }
-            TypeConverter<FROM, TO> converter = cast(registry.get(fromType, toType));
+            TypeConverter<FROM, TO> converter = cast(converterRegistry.get(fromType, toType));
             if (null == converter) {
+                if (Enum.class.isAssignableFrom(toType)) {
+                    TypeConverter<String, Enum> enumConverter = TypeConverter.stringToEnum((Class<Enum>) toType);
+                    return (TO) enumConverter.convert(TypeConverter.ANY_TO_STRING.convert(from), hint);
+                } else if (fromType.isArray()) {
+                    if (Iterable.class.isAssignableFrom(toType)) {
+                        return (TO) new Iterable() {
+                            @Override
+                            public Iterator iterator() {
+                                return new ArrayObjectIterator(from);
+                            }
+                        };
+                    } else if (Iterator.class.isAssignableFrom(toType)) {
+                        return (TO) new ArrayObjectIterator(from);
+                    } else if (toType.isArray()) {
+                        Class<?> fromComponentType = fromType.getComponentType();
+                        Class<?> toComponentType = toType.getComponentType();
+                        final TypeConverter componentConverter = converterRegistry.get(fromComponentType, toComponentType);
+                        if (null != componentConverter) {
+                            int len = Array.getLength(from);
+                            Object toArray = Array.newInstance(toComponentType, len);
+                            for (int i = 0; i < len; ++i) {
+                                Array.set(toArray, i, componentConverter.convert(Array.get(from, i)));
+                            }
+                            return (TO) toArray;
+                        }
+                    }
+                }
                 if (null != defVal) {
                     return (TO)defVal;
                 } else {
-                    throw new IllegalArgumentException(S.fmt("Unable to find converter from %s to %s", fromType, toType));
+                    if (reportError) {
+                        throw new IllegalArgumentException(S.fmt("Unable to find converter from %s to %s", fromType, toType));
+                    }
+                    return null;
                 }
             }
 
@@ -6071,7 +6233,7 @@ public class Lang implements Serializable {
      * @return all interfaces `type` implements
      */
     public static Set<Class> interfacesOf(Class<?> type) {
-        Set<Class> interfaces = new HashSet<>();
+        Set<Class> interfaces = new LinkedHashSet<>();
         Class<?> parent = type.getSuperclass();
         if (null != parent && Object.class != parent) {
             interfaces.addAll(interfacesOf(parent));
@@ -6207,6 +6369,15 @@ public class Lang implements Serializable {
         try {
             field.setAccessible(true);
             return (T) field.get(obj);
+        } catch (IllegalAccessException e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public static void setFieldValue(Object obj, Field field, Object fieldValue) {
+        try {
+            field.setAccessible(true);
+            field.set(obj, fieldValue);
         } catch (IllegalAccessException e) {
             throw E.unexpected(e);
         }
@@ -6466,7 +6637,7 @@ public class Lang implements Serializable {
                 }
                 return ct.newInstance(p1);
             }
-            throw new UnexpectedNewInstanceException("constructor not found");
+            throw new UnexpectedNewInstanceException("Constructor not found on " + c.getName());
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof RuntimeException) {
@@ -8031,6 +8202,103 @@ public class Lang implements Serializable {
         return o;
     }
 
+    public static Class<?> commonSuperTypeOf(Object o1, Object o2, Object ... others) {
+        Class c1 = null == o1 ? null : o1.getClass();
+        Class c2 = null == o2 ? null : o2.getClass();
+        c1 = commonSuperTypeOf_(c1, c2);
+        if (Object.class == c1) {
+            return c1;
+        }
+        for (int i = others.length - 1; i >= 0; --i) {
+            Object o = others[i];
+            if (null == o) {
+                continue;
+            }
+            Class c = o.getClass();
+            c1 = commonSuperTypeOf_(c1, c);
+            if (Object.class == c1) {
+                return c1;
+            }
+        }
+        return c1;
+    }
+
+    public static Class<?> commonSuperTypeOf(Collection<?> objects) {
+        if (objects.isEmpty()) {
+            return Object.class;
+        }
+        Class c1 = null;
+        for (Object o: objects) {
+            if (o == null) {
+                continue;
+            }
+            Class c = o.getClass();
+            c1 = commonSuperTypeOf_(c1, c);
+            if (c1 == Object.class) {
+                return c1;
+            }
+        }
+        if (null == c1) {
+            c1 = Object.class;
+        }
+        return c1;
+    }
+
+    private static Class<?> commonSuperTypeOf_(Class<?> c1, Class<?> c2) {
+        if (c1 == c2) {
+            return c1;
+        }
+        if (null == c1) {
+            return c2;
+        }
+        if (null == c2) {
+            return c1;
+        }
+        if (c1.isAssignableFrom(c2)) {
+            return c1;
+        }
+        if (c2.isAssignableFrom(c1)) {
+            return c2;
+        }
+        Class superClass = c1.getSuperclass();
+        while (null != superClass && superClass != Object.class) {
+            if (superClass.isAssignableFrom(c2)) {
+                return superClass;
+            }
+            superClass = superClass.getSuperclass();
+        }
+        Set<Class> interfaces = interfacesOf(c1);
+        boolean isComparable = false;
+        boolean isSerializable = false;
+        boolean isCloneable = false;
+        for (Class intf: interfaces) {
+            if (intf == Comparable.class) {
+                isComparable = true;
+                continue;
+            }
+            if (intf == Serializable.class) {
+                isSerializable = true;
+                continue;
+            }
+            if (intf == Cloneable.class) {
+                isCloneable = true;
+            }
+            if (intf.isAssignableFrom(c2)) {
+                return intf;
+            }
+        }
+        if (isComparable) {
+            return Comparable.class;
+        }
+        if (isSerializable) {
+            return Serializable.class;
+        }
+        if (isCloneable) {
+            return Cloneable.class;
+        }
+        return Object.class;
+    }
+
     /**
      * The default thread factory
      */
@@ -8131,6 +8399,481 @@ public class Lang implements Serializable {
             properties.put(m.getName(), $.invokeVirtual(anno, m));
         }
         return properties;
+    }
+
+    public static class _MapStage {
+        private Object from;
+        private Function<Class, ?> instanceFactory = OsglConfig.INSTANCE_FACTORY;
+        private Map<Class, Object> hints = C.EMPTY_MAP;
+        private DataMapper.Rule rule = KEYWORD_MATCHING;
+        private TypeConverterRegistry converterRegistry;
+        private String filterSpec;
+        private boolean ignoreError;
+        private Class<?> targetKeyType;
+        private Class<?> targetComponentType;
+
+        private _MapStage(Object from) {
+            this.from = $.requireNotNull(from);
+        }
+
+        public _MapStage conversionHints(Map<Class, Object> conversionHints) {
+            this.hints = ensureGet(conversionHints, C.EMPTY_MAP);
+            return this;
+        }
+
+        public _MapStage instanceFactory(Function<Class, ?> instanceFactory) {
+            this.instanceFactory = instanceFactory;
+            return this;
+        }
+
+        public _MapStage targetMapComponentType(Class<?> mapKeyType, Class<?> mapValType) {
+            this.targetKeyType = $.requireNotNull(mapKeyType);
+            this.targetComponentType = $.requireNotNull(mapValType);
+            return this;
+        }
+
+        public _MapStage targetCollectionComponentType(Class<?> componentType) {
+            this.targetComponentType = $.requireNotNull(componentType);
+            return this;
+        }
+
+        public _MapStage strictNameMatching() {
+            this.rule = STRICT_NAME;
+            return this;
+        }
+
+        public _MapStage strictNameAndTypeMatching() {
+            this.rule = STRICT_NAME_TYPE;
+            return this;
+        }
+
+        public _MapStage keywordMatching() {
+            this.rule = KEYWORD_MATCHING;
+            return this;
+        }
+
+        public _MapStage filter(String filterSpec) {
+            this.filterSpec = filterSpec;
+            return this;
+        }
+
+        public _MapStage ignoreError() {
+            this.ignoreError = true;
+            return this;
+        }
+
+        public <T> T to(T to) {
+            new DataMapper(from, to, targetKeyType, targetComponentType, rule, filterSpec, ignoreError, hints, instanceFactory, converterRegistry);
+            return to;
+        }
+
+    }
+
+    public static _MapStage map(Object source) {
+        return new _MapStage(source);
+    }
+
+    public static <T> T clone(T source) {
+        return clone(source, OsglConfig.INSTANCE_FACTORY);
+    }
+
+    public static <T> T clone(T source, Function<Class, ?> instanceFactory) {
+        Object target = instanceFactory.apply(source.getClass());
+        return (T) new _MapStage(source).strictNameAndTypeMatching().to(target);
+    }
+
+    public static _MapStage copy(Object from) {
+        return new _MapStage(from).strictNameMatching();
+    }
+
+    /**
+     * copy properties from `from` to `to` by name.
+     *
+     * The copy might involve type conversion if needed.
+     * If type cannot be convert then the target field
+     * will not be changed
+     *
+     * @param from
+     *      the object from which properties will be copied
+     * @param to
+     *      the target object
+     */
+    public static void copy(Object from, Object to) {
+        copy(from, to, C.EMPTY_MAP, OsglConfig.INSTANCE_FACTORY);
+    }
+
+    /**
+     * copy properties from `from` to `to` by name.
+     *
+     * The copy might involve type conversion if needed.
+     * If type cannot be convert then the target field
+     * will not be changed
+     *
+     *
+     * @param from
+     *      the object from which properties will be copied
+     * @param to
+     *      the target object
+     * @param conversionHints
+     *      A map of conversion hints indexed by target type
+     */
+    public static void copy(Object from, Object to, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
+        Class<?> toClass = to.getClass();
+        E.illegalArgumentIf(isSimpleType(toClass), "cannot copy to a simple type");
+        Class<?> fromClass = from.getClass();
+        E.illegalArgumentIf(isSimpleType(fromClass), "cannot copy from a simple type");
+        if (Map.class.isAssignableFrom(fromClass)) {
+            if (Map.class.isAssignableFrom(toClass)) {
+                copy((Map) from, (Map) to, null, null, true, conversionHints, instanceFactory);
+            } else {
+                copy((Map) from, to, conversionHints, instanceFactory);
+            }
+        } else if (Collection.class.isAssignableFrom(fromClass)) {
+            Collection fromList = (Collection) from;
+            if (fromList.isEmpty()) {
+                return;
+            }
+            if (Collection.class.isAssignableFrom(toClass)) {
+                Collection toList = (Collection) to;
+                if (toList.isEmpty()) {
+                    toList.addAll(fromList);
+                } else {
+                    Class type = commonSuperTypeOf(toList);
+                    if (null == type) {
+                        toList.addAll(fromList);
+                    } else {
+                        copy(fromList, toList, type, conversionHints, instanceFactory);
+                    }
+                }
+                return;
+            }
+            Object e0 = null;
+            for (Object o: fromList) {
+                if (null != o) {
+                    e0 = o;
+                    break;
+                }
+            }
+            if (e0 instanceof Map) {
+                // Yaml load embedded object as List<Map<String, Object>>, let's handle it here
+                Map<String, Object> map = new HashMap<>();
+                for (Object e : fromList) {
+                    if (e instanceof Map) {
+                        Map<?, ?> em = (Map) e;
+                        if (em.size() != 1) {
+                            return;
+                        }
+                        Map.Entry entry = em.entrySet().iterator().next();
+                        map.put(entry.getKey().toString(), entry.getValue());
+                    }
+                }
+                copy(map, to, conversionHints, instanceFactory);
+            }
+        } else {
+            List<Field> fromFields = $.fieldsOf(fromClass);
+            List<Field> toFields = $.fieldsOf(toClass);
+            copy(from, fromFields, to, toFields, conversionHints, instanceFactory);
+        }
+    }
+
+    private static void copy(Iterable from, Collection to, Class<?> toElementType, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
+        Object hint = conversionHints.get(toElementType);
+        for (Object element : from) {
+            Object toElement = convert(element).hint(hint).to(toElementType);
+            if (null == toElement) {
+                try {
+                    toElement = instanceFactory.apply(toElementType);
+                    copy(element, toElement, conversionHints, instanceFactory);
+                } catch (Exception e) {
+                    // ignore error
+                }
+            }
+            if (null != toElement) {
+                to.add(toElement);
+            }
+        }
+    }
+
+    private static void copy(Map<Object, Object> from, Object to, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
+        Class<?> toClass = to.getClass();
+        if (Map.class.isAssignableFrom(toClass)) {
+            copy(from, (Map)to, null, null, true, conversionHints, instanceFactory);
+            return;
+        }
+        List<Field> toFields = fieldsOf(toClass);
+        for (Field toField : toFields) {
+            String name = toField.getName();
+            Object fromElement = from.get(name);
+            if (null != fromElement) {
+                Class fromElementType = fromElement.getClass();
+                fromElementType = fromElementType.isArray() ? fromElementType : wrapperClassOf(fromElementType);
+                Class<?> toFieldType = toField.getType();
+                toFieldType = toFieldType.isArray() ? toFieldType : wrapperClassOf(toFieldType);
+                if (isSimpleType(toFieldType)) {
+                    if (fromElementType == toFieldType || toFieldType.isAssignableFrom(fromElementType)) {
+                        setFieldValue(to, toField, fromElement);
+                    } else {
+                        try {
+                            Object toFieldValue = convert(fromElement)
+                                    .hint(conversionHints.get(toFieldType))
+                                    .to(toFieldType);
+                            if (null != toFieldValue) {
+                                setFieldValue(to, toField, toFieldValue);
+                            }
+                        } catch (Exception e) {
+                            // ignore type conversion error
+                        }
+                    }
+                } else {
+                    Object toFieldValue = null;
+                    if (isSimpleType(fromElement.getClass())) {
+                        toFieldValue = $.convert(fromElement).hint(conversionHints.get(toFieldType)).to(toFieldType);
+                        if (null != toFieldValue) {
+                            setFieldValue(to, toField, toFieldValue);
+                        }
+                        continue;
+                    }
+                    if (Map.class.isAssignableFrom(toFieldType) && Map.class.isAssignableFrom(fromElementType)) {
+                        toFieldValue = getFieldValue(to, toField);
+                        if (null == toFieldValue) {
+                            if (Map.class == toFieldType) {
+                                toFieldValue = new HashMap<>();
+                            } else if (SortedMap.class == toFieldType) {
+                                toFieldValue = new TreeMap();
+                            } else {
+                                toFieldValue = instanceFactory.apply(toFieldType);
+                            }
+                            setFieldValue(to, toField, toFieldValue);
+                        }
+                        Class keyType = null;
+                        Class valType = null;
+                        Type genericToFieldType = toField.getGenericType();
+                        if (genericToFieldType instanceof ParameterizedType) {
+                            ParameterizedType ptype = (ParameterizedType) genericToFieldType;
+                            Type[] params = ptype.getActualTypeArguments();
+                            if (params.length > 1) {
+                                keyType = (Class) params[0];
+                                valType = (Class) params[1];
+                            }
+                        }
+                        copy((Map) fromElement, (Map) toFieldValue, keyType, valType, true, conversionHints, instanceFactory);
+                        continue;
+                    }
+                    if (Collection.class.isAssignableFrom(toFieldType) && Iterable.class.isAssignableFrom(fromElementType)) {
+                        toFieldValue = getFieldValue(to, toField);
+                        if (null == toFieldValue) {
+                            if (toFieldType.isInterface()) {
+                                if (List.class == toFieldType) {
+                                    toFieldValue = new ArrayList();
+                                } else if (Set.class == toFieldType) {
+                                    toFieldValue = new HashSet();
+                                } else if (SortedSet.class == toFieldType) {
+                                    toFieldValue = new TreeSet();
+                                } else if (C.List.class == toFieldType) {
+                                    toFieldValue = C.newList();
+                                } else {
+                                    throw E.unexpected("Unknown collection type: " + toFieldType.getName());
+                                }
+                            } else {
+                                toFieldValue = instanceFactory.apply(toFieldType);
+                            }
+                            setFieldValue(to, toField, toFieldValue);
+                        }
+                        Type genericToFieldType = toField.getGenericType();
+                        if (genericToFieldType instanceof ParameterizedType) {
+                            Type listElementType = ((ParameterizedType) genericToFieldType).getActualTypeArguments()[0];
+                            if (listElementType instanceof Class) {
+                                copy((Iterable) fromElement, (Collection) toFieldValue, (Class) listElementType, conversionHints, instanceFactory);
+                            }
+                        }
+                        continue;
+                    }
+                    try {
+                        toFieldValue = convert(fromElement)
+                                .hint(conversionHints.get(toFieldType))
+                                .to(toFieldType);
+                        if (null != toFieldValue) {
+                            setFieldValue(to, toField, toFieldValue);
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        // ignore type conversion error
+                    }
+                    if (null == toFieldValue) {
+                        toFieldValue = getFieldValue(to, toField);
+                        if (null == toFieldValue) {
+                            try {
+                                toFieldValue = instanceFactory.apply(toFieldType);
+                                setFieldValue(to, toField, toFieldValue);
+                            } catch (Exception e) {
+                                // ignore error
+                            }
+                        }
+                        if (null != toFieldValue) {
+                            copy(fromElement, toFieldValue, conversionHints, instanceFactory);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void copy(Map<Object, Object> from, Map<Object, Object> to, Class<?> toKeyType, Class<?> toValueType, boolean append, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
+        if (null == toValueType && !to.isEmpty()) {
+            // probe toValueType from `to` map
+            toValueType = commonSuperTypeOf(to.values());
+        }
+        if (null == toKeyType && !to.isEmpty()) {
+            // probe toKeyType from `to` map
+            toKeyType = commonSuperTypeOf(to.keySet());
+        }
+        Object valueHint = null == toValueType ? null : conversionHints.get(toValueType);
+        Object keyHint = null == toKeyType ? null : conversionHints.get(toKeyType);
+        for (Map.Entry<Object, Object> entry : from.entrySet()) {
+            Object fromValue = entry.getValue();
+            if (null == fromValue) {
+                continue;
+            }
+            Object fromKey = entry.getKey();
+            Object toKey = null == toKeyType ? fromKey : convert(fromKey).hint(keyHint).to(toKeyType);
+            Object toValue = to.get(toKey);
+            if (null == toValue && !append) {
+                continue;
+            }
+            if (null == toValue) {
+                toValue = convert(fromValue).hint(valueHint).to(toValueType);
+            } else {
+                copy(fromValue, to, conversionHints, instanceFactory);
+            }
+            to.put(toKey, toValue);
+        }
+    }
+
+    private static void copy(Object from, List<Field> fromFields, Object to, List<Field> toFields, Map<Class, Object> conversionHints, Function<Class, ?> instanceFactory) {
+        Map<String, Field> fromFieldMap = new HashMap();
+        for (Field fromField : fromFields) {
+            fromFieldMap.put(fromField.getName(), fromField);
+        }
+        for (Field toField : toFields) {
+            String name = toField.getName();
+            Field fromField = fromFieldMap.get(name);
+            if (null == fromField) {
+                continue;
+            }
+            Object fromFieldValue = getFieldValue(from, fromField);
+            if (null == fromFieldValue) {
+                continue;
+            }
+            Class<?> toFieldType = toField.getType();
+            toFieldType = toFieldType.isArray() ? toFieldType : wrapperClassOf(toFieldType);
+            Class fromFieldType = fromField.getType();
+            fromFieldType = fromFieldType.isArray() ? fromFieldType : wrapperClassOf(fromFieldType);
+            if (isSimpleType(toFieldType)) {
+                if (toFieldType == fromFieldType || toFieldType.isAssignableFrom(fromFieldType)) {
+                    setFieldValue(to, toField, fromFieldValue);
+                } else {
+                    try {
+                        Object toFieldValue = $.convert(fromFieldValue)
+                                .hint(conversionHints.get(toFieldType))
+                                .to(toFieldType);
+                        if (null != toFieldValue) {
+                            setFieldValue(to, toField, toFieldValue);
+                        }
+                    } catch (Exception e) {
+                        // ignore conversion error
+                    }
+                }
+            } else {
+                Object toFieldValue = null;
+                if (isSimpleType(fromFieldType)) {
+                    toFieldValue = $.convert(fromFieldValue).hint(conversionHints.get(toFieldType)).to(toFieldType);
+                    if (null != toFieldValue) {
+                        setFieldValue(to, toField, toFieldValue);
+                    }
+                    continue;
+                }
+                if (Map.class.isAssignableFrom(toFieldType) && Map.class.isAssignableFrom(fromFieldType)) {
+                    toFieldValue = getFieldValue(to, toField);
+                    if (null == toFieldValue) {
+                        if (Map.class == toFieldType) {
+                            toFieldValue = new HashMap<>();
+                        } else if (SortedMap.class == toFieldType) {
+                            toFieldValue = new TreeMap();
+                        } else {
+                            toFieldValue = instanceFactory.apply(toFieldType);
+                        }
+                        setFieldValue(to, toField, toFieldValue);
+                    }
+                    Class keyType = null;
+                    Class valType = null;
+                    Type genericToFieldType = toField.getGenericType();
+                    if (genericToFieldType instanceof ParameterizedType) {
+                        ParameterizedType ptype = (ParameterizedType) genericToFieldType;
+                        Type[] params = ptype.getActualTypeArguments();
+                        if (params.length > 1) {
+                            keyType = (Class) params[0];
+                            valType = (Class) params[1];
+                        }
+                    }
+                    copy((Map) fromFieldValue, (Map) toFieldValue, keyType, valType, true, conversionHints, instanceFactory);
+                    continue;
+                }
+                if (Collection.class.isAssignableFrom(toFieldType) && Iterable.class.isAssignableFrom(fromFieldType)) {
+                    toFieldValue = getFieldValue(to, toField);
+                    if (null == toFieldValue) {
+                        if (toFieldType.isInterface()) {
+                            if (List.class == toFieldType) {
+                                toFieldValue = new ArrayList();
+                            } else if (Set.class == toFieldType) {
+                                toFieldValue = new HashSet();
+                            } else if (SortedSet.class == toFieldType) {
+                                toFieldValue = new TreeSet();
+                            } else if (C.List.class == toFieldType) {
+                                toFieldValue = C.newList();
+                            } else {
+                                throw E.unexpected("Unknown collection type: " + toFieldType.getName());
+                            }
+                        } else {
+                            toFieldValue = instanceFactory.apply(toFieldType);
+                        }
+                        setFieldValue(to, toField, toFieldValue);
+                    }
+                    Type genericToFieldType = toField.getGenericType();
+                    if (genericToFieldType instanceof ParameterizedType) {
+                        Type listElementType = ((ParameterizedType) genericToFieldType).getActualTypeArguments()[0];
+                        if (listElementType instanceof Class) {
+                            copy((Iterable) fromFieldValue, (Collection) toFieldValue, (Class) listElementType, conversionHints, instanceFactory);
+                        }
+                    }
+                    continue;
+                }
+                try {
+                    toFieldValue = $.convert(fromFieldValue)
+                            .hint(conversionHints.get(toFieldType))
+                            .to(toFieldType);
+                    if (null != toFieldValue) {
+                        setFieldValue(to, toField, toFieldValue);
+                        continue;
+                    }
+                } catch (Exception e) {
+                    // ignore conversion error
+                }
+                if (null == toFieldValue) {
+                    toFieldValue = getFieldValue(to, toField);
+                    if (null == toFieldValue) {
+                        try {
+                            toFieldValue = instanceFactory.apply(toFieldType);
+                            setFieldValue(to, toField, toFieldValue);
+                        } catch (Exception e) {
+                            // ignore error
+                        }
+                    }
+                    if (null != toFieldValue) {
+                        copy(fromFieldValue, toFieldValue, conversionHints, instanceFactory);
+                    }
+                }
+            }
+        }
     }
 
 

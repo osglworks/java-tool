@@ -250,8 +250,19 @@ public class LangTest extends TestBase {
 
         @Test
         public void testConvertEnum() {
-            eq(Code.AB, $.convert("AB").to(Code.class));
-            eq(Code.AB, $.convert("ab").caseInsensitivie().to(Code.class));
+            eq(Code.AB, $.convert("AB").strictMatching().to(Code.class));
+            eq(Code.AB, $.convert("ab").to(Code.class));
+            eq(Code.RED_GREEN_BLUE, $.convert("red-green-blue").to(Code.class));
+        }
+
+        @Test(expected = IllegalArgumentException.class)
+        public void testConvertEnumFailureWithStrictMatching() {
+            $.convert("ab").strictMatching().to(Code.class);
+        }
+
+        @Test(expected = IllegalArgumentException.class)
+        public void testConvertEnumFailureWithUnknownName() {
+            $.convert("some-random-str").to(Code.class);
         }
 
         @Test
@@ -283,10 +294,22 @@ public class LangTest extends TestBase {
 
         @Test
         public void testConvertExtension() {
-            TypeConverterRegistry.INSTANCE.register(new MyConverter()).register(new StringToMyFrom());
+            TypeConverterRegistry.INSTANCE
+                    .register(new MyConverter())
+                    .register(new StringToMyFrom());
             String id = S.random();
             eq(new MyTo(id), $.convert(new MyFrom(id)).to(MyTo.class));
             eq("abc", $.convert("abc").to(MyTo.class).toString());
+        }
+
+        @Test
+        public void testConvertArray() {
+            int[] source = {1, 2, 3};
+            String[] target = $.convert(source).to(String[].class);
+            eq(3, target.length);
+            eq("3", target[2]);
+            Iterable iterable = $.convert(source).to(Iterable.class);
+            eq("123", S.join(iterable).get());
         }
     }
 

@@ -1,6 +1,11 @@
 # OSGL Tool Change Log
 
-1.10.1
+1.11.0
+* Provide a Mapping framework #75
+* OSGL conversion framework refactory #76
+    - new registry data structure
+    - new converter path routing mechanism
+* Provide a tool for bean copy #69
 * `S.buffer(char[])` error #74
 * Add `S.reversed(String)` method #73
 * Add dotted style to `Keyword` #71

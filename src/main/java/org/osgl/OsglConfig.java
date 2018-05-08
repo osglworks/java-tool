@@ -20,9 +20,12 @@ package org.osgl;
  * #L%
  */
 
+import org.osgl.exception.NotAppliedException;
 import org.osgl.util.UtilConfig;
 import org.osgl.util.algo.StringReplace;
 import org.osgl.util.algo.StringSearch;
+
+import java.util.*;
 
 public class OsglConfig {
 
@@ -35,6 +38,24 @@ public class OsglConfig {
      * Default string replace logic
      */
     public static StringReplace DEF_STRING_REPLACE = new StringReplace.SimpleStringReplace();
+
+    public static $.Function<Class, ?> INSTANCE_FACTORY = new $.Function<Class, Object>() {
+        @Override
+        public Object apply(Class aClass) throws NotAppliedException, Lang.Break {
+            if (List.class == aClass) {
+                return new ArrayList<>();
+            } else if (Map.class == aClass) {
+                return new HashMap<>();
+            } else if (Set.class == aClass) {
+                return new HashSet<>();
+            } else if (SortedSet.class == aClass) {
+                return new TreeSet<>();
+            } else if (SortedMap.class == aClass) {
+                return new TreeMap<>();
+            }
+            return $.newInstance(aClass);
+        }
+    };
 
     public static void setThreadLocalBufferLimit(int limit) {
         UtilConfig.setThreadLocalBufferLimit(limit);
@@ -71,5 +92,9 @@ public class OsglConfig {
 
     public static int getThreadLocalByteArrayBufferInitSize() {
         return UtilConfig.getThreadLocalByteArrayBufferInitSize();
+    }
+
+    public static void setInstanceFactory($.Function<Class, ?> instanceFactory) {
+        INSTANCE_FACTORY = $.requireNotNull(instanceFactory);
     }
 }
