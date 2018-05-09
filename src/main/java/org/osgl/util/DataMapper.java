@@ -304,7 +304,8 @@ public class DataMapper {
 
     private Object target;
     private Class<?> targetType;
-    private Class<?> targetComponentType;
+    private Type targetComponentType = Object.class;
+    private Class<?> targetComponentRawType = Object.class;
     private Class<?> targetKeyType;
 
     /**
@@ -328,7 +329,7 @@ public class DataMapper {
      */
     private boolean ignoreError;
 
-    public DataMapper(Object source, Object target, Class<?> targetKeyType, Class<?> targetComponentType, Rule rule, String filterSpec, boolean ignoreError, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry) {
+    public DataMapper(Object source, Object target, Class<?> targetKeyType, Type targetComponentType, Rule rule, String filterSpec, boolean ignoreError, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry) {
         this.targetType = target.getClass();
         E.illegalArgumentIf(isImmutable(targetType), "target type is immutable: " + targetType.getName());
         this.sourceType = source.getClass();
@@ -340,6 +341,13 @@ public class DataMapper {
         }
         this.targetKeyType = targetKeyType;
         this.targetComponentType = targetComponentType;
+        if (null != targetComponentType) {
+            if (targetComponentType instanceof Class) {
+                this.targetComponentRawType = (Class) targetComponentType;
+            } else {
+                this.targetComponentRawType = (Class) ((ParameterizedType) targetComponentType).getRawType();
+            }
+        }
         this.rule = $.requireNotNull(rule);
         this.filter = new PropertyFilter(filterSpec);
         this.conversionHints = null == conversionHints ? C.<Class, Object>Map() : conversionHints;
@@ -351,13 +359,20 @@ public class DataMapper {
         this.doMapping();
     }
 
-    private DataMapper(Object source, Object target, String targetName, Class targetKeyType, Class targetComponentType, DataMapper parentMapper) {
+    private DataMapper(Object source, Object target, String targetName, Class targetKeyType, Type targetComponentType, DataMapper parentMapper) {
         this.sourceType = source.getClass();
         this.source = source;
         this.targetType = target.getClass();
         this.target = target;
         this.targetKeyType = targetKeyType;
         this.targetComponentType = targetComponentType;
+        if (null != targetComponentType) {
+            if (targetComponentType instanceof Class) {
+                this.targetComponentRawType = (Class) targetComponentType;
+            } else {
+                this.targetComponentRawType = (Class) ((ParameterizedType) targetComponentType).getRawType();
+            }
+        }
         this.rule = parentMapper.rule;
         this.filter = parentMapper.filter;
         this.ignoreError = parentMapper.ignoreError;
@@ -432,8 +447,8 @@ public class DataMapper {
                 if (rule != Rule.STRICT_NAME_TYPE) {
                     List pseudoList = new ArrayList<>();
                     // try to treat the source object as source component
-                    if (!targetComponentType.isAssignableFrom(sourceType)) {
-                        Object convertedSource = convertSourceTo(targetComponentType);
+                    if (!targetComponentRawType.isAssignableFrom(sourceType)) {
+                        Object convertedSource = convertSourceTo(targetComponentRawType);
                         if (null != convertedSource) {
                             pseudoList.add(convertedSource);
                         } else {
@@ -454,6 +469,8 @@ public class DataMapper {
         }
         // now try to map from sourceIterable to target
         Iterator itr = sourceIterable.iterator();
+        boolean targetComponentIsSequence = isSequence(targetComponentRawType);
+        boolean targetComponentIsMap = !targetComponentIsSequence && Map.class.isAssignableFrom(targetComponentRawType);
         if (targetIsArray || null != targetList) {
             int cursor = 0;
             while (cursor < targetLen && itr.hasNext()) {
@@ -466,7 +483,10 @@ public class DataMapper {
                     }
                     continue;
                 }
-                Object targetComponent = convert(sourceComponent).to(targetComponentType);
+                Object targetComponent = null;
+                if (!(targetComponentIsMap || targetComponentIsSequence)) {
+                    targetComponent = convert(sourceComponent).to(targetComponentRawType);
+                }
                 if (null != targetComponent) {
                     if (targetIsList) {
                         targetList.set(cursor, targetComponent);
@@ -476,21 +496,52 @@ public class DataMapper {
                 } else {
                     targetComponent = targetIsList ? targetList.get(cursor) : Array.get(target, cursor);
                     if (null == targetComponent) {
-                        targetComponent = instanceFactory.apply(targetComponentType);
+                        targetComponent = instanceFactory.apply(targetComponentRawType);
                         if (targetIsList) {
                             targetList.set(cursor, targetComponent);
                         } else {
                             Array.set(target, cursor, targetComponent);
                         }
                     }
-                    new DataMapper(sourceComponent, targetComponent, "", null, targetComponentType, this);
+                    Class<?> componentkeyType = null;
+                    Type componentComponentType = null;
+                    if (targetComponentType instanceof ParameterizedType) {
+                        ParameterizedType ptype = (ParameterizedType) targetComponentType;
+                        Type[] ta = ptype.getActualTypeArguments();
+                        if (targetComponentIsMap) {
+                            componentkeyType = (Class) ta[0];
+                            componentComponentType = ta[1];
+                        } else if (targetComponentIsSequence) {
+                            componentComponentType = ta[0];
+                        }
+                    }
+                    new DataMapper(sourceComponent, targetComponent, "", componentkeyType, componentComponentType, this);
                 }
             }
         }
         if (!targetIsArray) {
             while (itr.hasNext()) {
                 Object sourceComponent = itr.next();
-                Object targetComponent = convert(sourceComponent).to(targetComponentType);
+                Object targetComponent = null;
+                if (!(targetComponentIsMap || targetComponentIsSequence)) {
+                    targetComponent = convert(sourceComponent).to(targetComponentRawType);
+                }
+                if (null == targetComponent) {
+                    targetComponent = instanceFactory.apply(targetComponentRawType);
+                    Class<?> componentkeyType = null;
+                    Type componentComponentType = null;
+                    if (targetComponentType instanceof ParameterizedType) {
+                        ParameterizedType ptype = (ParameterizedType) targetComponentType;
+                        Type[] ta = ptype.getActualTypeArguments();
+                        if (targetComponentIsMap) {
+                            componentkeyType = (Class) ta[0];
+                            componentComponentType = ta[1];
+                        } else if (targetComponentIsSequence) {
+                            componentComponentType = ta[0];
+                        }
+                    }
+                    new DataMapper(sourceComponent, targetComponent, "", componentkeyType, componentComponentType, this);
+                }
                 if (null != targetComponent) {
                     targetCollection.add(targetComponent);
                 }
@@ -513,35 +564,57 @@ public class DataMapper {
             }
         }
         Map targetMapKeywordLookup = null;
-        if (rule.keywordMatching() && String.class == targetKeyType) {
-            targetMapKeywordLookup = new HashMap();
-            for (Object key : targetMap.keySet()) {
-                targetMapKeywordLookup.put(Keyword.of(key.toString()), key);
+        if (rule.keywordMatching()) {
+            if (String.class == targetKeyType) {
+                targetMapKeywordLookup = new HashMap();
+                for (Object key : targetMap.keySet()) {
+                    targetMapKeywordLookup.put(Keyword.of(key.toString()), key);
+                }
             }
         }
-        for ($.Pair<Object, $.Producer<Object>> sourceProperty : sourceProperties()) {
-            Object sourceKey = sourceProperty.left();
-            Object sourceVal = sourceProperty.right();
-            Object targetKey;
+
+        boolean targetComponentIsSequence = isSequence(targetComponentRawType);
+        boolean targetComponentIsMap = !targetComponentIsSequence && Map.class.isAssignableFrom(targetComponentRawType);
+        for ($.Triple<Object, Keyword, $.Producer<Object>> sourceProperty : sourceProperties()) {
+            Object sourceKey = sourceProperty.first();
+            Keyword sourceKeyword = sourceProperty.second();
+            Object sourceVal = sourceProperty.last().produce();
+            Object targetKey = null;
             if (targetMapKeywordLookup != null) {
-                Keyword keywordTargetKey = Keyword.of(sourceKey.toString());
-                targetKey = targetMapKeywordLookup.get(keywordTargetKey);
-            } else {
+                targetKey = targetMapKeywordLookup.get(sourceKeyword);
+            }
+            if (targetKey == null) {
                 targetKey = convert(sourceKey).to(targetKeyType);
             }
             if (null == sourceVal) {
                 targetMap.remove(targetKey);
                 continue;
             }
-            Object targetVal = convert(sourceVal).to(targetComponentType);
+            Object targetVal = null;
+            if (!(targetComponentIsMap || targetComponentIsSequence)) {
+                targetVal = convert(sourceVal).to(targetComponentRawType);
+            }
             if (null != targetVal) {
                 targetMap.put(targetKey, targetVal);
             } else {
                 targetVal = targetMap.get(targetKey);
                 if (targetVal == null) {
-                    targetVal = instanceFactory.apply(targetComponentType);
+                    targetVal = instanceFactory.apply(targetComponentRawType);
+                    targetMap.put(targetKey, targetVal);
                 }
-                new DataMapper(sourceVal, targetVal, targetKey.toString(), targetKeyType, targetComponentType, this);
+                Class<?> componentkeyType = null;
+                Type componentComponentType = null;
+                if (targetComponentType instanceof ParameterizedType) {
+                    ParameterizedType ptype = (ParameterizedType) targetComponentType;
+                    Type[] ta = ptype.getActualTypeArguments();
+                    if (targetComponentIsMap) {
+                        componentkeyType = (Class) ta[0];
+                        componentComponentType = ta[1];
+                    } else if (targetComponentIsSequence) {
+                        componentComponentType = ta[0];
+                    }
+                }
+                new DataMapper(sourceVal, targetVal, targetKey.toString(), componentkeyType, componentComponentType, this);
             }
         }
     }
@@ -591,6 +664,9 @@ public class DataMapper {
             if (null == sourcePropValue) {
                 $.setFieldValue(target, targetField, null);
             } else {
+                if (processContainer(sourcePropValue, targetField, targetFieldName, targetFieldType)) {
+                    continue;
+                }
                 Object targetFieldValue = convert(sourcePropValue).to(targetFieldType);
                 if (null != targetFieldValue) {
                     $.setFieldValue(target, targetField, targetFieldValue);
@@ -637,13 +713,56 @@ public class DataMapper {
         }
     }
 
-    private Iterable<$.Pair<Object, $.Producer<Object>>> sourceProperties() {
+    private boolean processContainer(Object sourcePropValue, Field targetField, String targetFieldName, Class<?> targetFieldType) {
+        boolean targetFieldIsCollection = Collection.class.isAssignableFrom(targetFieldType);
+        boolean targetFieldIsMap = !targetFieldIsCollection && Map.class.isAssignableFrom(targetFieldType);
+        if (targetFieldIsCollection || targetFieldIsMap) {
+            Object targetFieldValue = $.getFieldValue(target, targetField);
+            if (null == targetFieldValue) {
+                targetFieldValue = instanceFactory.apply(targetFieldType);
+                $.setFieldValue(target, targetField, targetFieldValue);
+            }
+            if (targetFieldIsCollection) {
+                sourcePropValue = convert(sourcePropValue).to(Collection.class);
+            } else {
+                sourcePropValue = convert(sourcePropValue).to(Map.class);
+            }
+            if (null == sourcePropValue) {
+                logMappingFailure();
+                return true;
+            }
+            Class<?> targetKeyType = null;
+            Type targetComponentType = null;
+            Type targetFieldGenericType = targetField.getGenericType();
+            if (targetFieldGenericType instanceof ParameterizedType) {
+                ParameterizedType ptype = (ParameterizedType) targetFieldGenericType;
+                Type[] ta = ptype.getActualTypeArguments();
+                Type type0 = ta[0];
+                Type type1 = targetFieldIsMap ? ta[1] : null;
+                if (type0 instanceof Class) {
+                    if (targetFieldIsMap) {
+                        targetKeyType = (Class) type0;
+                    } else {
+                        targetComponentType = type0;
+                    }
+                }
+                if (null != type1) {
+                    targetComponentType = type1;
+                }
+            }
+            new DataMapper(sourcePropValue, targetFieldValue, targetFieldName, targetKeyType, targetComponentType, this);
+            return true;
+        }
+        return false;
+    }
+
+    private Iterable<$.Triple<Object, Keyword, $.Producer<Object>>> sourceProperties() {
         if (Map.class.isAssignableFrom(sourceType)) {
             return C.list(((Map<Object, Object>) source).entrySet())
                     .filter(mapEntryFilter())
-                    .map(new $.Transformer<Map.Entry, $.Pair<Object, $.Producer<Object>>>() {
+                    .map(new $.Transformer<Map.Entry, $.Triple<Object, Keyword, $.Producer<Object>>>() {
                         @Override
-                        public $.T2<Object, $.Producer<Object>> transform(final Map.Entry entry) {
+                        public $.Triple<Object, Keyword, $.Producer<Object>> transform(final Map.Entry entry) {
                             $.Producer<Object> producer = new $.Producer<Object>() {
                                 @Override
                                 public Object produce() {
@@ -651,22 +770,24 @@ public class DataMapper {
                                 }
                             };
                             Object key = entry.getKey();
+                            Keyword keyword = null;
                             if (rule.keywordMatching() && key instanceof String) {
-                                key = Keyword.of(key.toString());
+                                keyword = Keyword.of(key.toString());
                             }
-                            return $.T2(key, producer);
+                            return $.T3(key, keyword, producer);
                         }
                     });
         } else {
             final List<Field> fields = $.fieldsOf(sourceType);
             return C.list(fields)
                     .filter(fieldFilter())
-                    .map(new $.Transformer<Field, $.Pair<Object, $.Producer<Object>>>() {
+                    .map(new $.Transformer<Field, $.Triple<Object, Keyword, $.Producer<Object>>>() {
                         @Override
-                        public $.Pair<Object, $.Producer<Object>> transform(final Field field) {
+                        public $.Triple<Object, Keyword, $.Producer<Object>> transform(final Field field) {
                             Object name = field.getName();
+                            Keyword keyword = null;
                             if (rule.keywordMatching()) {
-                                name = Keyword.of(name.toString());
+                                keyword = Keyword.of(name.toString());
                             }
                             $.Producer<Object> producer = new $.Producer<Object>() {
                                 @Override
@@ -674,7 +795,7 @@ public class DataMapper {
                                     return $.getFieldValue(source, field);
                                 }
                             };
-                            return $.T2(name, producer);
+                            return $.T3(name, keyword, producer);
                         }
                     });
         }
@@ -727,7 +848,7 @@ public class DataMapper {
     }
 
     private void logMappingFailure() {
-        logError("Mapping failure");
+        logError("Error mapping from %s to %s", sourceType.getName(), targetType.getName());
     }
 
     private <T> T convertSourceTo(Class<T> type) {

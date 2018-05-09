@@ -1,5 +1,10 @@
 # OSGL Tool Change Log
 
+1.11.2
+* Mapping framework failed to do type case within Map #77
+* Mapping from map to map key lost when using `Rule.KEYWORD_MATCHING` #78
+* Mapping from map to map type lost when component type is a `ParameterizedType` #79
+
 1.11.1
 * Clean unused copy code from Lang
 * Allow specify converter registry to _MapStage

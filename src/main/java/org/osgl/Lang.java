@@ -6615,12 +6615,12 @@ public class Lang implements Serializable {
             if (t instanceof RuntimeException) {
                 throw ((RuntimeException) t);
             } else {
-                throw new UnexpectedNewInstanceException(e);
+                throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
             }
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new UnexpectedNewInstanceException(e);
+            throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
         }
     }
 
@@ -6643,7 +6643,7 @@ public class Lang implements Serializable {
             if (t instanceof RuntimeException) {
                 throw ((RuntimeException) t);
             } else {
-                throw new UnexpectedNewInstanceException(e);
+                throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
             }
         } catch (RuntimeException e) {
             throw e;
@@ -6675,7 +6675,7 @@ public class Lang implements Serializable {
             if (t instanceof RuntimeException) {
                 throw ((RuntimeException) t);
             } else {
-                throw new UnexpectedNewInstanceException(e);
+                throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
             }
         } catch (RuntimeException e) {
             throw e;
@@ -6703,18 +6703,18 @@ public class Lang implements Serializable {
                 }
                 return ct.newInstance(p1, p2, p3);
             }
-            throw new UnexpectedNewInstanceException("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found on " + c.getName());
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof RuntimeException) {
                 throw ((RuntimeException) t);
             } else {
-                throw new UnexpectedNewInstanceException(e);
+                throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
             }
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new UnexpectedNewInstanceException(e);
+            throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
         }
     }
 
@@ -6740,18 +6740,18 @@ public class Lang implements Serializable {
                 }
                 return ct.newInstance(p1, p2, p3, p4);
             }
-            throw new UnexpectedNewInstanceException("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found on " + c.getName());
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof RuntimeException) {
                 throw ((RuntimeException) t);
             } else {
-                throw new UnexpectedNewInstanceException(e);
+                throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
             }
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new UnexpectedNewInstanceException(e);
+            throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
         }
     }
 
@@ -6780,18 +6780,18 @@ public class Lang implements Serializable {
                 }
                 return ct.newInstance(p1, p2, p3, p4, p5);
             }
-            throw new UnexpectedNewInstanceException("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found on " + c.getName());
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof RuntimeException) {
                 throw ((RuntimeException) t);
             } else {
-                throw new UnexpectedNewInstanceException(e);
+                throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
             }
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new UnexpectedNewInstanceException(e);
+            throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
         }
     }
 
@@ -6839,18 +6839,18 @@ public class Lang implements Serializable {
                 System.arraycopy(pa, 0, oa, 5, len);
                 return ct.newInstance(oa);
             }
-            throw new UnexpectedNewInstanceException("constructor not found");
+            throw new UnexpectedNewInstanceException("constructor not found on " + c.getName());
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof RuntimeException) {
                 throw ((RuntimeException) t);
             } else {
-                throw new UnexpectedNewInstanceException(e);
+                throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
             }
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new UnexpectedNewInstanceException(e);
+            throw new UnexpectedNewInstanceException(e, "error instantiate instance of " + c.getName());
         }
     }
 
