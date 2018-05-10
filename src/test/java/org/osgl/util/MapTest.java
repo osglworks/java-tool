@@ -30,7 +30,7 @@ public class MapTest extends TestBase {
 
     @Test
     public void testSerialize() throws Exception {
-        Map map = C.map("foo", 1, "bar", 0);
+        Map map = C.Map("foo", 1, "bar", 0);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(map);

@@ -20,9 +20,9 @@ package org.osgl;
  * #L%
  */
 
-import static org.osgl.util.DataMapper.Rule.KEYWORD_MATCHING;
-import static org.osgl.util.DataMapper.Rule.STRICT_NAME;
-import static org.osgl.util.DataMapper.Rule.STRICT_NAME_TYPE;
+import static org.osgl.util.DataMapper.MappingRule.KEYWORD_MATCHING;
+import static org.osgl.util.DataMapper.MappingRule.STRICT_MATCHING;
+import static org.osgl.util.DataMapper.Semantic.*;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -2925,6 +2925,20 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<Iterable, List> ITERABLE_TO_LIST = new TypeConverter<Iterable, List>() {
+            @Override
+            public List convert(Iterable iterable) {
+                return iterable instanceof List ? (List) iterable : C.list(iterable);
+            }
+        };
+
+        public static TypeConverter<Iterable, Set> ITERABLE_TO_SET = new TypeConverter<Iterable, Set>() {
+            @Override
+            public Set convert(Iterable iterable) {
+                return iterable instanceof Set ? (Set) iterable : C.set(iterable);
+            }
+        };
+
         public static TypeConverter<Enumeration, Iterator> ENUMERATION_TO_ITERATOR = new TypeConverter<Enumeration, Iterator>() {
             @Override
             public Iterator convert(Enumeration enumeration) {
@@ -3296,11 +3310,11 @@ public class Lang implements Serializable {
         }
 
         public <TO> TO to(Class<TO> toType) {
+            if (null == from) {
+                return null != defVal ? (TO) defVal : isPrimitive(toType) ? primitiveDefaultValue(toType) : null;
+            }
             if (fromType == toType || toType.isAssignableFrom(fromType)) {
                 return cast(from);
-            }
-            if (null == from && null != defVal) {
-                return (TO) defVal;
             }
             TypeConverter<FROM, TO> converter = cast(converterRegistry.get(fromType, toType));
             if (null == converter) {
@@ -3309,14 +3323,16 @@ public class Lang implements Serializable {
                     return (TO) enumConverter.convert(TypeConverter.ANY_TO_STRING.convert(from), hint);
                 } else if (fromType.isArray()) {
                     if (Iterable.class.isAssignableFrom(toType)) {
-                        return (TO) new Iterable() {
+                        Iterable iterable = new Iterable() {
                             @Override
                             public Iterator iterator() {
                                 return new ArrayObjectIterator(from);
                             }
                         };
+                        return $.convert(iterable).to(toType);
                     } else if (Iterator.class.isAssignableFrom(toType)) {
-                        return (TO) new ArrayObjectIterator(from);
+                        Iterator iterator = new ArrayObjectIterator(from);
+                        return $.convert(iterator).to(toType);
                     } else if (toType.isArray()) {
                         Class<?> fromComponentType = fromType.getComponentType();
                         Class<?> toComponentType = toType.getComponentType();
@@ -6183,18 +6199,36 @@ public class Lang implements Serializable {
 
     public static class _IsClass extends _IsModifier {
         private Class<?> c;
+        private boolean allowBoxing;
 
         public _IsClass(Object obj) {
-            this((obj instanceof Class ? (Class)obj : obj.getClass()));
+            this((obj instanceof Class ? (Class)obj : null == obj ? null : obj.getClass()));
         }
 
         public _IsClass(Class<?> clazz) {
-            super(clazz.getModifiers());
+            super(null == clazz ? 0 : clazz.getModifiers());
             c = clazz;
         }
 
+        public _IsClass allowBoxing() {
+            this.allowBoxing = true;
+            return this;
+        }
+
         public boolean instanceOf(Class<?> clz) {
-            return clz.isAssignableFrom(c);
+            if (null == c) {
+                return false;
+            }
+            boolean result = clz.isAssignableFrom(c);
+            if (!result && allowBoxing) {
+                if (isPrimitive(c)) {
+                    return clz.isAssignableFrom(wrapperClassOf(c));
+                }
+                if (isWrapper(c)) {
+                    return clz.isAssignableFrom(primitiveTypeOf(c));
+                }
+            }
+            return result;
         }
 
         public boolean notInstanceOf(Class<?> clz) {
@@ -6206,6 +6240,9 @@ public class Lang implements Serializable {
         }
 
         public boolean array() {
+            if (null == c) {
+                return false;
+            }
             return c.isArray();
         }
 
@@ -6383,6 +6420,10 @@ public class Lang implements Serializable {
         }
     }
 
+    public static void resetFieldValue(Object obj, Field field) {
+        setFieldValue(obj, field, $.convert(null).to(field.getType()));
+    }
+
     private static Map<Object, Class> __primitiveTypes = new HashMap<Object, Class>();
 
     static {
@@ -6412,7 +6453,7 @@ public class Lang implements Serializable {
         __primitiveTypes.put("double[]", double[].class);
     }
 
-    private static Map<Object, Object> __primitiveInstances = new HashMap<Object, Object>();
+    private static Map<Object, Object> __primitiveInstances = new HashMap<>();
 
     static {
         __primitiveInstances.put("int", 0);
@@ -6482,6 +6523,18 @@ public class Lang implements Serializable {
     }
 
     /**
+     * Check if an Object or class is immutable
+     * @param o
+     *      the object to be checked
+     * @return
+     *      `true` if the object is immutable or `false` otherwise
+     */
+    public static boolean isImmutable(Object o) {
+        Class<?> type = (o instanceof Class) ? (Class) o : o.getClass();
+        return isSimpleType(type) || OsglConfig.isImmutable(type);
+    }
+
+    /**
      * Check if a given class is a primitive type
      *
      * @param c the class
@@ -6489,6 +6542,10 @@ public class Lang implements Serializable {
      */
     public static boolean isPrimitive(Class<?> c) {
         return __primitiveToWrappers.containsKey(c);
+    }
+
+    public static boolean isWrapper(Class<?> c) {
+        return __wrapperToPrmitives.containsKey(c);
     }
 
     public static Class wrapperClassOf(Class c) {
@@ -6605,7 +6662,15 @@ public class Lang implements Serializable {
         }
     }
 
+    public static <T> T primitiveDefaultValue(Class<T> c) {
+        return (T) __primitiveInstances.get(c);
+    }
+
     public static <T> T newInstance(Class<T> c) {
+        Object o = __primitiveInstances.get(c);
+        if (null != o) {
+            return (T) o;
+        }
         try {
             Constructor<T> ct = c.getDeclaredConstructor();
             ct.setAccessible(true);
@@ -6976,7 +7041,7 @@ public class Lang implements Serializable {
         }
         Field[] fields = c.getDeclaredFields();
         for (Field field : fields) {
-            if (null != filter && !filter.apply(field)) {
+            if (field.isSynthetic() || null != filter && !filter.apply(field)) {
                 continue;
             }
             field.setAccessible(true);
@@ -8408,15 +8473,32 @@ public class Lang implements Serializable {
         private Object from;
         private Function<Class, ?> instanceFactory = OsglConfig.INSTANCE_FACTORY;
         private Map<Class, Object> hints = C.EMPTY_MAP;
-        private DataMapper.Rule rule = KEYWORD_MATCHING;
+        private DataMapper.MappingRule rule = STRICT_MATCHING;
+        private DataMapper.Semantic semantic;
         private TypeConverterRegistry converterRegistry;
         private String filterSpec;
         private boolean ignoreError;
         private Class<?> targetKeyType;
         private Class<?> targetComponentType;
+        private Class<?> rootClass = Object.class;
+        private ParameterizedType targetGenericType;
 
-        private _MappingStage(Object from) {
+        private _MappingStage(Object from, DataMapper.Semantic semantic) {
             this.from = $.requireNotNull(from);
+            this.semantic = $.requireNotNull(semantic);
+        }
+
+        public _MappingStage rootClass(Class<?> rootClass) {
+            this.rootClass = null == rootClass ? Object.class : rootClass;
+            return this;
+        }
+
+        public _MappingStage targetGenericType(Type type) {
+            if (type instanceof ParameterizedType) {
+                // we need Parameterized type only
+                this.targetGenericType = (ParameterizedType) type;
+            }
+            return this;
         }
 
         public _MappingStage withConverter(TypeConverter converter, TypeConverter... otherConverters) {
@@ -8437,6 +8519,15 @@ public class Lang implements Serializable {
             for (TypeConverter converter : converters) {
                 converterRegistry.register(converter);
             }
+            return this;
+        }
+
+        public _MappingStage conversionHint(Class<?> type, Object hint) {
+            E.NPE(type, hint);
+            if (this.hints == C.EMPTY_MAP) {
+                this.hints = new HashMap<>();
+            }
+            this.hints.put(type, hint);
             return this;
         }
 
@@ -8461,13 +8552,13 @@ public class Lang implements Serializable {
             return this;
         }
 
-        public _MappingStage strictNameMatching() {
-            this.rule = STRICT_NAME;
+        public _MappingStage strictMatching() {
+            this.rule = STRICT_MATCHING;
             return this;
         }
 
-        public _MappingStage strictNameAndTypeMatching() {
-            this.rule = STRICT_NAME_TYPE;
+        public _MappingStage looseMatching() {
+            this.rule = KEYWORD_MATCHING;
             return this;
         }
 
@@ -8487,36 +8578,37 @@ public class Lang implements Serializable {
         }
 
         public <T> T to(T to) {
-            new DataMapper(from, to, targetKeyType, targetComponentType, rule, filterSpec, ignoreError, hints, instanceFactory, converterRegistry);
-            return to;
+            return to(to, false);
+        }
+
+        public <T> T toNewInstance(T to) {
+            return to(to, true);
+        }
+
+        private <T> T to(T to, boolean toIsNew) {
+            return (T) new DataMapper(from, to, targetGenericType, rule, semantic, filterSpec, ignoreError, hints, instanceFactory, converterRegistry, toIsNew, rootClass).getTarget();
         }
 
     }
 
     /**
-     * Prepare a Mapping operation with {@link DataMapper.Rule#KEYWORD_MATCHING keyword matching}
+     * Prepare a {@link org.osgl.util.DataMapper.Semantic#DEEP_COPY} from `source` to an new instance with
+     * the same time of `source`
      *
      * @param source
      *      the source object
-     * @return a {@link _MappingStage}
-     */
-    public static _MappingStage map(Object source) {
-        return new _MappingStage(source);
-    }
-
-    /**
-     * Prepare a Mapping operation with {@link DataMapper.Rule#STRICT_NAME_TYPE strict name and type matching}
-     *
-     * @param source
-     *      the source object
-     * @return a {@link _MappingStage}
+     * @return a {@link _MappingStage} that are ready to do deep copy to
+     *      new instance of `source` type
      */
     public static _MappingStage clone(Object source) {
-        return new _MappingStage(source).strictNameAndTypeMatching();
+        return new _MappingStage(source, DataMapper.Semantic.DEEP_COPY);
     }
 
     /**
      * Returns clone of a given `source` object.
+     *
+     * This is done by doing a {@link org.osgl.util.DataMapper.Semantic#DEEP_COPY} from
+     * `source` object to an new instance of `source` type
      *
      * @param source
      *      the object to be clone
@@ -8532,6 +8624,9 @@ public class Lang implements Serializable {
     /**
      * Returns clone of a given `source` object.
      *
+     * This is done by doing a {@link org.osgl.util.DataMapper.Semantic#DEEP_COPY} from
+     * `source` object to an new instance of `source` type
+     *
      * @param source
      *      the object to be clone
      * @param instanceFactory
@@ -8543,20 +8638,53 @@ public class Lang implements Serializable {
      */
     public static <T> T cloneOf(T source, Function<Class, ?> instanceFactory) {
         Object target = instanceFactory.apply(source.getClass());
-        return (T) new _MappingStage(source).strictNameAndTypeMatching().to(target);
+        return (T) deepCopy(source).toNewInstance(target);
     }
 
     /**
-     * Prepare a Mapping operation with {@link DataMapper.Rule#STRICT_NAME strict name matching}
+     * Prepare a Mapping operation with {@link DataMapper.Semantic#SHALLOW_COPY shallow copy} semantic
      *
-     * @param from
+     * @param source
      *      the source object
      * @return a {@link _MappingStage}
      */
-    public static _MappingStage copy(Object from) {
-        return new _MappingStage(from).strictNameMatching();
+    public static _MappingStage copy(Object source) {
+        return new _MappingStage(source, SHALLOW_COPY);
     }
 
+    /**
+     * Prepare a Mapping operation with {@link DataMapper.Semantic#DEEP_COPY deep copy} semantic
+     *
+     * @param source
+     *      the source object
+     * @return a {@link _MappingStage}
+     */
+    public static _MappingStage deepCopy(Object source) {
+        return new _MappingStage(source, DEEP_COPY);
+    }
+
+    /**
+     * Prepare a Mapping operation with {@link DataMapper.Semantic#MERGE merge} semantic
+     *
+     * @param source
+     *      the source object
+     * @return a {@link _MappingStage}
+     */
+    public static _MappingStage merge(Object source) {
+        return new _MappingStage(source, MERGE);
+    }
+
+
+    /**
+     * Prepare a Mapping operation with {@link DataMapper.MappingRule#KEYWORD_MATCHING keyword matching}
+     *
+     * @param source
+     *      the source object
+     * @return a {@link _MappingStage}
+     */
+    public static _MappingStage map(Object source) {
+        return new _MappingStage(source, MAP).keywordMatching();
+    }
 
     // --- eof common utilities
 

@@ -21,6 +21,7 @@ package org.osgl;
  */
 
 import org.osgl.exception.NotAppliedException;
+import org.osgl.util.IO;
 import org.osgl.util.UtilConfig;
 import org.osgl.util.algo.StringReplace;
 import org.osgl.util.algo.StringSearch;
@@ -56,6 +57,20 @@ public class OsglConfig {
             return $.newInstance(aClass);
         }
     };
+
+    private static final Set<String> immutableClassNames = new HashSet<>();
+    static {
+        immutableClassNames.addAll(IO.read(OsglConfig.class.getResource("immutable-classes.list")).toLines());
+    }
+
+    public static void registerImmutableClassNames(Collection<String> immutableClassNames) {
+        OsglConfig.immutableClassNames.addAll(immutableClassNames);
+    }
+
+    static boolean isImmutable(Class<?> c) {
+        return immutableClassNames.contains(c.getName());
+    }
+
 
     public static void setThreadLocalBufferLimit(int limit) {
         UtilConfig.setThreadLocalBufferLimit(limit);

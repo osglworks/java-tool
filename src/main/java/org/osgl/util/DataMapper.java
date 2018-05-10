@@ -9,9 +9,9 @@ package org.osgl.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,13 @@ package org.osgl.util;
  * #L%
  */
 
-import static org.osgl.util.DataMapper.Rule.KEYWORD_MATCHING;
-import static org.osgl.util.DataMapper.Rule.STRICT_NAME_TYPE;
+import static org.osgl.util.DataMapper.MappingRule.KEYWORD_MATCHING;
 
 import org.osgl.$;
+import org.osgl.Lang;
 import org.osgl.OsglConfig;
 import org.osgl.exception.MappingException;
+import org.osgl.exception.UnexpectedException;
 import org.osgl.util.converter.TypeConverterRegistry;
 
 import java.lang.reflect.Array;
@@ -56,11 +57,9 @@ import java.util.*;
  *
  * Three mapping rule has been defined:
  *
- * * {@link Rule#STRICT_NAME_TYPE}
- * - mapping only happens between exact same name and type
- * * {@link Rule#STRICT_NAME}
+ * * {@link MappingRule#STRICT_MATCHING}
  * - mapping happens between exact same name, and do type conversion if needed
- * * {@link Rule#KEYWORD_MATCHING}
+ * * {@link MappingRule#KEYWORD_MATCHING}
  * - mapping happens if the {@link Keyword} of source field name
  * and target field name matches. For example `foo_bar` can be mapped to `fooBar`.
  *
@@ -79,7 +78,7 @@ import java.util.*;
  *
  * ## Type conversion
  *
- * When mapping rule is not {@link Rule#STRICT_NAME_TYPE}, the mapper will try to
+ * When mapping semantic is {@link Semantic#MAP}, the mapper will try to
  * convert from source type to target type when types doesn't match. Otherwise
  * it will raise an {@link MappingException}.
  *
@@ -94,8 +93,13 @@ import java.util.*;
  * In case element exists in the target array then it will do recursive mapping
  * from the source element to the target element.
  *
+ * ### Handle out of range
+ *
  * If source array/collection has more elements that the target array can hold,
- * then the extra elements will be ignored
+ * an new array will be returned when calling to {@link #getTarget()}.
+ *
+ * If array is inner property of another structure, it will be replaced with
+ * the new array that holds all elements from source array/collection
  *
  * ## Mapping to a List
  *
@@ -143,8 +147,8 @@ import java.util.*;
  * If there are extra properties in the source object, they will be added into the
  * target map if the type can be converted.
  *
- * When mapping to a map, the {@link Rule#KEYWORD_MATCHING} won't effect, it is
- * treated as {@link Rule#STRICT_NAME}
+ * When mapping to a map, the {@link MappingRule#KEYWORD_MATCHING} won't effect, it is
+ * treated as {@link MappingRule#STRICT_MATCHING}
  *
  * ## Mapping from a Map
  *
@@ -162,26 +166,83 @@ import java.util.*;
  */
 public class DataMapper {
 
-    public enum Rule {
-        /**
-         * Both field name and type must match exactly.
-         */
-        STRICT_NAME_TYPE,
+    public enum MappingRule {
 
         /**
          * field name must match exactly.
          */
-        STRICT_NAME,
+        STRICT_MATCHING,
 
         /**
          * field name match by {@link Keyword} equality.
          *
-         * For example, the
+         * For example, `foo_bar` in source can be mapped to `fooBar` in target
          */
         KEYWORD_MATCHING;
 
         public boolean keywordMatching() {
             return this == KEYWORD_MATCHING;
+        }
+    }
+
+    /**
+     * The mapping semantic steering the mapping logic
+     */
+    public enum Semantic {
+        /**
+         * Copy the reference from source properties to target properties.
+         * * require property type be exactly match between source and target data
+         * * if there are more properties in the target data, the extra properties will be
+         * set to `null` or default value if they are primitive types
+         */
+        SHALLOW_COPY,
+
+        /**
+         * Recursively copy data from source data structure into target data structure.
+         * * intermediate data structure can be different between source and target
+         * * the terminate data type must match exactly
+         * * if there are more properties in the target data, the extra properties will be
+         * set to `null` or default value if they are primitive types
+         * * if there are existing data in collection of target data structure, the existing data must be cleared
+         * before copy happening
+         */
+        DEEP_COPY,
+
+        /**
+         * Recursively merge data from source data structure into target data structure. This
+         * semantic is same as {@link #DEEP_COPY} except:
+         * * if there are more properties in the target data, the extra properties will be left
+         * untouched
+         * * if there are existing data in collection of target data structure, the data will be
+         * merged or untouched
+         */
+        MERGE,
+
+        /**
+         * Recursively map data from source data structure into target data structure. This
+         * semantic is same as {@link #MERGE} except:
+         * * the terminate data type can be different, in which case type conversion will be used.
+         */
+        MAP;
+
+        boolean isShallowCopy() {
+            return this == SHALLOW_COPY;
+        }
+
+        boolean isDeepCopy() {
+            return this == DEEP_COPY;
+        }
+
+        boolean isCopy() {
+            return isShallowCopy() || isDeepCopy();
+        }
+
+        boolean isMerge() {
+            return this == MERGE;
+        }
+
+        boolean isMapping() {
+            return this == MAP;
         }
     }
 
@@ -231,7 +292,7 @@ public class DataMapper {
                 }
                 word = word.trim();
                 if (useBlackList) {
-                    if (rule == Rule.KEYWORD_MATCHING) {
+                    if (rule == MappingRule.KEYWORD_MATCHING) {
                         if (blackKeywords == C.EMPTY_SET) {
                             blackKeywords = new HashSet<>();
                         }
@@ -243,7 +304,7 @@ public class DataMapper {
                         blackList.add(word);
                     }
                 } else {
-                    if (rule == Rule.KEYWORD_MATCHING) {
+                    if (rule == MappingRule.KEYWORD_MATCHING) {
                         if (whiteKeywords == C.EMPTY_SET) {
                             whiteKeywords = new HashSet<>();
                         }
@@ -262,7 +323,6 @@ public class DataMapper {
             }
             allEmpty = whiteKeywords.isEmpty() && whiteList.isEmpty() && blackKeywords.isEmpty() && blackList.isEmpty();
         }
-
 
         @Override
         public boolean test(String s) {
@@ -284,15 +344,20 @@ public class DataMapper {
 
     }
 
-    /**
-     * Default mapping rule is {@link Rule#KEYWORD_MATCHING}
-     */
-    private Rule rule;
+    private MappingRule rule;
+
+    private Semantic semantic;
 
     /**
      * Keep track the object hierarchies
      */
     private StringBuilder context = new StringBuilder();
+
+    /**
+     * Used to track types walked through and detect
+     * circular reference
+     */
+    private Set<Class> circularReferenceDetector;
 
     /**
      * Decide whether copy a field or not
@@ -304,7 +369,8 @@ public class DataMapper {
 
     private Object target;
     private Class<?> targetType;
-    private Type targetComponentType = Object.class;
+    private ParameterizedType targetGenericType;
+    private ParameterizedType targetComponentType;
     private Class<?> targetComponentRawType = Object.class;
     private Class<?> targetKeyType;
 
@@ -329,26 +395,72 @@ public class DataMapper {
      */
     private boolean ignoreError;
 
-    public DataMapper(Object source, Object target, Class<?> targetKeyType, Type targetComponentType, Rule rule, String filterSpec, boolean ignoreError, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry) {
+    /**
+     * If set then it will stop exploring fields
+     * when it reaches the `rootClass`
+     */
+    private Class rootClass;
+
+    /**
+     * Cache target fields
+     */
+    private List<Field> targetFields;
+
+    /**
+     * Cache result of check if target is an array
+     */
+    private boolean targetIsArray;
+
+    /**
+     * Cache result of check if target is a list
+     */
+    private boolean targetIsCollection;
+
+    /**
+     * Cache result of check if target is a collection
+     */
+    private boolean targetIsList;
+
+    /**
+     * Cache result of check if target is a map
+     */
+    private boolean targetIsMap;
+
+    private boolean targetIsPojo;
+
+    /**
+     * Cache result of target length if it is array or collection
+     */
+    private int targetLength = -1;
+
+    /**
+     * Cache result of target as collection if it is a collection
+     */
+    private Collection targetCollection;
+
+    /**
+     * Cache result of target as list if it is a list
+     */
+    private List targetList;
+
+    /**
+     * Cache result of target as map if it is a map
+     */
+    private Map targetMap;
+
+    /**
+     * If target is newinstance then we will save the
+     * logic to clear target
+     */
+    private boolean targetIsNewInstance;
+
+    public DataMapper(Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic, String filterSpec, boolean ignoreError, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, boolean targetIsNewInstance, Class<?> rootClass) {
         this.targetType = target.getClass();
         E.illegalArgumentIf(isImmutable(targetType), "target type is immutable: " + targetType.getName());
+        this.targetGenericType = targetGenericType;
         this.sourceType = source.getClass();
-        if (rule == STRICT_NAME_TYPE) {
-            if (!targetType.isAssignableFrom(sourceType)) {
-                logError("Type mismatch. Source type: %s; Target type: %s", sourceType.getName(), targetType.getName());
-                return;
-            }
-        }
-        this.targetKeyType = targetKeyType;
-        this.targetComponentType = targetComponentType;
-        if (null != targetComponentType) {
-            if (targetComponentType instanceof Class) {
-                this.targetComponentRawType = (Class) targetComponentType;
-            } else {
-                this.targetComponentRawType = (Class) ((ParameterizedType) targetComponentType).getRawType();
-            }
-        }
         this.rule = $.requireNotNull(rule);
+        this.semantic = $.requireNotNull(semantic);
         this.filter = new PropertyFilter(filterSpec);
         this.conversionHints = null == conversionHints ? C.<Class, Object>Map() : conversionHints;
         this.instanceFactory = null == instanceFactory ? OsglConfig.INSTANCE_FACTORY : instanceFactory;
@@ -356,24 +468,22 @@ public class DataMapper {
         this.target = target;
         this.ignoreError = ignoreError;
         this.typeConverterRegistry = null == typeConverterRegistry ? TypeConverterRegistry.INSTANCE : typeConverterRegistry;
+        this.targetIsNewInstance = targetIsNewInstance;
+        this.rootClass = null == rootClass ? Object.class : rootClass;
+        this.circularReferenceDetector = new HashSet<>();
+        this.circularReferenceDetector.add(targetType);
+        E.illegalArgumentIfNot(this.rootClass.isAssignableFrom(this.targetType), "root class[%s] must be assignable from target type[%s]", rootClass.getName(), targetType.getName());
         this.doMapping();
     }
 
-    private DataMapper(Object source, Object target, String targetName, Class targetKeyType, Type targetComponentType, DataMapper parentMapper) {
+    private DataMapper(Object source, Object target, String targetName, ParameterizedType targetGenericType, DataMapper parentMapper) {
         this.sourceType = source.getClass();
         this.source = source;
         this.targetType = target.getClass();
         this.target = target;
-        this.targetKeyType = targetKeyType;
-        this.targetComponentType = targetComponentType;
-        if (null != targetComponentType) {
-            if (targetComponentType instanceof Class) {
-                this.targetComponentRawType = (Class) targetComponentType;
-            } else {
-                this.targetComponentRawType = (Class) ((ParameterizedType) targetComponentType).getRawType();
-            }
-        }
+        this.targetGenericType = targetGenericType;
         this.rule = parentMapper.rule;
+        this.semantic = parentMapper.semantic;
         this.filter = parentMapper.filter;
         this.ignoreError = parentMapper.ignoreError;
         this.conversionHints = parentMapper.conversionHints;
@@ -391,6 +501,11 @@ public class DataMapper {
         } else {
             // this case is the array or collection element copy
         }
+        this.targetIsNewInstance = parentMapper.targetIsNewInstance;
+        this.rootClass = Object.class;
+        this.circularReferenceDetector = new HashSet<>();
+        this.circularReferenceDetector.addAll(parentMapper.circularReferenceDetector);
+        this.circularReferenceDetector.add(targetType);
         this.doMapping();
     }
 
@@ -399,17 +514,22 @@ public class DataMapper {
     }
 
     private void doMapping() {
-        boolean targetIsArray = targetType.isArray();
-        boolean targetIsCollection = !targetIsArray && Collection.class.isAssignableFrom(targetType);
-        if (targetIsArray || targetIsCollection) {
-            mapToArrayOrCollection(targetIsArray);
-        } else {
-            boolean targetIsMap = Map.class.isAssignableFrom(targetType);
-            if (targetIsMap) {
-                mapToMap();
+        try {
+            this.probeTargetType();
+            this.cleanTargetIfNeeded();
+            if (targetIsArray || targetIsCollection) {
+                mapToArrayOrCollection();
             } else {
-                mapToPojo();
+                if (targetIsMap) {
+                    mapToMap();
+                } else {
+                    mapToPojo();
+                }
             }
+        } catch (MappingException e) {
+            throw e;
+        } catch (Exception e) {
+            logError(e);
         }
     }
 
@@ -417,211 +537,143 @@ public class DataMapper {
      * Array mapping require the source type to
      * be sequenced, i.e. array or iterable
      */
-    private void mapToArrayOrCollection(boolean targetIsArray) {
-        Collection targetCollection = null;
-        List targetList = null;
-        int targetLen = 0;
-        boolean targetIsList = false;
-        if (targetIsArray) {
-            targetLen = Array.getLength(target);
-            if (targetLen == 0) {
+    private void mapToArrayOrCollection() {
+        List sourceList = null;
+
+        // ensure we have a source as list
+        if (!isSequence(sourceType)) {
+            if (semantic.isMapping()) {
+                sourceList = convert(source).to(List.class);
+            }
+            if (null == sourceList) {
+                logError("Cannot map source[%s] into array or collection", sourceType.getName());
                 return;
             }
-            targetComponentType = targetType.getComponentType();
         } else {
-            targetCollection = (Collection) target;
-            if (List.class.isAssignableFrom(targetType)) {
-                targetIsList = true;
-                targetList = (List) target;
-                targetLen = targetList.size();
-            }
-            if (null == targetComponentType) {
-                targetComponentType = $.commonSuperTypeOf(targetCollection);
-            }
+            sourceList = convert(source).to(List.class);
         }
-        Iterable sourceIterable;
-        if (!isSequence(sourceType)) {
-            // try convert source to an iterable
-            sourceIterable = convertSourceTo(Iterable.class);
-            if (null == sourceIterable) {
-                if (rule != Rule.STRICT_NAME_TYPE) {
-                    List pseudoList = new ArrayList<>();
-                    // try to treat the source object as source component
-                    if (!targetComponentRawType.isAssignableFrom(sourceType)) {
-                        Object convertedSource = convertSourceTo(targetComponentRawType);
-                        if (null != convertedSource) {
-                            pseudoList.add(convertedSource);
-                        } else {
-                            logMappingFailure();
-                            return;
-                        }
-                    } else {
-                        pseudoList.add(source);
-                    }
-                    sourceIterable = pseudoList;
-                } else {
-                    logMappingFailure();
-                    return;
+
+        // make sure target has enough size if it is an array or list
+        int sourceLength = sourceList.size();
+        final int originTargetLength = targetLength;
+        if (targetLength < sourceLength) {
+            if (targetIsArray) {
+                Object target0 = target;
+                target = Array.newInstance(targetComponentRawType, sourceLength);
+                System.arraycopy(target0, 0, target, 0, targetLength);
+                targetLength = sourceLength;
+            } else if (targetIsList) {
+                Object nullVal = $.convert(null).to(targetComponentRawType);
+                for (int i = targetLength; i < sourceLength; ++i) {
+                    targetList.add(nullVal);
                 }
+                targetLength = sourceLength;
             }
-        } else {
-            sourceIterable = convertSourceTo(Iterable.class);
         }
-        // now try to map from sourceIterable to target
-        Iterator itr = sourceIterable.iterator();
-        boolean targetComponentIsSequence = isSequence(targetComponentRawType);
-        boolean targetComponentIsMap = !targetComponentIsSequence && Map.class.isAssignableFrom(targetComponentRawType);
-        if (targetIsArray || null != targetList) {
-            int cursor = 0;
-            while (cursor < targetLen && itr.hasNext()) {
-                Object sourceComponent = itr.next();
-                if (null == sourceComponent) {
-                    if (targetIsArray) {
-                        Array.set(target, cursor, null);
-                    } else {
-                        targetList.set(cursor, null);
-                    }
+
+        // now map from source list into target
+        boolean targetComponentIsContainer = isContainer(targetComponentRawType);
+        Iterator itr = sourceList.iterator();
+        int cursor = 0;
+        while (itr.hasNext()) {
+            Object sourceComponent = itr.next();
+
+            // handle null value
+            if (null == sourceComponent) {
+                if (semantic.isMapping() || semantic.isMerge()) {
                     continue;
                 }
-                Object targetComponent = null;
-                if (!(targetComponentIsMap || targetComponentIsSequence)) {
-                    targetComponent = convert(sourceComponent).to(targetComponentRawType);
+                Object nullVal = $.convert(null).to(targetComponentRawType);
+                if (targetIsList) {
+                    targetList.set(cursor++, nullVal);
+                } else if (targetIsArray) {
+                    Array.set(target, cursor++, nullVal);
                 }
-                if (null != targetComponent) {
-                    if (targetIsList) {
-                        targetList.set(cursor, targetComponent);
-                    } else {
-                        Array.set(target, cursor, targetComponent);
-                    }
-                } else {
-                    targetComponent = targetIsList ? targetList.get(cursor) : Array.get(target, cursor);
-                    if (null == targetComponent) {
-                        targetComponent = instanceFactory.apply(targetComponentRawType);
-                        if (targetIsList) {
-                            targetList.set(cursor, targetComponent);
-                        } else {
-                            Array.set(target, cursor, targetComponent);
-                        }
-                    }
-                    Class<?> componentkeyType = null;
-                    Type componentComponentType = null;
-                    if (targetComponentType instanceof ParameterizedType) {
-                        ParameterizedType ptype = (ParameterizedType) targetComponentType;
-                        Type[] ta = ptype.getActualTypeArguments();
-                        if (targetComponentIsMap) {
-                            componentkeyType = (Class) ta[0];
-                            componentComponentType = ta[1];
-                        } else if (targetComponentIsSequence) {
-                            componentComponentType = ta[0];
-                        }
-                    }
-                    new DataMapper(sourceComponent, targetComponent, "", componentkeyType, componentComponentType, this);
+                continue;
+            }
+
+            // sanity check on type matching
+            boolean componentRawTypeMatches = $.is(sourceComponent).allowBoxing().instanceOf(targetComponentRawType);
+            if (!semantic.isMapping() && !componentRawTypeMatches) {
+                logError("component type mismatch. Source component type: %s, target component type: %s", sourceComponent.getClass().getName(), targetComponentRawType.getName());
+                continue;
+            }
+
+            // do the map work
+            Object targetComponent = null;
+            // try fetch existing component from array or list
+            if ((targetIsArray || targetIsList) && !semantic.isCopy() && cursor < originTargetLength) {
+                // if is copy then target is already cleared
+                // if cursor >= original target length then the element is always null
+                if (targetIsArray) {
+                    targetComponent = Array.get(target, cursor);
+                } else if (targetIsList) {
+                    targetComponent = targetList.get(cursor);
                 }
             }
-        }
-        if (!targetIsArray) {
-            while (itr.hasNext()) {
-                Object sourceComponent = itr.next();
-                Object targetComponent = null;
-                if (!(targetComponentIsMap || targetComponentIsSequence)) {
-                    targetComponent = convert(sourceComponent).to(targetComponentRawType);
+            targetComponent = prepareTargetComponent(
+                    sourceComponent, targetComponent, targetComponentRawType,
+                    targetComponentType, targetComponentIsContainer, "");
+            if (targetIsArray || targetIsList) {
+                // for array and list update existing slot from source
+                if (targetIsList) {
+                    targetList.set(cursor++, targetComponent);
+                } else if (targetIsArray) {
+                    Array.set(target, cursor++, targetComponent);
                 }
-                if (null == targetComponent) {
-                    targetComponent = instanceFactory.apply(targetComponentRawType);
-                    Class<?> componentkeyType = null;
-                    Type componentComponentType = null;
-                    if (targetComponentType instanceof ParameterizedType) {
-                        ParameterizedType ptype = (ParameterizedType) targetComponentType;
-                        Type[] ta = ptype.getActualTypeArguments();
-                        if (targetComponentIsMap) {
-                            componentkeyType = (Class) ta[0];
-                            componentComponentType = ta[1];
-                        } else if (targetComponentIsSequence) {
-                            componentComponentType = ta[0];
-                        }
-                    }
-                    new DataMapper(sourceComponent, targetComponent, "", componentkeyType, componentComponentType, this);
-                }
-                if (null != targetComponent) {
-                    targetCollection.add(targetComponent);
-                }
+            } else {
+                // for set or any other collection that is not an list, append from source
+                targetCollection.add(targetComponent);
             }
         }
     }
 
     private void mapToMap() {
-        Map targetMap = (Map) target;
-        if (null == targetKeyType) {
-            targetKeyType = $.commonSuperTypeOf(targetMap.keySet());
-            if (null == targetKeyType) {
-                targetKeyType = String.class;
-            }
-        }
-        if (null == targetComponentType) {
-            targetComponentType = $.commonSuperTypeOf(targetMap.values());
-            if (null == targetComponentType) {
-                targetComponentType = Object.class;
-            }
-        }
+        // build target keyword index if needed
         Map targetMapKeywordLookup = null;
-        if (rule.keywordMatching()) {
-            if (String.class == targetKeyType) {
-                targetMapKeywordLookup = new HashMap();
-                for (Object key : targetMap.keySet()) {
-                    targetMapKeywordLookup.put(Keyword.of(key.toString()), key);
-                }
+        if (rule.keywordMatching() && String.class == targetKeyType) {
+            targetMapKeywordLookup = new HashMap();
+            for (Object key : targetMap.keySet()) {
+                targetMapKeywordLookup.put(Keyword.of(key.toString()), key);
             }
         }
 
+        // do map work
         boolean targetComponentIsSequence = isSequence(targetComponentRawType);
-        boolean targetComponentIsMap = !targetComponentIsSequence && Map.class.isAssignableFrom(targetComponentRawType);
+        boolean targetComponentIsMap = !targetComponentIsSequence && isMap(targetComponentRawType);
+        boolean targetComponentIsContainer = targetComponentIsMap || targetComponentIsSequence;
+        String prefix = context.toString();
         for ($.Triple<Object, Keyword, $.Producer<Object>> sourceProperty : sourceProperties()) {
             Object sourceKey = sourceProperty.first();
-            Keyword sourceKeyword = sourceProperty.second();
+            if (!semantic.isMapping() && !$.is(sourceKey).allowBoxing().instanceOf(targetKeyType)) {
+                logError("map key type mismatch, required: %s; found: %s", targetKeyType, sourceKey.getClass().getName());
+                continue;
+            }
             Object sourceVal = sourceProperty.last().produce();
+            if (null == sourceVal) {
+                continue;
+            }
+            Keyword sourceKeyword = sourceProperty.second();
             Object targetKey = null;
             if (targetMapKeywordLookup != null) {
                 targetKey = targetMapKeywordLookup.get(sourceKeyword);
             }
             if (targetKey == null) {
-                targetKey = convert(sourceKey).to(targetKeyType);
+                targetKey = semantic.isMapping() ? convert(sourceKey).to(targetKeyType) : sourceKey;
             }
-            if (null == sourceVal) {
-                targetMap.remove(targetKey);
+            String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
+            if (!filter.test(key)) {
                 continue;
             }
-            Object targetVal = null;
-            if (!(targetComponentIsMap || targetComponentIsSequence)) {
-                targetVal = convert(sourceVal).to(targetComponentRawType);
-            }
-            if (null != targetVal) {
-                targetMap.put(targetKey, targetVal);
-            } else {
-                targetVal = targetMap.get(targetKey);
-                if (targetVal == null) {
-                    targetVal = instanceFactory.apply(targetComponentRawType);
-                    targetMap.put(targetKey, targetVal);
-                }
-                Class<?> componentkeyType = null;
-                Type componentComponentType = null;
-                if (targetComponentType instanceof ParameterizedType) {
-                    ParameterizedType ptype = (ParameterizedType) targetComponentType;
-                    Type[] ta = ptype.getActualTypeArguments();
-                    if (targetComponentIsMap) {
-                        componentkeyType = (Class) ta[0];
-                        componentComponentType = ta[1];
-                    } else if (targetComponentIsSequence) {
-                        componentComponentType = ta[0];
-                    }
-                }
-                new DataMapper(sourceVal, targetVal, targetKey.toString(), componentkeyType, componentComponentType, this);
-            }
+            Object targetVal = targetMap.get(targetKey);
+            targetVal = prepareTargetComponent(
+                    sourceVal, targetVal, targetComponentRawType,
+                    targetComponentType, targetComponentIsContainer, "");
+            targetMap.put(targetKey, targetVal);
         }
     }
 
     private void mapToPojo() {
-        List<Field> targetFields = $.fieldsOf(targetType);
-        String prefix = context.toString();
         Map<Object, Object> sourceMap = Map.class.isAssignableFrom(sourceType) ? (Map) source : null;
         Map<Keyword, Object> sourceMapByKeyword = null;
         if (rule.keywordMatching()) {
@@ -636,13 +688,19 @@ public class DataMapper {
                 }
             }
         }
+        String prefix = context.toString();
         for (Field targetField : targetFields) {
             Class<?> targetFieldType = targetField.getType();
+            if (circularReferenceDetector.contains(targetFieldType)) {
+                continue;
+            }
             String targetFieldName = targetField.getName();
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetFieldName) : targetFieldName;
             if (!filter.test(key)) {
                 continue;
             }
+            Type type = targetField.getGenericType();
+            ParameterizedType targetFieldGenericType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
             Object sourcePropValue;
             if (null != sourceMapByKeyword) {
                 sourcePropValue = sourceMapByKeyword.get(Keyword.of(targetFieldName));
@@ -662,98 +720,24 @@ public class DataMapper {
                 sourcePropValue = $.getFieldValue(source, sourceField);
             }
             if (null == sourcePropValue) {
-                $.setFieldValue(target, targetField, null);
-            } else {
-                if (processContainer(sourcePropValue, targetField, targetFieldName, targetFieldType)) {
-                    continue;
+                if (semantic.isCopy()) {
+                    $.setFieldValue(target, targetField, $.convert(null).to(targetFieldType));
                 }
-                Object targetFieldValue = convert(sourcePropValue).to(targetFieldType);
-                if (null != targetFieldValue) {
-                    $.setFieldValue(target, targetField, targetFieldValue);
-                    continue;
-                }
-                targetFieldValue = $.getFieldValue(target, targetField);
-                if (null == targetFieldValue) {
-                    targetFieldValue = instanceFactory.apply(targetFieldType);
-                    $.setFieldValue(target, targetField, targetFieldValue);
-                }
-                Class targetKeyType = null;
-                Class targetComponentType = null;
-                if (Map.class.isAssignableFrom(targetFieldType)) {
-                    Type targetGenericType = targetField.getGenericType();
-                    if (targetGenericType instanceof ParameterizedType) {
-                        ParameterizedType pt = (ParameterizedType) targetGenericType;
-                        Type[] ta = pt.getActualTypeArguments();
-                        if (ta.length > 1) {
-                            Type k = ta[0];
-                            Type v = ta[1];
-                            if (k instanceof Class) {
-                                targetKeyType = (Class) k;
-                            }
-                            if (v instanceof Class) {
-                                targetComponentType = (Class) v;
-                            }
-                        }
-                    }
-                } else if (Collection.class.isAssignableFrom(targetFieldType)) {
-                    Type targetGenericType = targetField.getGenericType();
-                    if (targetGenericType instanceof ParameterizedType) {
-                        ParameterizedType pt = (ParameterizedType) targetGenericType;
-                        Type[] ta = pt.getActualTypeArguments();
-                        if (ta.length > 0) {
-                            Type v = ta[0];
-                            if (v instanceof Class) {
-                                targetComponentType = (Class) v;
-                            }
-                        }
-                    }
-                }
-                new DataMapper(sourcePropValue, targetFieldValue, targetFieldName, targetKeyType, targetComponentType, this);
+                continue;
             }
-        }
-    }
 
-    private boolean processContainer(Object sourcePropValue, Field targetField, String targetFieldName, Class<?> targetFieldType) {
-        boolean targetFieldIsCollection = Collection.class.isAssignableFrom(targetFieldType);
-        boolean targetFieldIsMap = !targetFieldIsCollection && Map.class.isAssignableFrom(targetFieldType);
-        if (targetFieldIsCollection || targetFieldIsMap) {
+            boolean targetFieldIsContainer = isContainer(targetFieldType);
+            if (!targetFieldIsContainer && !semantic.isMapping() && !$.is(sourcePropValue).allowBoxing().instanceOf(targetFieldType)) {
+                logError("Type mismatch copy source [%s] to field[%s|%s]", sourcePropValue.getClass().getName(), targetFieldName, targetFieldType.getName());
+                continue;
+            }
+
             Object targetFieldValue = $.getFieldValue(target, targetField);
-            if (null == targetFieldValue) {
-                targetFieldValue = instanceFactory.apply(targetFieldType);
-                $.setFieldValue(target, targetField, targetFieldValue);
-            }
-            if (targetFieldIsCollection) {
-                sourcePropValue = convert(sourcePropValue).to(Collection.class);
-            } else {
-                sourcePropValue = convert(sourcePropValue).to(Map.class);
-            }
-            if (null == sourcePropValue) {
-                logMappingFailure();
-                return true;
-            }
-            Class<?> targetKeyType = null;
-            Type targetComponentType = null;
-            Type targetFieldGenericType = targetField.getGenericType();
-            if (targetFieldGenericType instanceof ParameterizedType) {
-                ParameterizedType ptype = (ParameterizedType) targetFieldGenericType;
-                Type[] ta = ptype.getActualTypeArguments();
-                Type type0 = ta[0];
-                Type type1 = targetFieldIsMap ? ta[1] : null;
-                if (type0 instanceof Class) {
-                    if (targetFieldIsMap) {
-                        targetKeyType = (Class) type0;
-                    } else {
-                        targetComponentType = type0;
-                    }
-                }
-                if (null != type1) {
-                    targetComponentType = type1;
-                }
-            }
-            new DataMapper(sourcePropValue, targetFieldValue, targetFieldName, targetKeyType, targetComponentType, this);
-            return true;
+            targetFieldValue = prepareTargetComponent(
+                    sourcePropValue, targetFieldValue, targetFieldType,
+                    targetFieldGenericType, targetFieldIsContainer, targetFieldName);
+            $.setFieldValue(target, targetField, targetFieldValue);
         }
-        return false;
     }
 
     private Iterable<$.Triple<Object, Keyword, $.Producer<Object>>> sourceProperties() {
@@ -835,6 +819,45 @@ public class DataMapper {
         };
     }
 
+    // preconditions:
+    // 1. source component is not null
+    // 2. source component can be assigned to target component type or
+    // 3. source component can be converted to target component type and semantic is MAP
+    private Object prepareTargetComponent(
+            Object sourceComponent,
+            Object targetComponent,
+            Class targetComponentType,
+            ParameterizedType targetComponentGenericType,
+            boolean targetComponentIsContainer,
+            String key
+    ) {
+        if (semantic.isShallowCopy() || isImmutable(targetComponentType)) {
+            if (semantic.isMapping() && !$.is(sourceComponent).allowBoxing().instanceOf(targetComponentType)) {
+                return convert(sourceComponent).to(targetComponentType);
+            }
+            return sourceComponent;
+        }
+        Object convertedTargetComponent = null;
+        if (!targetComponentIsContainer && semantic.isMapping()) {
+            convertedTargetComponent = convert(sourceComponent).to(targetComponentType);
+        }
+        if (null != convertedTargetComponent) {
+            return convertedTargetComponent;
+        }
+        if (null != targetComponent) {
+            targetComponent = new DataMapper(sourceComponent, targetComponent, key, targetComponentGenericType, this).getTarget();
+        } else {
+            targetComponent = copyOrReferenceOf(sourceComponent, sourceComponent.getClass(), key, targetComponentType, targetComponentGenericType);
+        }
+        return targetComponent;
+    }
+
+    private void logError(Throwable cause) {
+        if (!ignoreError) {
+            mappingError(cause, "Error mapping from %s to %s", sourceType.getName(), targetType.getName());
+        }
+    }
+
     private void logError(Throwable cause, String message, Object... messageArgs) {
         if (!ignoreError) {
             mappingError(cause, message, messageArgs);
@@ -876,10 +899,6 @@ public class DataMapper {
         return convert(source, !ignoreError);
     }
 
-    private $._ConvertStage<?> tryConvert(Object source) {
-        return convert(source, false);
-    }
-
     private $._ConvertStage<?> convert(Object source, boolean reportError) {
         $._ConvertStage stage = $.convert(source).customTypeConverters(typeConverterRegistry).hint(convertHintOf(sourceType));
         if (!reportError) {
@@ -900,8 +919,129 @@ public class DataMapper {
         throw new MappingException(source, target, message, messageArgs);
     }
 
-    private static boolean isSequence(Class<?> targetType) {
-        return targetType.isArray() || Collection.class.isAssignableFrom(targetType);
+    private void cleanTargetIfNeeded() {
+        if (semantic.isMapping() || semantic.isMerge()) {
+            return;
+        }
+        if (targetIsArray) {
+            // ensure primitive type get non-null value
+            Object nullVal = $.convert(null).to(targetComponentRawType);
+            for (int i = 0; i < targetLength; ++i) {
+                Array.set(target, i, nullVal);
+            }
+        } else if (null != targetCollection) {
+            targetCollection.clear();
+        } else if (null != targetMap) {
+            targetMap.clear();
+        } else {
+            for (Field field : targetFields) {
+                $.resetFieldValue(target, field);
+            }
+        }
+    }
+
+    private void probeTargetType() {
+        targetIsArray = targetType.isArray();
+        targetCollection = !targetIsArray && Collection.class.isAssignableFrom(targetType) ? (Collection) target : null;
+        targetIsCollection = null != targetCollection;
+        targetList = targetIsCollection && List.class.isAssignableFrom(targetType) ? (List) target : null;
+        targetIsList = null != targetList;
+        targetMap = !targetIsArray && null == targetCollection && Map.class.isAssignableFrom(targetType) ? (Map) target : null;
+        targetIsMap = null != targetMap;
+        targetIsPojo = !targetIsArray && !targetIsCollection && !targetIsMap;
+        if (targetIsArray) {
+            targetLength = Array.getLength(target);
+            targetComponentRawType = targetType.getComponentType();
+        } else {
+            if (targetIsPojo) {
+                targetFields = $.fieldsOf(targetType, rootClass, true);
+            }
+            if (null != targetGenericType) {
+                Type[] ta = targetGenericType.getActualTypeArguments();
+                Type componentType = null;
+                if (null != targetMap) {
+                    targetKeyType = (Class) ta[0];
+                    componentType = ta[1];
+                } else if (null != targetCollection) {
+                    componentType = ta[0];
+                }
+                if (null != componentType) {
+                    if (componentType instanceof ParameterizedType) {
+                        targetComponentType = (ParameterizedType) componentType;
+                        targetComponentRawType = (Class) targetComponentType.getRawType();
+                    } else {
+                        targetComponentRawType = (Class) componentType;
+                    }
+                }
+            }
+            if (targetList != null) {
+                targetLength = targetList.size();
+            }
+        }
+        if (targetIsMap) {
+            if (null == targetKeyType) {
+                targetKeyType = $.commonSuperTypeOf(targetMap.keySet());
+                if (null == targetKeyType) {
+                    targetKeyType = String.class;
+                }
+            }
+            if (null == targetComponentRawType) {
+                targetComponentRawType = $.commonSuperTypeOf(targetMap.values());
+                if (null == targetComponentRawType) {
+                    targetComponentRawType = Object.class;
+                }
+            }
+        }
+        if (targetIsCollection) {
+            if (null == targetComponentRawType) {
+                targetComponentRawType = $.commonSuperTypeOf(targetCollection);
+            }
+        }
+    }
+
+    private Object copyOrReferenceOf(Object source) {
+        return copyOrReferenceOf(source, "", null, null);
+    }
+
+    private Object copyOrReferenceOf(Object source, String targetName, Class targetType, ParameterizedType targetGenericType) {
+        return copyOrReferenceOf(source, source.getClass(), targetName, targetType, targetGenericType);
+    }
+
+    private Object copyOrReferenceOf(Object source, Class sourceType, String targetName, Class targetType, ParameterizedType targetGenericType) {
+        if (semantic.isShallowCopy() || isImmutable(sourceType)) {
+            return source;
+        }
+        Object target;
+        if (targetType.isArray()) {
+            int len;
+            if (sourceType.isArray()) {
+                len = Array.getLength(source);
+            } else if (Collection.class.isAssignableFrom(sourceType)) {
+                len = ((Collection) source).size();
+            } else {
+                throw new UnexpectedException("oops, how come source is not a array/collection??");
+            }
+            target = Array.newInstance(targetType.getComponentType(), len);
+        } else {
+            try {
+                target = instanceFactory.apply(targetType);
+            } catch (Exception e) {
+                return source;
+            }
+        }
+        return new DataMapper(source, target, targetName, targetGenericType, this).getTarget();
+    }
+
+    private static boolean isSequence(Class<?> type) {
+        return type.isArray() || Collection.class.isAssignableFrom(type);
+    }
+
+    private static boolean isMap(Class<?> type) {
+        return Map.class.isAssignableFrom(type);
+    }
+
+    private static boolean isContainer(Class<?> type) {
+        return isSequence(type) || isMap(type);
     }
 
     private static Class elementTypeOf(Object o) {
@@ -914,7 +1054,7 @@ public class DataMapper {
     }
 
     private static boolean isImmutable(Class<?> type) {
-        return $.isSimpleType(type) || Date.class.isAssignableFrom(type);
+        return !type.isArray() && ($.isSimpleType(type) || Lang.isImmutable(type));
     }
 
 }

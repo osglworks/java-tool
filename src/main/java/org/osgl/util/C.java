@@ -3397,6 +3397,21 @@ public class C {
     }
 
     /**
+     * Create an mutable set contains specified elements
+     * @param t1 one element to be added into the result set
+     * @param ta an array from which all elements will be added into the result set
+     * @param <T> the element type
+     * @return a set that contains all elements specified
+     */
+    public static <T> Set<T> newSet(T t1, T... ta) {
+        Set<T> set = new DelegatingSet<>();
+        set.add(t1);
+        Collections.addAll(set, ta);
+        return set;
+    }
+
+
+    /**
      * Create an new set with all elements contained in the collection
      * specified
      * @param col the collection from which all elements will be added into

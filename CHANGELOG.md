@@ -1,9 +1,11 @@
 # OSGL Tool Change Log
 
 1.11.2
+* Support different copy semantic #82
 * Mapping framework failed to do type case within Map #77
 * Mapping from map to map key lost when using `Rule.KEYWORD_MATCHING` #78
 * Mapping from map to map type lost when component type is a `ParameterizedType` #79
+* Mapping into array always set on the first element in the array #80
 
 1.11.1
 * Clean unused copy code from Lang
