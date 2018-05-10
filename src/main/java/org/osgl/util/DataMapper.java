@@ -364,6 +364,9 @@ public class DataMapper {
      */
     private PropertyFilter filter;
 
+    // the global filter
+    private PropertyFilter globalFilter;
+
     private Object source;
     private Class<?> sourceType;
 
@@ -514,9 +517,12 @@ public class DataMapper {
     }
 
     private void doMapping() {
+        String s = OsglConfig.globalMappingFilter(this.targetType);
+        if (S.notBlank(s)) {
+            this.globalFilter = new PropertyFilter(s);
+        }
         try {
             this.probeTargetType();
-            this.cleanTargetIfNeeded();
             if (targetIsArray || targetIsCollection) {
                 mapToArrayOrCollection();
             } else {
@@ -553,6 +559,23 @@ public class DataMapper {
             sourceList = convert(source).to(List.class);
         }
 
+        final Object nullVal = $.convert(null).to(targetComponentRawType);
+
+        // clear target for copy operations
+        if (semantic.isCopy()) {
+            if (targetIsArray) {
+                for (int i = 0; i < targetLength; ++i) {
+                    Array.set(target, i, nullVal);
+                }
+            } else if (targetIsList) {
+                for (int i = 0; i < targetLength; ++i) {
+                    targetList.set(i, nullVal);
+                }
+            } else {
+                targetCollection.clear();
+            }
+        }
+
         // make sure target has enough size if it is an array or list
         int sourceLength = sourceList.size();
         final int originTargetLength = targetLength;
@@ -563,7 +586,6 @@ public class DataMapper {
                 System.arraycopy(target0, 0, target, 0, targetLength);
                 targetLength = sourceLength;
             } else if (targetIsList) {
-                Object nullVal = $.convert(null).to(targetComponentRawType);
                 for (int i = targetLength; i < sourceLength; ++i) {
                     targetList.add(nullVal);
                 }
@@ -583,7 +605,6 @@ public class DataMapper {
                 if (semantic.isMapping() || semantic.isMerge()) {
                     continue;
                 }
-                Object nullVal = $.convert(null).to(targetComponentRawType);
                 if (targetIsList) {
                     targetList.set(cursor++, nullVal);
                 } else if (targetIsArray) {
@@ -629,6 +650,8 @@ public class DataMapper {
     }
 
     private void mapToMap() {
+        targetMap.clear();
+
         // build target keyword index if needed
         Map targetMapKeywordLookup = null;
         if (rule.keywordMatching() && String.class == targetKeyType) {
@@ -662,9 +685,6 @@ public class DataMapper {
                 targetKey = semantic.isMapping() ? convert(sourceKey).to(targetKeyType) : sourceKey;
             }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
-            if (!filter.test(key)) {
-                continue;
-            }
             Object targetVal = targetMap.get(targetKey);
             targetVal = prepareTargetComponent(
                     sourceVal, targetVal, targetComponentRawType,
@@ -695,6 +715,9 @@ public class DataMapper {
                 continue;
             }
             String targetFieldName = targetField.getName();
+            if (null != globalFilter && !globalFilter.test(targetFieldName)) {
+                continue;
+            }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetFieldName) : targetFieldName;
             if (!filter.test(key)) {
                 continue;
@@ -743,7 +766,6 @@ public class DataMapper {
     private Iterable<$.Triple<Object, Keyword, $.Producer<Object>>> sourceProperties() {
         if (Map.class.isAssignableFrom(sourceType)) {
             return C.list(((Map<Object, Object>) source).entrySet())
-                    .filter(mapEntryFilter())
                     .map(new $.Transformer<Map.Entry, $.Triple<Object, Keyword, $.Producer<Object>>>() {
                         @Override
                         public $.Triple<Object, Keyword, $.Producer<Object>> transform(final Map.Entry entry) {
@@ -785,23 +807,6 @@ public class DataMapper {
         }
     }
 
-    private $.Predicate<Map.Entry> mapEntryFilter() {
-        if (filter.allEmpty) {
-            return $.F.yes();
-        }
-        return new $.Predicate<Map.Entry>() {
-            @Override
-            public boolean test(Map.Entry entry) {
-                String key = entry.getKey().toString();
-                String prefix = context.toString();
-                if (S.notBlank(prefix)) {
-                    key = S.pathConcat(prefix, '.', key);
-                }
-                return filter.test(key);
-            }
-        };
-    }
-
     private $.Predicate<Field> fieldFilter() {
         if (filter.allEmpty) {
             return $.F.yes();
@@ -810,6 +815,9 @@ public class DataMapper {
             @Override
             public boolean test(Field field) {
                 String key = field.getName();
+                if (null != globalFilter && !globalFilter.test(key)) {
+                    return false;
+                }
                 String prefix = context.toString();
                 if (S.notBlank(prefix)) {
                     key = S.pathConcat(prefix, '.', key);
@@ -845,6 +853,30 @@ public class DataMapper {
             return convertedTargetComponent;
         }
         if (null != targetComponent) {
+            if (targetComponentType.isInterface()) {
+                Class realComponentType = targetComponent.getClass();
+                if (Map.class == targetComponentType && HashMap.class != realComponentType) {
+                    Map map = new HashMap();
+                    map.putAll((Map) targetComponent);
+                    targetComponent = map;
+                } else if (List.class == targetComponentType && ArrayList.class != realComponentType) {
+                    List list = new ArrayList();
+                    list.addAll((List) targetComponent);
+                    targetComponent = list;
+                } else if (Set.class == targetComponentType && HashSet.class != realComponentType) {
+                    Set set = new HashSet();
+                    set.addAll((Set) targetComponent);
+                    targetComponent = set;
+                } else if (SortedMap.class == targetComponentType && TreeMap.class != realComponentType) {
+                    Map map = new TreeMap();
+                    map.putAll((Map) targetComponent);
+                    targetComponent = map;
+                } else if (SortedSet.class == targetComponentType && TreeSet.class != realComponentType) {
+                    Set set = new TreeSet();
+                    set.addAll((Set) targetComponent);
+                    targetComponent = set;
+                }
+            }
             targetComponent = new DataMapper(sourceComponent, targetComponent, key, targetComponentGenericType, this).getTarget();
         } else {
             targetComponent = copyOrReferenceOf(sourceComponent, sourceComponent.getClass(), key, targetComponentType, targetComponentGenericType);
@@ -917,27 +949,6 @@ public class DataMapper {
 
     private MappingException mappingError(String message, Object... messageArgs) {
         throw new MappingException(source, target, message, messageArgs);
-    }
-
-    private void cleanTargetIfNeeded() {
-        if (semantic.isMapping() || semantic.isMerge()) {
-            return;
-        }
-        if (targetIsArray) {
-            // ensure primitive type get non-null value
-            Object nullVal = $.convert(null).to(targetComponentRawType);
-            for (int i = 0; i < targetLength; ++i) {
-                Array.set(target, i, nullVal);
-            }
-        } else if (null != targetCollection) {
-            targetCollection.clear();
-        } else if (null != targetMap) {
-            targetMap.clear();
-        } else {
-            for (Field field : targetFields) {
-                $.resetFieldValue(target, field);
-            }
-        }
     }
 
     private void probeTargetType() {

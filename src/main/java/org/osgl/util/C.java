@@ -39,9 +39,14 @@ package org.osgl.util;
  * #L%
  */
 
+import static org.osgl.Lang.Visitor;
+
 import org.osgl.$;
+import org.osgl.Lang.Func2;
+import org.osgl.Lang.IndexedVisitor;
 import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
+import org.osgl.exception.ReadOnlyException;
 import org.osgl.util.algo.Algorithms;
 
 import java.io.IOException;
@@ -278,7 +283,7 @@ public class C {
          * @return the result of reduction
          * @since 0.2
          */
-        <R> R reduce(R identity, $.Func2<R, T, R> accumulator);
+        <R> R reduce(R identity, Func2<R, T, R> accumulator);
 
         /**
          * Performs a reduction on the elements in this traversable, using provided accumulating
@@ -307,7 +312,7 @@ public class C {
          * the structure is empty
          * @since 0.2
          */
-        $.Option<T> reduce($.Func2<T, T, T> accumulator);
+        $.Option<T> reduce(Func2<T, T, T> accumulator);
 
         /**
          * Check if all elements match the predicate specified
@@ -718,11 +723,11 @@ public class C {
         /**
          * {@inheritDoc}
          * This method does not specify how to run the accumulator. It might be
-         * {@link C.Sequence#reduceLeft(Object, Osgl.Func2)} or
-         * {@link ReversibleSequence#reduceRight(Object, Osgl.Func2)}, or
+         * {@link C.Sequence#reduceLeft(Object, Func2)} or
+         * {@link ReversibleSequence#reduceRight(Object, Func2)}, or
          * even run reduction in parallel, it all depending on the implementation.
          * <p>For a guaranteed reduce from left to right, use
-         * {@link C.Sequence#reduceLeft(Object, Osgl.Func2)}  instead</p>
+         * {@link C.Sequence#reduceLeft(Object, Func2)}  instead</p>
          *
          * @param identity    {@inheritDoc}
          * @param accumulator {@inheritDoc}
@@ -731,7 +736,7 @@ public class C {
          * @since 0.2
          */
         @Override
-        <R> R reduce(R identity, $.Func2<R, T, R> accumulator);
+        <R> R reduce(R identity, Func2<R, T, R> accumulator);
 
         /**
          * Run reduction from header side. This is equivalent to:
@@ -749,20 +754,20 @@ public class C {
          * @return the reduced result
          * @since 0.2
          */
-        <R> R reduceLeft(R identity, $.Func2<R, T, R> accumulator);
+        <R> R reduceLeft(R identity, Func2<R, T, R> accumulator);
 
         /**
          * {@inheritDoc}
          * This method does not specify the approach to run reduction.
          * For a guaranteed reduction from head to tail, use
-         * {@link #reduceLeft(Osgl.Func2)} instead
+         * {@link #reduceLeft(Func2)} instead
          *
          * @param accumulator {@inheritDoc}
          * @return {@inheritDoc}
          * @since 0.2
          */
         @Override
-        $.Option<T> reduce($.Func2<T, T, T> accumulator);
+        $.Option<T> reduce(Func2<T, T, T> accumulator);
 
         /**
          * Run reduction from head to tail. This is equivalent to
@@ -781,7 +786,7 @@ public class C {
          * @return an {@link Osgl.Option} describing the accumulating result
          * @since 0.2
          */
-        $.Option<T> reduceLeft($.Func2<T, T, T> accumulator);
+        $.Option<T> reduceLeft(Func2<T, T, T> accumulator);
 
         /**
          * Apply the predicate specified to the element of this sequence
@@ -1077,10 +1082,10 @@ public class C {
          * @param accumulator the function performs accumulation from {@code T} an {@code R} to anthoer {@code R}
          * @param <R> the accumulation result
          * @return the aggregation result
-         * @see #reduce(Object, Osgl.Func2)
+         * @see #reduce(Object, Func2)
          * @since 0.2
          */
-        <R> R reduceRight(R identity, $.Func2<R, T, R> accumulator);
+        <R> R reduceRight(R identity, Func2<R, T, R> accumulator);
 
         /**
          * Run reduction from tail to head. This is equivalent to
@@ -1099,7 +1104,7 @@ public class C {
          * @return an {@link Osgl.Option} describing the accumulating result
          * @since 0.2
          */
-        $.Option<T> reduceRight($.Func2<T, T, T> accumulator);
+        $.Option<T> reduceRight(Func2<T, T, T> accumulator);
 
 
         /**
@@ -1334,7 +1339,7 @@ public class C {
         boolean containsAll(Range<ELEMENT> r2);
 
         /**
-         * Returns a {@link Osgl.Func2} function that takes two elements in the range domain and returns an integer to
+         * Returns a {@link Func2} function that takes two elements in the range domain and returns an integer to
          * determine the order of the two elements. See {@link java.util.Comparator#compare(Object, Object)} for
          * semantic of the function.
          * <p>If any one of the element applied is {@code null} the function should throw out
@@ -1346,7 +1351,7 @@ public class C {
         Comparator<ELEMENT> order();
 
         /**
-         * Returns a {@link Osgl.Func2} function that applied to an element in this {@code Range} and
+         * Returns a {@link Func2} function that applied to an element in this {@code Range} and
          * an integer {@code n} indicate the number of steps. The result of the function is an element in
          * the range or the range domain after moving {@code n} steps based on the element.
          * <p>If the element apply is {@code null}, the function should throw out
@@ -1356,7 +1361,7 @@ public class C {
          * @return a function implement the stepping logic
          * @since 0.2
          */
-        $.Func2<ELEMENT, Integer, ELEMENT> step();
+        Func2<ELEMENT, Integer, ELEMENT> step();
 
         /**
          * Returns an new range this range and another range {@code r2} merged together. The two ranges must have
@@ -1390,10 +1395,10 @@ public class C {
         Iterator<ELEMENT> reverseIterator();
 
         @SuppressWarnings("unused")
-        <R> R reduceRight(R identity, $.Func2<R, ELEMENT, R> accumulator);
+        <R> R reduceRight(R identity, Func2<R, ELEMENT, R> accumulator);
 
         @SuppressWarnings("unused")
-        $.Option<ELEMENT> reduceRight($.Func2<ELEMENT, ELEMENT, ELEMENT> accumulator);
+        $.Option<ELEMENT> reduceRight(Func2<ELEMENT, ELEMENT, ELEMENT> accumulator);
 
         @SuppressWarnings("unused")
         $.Option<ELEMENT> findLast($.Function<? super ELEMENT, Boolean> predicate);
@@ -1991,21 +1996,21 @@ public class C {
          * @param indexedVisitor the function to be called on each element along with the index
          * @return this list
          */
-        List<T> accept($.IndexedVisitor<Integer, ? super T> indexedVisitor);
+        List<T> accept(IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
-         * Alias of {@link #accept(Osgl.Visitor)}
+         * Alias of {@link #accept(Visitor)}
          * @param indexedVisitor the function to be called on each element along with the index
          * @return this list
          */
-        List<T> each($.IndexedVisitor<Integer, ? super T> indexedVisitor);
+        List<T> each(IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
-         * Alias of {@link #accept(Osgl.Visitor)}
+         * Alias of {@link #accept(Visitor)}
          * @param indexedVisitor the function to be called on each element along with the index
          * @return this list
          */
-        List<T> forEach($.IndexedVisitor<Integer, ? super T> indexedVisitor);
+        List<T> forEach(IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
          * Loop through the list from {@code 0} to {@code size - 1}. Call the indexedVisitor function
@@ -2014,7 +2019,7 @@ public class C {
          * @return this list
          */
         @SuppressWarnings("unused")
-        List<T> acceptLeft($.IndexedVisitor<Integer, ? super T> indexedVisitor);
+        List<T> acceptLeft(IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
          * Loop through the list from {@code size() - 1} to {@code 0}. Call the indexedVisitor function
@@ -2023,7 +2028,7 @@ public class C {
          * @return this list
          */
         @SuppressWarnings("unused")
-        List<T> acceptRight($.IndexedVisitor<Integer, ? super T> indexedVisitor);
+        List<T> acceptRight(IndexedVisitor<Integer, ? super T> indexedVisitor);
 
         /**
          * Returns a list formed from this list and another iterable
@@ -2162,7 +2167,7 @@ public class C {
         public class _Builder {
             private K key;
             private _Builder(K key) {
-                this.key = $.notNull(key);
+                this.key = $.requireNotNull(key);
             }
             public Map<K, V> to(V val) {
                 Map<K, V> me = Map.this;
@@ -2243,25 +2248,25 @@ public class C {
 
         @Override
         public V put(K key, V value) {
-            E.unsupportedIf(ro, "The map is read only");
+            ensureWritable();
             return _m.put(key, value);
         }
 
         @Override
         public V remove(Object key) {
-            E.unsupportedIf(ro, "The map is read only");
+            ensureWritable();
             return _m.remove(key);
         }
 
         @Override
         public void putAll(java.util.Map<? extends K, ? extends V> m) {
-            E.unsupportedIf(ro, "The map is read only");
+            ensureWritable();
             _m.putAll(m);
         }
 
         @Override
         public void clear() {
-            E.unsupportedIf(ro, "The map is read only");
+            ensureWritable();
             _m.clear();
         }
 
@@ -2340,7 +2345,7 @@ public class C {
          * @param indexedVisitor the function that takes argument of (key, value) pair
          * @return this map
          */
-        public Map<K, V> forEach($.IndexedVisitor<? super K, ? super V> indexedVisitor) {
+        public Map<K, V> forEach(IndexedVisitor<? super K, ? super V> indexedVisitor) {
             for (java.util.Map.Entry<K, V> entry: entrySet()) {
                 try {
                     indexedVisitor.apply(entry.getKey(), entry.getValue());
@@ -2352,21 +2357,21 @@ public class C {
         }
 
         /**
-         * Alias of {@link #forEach(Osgl.IndexedVisitor)}
+         * Alias of {@link #forEach(IndexedVisitor)}
          * @param indexedVisitor the visitor that can be applied on Key/Value pair stored in this Map
          * @return this map
          */
-        public Map<K, V> each($.IndexedVisitor<? super K, ? super V> indexedVisitor) {
+        public Map<K, V> each(IndexedVisitor<? super K, ? super V> indexedVisitor) {
             return forEach(indexedVisitor);
         }
 
 
         /**
-         * Alias of {@link #forEach(Osgl.IndexedVisitor)}
+         * Alias of {@link #forEach(IndexedVisitor)}
          * @param indexedVisitor the visitor that can be applied on Key/Value pair stored in this Map
          * @return this map
          */
-        public Map<K, V> accept($.IndexedVisitor<? super K, ? super V> indexedVisitor) {
+        public Map<K, V> accept(IndexedVisitor<? super K, ? super V> indexedVisitor) {
             return forEach(indexedVisitor);
         }
 
@@ -2430,6 +2435,10 @@ public class C {
             _m = (java.util.Map)s.readObject();
             int i = s.readInt();
             ro = i != 0;
+        }
+
+        private void ensureWritable() {
+            C.ensureWritable(ro, "map");
         }
     }
 
@@ -3671,13 +3680,19 @@ public class C {
      * @param <V> the generic type of Value
      * @throws $.Break the {@link org.osgl.Osgl.Break} with payload throwed out by indexedVisitor function to break to loop
      */
-    public static <K, V> void forEach(java.util.Map<K, V> map, $.IndexedVisitor<? super K, ? super V> indexedVisitor) throws $.Break {
+    public static <K, V> void forEach(java.util.Map<K, V> map, IndexedVisitor<? super K, ? super V> indexedVisitor) throws $.Break {
         for (java.util.Map.Entry<K, V> entry : map.entrySet()) {
             try {
                 indexedVisitor.apply(entry.getKey(), entry.getValue());
             } catch (NotAppliedException e) {
                 // ignore
             }
+        }
+    }
+
+    private static void ensureWritable(boolean ro, String containerName) {
+        if (ro) {
+            throw new ReadOnlyException(containerName + " is readonly");
         }
     }
 

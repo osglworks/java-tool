@@ -71,6 +71,19 @@ public class OsglConfig {
         return immutableClassNames.contains(c.getName());
     }
 
+    private static Map<Class, String> globalMappingFilters = new HashMap<>();
+
+    public static String globalMappingFilter(Class<?> type) {
+        return globalMappingFilters.get(type);
+    }
+
+    public static void registerGlobalMappingFilter(Class<?> type, String filter) {
+        globalMappingFilters.put(type, filter);
+    }
+
+    public static void resetGlobalMappingFilters() {
+        globalMappingFilters.clear();
+    }
 
     public static void setThreadLocalBufferLimit(int limit) {
         UtilConfig.setThreadLocalBufferLimit(limit);

@@ -1,13 +1,17 @@
 # OSGL Tool Change Log
 
-1.11.2
+1.11.3 10/May/2018
+* It cleared all fields when filter is specified #84
+* Support global mapping filter #83
+
+1.11.2 10/May/2018
 * Support different copy semantic #82
 * Mapping framework failed to do type case within Map #77
 * Mapping from map to map key lost when using `Rule.KEYWORD_MATCHING` #78
 * Mapping from map to map type lost when component type is a `ParameterizedType` #79
 * Mapping into array always set on the first element in the array #80
 
-1.11.1
+1.11.1 8/May/2018
 * Clean unused copy code from Lang
 * Allow specify converter registry to _MapStage
 

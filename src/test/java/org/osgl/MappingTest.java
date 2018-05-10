@@ -92,6 +92,8 @@ public class MappingTest extends TestBase {
         }
     }
 
+    static class Bar2 extends Bar {}
+
     static class Bean {
         public Foo foo = new Foo();
         public Map<String, Bar> map = C.Map("bar1", new Bar());
@@ -125,7 +127,6 @@ public class MappingTest extends TestBase {
             return new Date(dateTime.getMillis());
         }
     };
-
 
     @Ignore
     static class Base {
@@ -301,8 +302,9 @@ public class MappingTest extends TestBase {
         }
 
         @Test
-        public void deepCopyToDifferentType() {
-            Foo source = new Foo();
+        public void deepCopyToDifferentType() throws Exception {
+            Foo source = foo1;
+            Thread.sleep(10);
             Bar target = new Bar();
             Bar result = $.deepCopy(source).to(target);
             same(result, target);
@@ -311,7 +313,8 @@ public class MappingTest extends TestBase {
             eq(source.ia, target.ia);
             eq(source.si, target.si);
             notSame(source.ia, target.ia);
-            isNull(target.create_date);
+            notNull(target.create_date); // there are initial value
+            ne(source.createDate.getTime(), target.create_date.getMillis());
         }
 
         @Test(expected = MappingException.class)
@@ -323,7 +326,7 @@ public class MappingTest extends TestBase {
 
         @Test
         public void deepCopyIgnoreError() {
-            Foo source = new Foo();
+            Foo source = foo1;
             Bar target = new Bar();
             $.deepCopy(source).keywordMatching().ignoreError().to(target);
             eq(source.id, target.id);
@@ -331,7 +334,8 @@ public class MappingTest extends TestBase {
             eq(source.ia, target.ia);
             eq(source.si, target.si);
             notSame(source.ia, target.ia);
-            isNull(target.create_date);
+            notNull(target.create_date); // there are initial value
+            ne(source.createDate.getTime(), target.create_date.getMillis());
         }
 
 
@@ -362,6 +366,16 @@ public class MappingTest extends TestBase {
             yes(target.si.containsAll(source.si));
             notNull(target.create_date);
             eq(source.createDate.getTime(), target.create_date.getMillis());
+        }
+
+        @Test
+        public void testGlobalFilter() {
+            OsglConfig.registerGlobalMappingFilter(Bar2.class, "name");
+            Foo source = foo1;
+            Bar2 target = new Bar2();
+            $.deepCopy(source).to(target);
+            ne(source.id, target.id);
+            eq(source.name, target.name);
         }
 
         @Test
