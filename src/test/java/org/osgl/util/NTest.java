@@ -88,7 +88,7 @@ public class NTest extends TestBase {
 
         @Test
         public void testIntByFloat() {
-            eq(int1 / float1, func.apply(int1, float1).floatValue());
+            eq(int1 / float1, func.apply(int1, float1).floatValue(), Math.abs(int1 / 10000 / float1));
         }
 
         @Test
@@ -108,7 +108,7 @@ public class NTest extends TestBase {
 
         @Test
         public void testLongByFloat() {
-            eq(long1 / float1, func.apply(long1, float1).floatValue());
+            eq(long1 / float1, func.apply(long1, float1).floatValue(), Math.abs(long1 / 100000 / float1));
         }
 
         @Test
