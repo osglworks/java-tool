@@ -336,15 +336,17 @@ public class MappingTest extends TestBase {
 
 
         @Test
-        public void testMerge() {
+        public void testMerge() throws Exception {
             Foo source = foo1;
-            Bar target = bar1;
+            Thread.sleep(10);
+            Bar target = new Bar();
             $.merge(source).to(target);
             eq(source.id, target.id);
             eq(source.name, target.name);
             eq(source.ia, target.ia);
             ne(source.si, target.si);
-            isNull(target.create_date);
+            notNull(target.create_date); // there is initial value
+            ne(source.createDate.getTime(), target.create_date.getMillis());
             yes(target.si.containsAll(source.si));
         }
 
