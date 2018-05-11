@@ -42,6 +42,12 @@ public class MappingTest extends TestBase {
         public String name = S.random();
         public Date createDate = new Date();
         public Set<Integer> si = C.newSet(1, 2);
+        private String __enhanced_field = S.random();
+        private String fixxld = S.random();
+        private String field_with__ = S.random();
+        private String __some_super_field = S.random();
+        private int __a_super_value = N.randInt();
+        private String excludeMe = S.random();
 
         @Override
         public boolean equals(Object o) {
@@ -70,6 +76,12 @@ public class MappingTest extends TestBase {
         public String name = S.random();
         public long value = N.randLong();
         public Set<Integer> si = C.newSet(10, 20);
+        private String __enhanced_field = S.random();
+        private String fixxld = S.random();
+        private String field_with__ = S.random();
+        private String __some_super_field = S.random();
+        private int __a_super_value = N.randInt();
+        private String excludeMe = S.random();
 
         @Override
         public boolean equals(Object o) {
@@ -91,8 +103,6 @@ public class MappingTest extends TestBase {
             return result;
         }
     }
-
-    static class Bar2 extends Bar {}
 
     static class Bean {
         public Foo foo = new Foo();
@@ -370,12 +380,32 @@ public class MappingTest extends TestBase {
 
         @Test
         public void testGlobalFilter() {
-            OsglConfig.registerGlobalMappingFilter(Bar2.class, "name");
             Foo source = foo1;
-            Bar2 target = new Bar2();
+            Bar target = new Bar();
             $.deepCopy(source).to(target);
-            ne(source.id, target.id);
+            eq(source.id, target.id);
             eq(source.name, target.name);
+            eq(source.__a_super_value, target.__a_super_value);
+            eq(source.__enhanced_field, target.__enhanced_field);
+            eq(source.__some_super_field, target.__some_super_field);
+            eq(source.__a_super_value, target.__a_super_value);
+            eq(source.field_with__, target.field_with__);
+            eq(source.excludeMe, target.excludeMe);
+            OsglConfig.addGlobalMappingFilters("contains:super");
+            OsglConfig.addGlobalMappingFilters("reg:.*xx.*");
+            OsglConfig.addGlobalMappingFilters("starts:__enhanced");
+            OsglConfig.addGlobalMappingFilters("ends:__");
+            OsglConfig.addGlobalMappingFilters("excludeMe");
+            target = new Bar();
+            $.deepCopy(source).to(target);
+            eq(source.id, target.id);
+            eq(source.name, target.name);
+            ne(source.__a_super_value, target.__a_super_value);
+            ne(source.__enhanced_field, target.__enhanced_field);
+            ne(source.__some_super_field, target.__some_super_field);
+            ne(source.__a_super_value, target.__a_super_value);
+            ne(source.field_with__, target.field_with__);
+            ne(source.excludeMe, target.excludeMe);
         }
 
         @Test

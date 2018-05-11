@@ -364,9 +364,6 @@ public class DataMapper {
      */
     private PropertyFilter filter;
 
-    // the global filter
-    private PropertyFilter globalFilter;
-
     private Object source;
     private Class<?> sourceType;
 
@@ -451,13 +448,7 @@ public class DataMapper {
      */
     private Map targetMap;
 
-    /**
-     * If target is newinstance then we will save the
-     * logic to clear target
-     */
-    private boolean targetIsNewInstance;
-
-    public DataMapper(Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic, String filterSpec, boolean ignoreError, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, boolean targetIsNewInstance, Class<?> rootClass) {
+    public DataMapper(Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic, String filterSpec, boolean ignoreError, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass) {
         this.targetType = target.getClass();
         E.illegalArgumentIf(isImmutable(targetType), "target type is immutable: " + targetType.getName());
         this.targetGenericType = targetGenericType;
@@ -471,7 +462,6 @@ public class DataMapper {
         this.target = target;
         this.ignoreError = ignoreError;
         this.typeConverterRegistry = null == typeConverterRegistry ? TypeConverterRegistry.INSTANCE : typeConverterRegistry;
-        this.targetIsNewInstance = targetIsNewInstance;
         this.rootClass = null == rootClass ? Object.class : rootClass;
         this.circularReferenceDetector = new HashSet<>();
         this.circularReferenceDetector.add(targetType);
@@ -504,7 +494,6 @@ public class DataMapper {
         } else {
             // this case is the array or collection element copy
         }
-        this.targetIsNewInstance = parentMapper.targetIsNewInstance;
         this.rootClass = Object.class;
         this.circularReferenceDetector = new HashSet<>();
         this.circularReferenceDetector.addAll(parentMapper.circularReferenceDetector);
@@ -517,10 +506,6 @@ public class DataMapper {
     }
 
     private void doMapping() {
-        String s = OsglConfig.globalMappingFilter(this.targetType);
-        if (S.notBlank(s)) {
-            this.globalFilter = new PropertyFilter(s);
-        }
         try {
             this.probeTargetType();
             if (targetIsArray || targetIsCollection) {
@@ -668,6 +653,9 @@ public class DataMapper {
         String prefix = context.toString();
         for ($.Triple<Object, Keyword, $.Producer<Object>> sourceProperty : sourceProperties()) {
             Object sourceKey = sourceProperty.first();
+            if (sourceKey instanceof String && OsglConfig.globalMappingFilter_shouldIgnore(sourceKey.toString())) {
+                continue;
+            }
             if (!semantic.isMapping() && !$.is(sourceKey).allowBoxing().instanceOf(targetKeyType)) {
                 logError("map key type mismatch, required: %s; found: %s", targetKeyType, sourceKey.getClass().getName());
                 continue;
@@ -715,7 +703,7 @@ public class DataMapper {
                 continue;
             }
             String targetFieldName = targetField.getName();
-            if (null != globalFilter && !globalFilter.test(targetFieldName)) {
+            if (OsglConfig.globalMappingFilter_shouldIgnore(targetFieldName)) {
                 continue;
             }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetFieldName) : targetFieldName;
@@ -815,7 +803,7 @@ public class DataMapper {
             @Override
             public boolean test(Field field) {
                 String key = field.getName();
-                if (null != globalFilter && !globalFilter.test(key)) {
+                if (OsglConfig.globalMappingFilter_shouldIgnore(key)) {
                     return false;
                 }
                 String prefix = context.toString();

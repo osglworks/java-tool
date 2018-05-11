@@ -8478,8 +8478,6 @@ public class Lang implements Serializable {
         private TypeConverterRegistry converterRegistry;
         private String filterSpec;
         private boolean ignoreError;
-        private Class<?> targetKeyType;
-        private Class<?> targetComponentType;
         private Class<?> rootClass = Object.class;
         private ParameterizedType targetGenericType;
 
@@ -8488,11 +8486,62 @@ public class Lang implements Serializable {
             this.semantic = $.requireNotNull(semantic);
         }
 
+        /**
+         * Specify the root class of target bean when getting the fields.
+         *
+         * For example, if your entity class extends from `ModelBase`, and
+         * you do not want to copy the `ModelBase` defined fields, then you
+         * can set `ModelBase.class` as root case:
+         *
+         * ```java
+         * $.copy(source).rootClass(ModelBase.class).to(target);
+         * ```
+         *
+         * @param rootClass
+         *      The root class
+         * @return this mapping stage for chained call
+         * @see #fieldsOf(Class, Class, boolean)
+         */
         public _MappingStage rootClass(Class<?> rootClass) {
             this.rootClass = null == rootClass ? Object.class : rootClass;
             return this;
         }
 
+        /**
+         * Specify target generic type by {@link TypeReference}.
+         *
+         * This make is it easy to specify a generic type for target generic type. For example,
+         *
+         * ```java
+         * Map<String, User> userMap = $.map(sourceMap)
+         *      .targetGenericType(new TypeReference(Map<String, User>) {})
+         *      .to(new HashMap());
+         * ```
+         *
+         * @param typeReference
+         *      the type reference.
+         * @return this mapping stage for chained call
+         * @see #targetGenericType(Type)
+         */
+        public _MappingStage targetGenericType(TypeReference typeReference) {
+            return targetGenericType(typeReference.getType());
+        }
+
+        /**
+         * Specify target generic type.
+         *
+         * This might be helpful if the target type is a container, e.g. Map or List. With
+         * the generic type specified the data mapper can handle the type matching
+         * for the container's component types, like key and value type of a map or element
+         * type of a list.
+         *
+         * Note the type specifeid must be an instance of {@link ParameterizedType}
+         * in order to effect.
+         *
+         * @param type
+         *      the target generic type
+         * @return this mapping stage for chained call
+         */
         public _MappingStage targetGenericType(Type type) {
             if (type instanceof ParameterizedType) {
                 // we need Parameterized type only
@@ -8501,6 +8550,20 @@ public class Lang implements Serializable {
             return this;
         }
 
+        /**
+         * Apply type converters during the mapping process. If the mapping semantic is {@link DataMapper.Semantic#MAP map}
+         * then it allows to do type convert if source type cannot be assigned to target type.
+         *
+         * By default it will use built-in or registered type converters in the global
+         * {@link TypeConverterRegistry#INSTANCE type converter registry}.
+         *
+         * This method allows it to provide additional type converters in addition to built-in or registered
+         * type converters in the global registry.
+         *
+         * @param converter the first type converter
+         * @param otherConverters the rest type converters
+         * @return this mapping stage for chained call
+         */
         public _MappingStage withConverter(TypeConverter converter, TypeConverter... otherConverters) {
             if (null == converterRegistry) {
                 converterRegistry = new TypeConverterRegistry();
@@ -8512,6 +8575,14 @@ public class Lang implements Serializable {
             return this;
         }
 
+        /**
+         * Apply a collection of {@link TypeConverter type converters} during
+         * the mapping process.
+         *
+         * @param converters
+         *      A collection of type converters.
+         * @return this mapping stage for chained call
+         */
         public _MappingStage withConverter(Collection<TypeConverter> converters) {
             if (null == converterRegistry) {
                 converterRegistry = new TypeConverterRegistry();
@@ -8522,6 +8593,26 @@ public class Lang implements Serializable {
             return this;
         }
 
+        /**
+         * Add conversion hint associated with class.
+         *
+         * A conversion hint could be used to manipulate conversion process employed
+         * by the mapping process when {@link #semantic}. For example if the mapping
+         * process might need to map a string to a Date, it can specify the format
+         * as:
+         *
+         * ```java
+         * $.map(postData).conversionHint(Date.class, "yyyy-MM-dd").to(Order);
+         * ```
+         *
+         * The above code will ensure the string property (if named matched)
+         * be parsed into `Date` using format "yyyy-MM-dd".
+         *
+         * @param type
+         * @param hint
+         * @return this mapping stage for chained call
+         * @see #convert(Object)
+         */
         public _MappingStage conversionHint(Class<?> type, Object hint) {
             E.NPE(type, hint);
             if (this.hints == C.EMPTY_MAP) {
@@ -8531,62 +8622,120 @@ public class Lang implements Serializable {
             return this;
         }
 
+        /**
+         * Add conversion hints indexed by class.
+         *
+         * @param conversionHints
+         *      A map of conversion hints
+         * @return this mapping stage for chained call
+         * @see #conversionHint(Class, Object)
+         */
         public _MappingStage conversionHints(Map<Class, Object> conversionHints) {
             this.hints = ensureGet(conversionHints, C.EMPTY_MAP);
             return this;
         }
 
+        /**
+         * Specify a function used to create new instance during mapping process.
+         *
+         * If not specified, then it will use {@link OsglConfig#INSTANCE_FACTORY}
+         *
+         * @param instanceFactory
+         *      the new instance factory
+         * @return this mapping stage for chained call
+         */
         public _MappingStage instanceFactory(Function<Class, ?> instanceFactory) {
             this.instanceFactory = instanceFactory;
             return this;
         }
 
-        public _MappingStage targetMapComponentType(Class<?> mapKeyType, Class<?> mapValType) {
-            this.targetKeyType = $.requireNotNull(mapKeyType);
-            this.targetComponentType = $.requireNotNull(mapValType);
-            return this;
-        }
-
-        public _MappingStage targetCollectionComponentType(Class<?> componentType) {
-            this.targetComponentType = $.requireNotNull(componentType);
-            return this;
-        }
-
+        /**
+         * Indicate field mapping shall be exactly string equal test.
+         *
+         * @return this mapping stage for chained call
+         */
         public _MappingStage strictMatching() {
             this.rule = STRICT_MATCHING;
             return this;
         }
 
+        /**
+         * Alias of {@link #keywordMatching()}
+         */
         public _MappingStage looseMatching() {
             this.rule = KEYWORD_MATCHING;
             return this;
         }
 
+        /**
+         * Indicate field mapping shall based on {@link Keyword} match.
+         *
+         * Say the following names are assumed to be matching to each other:
+         *
+         * * `fooBar`
+         * * `foo_bar`
+         *
+         * @return this mapping stage for chained call
+         */
         public _MappingStage keywordMatching() {
             this.rule = KEYWORD_MATCHING;
             return this;
         }
 
+        /**
+         * Specify filter spec for this mapping process.
+         *
+         * Example of filter spec:
+         *
+         * * `-foo` - do not map on field named `foo`
+         * * `-foo.bar` - do not map on field named `bar` in a embedded field named `foo`
+         * * `name,email` - map only fields `name` and `email`
+         *
+         * @param filterSpec
+         *      the filter spec indicates which fields shall be subject or waived in the mapping process.
+         * @return
+         *      this mapping stage for chained call.
+         */
         public _MappingStage filter(String filterSpec) {
             this.filterSpec = filterSpec;
             return this;
         }
 
+        /**
+         * Indicate ignore exceptions encountered during mapping process.
+         *
+         * For certain case you know that copy between source and target will fail as
+         * they were not the same type object and some fields might encounter type mismatch
+         * issue, however you do want to copy the fields that are able to be copied, in
+         * this scenario you can dictate copy process to ignore error:
+         *
+         * ```java
+         * $.deepCopy(source).ignoreError().to(target);
+         * ```
+         *
+         * @return this mapping stage for chained call
+         */
         public _MappingStage ignoreError() {
             this.ignoreError = true;
             return this;
         }
 
+        /**
+         * Commit the mapping stage and trigger the mapping process, return the target been copied.
+         *
+         * Generally the returned instance should be the same instance of `to` passed in. However
+         * when copied to an array which has less elements than the source array or collection,
+         * an new array instance with the same component type with `to` will be created and populated.
+         * The original `to` array will be left unchanged. The return value is the new array instance.
+         *
+         * @param to
+         *      the target
+         * @param <T>
+         *      the generic type parameter of the target.
+         * @return the target been copied, might not be the same instance of `to` if `to` is an array
+         */
         public <T> T to(T to) {
-            return to(to, false);
-        }
-
-        public <T> T toNewInstance(T to) {
-            return to(to, true);
-        }
-
-        private <T> T to(T to, boolean toIsNew) {
-            return (T) new DataMapper(from, to, targetGenericType, rule, semantic, filterSpec, ignoreError, hints, instanceFactory, converterRegistry, toIsNew, rootClass).getTarget();
+            return (T) new DataMapper(from, to, targetGenericType, rule, semantic, filterSpec, ignoreError, hints, instanceFactory, converterRegistry, rootClass).getTarget();
         }
 
     }
@@ -8638,7 +8787,7 @@ public class Lang implements Serializable {
      */
     public static <T> T cloneOf(T source, Function<Class, ?> instanceFactory) {
         Object target = instanceFactory.apply(source.getClass());
-        return (T) deepCopy(source).toNewInstance(target);
+        return (T) deepCopy(source).to(target);
     }
 
     /**

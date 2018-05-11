@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.11.4 11/May/2018
+* Mapping global filter update #85
+
 1.11.3 10/May/2018
 * It cleared all fields when filter is specified #84
 * Support global mapping filter #83

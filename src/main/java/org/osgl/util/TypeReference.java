@@ -79,5 +79,9 @@ public class TypeReference<T> {
         return type;
     }
 
-    public final static Type LIST_STRING = new com.alibaba.fastjson.TypeReference<List<String>>() {}.getType();
+    public final static Type LIST_STRING = new TypeReference<List<String>>() {}.getType();
+
+    public static void main(String[] args) {
+        System.out.println(LIST_STRING);
+    }
 }

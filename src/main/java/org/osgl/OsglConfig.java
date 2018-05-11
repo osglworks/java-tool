@@ -21,12 +21,15 @@ package org.osgl;
  */
 
 import org.osgl.exception.NotAppliedException;
+import org.osgl.util.E;
 import org.osgl.util.IO;
+import org.osgl.util.S;
 import org.osgl.util.UtilConfig;
 import org.osgl.util.algo.StringReplace;
 import org.osgl.util.algo.StringSearch;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class OsglConfig {
 
@@ -71,18 +74,112 @@ public class OsglConfig {
         return immutableClassNames.contains(c.getName());
     }
 
-    private static Map<Class, String> globalMappingFilters = new HashMap<>();
 
-    public static String globalMappingFilter(Class<?> type) {
-        return globalMappingFilters.get(type);
+    private static Set<String> mappingDisabledFields = new HashSet<>();
+    private static List<$.Predicate<String>> mappingDisabledFieldPredicates = new ArrayList<>();
+
+    /**
+     * Check if a field name or map key should be ignored by global filter in mapping process.
+     * @param s a field name or map key
+     * @return `true` if the field name or map key should be ignored in mapping process.
+     */
+    public static boolean globalMappingFilter_shouldIgnore(String s) {
+        if (mappingDisabledFields.contains(s)) {
+            return true;
+        }
+        if (mappingDisabledFieldPredicates.isEmpty()) {
+            return false;
+        }
+        for ($.Predicate<String> tester : mappingDisabledFieldPredicates) {
+            if (tester.test(s)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public static void registerGlobalMappingFilter(Class<?> type, String filter) {
-        globalMappingFilters.put(type, filter);
+    /**
+     * Register global mapping filters.
+     *
+     * @param filterSpec
+     *      the first filter spec
+     * @param filterSpecs
+     *      other filter specs
+     * @see #addGlobalMappingFilter(String)
+     */
+    public static void addGlobalMappingFilters(String filterSpec, String ... filterSpecs) {
+        addGlobalMappingFilter(filterSpec);
+        for (String s : filterSpecs) {
+            addGlobalMappingFilter(s);
+        }
     }
 
-    public static void resetGlobalMappingFilters() {
-        globalMappingFilters.clear();
+    /**
+     * Register global mapping filters
+     *
+     * @param filterSpecs
+     *      A collection of filter specs
+     * @see #addGlobalMappingFilter(String)
+     */
+    public static void addGlobalMappingFilters(Collection<String> filterSpecs) {
+        for (String filter : filterSpecs) {
+            addGlobalMappingFilter(filter);
+        }
+    }
+
+    /**
+     * Register a global mapping filter. Unlike normal mapping filter, global mapping filter spec
+     *
+     * * checks only immediate level field name or map key
+     * * it is always a black list filter
+     * * it supports different matching verb:
+     *      - `contains:<payload>` - if test string contains `payload` then it shall be ignored
+     *      - `starts:<payload>` - if test string starts with `payload` then it shall be ignored
+     *      - `ends:<payload>` - if test string ends with `payload` then it shall be ignored
+     *      - `reg:<payload>` - if test string matches reg exp pattern `payload` then it shall be ignored
+     * * if the filter spec dose not fall in the above category, then it is added into a set, and
+     *   if any test string exactly matches any item in that set, it shall be ignored.
+     *
+     * @param filterSpec
+     *      the filter spec. It can contains multiple filter specs separated by `,`
+     */
+    public static void addGlobalMappingFilter(String filterSpec) {
+        List<String> list = S.fastSplit(filterSpec, ",");
+        for (String s : list) {
+            if (S.blank(s)) {
+                continue;
+            }
+            addSingleGlobalMappingFilter(s.trim());
+        }
+    }
+
+    private static void addSingleGlobalMappingFilter(String filterSpec) {
+        E.illegalArgumentIf(S.blank(filterSpec), "Invalid filter: " + filterSpec);
+        if (filterSpec.startsWith("contains:")) {
+            String text = filterSpec.substring(9);
+            E.illegalArgumentIf(S.blank(text), "Invalid filter: " + filterSpec);
+            mappingDisabledFieldPredicates.add(S.F.contains(text));
+        } else if (filterSpec.startsWith("reg:")) {
+            String text = filterSpec.substring(4);
+            E.illegalArgumentIf(S.blank(text), "Invalid filter: " + filterSpec);
+            final Pattern pattern = Pattern.compile(text);
+            mappingDisabledFieldPredicates.add(new Lang.Predicate<String>() {
+                @Override
+                public boolean test(String s) {
+                    return pattern.matcher(s).matches();
+                }
+            });
+        } else if (filterSpec.startsWith("starts:")) {
+            String text = filterSpec.substring(7);
+            E.illegalArgumentIf(S.blank(text), "Invalid filter: " + filterSpec);
+            mappingDisabledFieldPredicates.add(S.F.startsWith(text));
+        } else if (filterSpec.startsWith("ends:")) {
+            String text = filterSpec.substring(5);
+            E.illegalArgumentIf(S.blank(text), "Invalid filter: " + filterSpec);
+            mappingDisabledFieldPredicates.add(S.F.endsWith(text));
+        } else {
+            mappingDisabledFields.add(filterSpec);
+        }
     }
 
     public static void setThreadLocalBufferLimit(int limit) {
