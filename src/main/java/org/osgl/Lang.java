@@ -5318,12 +5318,17 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a String.
      *
+     * A String typed instance is considered to be `false` when
+     *
+     * 1. it is null or empty, or
+     * 2. it equals to `false` (case insensitive mode)
+     *
      * @param s the string to be evaluated
      * @return {@code true} if s is not empty and s is not `false`
      * @see S#empty(String)
      */
     public static boolean bool(String s) {
-        return !S.empty(s) && !"false".equals(s);
+        return !S.empty(s) && !"false".equalsIgnoreCase(s);
     }
 
     /**
