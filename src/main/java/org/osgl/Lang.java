@@ -8521,6 +8521,7 @@ public class Lang implements Serializable {
         private TypeConverterRegistry converterRegistry;
         private String filterSpec;
         private boolean ignoreError;
+        private boolean ignoreGlobalFilter;
         private Class<?> rootClass = Object.class;
         private ParameterizedType targetGenericType;
 
@@ -8744,6 +8745,11 @@ public class Lang implements Serializable {
             return this;
         }
 
+        public _MappingStage ignoreGlobalFilter() {
+            this.ignoreGlobalFilter = true;
+            return this;
+        }
+
         /**
          * Indicate ignore exceptions encountered during mapping process.
          *
@@ -8778,7 +8784,7 @@ public class Lang implements Serializable {
          * @return the target been copied, might not be the same instance of `to` if `to` is an array
          */
         public <T> T to(T to) {
-            return (T) new DataMapper(from, to, targetGenericType, rule, semantic, filterSpec, ignoreError, hints, instanceFactory, converterRegistry, rootClass).getTarget();
+            return (T) new DataMapper(from, to, targetGenericType, rule, semantic, filterSpec, ignoreError, ignoreGlobalFilter, hints, instanceFactory, converterRegistry, rootClass).getTarget();
         }
 
     }

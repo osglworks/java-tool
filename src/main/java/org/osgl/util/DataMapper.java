@@ -396,6 +396,11 @@ public class DataMapper {
     private boolean ignoreError;
 
     /**
+     * If set to `true` then it skip checking field/map key using global filter
+     */
+    private boolean ignoreGlobalFilter;
+
+    /**
      * If set then it will stop exploring fields
      * when it reaches the `rootClass`
      */
@@ -448,7 +453,7 @@ public class DataMapper {
      */
     private Map targetMap;
 
-    public DataMapper(Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic, String filterSpec, boolean ignoreError, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass) {
+    public DataMapper(Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic, String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass) {
         this.targetType = target.getClass();
         E.illegalArgumentIf(isImmutable(targetType), "target type is immutable: " + targetType.getName());
         this.targetGenericType = targetGenericType;
@@ -461,6 +466,7 @@ public class DataMapper {
         this.source = source;
         this.target = target;
         this.ignoreError = ignoreError;
+        this.ignoreGlobalFilter = ignoreGlobalFilter;
         this.typeConverterRegistry = null == typeConverterRegistry ? TypeConverterRegistry.INSTANCE : typeConverterRegistry;
         this.rootClass = null == rootClass ? Object.class : rootClass;
         this.circularReferenceDetector = new HashSet<>();
@@ -479,6 +485,7 @@ public class DataMapper {
         this.semantic = parentMapper.semantic;
         this.filter = parentMapper.filter;
         this.ignoreError = parentMapper.ignoreError;
+        this.ignoreGlobalFilter = parentMapper.ignoreGlobalFilter;
         this.conversionHints = parentMapper.conversionHints;
         this.instanceFactory = parentMapper.instanceFactory;
         this.typeConverterRegistry = parentMapper.typeConverterRegistry;
@@ -653,7 +660,7 @@ public class DataMapper {
         String prefix = context.toString();
         for ($.Triple<Object, Keyword, $.Producer<Object>> sourceProperty : sourceProperties()) {
             Object sourceKey = sourceProperty.first();
-            if (sourceKey instanceof String && OsglConfig.globalMappingFilter_shouldIgnore(sourceKey.toString())) {
+            if (!ignoreGlobalFilter && sourceKey instanceof String && OsglConfig.globalMappingFilter_shouldIgnore(sourceKey.toString())) {
                 continue;
             }
             if (!semantic.isMapping() && !$.is(sourceKey).allowBoxing().instanceOf(targetKeyType)) {
@@ -703,7 +710,7 @@ public class DataMapper {
                 continue;
             }
             String targetFieldName = targetField.getName();
-            if (OsglConfig.globalMappingFilter_shouldIgnore(targetFieldName)) {
+            if (!ignoreGlobalFilter && OsglConfig.globalMappingFilter_shouldIgnore(targetFieldName)) {
                 continue;
             }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetFieldName) : targetFieldName;

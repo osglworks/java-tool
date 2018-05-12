@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.11.4 11/May/2018
+* Allow waive global filter for a mapping process #89
 * `Lang.bool("false")` returns `true` #88
 * Add `Lang.isPrimitiveType(Class)` and `Lang.isWrapperType(Class)` method #87
 * Add `Lang.isPrimitiveType(String)` method #86

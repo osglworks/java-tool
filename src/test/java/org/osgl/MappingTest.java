@@ -199,6 +199,12 @@ public class MappingTest extends TestBase {
             bean = new Bean();
 
             int_3_array = new int[] {1, 2, 3};
+
+            OsglConfig.addGlobalMappingFilters("contains:super");
+            OsglConfig.addGlobalMappingFilters("reg:.*xx.*");
+            OsglConfig.addGlobalMappingFilters("starts:__enhanced");
+            OsglConfig.addGlobalMappingFilters("ends:__");
+            OsglConfig.addGlobalMappingFilters("excludeMe");
         }
 
     }
@@ -385,27 +391,27 @@ public class MappingTest extends TestBase {
             $.deepCopy(source).to(target);
             eq(source.id, target.id);
             eq(source.name, target.name);
-            eq(source.__a_super_value, target.__a_super_value);
-            eq(source.__enhanced_field, target.__enhanced_field);
-            eq(source.__some_super_field, target.__some_super_field);
-            eq(source.__a_super_value, target.__a_super_value);
-            eq(source.field_with__, target.field_with__);
-            eq(source.excludeMe, target.excludeMe);
-            OsglConfig.addGlobalMappingFilters("contains:super");
-            OsglConfig.addGlobalMappingFilters("reg:.*xx.*");
-            OsglConfig.addGlobalMappingFilters("starts:__enhanced");
-            OsglConfig.addGlobalMappingFilters("ends:__");
-            OsglConfig.addGlobalMappingFilters("excludeMe");
-            target = new Bar();
-            $.deepCopy(source).to(target);
-            eq(source.id, target.id);
-            eq(source.name, target.name);
             ne(source.__a_super_value, target.__a_super_value);
             ne(source.__enhanced_field, target.__enhanced_field);
             ne(source.__some_super_field, target.__some_super_field);
             ne(source.__a_super_value, target.__a_super_value);
             ne(source.field_with__, target.field_with__);
             ne(source.excludeMe, target.excludeMe);
+        }
+
+        @Test
+        public void testIgnoreGlobalFilter() {
+            Foo source = foo1;
+            Bar target = new Bar();
+            $.deepCopy(source).ignoreGlobalFilter().to(target);
+            eq(source.id, target.id);
+            eq(source.name, target.name);
+            eq(source.__a_super_value, target.__a_super_value);
+            eq(source.__enhanced_field, target.__enhanced_field);
+            eq(source.__some_super_field, target.__some_super_field);
+            eq(source.__a_super_value, target.__a_super_value);
+            eq(source.field_with__, target.field_with__);
+            eq(source.excludeMe, target.excludeMe);
         }
 
         @Test
