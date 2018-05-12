@@ -5272,10 +5272,10 @@ public class Lang implements Serializable {
             return (Boolean) v;
         }
         if (v instanceof String) {
-            return S.notEmpty((String) v);
+            return bool((String) v);
         }
         if (v instanceof Collection) {
-            return !((Collection) v).isEmpty();
+            return bool((Collection) v);
         }
         if (v.getClass().isArray()) {
             return 0 < Array.getLength(v);
@@ -5319,11 +5319,11 @@ public class Lang implements Serializable {
      * Do bool evaluation on a String.
      *
      * @param s the string to be evaluated
-     * @return {@code true} if s is not empty
+     * @return {@code true} if s is not empty and s is not `false`
      * @see S#empty(String)
      */
     public static boolean bool(String s) {
-        return !S.empty(s);
+        return !S.empty(s) && !"false".equals(s);
     }
 
     /**
@@ -6424,7 +6424,7 @@ public class Lang implements Serializable {
         setFieldValue(obj, field, $.convert(null).to(field.getType()));
     }
 
-    private static Map<Object, Class> __primitiveTypes = new HashMap<Object, Class>();
+    private static Map<Object, Class> __primitiveTypes = new HashMap<>();
 
     static {
         __primitiveTypes.put("int", int.class);
@@ -6535,15 +6535,58 @@ public class Lang implements Serializable {
     }
 
     /**
-     * Check if a given class is a primitive type
+     * Check if a given class is a primitive type.
      *
      * @param c the class
      * @return `true` if `c` is primitive type
      */
+    public static boolean isPrimitiveType(Class<?> c) {
+        return __primitiveToWrappers.containsKey(c);
+    }
+
+    /**
+     * Check if a given class is a primitive type.
+     *
+     * This method is deprecated. Please use {@link #isPrimitiveType(Class)} instead
+     *
+     * @param c the class
+     * @return `true` if `c` is primitive type
+     */
+    @Deprecated
     public static boolean isPrimitive(Class<?> c) {
         return __primitiveToWrappers.containsKey(c);
     }
 
+    /**
+     * Check if a given string is a primitive type name.
+     *
+     * @param name the string to be test
+     * @return `true` if `name` is primitive type name
+     */
+    public static boolean isPrimitiveType(String name) {
+        return __primitiveTypes.containsKey(name);
+    }
+
+    /**
+     * Check if a given class is a wrapper type of a primitive type.
+     *
+     * @param c the class
+     * @return `true` if `c` is wrapper type
+     */
+    public static boolean isWrapperType(Class<?> c) {
+        return __wrapperToPrmitives.containsKey(c);
+    }
+
+    /**
+     * Check if a given class is a wrapper type of a primitive type.
+     *
+     * This method is deprecated, please use {@link #isWrapperType(Class)}
+     * instead.
+     *
+     * @param c the class
+     * @return `true` if `c` is wrapper type
+     */
+    @Deprecated
     public static boolean isWrapper(Class<?> c) {
         return __wrapperToPrmitives.containsKey(c);
     }

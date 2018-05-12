@@ -1,6 +1,9 @@
 # OSGL Tool Change Log
 
 1.11.4 11/May/2018
+* `Lang.bool("false")` returns `true` #88
+* Add `Lang.isPrimitiveType(Class)` and `Lang.isWrapperType(Class)` method #87
+* Add `Lang.isPrimitiveType(String)` method #86
 * Mapping global filter update #85
 
 1.11.3 10/May/2018
