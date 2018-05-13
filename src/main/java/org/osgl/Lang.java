@@ -7052,6 +7052,18 @@ public class Lang implements Serializable {
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean noStatic) {
+        return fieldsOf(c, rootClass, false, noStatic);
+    }
+
+    /**
+     * Returns all fields of a class and all super classes until root class. Note all fields returned will
+     * be called on {@link Field#setAccessible(boolean)} with value `true`
+     * @param c the class
+     * @param rootClass the class that stops the recursive operation
+     * @param noStatic specify if static fields should be included
+     * @return a list of fields
+     */
+    public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean includeRootClass, boolean noStatic) {
         List<Field> fields = new ArrayList<Field>();
         $.Predicate<Field> filter = noStatic ? new $.Predicate<Field>() {
             @Override
@@ -7059,31 +7071,54 @@ public class Lang implements Serializable {
                 return !Modifier.isStatic(field.getModifiers());
             }
         } : null;
-        addFieldsToList(fields, c, rootClass, filter);
+        addFieldsToList(fields, c, rootClass, includeRootClass, filter);
         return fields;
     }
 
     /**
      * Returns all fields of a class and all super classes until root class. Note all fields returned will
-     * be called on {@link Field#setAccessible(boolean)} with value `true`
+     * be called on {@link Field#setAccessible(boolean)} with value `true`.
      * @param c the class
      * @param rootClass the class that stops the recursive lookup
-     * @param filter specify what field should be put into the list if not `null`
+     * @param filter specify which field should be put into the list if not `null`
      * @return the list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, $.Function<Field, Boolean> filter) {
         List<Field> fields = new ArrayList<Field>();
-        addFieldsToList(fields, c, rootClass, filter);
+        addFieldsToList(fields, c, rootClass, false, filter);
         return fields;
     }
 
+    /**
+     * Returns all fields of a class and all super classes until root class. Note all fields returned will
+     * be called on {@link Field#setAccessible(boolean)} with value `true`.
+     * @param c the class
+     * @param rootClass the class that stops the recursive lookup
+     * @param includeRootClass specify root class itself needs to be checked or not
+     * @param filter specify which field should be put into the list if not `null`
+     * @return the list of fields
+     */
+    public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean includeRootClass, $.Function<Field, Boolean> filter) {
+        List<Field> fields = new ArrayList<Field>();
+        addFieldsToList(fields, c, rootClass, includeRootClass, filter);
+        return fields;
+    }
+
+    /**
+     * Returns all fields of a class and all super classes until classFilter not applied. Note all fields
+     * returned will be called on {@link Field#setAccessible(boolean)} with value `true`.
+     * @param c the class
+     * @param classFilter the filter to check if it should break recursive call
+     * @param fieldFilter specify which field should be put into the list if not `null`
+     * @return the list of fields
+     */
     public static List<Field> fieldsOf(Class<?> c, $.Function<Class<?>, Boolean> classFilter, $.Function<Field, Boolean> fieldFilter) {
         List<Field> fields = new ArrayList<Field>();
         addFieldsToList(fields, c, classFilter, fieldFilter);
         return fields;
     }
 
-    private static void addFieldsToList(List<Field> list, Class<?> c, Class<?> rootClass, $.Function<Field, Boolean> filter) {
+    private static void addFieldsToList(List<Field> list, Class<?> c, Class<?> rootClass, boolean includeRootClass, $.Function<Field, Boolean> filter) {
         if (c.isInterface()) {
             return;
         }
@@ -7095,10 +7130,17 @@ public class Lang implements Serializable {
             field.setAccessible(true);
             list.add(field);
         }
-        if (c != rootClass) {
+        if (includeRootClass) {
+            if (c != rootClass) {
+                c = c.getSuperclass();
+                if (null != c) {
+                    addFieldsToList(list, c, rootClass, true, filter);
+                }
+            }
+        } else {
             c = c.getSuperclass();
-            if (null != c) {
-                addFieldsToList(list, c, rootClass, filter);
+            if (null != c && c != rootClass) {
+                addFieldsToList(list, c, rootClass, false, filter);
             }
         }
     }
@@ -8533,6 +8575,19 @@ public class Lang implements Serializable {
         private _MappingStage(Object from, DataMapper.Semantic semantic) {
             this.from = $.requireNotNull(from);
             this.semantic = $.requireNotNull(semantic);
+        }
+
+        /**
+         * Change mapping semantic of this mappign stage.
+         *
+         * @param semantic
+         *      the new {@link DataMapper.Semantic mapping semantic} to be used
+         * @return
+         *      this mapping stage for chained call
+         */
+        public _MappingStage sematic(DataMapper.Semantic semantic) {
+            this.semantic = $.requireNotNull(semantic);
+            return this;
         }
 
         /**
