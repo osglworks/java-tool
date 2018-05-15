@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.13.0
+* Mapping framework: copy from a container to another container should always be allowed #94
+* Support internal cache #95
+
 1.12.0 13/May/2018
 * Allow it to change a mapping stage's semantic #91
 * **compatible break change** Make `rootClass` specified in `Lang.fieldsOf()` be exclusive #90

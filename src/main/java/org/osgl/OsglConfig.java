@@ -20,6 +20,8 @@ package org.osgl;
  * #L%
  */
 
+import org.osgl.cache.CacheService;
+import org.osgl.cache.impl.SimpleCacheService;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.E;
 import org.osgl.util.IO;
@@ -32,6 +34,16 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class OsglConfig {
+
+    private static CacheService internalCache = new SimpleCacheService("osgl-tool");
+
+    public static void setInternalCache(CacheService cache) {
+        internalCache = $.requireNotNull(cache);
+    }
+
+    public static CacheService internalCache() {
+        return internalCache;
+    }
 
     /**
      * Default string search logic

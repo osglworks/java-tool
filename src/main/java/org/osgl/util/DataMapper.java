@@ -536,13 +536,11 @@ public class DataMapper {
      * be sequenced, i.e. array or iterable
      */
     private void mapToArrayOrCollection() {
-        List sourceList = null;
+        List sourceList;
 
         // ensure we have a source as list
         if (!isSequence(sourceType)) {
-            if (semantic.isMapping()) {
-                sourceList = convert(source).to(List.class);
-            }
+            sourceList = convert(source).to(List.class);
             if (null == sourceList) {
                 logError("Cannot map source[%s] into array or collection", sourceType.getName());
                 return;

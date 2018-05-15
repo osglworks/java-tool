@@ -7064,14 +7064,19 @@ public class Lang implements Serializable {
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean includeRootClass, boolean noStatic) {
-        List<Field> fields = new ArrayList<Field>();
-        $.Predicate<Field> filter = noStatic ? new $.Predicate<Field>() {
-            @Override
-            public boolean test(Field field) {
-                return !Modifier.isStatic(field.getModifiers());
-            }
-        } : null;
-        addFieldsToList(fields, c, rootClass, includeRootClass, filter);
+        String key = S.concat(c, rootClass, includeRootClass, noStatic);
+        List<Field> fields = cache().get(key);
+        if (null == fields) {
+            fields = new ArrayList<>();
+            cache().put(key, fields);
+            $.Predicate<Field> filter = noStatic ? new $.Predicate<Field>() {
+                @Override
+                public boolean test(Field field) {
+                    return !Modifier.isStatic(field.getModifiers());
+                }
+            } : null;
+            addFieldsToList(fields, c, rootClass, includeRootClass, filter);
+        }
         return fields;
     }
 
@@ -10457,6 +10462,10 @@ public class Lang implements Serializable {
                 }
             };
         }
+    }
+
+    private static CacheService cache() {
+        return OsglConfig.internalCache();
     }
 
 }
