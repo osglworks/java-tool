@@ -52,7 +52,7 @@ public class ShallowCopyBenchmark extends BenchmarkBase {
 
     @Test
     public void osgl() {
-        //for (int i = 0; i < 100 * 100 * 100 * 10; ++i)
+//        for (int i = 0; i < 100 * 100 * 100 * 10; ++i)
         $.copy(source).to(target);
     }
 

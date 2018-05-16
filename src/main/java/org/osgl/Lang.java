@@ -9,9 +9,9 @@ package org.osgl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -144,7 +144,8 @@ public class Lang implements Serializable {
          *     })
          * </pre>
          *
-         * @param payload the object passed through the <code>Break</code>
+         * @param payload
+         *         the object passed through the <code>Break</code>
          * @return a {@link Break} instance
          */
         protected final Break breakOut(Object payload) {
@@ -156,7 +157,8 @@ public class Lang implements Serializable {
     /**
      * Define a function that apply to no parameter (strictly this is not a function)
      *
-     * @param <R> the generic type of the return value, could be <code>Void</code>
+     * @param <R>
+     *         the generic type of the return value, could be <code>Void</code>
      * @see Function
      * @see Func2
      * @see Func3
@@ -170,8 +172,10 @@ public class Lang implements Serializable {
          * user application to implement main logic of applying the function
          *
          * @return the Result instance of type R after appplying the function
-         * @throws NotAppliedException if the function doesn't apply to the current context
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
+         * @throws NotAppliedException
+         *         if the function doesn't apply to the current context
+         * @throws Break
+         *         to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply() throws NotAppliedException, Break;
     }
@@ -189,7 +193,8 @@ public class Lang implements Serializable {
          * Applies fallback function where this partial function is not defined, i.e. any
          * {@link java.lang.RuntimeException} is captured
          *
-         * @param fallback 　if {@link RuntimeException} captured then apply this fallback function
+         * @param fallback
+         *         　if {@link RuntimeException} captured then apply this fallback function
          * @return the result of this function or the fallback function application
          */
         public R applyOrElse(F0<? extends R> fallback) {
@@ -206,10 +211,13 @@ public class Lang implements Serializable {
          * function throws an exception, it is relayed to the caller of the composed
          * function.
          *
-         * @param after the function applies after this function is applied
-         * @param <T>   the type of the output of the {@code before} function
+         * @param after
+         *         the function applies after this function is applied
+         * @param <T>
+         *         the type of the output of the {@code before} function
          * @return the composed function
-         * @throws NullPointerException if {@code before} is null
+         * @throws NullPointerException
+         *         if {@code before} is null
          */
         public <T> F0<T> andThen(final Function<? super R, ? extends T> after) {
             E.NPE(after);
@@ -230,7 +238,8 @@ public class Lang implements Serializable {
          * <p>When apply the composed function, the result of the last function
          * is returned</p>
          *
-         * @param fs a sequence of function to be applied after this function
+         * @param fs
+         *         a sequence of function to be applied after this function
          * @return a composed function
          */
         public F0<R> andThen(final Func0<? extends R>... fs) {
@@ -255,7 +264,8 @@ public class Lang implements Serializable {
          * a {@link java.lang.RuntimeException} is captured apply to the fallback function specified. This
          * method helps to implement partial function
          *
-         * @param fallback the function to applied if this function doesn't apply in the current situation
+         * @param fallback
+         *         the function to applied if this function doesn't apply in the current situation
          * @return the final result
          */
         public F0<R> orElse(final Func0<? extends R> fallback) {
@@ -296,7 +306,8 @@ public class Lang implements Serializable {
     /**
      * The class adapt traditional Factory to Function
      *
-     * @param <T> the type of the instance been created by the factory
+     * @param <T>
+     *         the type of the instance been created by the factory
      */
     public static abstract class Factory<T> extends F0<T> {
 
@@ -347,7 +358,8 @@ public class Lang implements Serializable {
     /**
      * Return a dumb function for {@link Func0}. This is the type-safe version of {@link #F0}
      *
-     * @param <T> a generic type that matches whatever type required by the context of applying the function
+     * @param <T>
+     *         a generic type that matches whatever type required by the context of applying the function
      * @return A dumb function that always return {@code null}
      * @since 0.2
      */
@@ -359,8 +371,10 @@ public class Lang implements Serializable {
     /**
      * Convert a general {@link Func0} typed function to {@link F0} type
      *
-     * @param f0  a function of type {@link Func0} that returns type R value
-     * @param <R> the generic type of the return value when applying function f0
+     * @param f0
+     *         a function of type {@link Func0} that returns type R value
+     * @param <R>
+     *         the generic type of the return value when applying function f0
      * @return a {@link F0} type that is equaivlent to function f0
      * @since 0.2
      */
@@ -382,8 +396,10 @@ public class Lang implements Serializable {
      * Define a function structure that accept one parameter. This interface is created to make it
      * easily migrate to Java 8 in the future
      *
-     * @param <T> the type of input parameter
-     * @param <U> the type of the return value when this function applied to the parameter(s)
+     * @param <T>
+     *         the type of input parameter
+     * @param <U>
+     *         the type of the return value when this function applied to the parameter(s)
      * @see Func0
      * @see Function
      * @see Func2
@@ -401,10 +417,13 @@ public class Lang implements Serializable {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
-         * @param t the argument
+         * @param t
+         *         the argument
          * @return {@code U} type result
-         * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
+         * @throws NotAppliedException
+         *         if the function doesn't apply to the parameter(s)
+         * @throws Break
+         *         to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         U apply(T t) throws NotAppliedException, Break;
 
@@ -413,8 +432,10 @@ public class Lang implements Serializable {
     /**
      * Alias of {@link Function}
      *
-     * @param <P1> the argument type
-     * @param <R>  the return value type
+     * @param <P1>
+     *         the argument type
+     * @param <R>
+     *         the return value type
      * @since 0.2
      */
     public interface Func1<P1, R> extends Function<P1, R> {
@@ -423,8 +444,10 @@ public class Lang implements Serializable {
     /**
      * A {@link Function} function that support {@link #times(int)} operation
      *
-     * @param <P1> the type of parameter the function applied to
-     * @param <R>  the type of return value of the function
+     * @param <P1>
+     *         the type of parameter the function applied to
+     * @param <R>
+     *         the type of return value of the function
      */
     public interface MultiplicableFunction<P1, R> extends Function<P1, R> {
         /**
@@ -432,7 +455,8 @@ public class Lang implements Serializable {
          * returned applied to a param, the effect is the same as apply this function
          * {@code n} times to the same param
          *
-         * @param n specify the times factor
+         * @param n
+         *         specify the times factor
          * @return the new function
          */
         MultiplicableFunction<P1, R> times(int n);
@@ -443,8 +467,10 @@ public class Lang implements Serializable {
      * {@code Bijection} (mapping from {@code X} to {@code Y} is a special {@link Function} that has an
      * inverse function by itself also a {@code Bijection} mapping from {@code Y} to {@code X}
      *
-     * @param <X> the type of parameter
-     * @param <Y> the type of return value
+     * @param <X>
+     *         the type of parameter
+     * @param <Y>
+     *         the type of return value
      */
     public interface Bijection<X, Y> extends Function<X, Y> {
         /**
@@ -492,8 +518,10 @@ public class Lang implements Serializable {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1       the argument this function to be applied
-         * @param fallback the function to be applied to the argument p1 when this function failed with any runtime exception
+         * @param p1
+         *         the argument this function to be applied
+         * @param fallback
+         *         the function to be applied to the argument p1 when this function failed with any runtime exception
          * @return the result of this function or the fallback function application
          */
         public R applyOrElse(P1 p1, F1<? super P1, ? extends R> fallback) {
@@ -520,10 +548,13 @@ public class Lang implements Serializable {
          * function throws an exception, it is relayed to the caller of the composed
          * function.
          *
-         * @param <T>   the type of return value of the new composed function
-         * @param after the function applies after this function is applied
+         * @param <T>
+         *         the type of return value of the new composed function
+         * @param after
+         *         the function applies after this function is applied
          * @return the composed function
-         * @throws NullPointerException if @{code after} is null
+         * @throws NullPointerException
+         *         if @{code after} is null
          */
         public <T> F1<P1, T> andThen(final Function<? super R, ? extends T> after) {
             E.NPE(after);
@@ -544,7 +575,8 @@ public class Lang implements Serializable {
          * <p>When apply the composed function, the result of the last function
          * is returned</p>
          *
-         * @param afters a sequence of function to be applied after this function
+         * @param afters
+         *         a sequence of function to be applied after this function
          * @return a composed function
          */
         public F1<P1, R> andThen(final Function<? super P1, ? extends R>... afters) {
@@ -569,7 +601,8 @@ public class Lang implements Serializable {
          * a {@link NotAppliedException} is captured apply to the fallback function specified. This
          * method helps to implement partial function
          *
-         * @param fallback the function to applied if this function doesn't apply to the parameter(s)
+         * @param fallback
+         *         the function to applied if this function doesn't apply to the parameter(s)
          * @return the composed function
          */
         public F1<P1, R> orElse(final Function<? super P1, ? extends R> fallback) {
@@ -590,7 +623,8 @@ public class Lang implements Serializable {
          * Returns an {@code F0&lt;R&gt;>} function by composing the specified {@code Func0&ltP1&gt;} function
          * with this function applied last
          *
-         * @param before the function to be applied first when applying the return function
+         * @param before
+         *         the function to be applied first when applying the return function
          * @return an new function such that f() == apply(f0())
          */
         public F0<R> compose(final Func0<? extends P1> before) {
@@ -607,8 +641,10 @@ public class Lang implements Serializable {
          * Returns an {@code F1&lt;X1, R&gt;>} function by composing the specified
          * {@code Function&ltX1, P1&gt;} function with this function applied last
          *
-         * @param before the function to be applied first when applying the return function
-         * @param <X1>   type of argument takes by the {@code before} function
+         * @param before
+         *         the function to be applied first when applying the return function
+         * @param <X1>
+         *         type of argument takes by the {@code before} function
          * @return an new function such that f(a) == apply(f1(a))
          */
         public <X1> F1<X1, R>
@@ -626,9 +662,12 @@ public class Lang implements Serializable {
          * Returns an {@code F2&lt;X1, X2, R&gt;>} function by composing the specified
          * {@code Func2&ltX1, X2, P1&gt;} function with this function applied last
          *
-         * @param <X1>   the type of first param the new function applied to
-         * @param <X2>   the type of second param the new function applied to
-         * @param before the function to be applied first when applying the return function
+         * @param <X1>
+         *         the type of first param the new function applied to
+         * @param <X2>
+         *         the type of second param the new function applied to
+         * @param before
+         *         the function to be applied first when applying the return function
          * @return an new function such that f(x1, x2) == apply(f1(x1, x2))
          */
         public <X1, X2> F2<X1, X2, R>
@@ -647,10 +686,14 @@ public class Lang implements Serializable {
          * Returns an {@code F3&lt;X1, X2, X3, R&gt;>} function by composing the specified
          * {@code Func3&ltX1, X2, X3, P1&gt;} function with this function applied last
          *
-         * @param <X1>   the type of first param the new function applied to
-         * @param <X2>   the type of second param the new function applied to
-         * @param <X3>   the type of third param the new function applied to
-         * @param before the function to be applied first when applying the return function
+         * @param <X1>
+         *         the type of first param the new function applied to
+         * @param <X2>
+         *         the type of second param the new function applied to
+         * @param <X3>
+         *         the type of third param the new function applied to
+         * @param before
+         *         the function to be applied first when applying the return function
          * @return an new function such that f(x1, x2, x3) == apply(f1(x1, x2, x3))
          */
         public <X1, X2, X3> F3<X1, X2, X3, R>
@@ -668,11 +711,16 @@ public class Lang implements Serializable {
          * Returns an {@code F3&lt;X1, X2, X3, X4, R&gt;>} function by composing the specified
          * {@code Func3&ltX1, X2, X3, X4, P1&gt;} function with this function applied last
          *
-         * @param <X1>   the type of first param the new function applied to
-         * @param <X2>   the type of second param the new function applied to
-         * @param <X3>   the type of third param the new function applied to
-         * @param <X4>   the type of fourth param the new function applied to
-         * @param before the function to be applied first when applying the return function
+         * @param <X1>
+         *         the type of first param the new function applied to
+         * @param <X2>
+         *         the type of second param the new function applied to
+         * @param <X3>
+         *         the type of third param the new function applied to
+         * @param <X4>
+         *         the type of fourth param the new function applied to
+         * @param before
+         *         the function to be applied first when applying the return function
          * @return an new function such that f(x1, x2, x3, x4) == apply(f1(x1, x2, x3, x4))
          */
         public <X1, X2, X3, X4> F4<X1, X2, X3, X4, R>
@@ -690,12 +738,18 @@ public class Lang implements Serializable {
          * Returns an {@code F3&lt;X1, X2, X3, X4, X5, R&gt;>} function by composing the specified
          * {@code Func3&ltX1, X2, X3, X4, X5, P1&gt;} function with this function applied last
          *
-         * @param <X1>   the type of first param the new function applied to
-         * @param <X2>   the type of second param the new function applied to
-         * @param <X3>   the type of third param the new function applied to
-         * @param <X4>   the type of fourth param the new function applied to
-         * @param <X5>   the type of fifth param the new function applied to
-         * @param before the function to be applied first when applying the return function
+         * @param <X1>
+         *         the type of first param the new function applied to
+         * @param <X2>
+         *         the type of second param the new function applied to
+         * @param <X3>
+         *         the type of third param the new function applied to
+         * @param <X4>
+         *         the type of fourth param the new function applied to
+         * @param <X5>
+         *         the type of fifth param the new function applied to
+         * @param before
+         *         the function to be applied first when applying the return function
          * @return an new function such that f(x1, x2, x3, x4, x5) == apply(f1(x1, x2, x3, x4, x5))
          */
         public <X1, X2, X3, X4, X5> F5<X1, X2, X3, X4, X5, R>
@@ -749,8 +803,10 @@ public class Lang implements Serializable {
     /**
      * The type-safe version of {@link #F1}
      *
-     * @param <P1> the argument type
-     * @param <R>  the return value type
+     * @param <P1>
+     *         the argument type
+     * @param <R>
+     *         the return value type
      * @return a dumb function {@link #F1}
      * @since 0.2
      */
@@ -764,9 +820,12 @@ public class Lang implements Serializable {
      * Convert a general {@link Function} function into a {@link F1} typed
      * function
      *
-     * @param f1   the function that consumes {@code P1} and produce {@code R}
-     * @param <P1> the argument type
-     * @param <R>  the return value type
+     * @param f1
+     *         the function that consumes {@code P1} and produce {@code R}
+     * @param <P1>
+     *         the argument type
+     * @param <R>
+     *         the return value type
      * @return whatever of type {@code R}
      * @since 0.2
      */
@@ -822,9 +881,12 @@ public class Lang implements Serializable {
     /**
      * Define a function structure that accept two parameter
      *
-     * @param <P1> the type of first parameter this function applied to
-     * @param <P2> the type of second parameter this function applied to
-     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @param <P1>
+     *         the type of first parameter this function applied to
+     * @param <P2>
+     *         the type of second parameter this function applied to
+     * @param <R>
+     *         the type of the return value when this function applied to the parameter(s)
      * @see Func0
      * @see Function
      * @see Func3
@@ -841,11 +903,15 @@ public class Lang implements Serializable {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
-         * @param p1 the first argument of type P1
-         * @param p2 the second argument of type P2
+         * @param p1
+         *         the first argument of type P1
+         * @param p2
+         *         the second argument of type P2
          * @return the result of type R
-         * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
+         * @throws NotAppliedException
+         *         if the function doesn't apply to the parameter(s)
+         * @throws Break
+         *         to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2) throws NotAppliedException, Break;
 
@@ -866,9 +932,12 @@ public class Lang implements Serializable {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1       the first param with type P1
-         * @param p2       the second param with type P2
-         * @param fallback the function to be called when an {@link RuntimeException} caught
+         * @param p1
+         *         the first param with type P1
+         * @param p2
+         *         the second param with type P2
+         * @param fallback
+         *         the function to be called when an {@link RuntimeException} caught
          * @return the result of this function or the fallback function application
          */
         public R applyOrElse(P1 p1, P2 p2, F2<? super P1, ? super P2, ? extends R> fallback) {
@@ -905,11 +974,14 @@ public class Lang implements Serializable {
          * first to given parameter and then the specified function is applied to the result of
          * this function.
          *
-         * @param f   the function takes the <code>R</code> type parameter and return <code>T</code>
-         *            type result
-         * @param <T> the return type of function {@code f}
+         * @param f
+         *         the function takes the <code>R</code> type parameter and return <code>T</code>
+         *         type result
+         * @param <T>
+         *         the return type of function {@code f}
          * @return the composed function
-         * @throws NullPointerException if <code>f</code> is null
+         * @throws NullPointerException
+         *         if <code>f</code> is null
          */
         public <T> F2<P1, P2, T> andThen(final Function<? super R, ? extends T> f) {
             E.NPE(f);
@@ -931,7 +1003,8 @@ public class Lang implements Serializable {
          * <p>When apply the composed function, the result of the last function
          * is returned</p>
          *
-         * @param fs a sequence of function to be applied after this function
+         * @param fs
+         *         a sequence of function to be applied after this function
          * @return a composed function
          */
         public F2<P1, P2, R> andThen(final Func2<? super P1, ? super P2, ? extends R>... fs) {
@@ -956,7 +1029,8 @@ public class Lang implements Serializable {
          * a {@link NotAppliedException} is captured apply to the fallback function specified. This
          * method helps to implement partial function
          *
-         * @param fallback the function to applied if this function doesn't apply to the parameter(s)
+         * @param fallback
+         *         the function to applied if this function doesn't apply to the parameter(s)
          * @return the composed function
          */
         public F2<P1, P2, R> orElse(final Func2<? super P1, ? super P2, ? extends R> fallback) {
@@ -1013,9 +1087,12 @@ public class Lang implements Serializable {
     /**
      * The type-safe version of {@link #F2}
      *
-     * @param <P1> the type of the first param the new function applied to
-     * @param <P2> the type of the second param the new function applied to
-     * @param <R>  the type of new function application result
+     * @param <P1>
+     *         the type of the first param the new function applied to
+     * @param <P2>
+     *         the type of the second param the new function applied to
+     * @param <R>
+     *         the type of new function application result
      * @return the dumb function {@link #F2}
      * @since 0.2
      */
@@ -1029,10 +1106,14 @@ public class Lang implements Serializable {
      * Convert a general {@link Func2} function into a {@link F2} typed
      * function
      *
-     * @param f2   the function that takes two arguments and return type {@code R}
-     * @param <P1> the type of the first param the new function applied to
-     * @param <P2> the type of the second param the new function applied to
-     * @param <R>  the type of new function application result
+     * @param f2
+     *         the function that takes two arguments and return type {@code R}
+     * @param <P1>
+     *         the type of the first param the new function applied to
+     * @param <P2>
+     *         the type of the second param the new function applied to
+     * @param <R>
+     *         the type of new function application result
      * @return a {@code F2} instance corresponding to the specified {@code Func2} instance
      * @since 0.2
      */
@@ -1054,10 +1135,14 @@ public class Lang implements Serializable {
     /**
      * Define a function structure that accept three parameter
      *
-     * @param <P1> the type of first parameter this function applied to
-     * @param <P2> the type of second parameter this function applied to
-     * @param <P3> the type of thrid parameter this function applied to
-     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @param <P1>
+     *         the type of first parameter this function applied to
+     * @param <P2>
+     *         the type of second parameter this function applied to
+     * @param <P3>
+     *         the type of thrid parameter this function applied to
+     * @param <R>
+     *         the type of the return value when this function applied to the parameter(s)
      * @see Func0
      * @see Function
      * @see Func2
@@ -1072,12 +1157,17 @@ public class Lang implements Serializable {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
-         * @param p1 argument 1
-         * @param p2 argument 2
-         * @param p3 argument 3
+         * @param p1
+         *         argument 1
+         * @param p2
+         *         argument 2
+         * @param p3
+         *         argument 3
          * @return the result of function applied
-         * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
+         * @throws NotAppliedException
+         *         if the function doesn't apply to the parameter(s)
+         * @throws Break
+         *         to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2, P3 p3) throws NotAppliedException, Break;
     }
@@ -1097,10 +1187,14 @@ public class Lang implements Serializable {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1       the first argument
-         * @param p2       the second argument
-         * @param p3       the third argument
-         * @param fallback the function to be called of application of this function failed with any runtime exception
+         * @param p1
+         *         the first argument
+         * @param p2
+         *         the second argument
+         * @param p3
+         *         the third argument
+         * @param fallback
+         *         the function to be called of application of this function failed with any runtime exception
          * @return the result of this function or the fallback function application
          */
         public R applyOrElse(P1 p1, P2 p2, P3 p3, F3<? super P1, ? super P2, ? super P3, ? extends R> fallback) {
@@ -1147,11 +1241,14 @@ public class Lang implements Serializable {
          * first to given parameter and then the specified function is applied to the result of
          * this function.
          *
-         * @param f   the function takes the <code>R</code> type parameter and return <code>T</code>
-         *            type result
-         * @param <T> the return type of function {@code f}
+         * @param f
+         *         the function takes the <code>R</code> type parameter and return <code>T</code>
+         *         type result
+         * @param <T>
+         *         the return type of function {@code f}
          * @return the composed function
-         * @throws NullPointerException if <code>f</code> is null
+         * @throws NullPointerException
+         *         if <code>f</code> is null
          */
         public <T> Func3<P1, P2, P3, T> andThen(final Function<? super R, ? extends T> f) {
             E.NPE(f);
@@ -1173,7 +1270,8 @@ public class Lang implements Serializable {
          * <p>When apply the composed function, the result of the last function
          * is returned</p>
          *
-         * @param fs a sequence of function to be applied after this function
+         * @param fs
+         *         a sequence of function to be applied after this function
          * @return a composed function
          */
         public Func3<P1, P2, P3, R> andThen(
@@ -1201,7 +1299,8 @@ public class Lang implements Serializable {
          * a {@link NotAppliedException} is captured apply to the fallback function specified. This
          * method helps to implement partial function
          *
-         * @param fallback the function to applied if this function doesn't apply to the parameter(s)
+         * @param fallback
+         *         the function to applied if this function doesn't apply to the parameter(s)
          * @return the composed function
          */
         public F3<P1, P2, P3, R> orElse(final Func3<? super P1, ? super P2, ? super P3, ? extends R> fallback) {
@@ -1259,10 +1358,14 @@ public class Lang implements Serializable {
     /**
      * The type-safe version of {@link #F3}
      *
-     * @param <P1> the type of first parameter this function applied to
-     * @param <P2> the type of second parameter this function applied to
-     * @param <P3> the type of thrid parameter this function applied to
-     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @param <P1>
+     *         the type of first parameter this function applied to
+     * @param <P2>
+     *         the type of second parameter this function applied to
+     * @param <P3>
+     *         the type of thrid parameter this function applied to
+     * @param <R>
+     *         the type of the return value when this function applied to the parameter(s)
      * @return the dumb function {@link #F3}
      * @since 0.2
      */
@@ -1276,11 +1379,16 @@ public class Lang implements Serializable {
      * Convert a general {@link Func3} function into a {@link F3} typed
      * function
      *
-     * @param f3   the general function with three params
-     * @param <P1> type of argument 1
-     * @param <P2> type of argument 2
-     * @param <P3> type of argument 3
-     * @param <R>  return type
+     * @param f3
+     *         the general function with three params
+     * @param <P1>
+     *         type of argument 1
+     * @param <P2>
+     *         type of argument 2
+     * @param <P3>
+     *         type of argument 3
+     * @param <R>
+     *         return type
      * @return the {@link #F3} typed instance which is equivalent to f3
      * @since 0.2
      */
@@ -1302,11 +1410,16 @@ public class Lang implements Serializable {
     /**
      * Define a function structure that accept four parameter
      *
-     * @param <P1> the type of first parameter this function applied to
-     * @param <P2> the type of second parameter this function applied to
-     * @param <P3> the type of thrid parameter this function applied to
-     * @param <P4> the type of fourth parameter this function applied to
-     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @param <P1>
+     *         the type of first parameter this function applied to
+     * @param <P2>
+     *         the type of second parameter this function applied to
+     * @param <P3>
+     *         the type of thrid parameter this function applied to
+     * @param <P4>
+     *         the type of fourth parameter this function applied to
+     * @param <R>
+     *         the type of the return value when this function applied to the parameter(s)
      * @see Func0
      * @see Function
      * @see Func2
@@ -1321,13 +1434,19 @@ public class Lang implements Serializable {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
-         * @param p1 the first argument
-         * @param p2 the second argument
-         * @param p3 the third argument
-         * @param p4 the fourth argument
+         * @param p1
+         *         the first argument
+         * @param p2
+         *         the second argument
+         * @param p3
+         *         the third argument
+         * @param p4
+         *         the fourth argument
          * @return whatever value of type {@code R}
-         * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
+         * @throws NotAppliedException
+         *         if the function doesn't apply to the parameter(s)
+         * @throws Break
+         *         to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2, P3 p3, P4 p4) throws NotAppliedException, Break;
 
@@ -1348,12 +1467,17 @@ public class Lang implements Serializable {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1       the first argument
-         * @param p2       the second argument
-         * @param p3       the third argument
-         * @param p4       the fourth argument
-         * @param fallback the failover function to be called if application of this function failed with any
-         *                 runtime exception
+         * @param p1
+         *         the first argument
+         * @param p2
+         *         the second argument
+         * @param p3
+         *         the third argument
+         * @param p4
+         *         the fourth argument
+         * @param fallback
+         *         the failover function to be called if application of this function failed with any
+         *         runtime exception
          * @return a composite function that apply to this function first and if failed apply to the callback function
          */
         public R applyOrElse(P1 p1, P2 p2, P3 p3, P4 p4,
@@ -1412,11 +1536,14 @@ public class Lang implements Serializable {
          * first to given parameter and then the specified function is applied to the result of
          * this function.
          *
-         * @param f   the function takes the <code>R</code> type parameter and return <code>T</code>
-         *            type result
-         * @param <T> the return type of function {@code f}
+         * @param f
+         *         the function takes the <code>R</code> type parameter and return <code>T</code>
+         *         type result
+         * @param <T>
+         *         the return type of function {@code f}
          * @return the composed function
-         * @throws NullPointerException if <code>f</code> is null
+         * @throws NullPointerException
+         *         if <code>f</code> is null
          */
         public <T> F4<P1, P2, P3, P4, T> andThen(final Function<? super R, ? extends T> f) {
             E.NPE(f);
@@ -1438,7 +1565,8 @@ public class Lang implements Serializable {
          * <p>When apply the composed function, the result of the last function
          * is returned</p>
          *
-         * @param fs a sequence of function to be applied after this function
+         * @param fs
+         *         a sequence of function to be applied after this function
          * @return a composed function
          */
         public F4<P1, P2, P3, P4, R> andThen(
@@ -1466,7 +1594,8 @@ public class Lang implements Serializable {
          * a {@link NotAppliedException} is captured apply to the fallback function specified. This
          * method helps to implement partial function
          *
-         * @param fallback the function to applied if this function doesn't apply to the parameter(s)
+         * @param fallback
+         *         the function to applied if this function doesn't apply to the parameter(s)
          * @return the composed function
          */
         public F4<P1, P2, P3, P4, R> orElse(
@@ -1526,11 +1655,16 @@ public class Lang implements Serializable {
     /**
      * The type-safe version of {@link #F4}
      *
-     * @param <P1> type of first argument
-     * @param <P2> type of second argument
-     * @param <P3> type of third argument
-     * @param <P4> type of fourth argument
-     * @param <R>  type of return value
+     * @param <P1>
+     *         type of first argument
+     * @param <P2>
+     *         type of second argument
+     * @param <P3>
+     *         type of third argument
+     * @param <P4>
+     *         type of fourth argument
+     * @param <R>
+     *         type of return value
      * @return the dumb {@link #F4} function
      * @since 0.2
      */
@@ -1544,12 +1678,18 @@ public class Lang implements Serializable {
      * Convert a general {@link Func4} function into a {@link F4} typed
      * function
      *
-     * @param f4   the function to be converted
-     * @param <P1> type of first argument
-     * @param <P2> type of second argument
-     * @param <P3> type of third argument
-     * @param <P4> type of fourth argument
-     * @param <R>  type of return value
+     * @param f4
+     *         the function to be converted
+     * @param <P1>
+     *         type of first argument
+     * @param <P2>
+     *         type of second argument
+     * @param <P3>
+     *         type of third argument
+     * @param <P4>
+     *         type of fourth argument
+     * @param <R>
+     *         type of return value
      * @return the function of {@link F4} type that is equivalent to function {@code f4}
      * @since 0.2
      */
@@ -1572,12 +1712,18 @@ public class Lang implements Serializable {
     /**
      * Define a function structure that accept five parameter
      *
-     * @param <P1> the type of first parameter this function applied to
-     * @param <P2> the type of second parameter this function applied to
-     * @param <P3> the type of thrid parameter this function applied to
-     * @param <P4> the type of fourth parameter this function applied to
-     * @param <P5> the type of fifth parameter this function applied to
-     * @param <R>  the type of the return value when this function applied to the parameter(s)
+     * @param <P1>
+     *         the type of first parameter this function applied to
+     * @param <P2>
+     *         the type of second parameter this function applied to
+     * @param <P3>
+     *         the type of thrid parameter this function applied to
+     * @param <P4>
+     *         the type of fourth parameter this function applied to
+     * @param <P5>
+     *         the type of fifth parameter this function applied to
+     * @param <R>
+     *         the type of the return value when this function applied to the parameter(s)
      * @see Func0
      * @see Function
      * @see Func2
@@ -1592,14 +1738,21 @@ public class Lang implements Serializable {
          * {@link NotAppliedException} if the function is not defined for
          * the given parameter(s)</p>
          *
-         * @param p1 first argument
-         * @param p2 second argument
-         * @param p3 third argument
-         * @param p4 fourth argument
-         * @param p5 fifth argument
+         * @param p1
+         *         first argument
+         * @param p2
+         *         second argument
+         * @param p3
+         *         third argument
+         * @param p4
+         *         fourth argument
+         * @param p5
+         *         fifth argument
          * @return whatever with type {@code R}
-         * @throws NotAppliedException if the function doesn't apply to the parameter(s)
-         * @throws Break               to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
+         * @throws NotAppliedException
+         *         if the function doesn't apply to the parameter(s)
+         * @throws Break
+         *         to short cut collecting operations (fold/reduce) on an {@link org.osgl.util.C.Traversable container}
          */
         R apply(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) throws NotAppliedException, Break;
     }
@@ -1619,12 +1772,18 @@ public class Lang implements Serializable {
          * Applies this partial function to the given argument when it is contained in the function domain.
          * Applies fallback function where this partial function is not defined.
          *
-         * @param p1       the first argument
-         * @param p2       the second argument
-         * @param p3       the third argument
-         * @param p4       the fourth argument
-         * @param p5       the fifth argument
-         * @param fallback the function to be called if application of this function failed with any runtime exception
+         * @param p1
+         *         the first argument
+         * @param p2
+         *         the second argument
+         * @param p3
+         *         the third argument
+         * @param p4
+         *         the fourth argument
+         * @param p5
+         *         the fifth argument
+         * @param fallback
+         *         the function to be called if application of this function failed with any runtime exception
          * @return a composite function apply to this function and then the callback function if this function failed
          */
         public R applyOrElse(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5,
@@ -1693,11 +1852,14 @@ public class Lang implements Serializable {
          * first to given parameter and then the specified function is applied to the result of
          * this function.
          *
-         * @param f   the function takes the <code>R</code> type parameter and return <code>T</code>
-         *            type result
-         * @param <T> the return type of function {@code f}
+         * @param f
+         *         the function takes the <code>R</code> type parameter and return <code>T</code>
+         *         type result
+         * @param <T>
+         *         the return type of function {@code f}
          * @return the composed function
-         * @throws NullPointerException if <code>f</code> is null
+         * @throws NullPointerException
+         *         if <code>f</code> is null
          */
         public <T> F5<P1, P2, P3, P4, P5, T> andThen(final Function<? super R, ? extends T> f) {
             E.NPE(f);
@@ -1719,7 +1881,8 @@ public class Lang implements Serializable {
          * <p>When apply the composed function, the result of the last function
          * is returned</p>
          *
-         * @param fs a sequence of function to be applied after this function
+         * @param fs
+         *         a sequence of function to be applied after this function
          * @return a composed function
          */
         public F5<P1, P2, P3, P4, P5, R> andThen(
@@ -1747,7 +1910,8 @@ public class Lang implements Serializable {
          * a {@link NotAppliedException} is captured apply to the fallback function specified. This
          * method helps to implement partial function
          *
-         * @param fallback the function to applied if this function doesn't apply to the parameter(s)
+         * @param fallback
+         *         the function to applied if this function doesn't apply to the parameter(s)
          * @return the composed function
          */
         public F5<P1, P2, P3, P4, P5, R> orElse(
@@ -1807,12 +1971,18 @@ public class Lang implements Serializable {
     /**
      * The type-safe version of {@link #F5}
      *
-     * @param <P1> type of first argument
-     * @param <P2> type of second argument
-     * @param <P3> type of third argument
-     * @param <P4> type of fourth argument
-     * @param <P5> type of fifth argument
-     * @param <R>  type of return value
+     * @param <P1>
+     *         type of first argument
+     * @param <P2>
+     *         type of second argument
+     * @param <P3>
+     *         type of third argument
+     * @param <P4>
+     *         type of fourth argument
+     * @param <P5>
+     *         type of fifth argument
+     * @param <R>
+     *         type of return value
      * @return a dumb {@link #F5} function
      * @since 0.2
      */
@@ -1826,13 +1996,20 @@ public class Lang implements Serializable {
      * Convert a general {@link Func5} function into a {@link F5} typed
      * function
      *
-     * @param f5   the function to be converted
-     * @param <P1> type of first argument
-     * @param <P2> type of second argument
-     * @param <P3> type of third argument
-     * @param <P4> type of fourth argument
-     * @param <P5> type of fifth argument
-     * @param <R>  type of return value
+     * @param f5
+     *         the function to be converted
+     * @param <P1>
+     *         type of first argument
+     * @param <P2>
+     *         type of second argument
+     * @param <P3>
+     *         type of third argument
+     * @param <P4>
+     *         type of fourth argument
+     * @param <P5>
+     *         type of fifth argument
+     * @param <R>
+     *         type of return value
      * @return the function of {@link F5} type that is equivalent to function {@code f5}
      * @since 0.2
      */
@@ -1857,7 +2034,8 @@ public class Lang implements Serializable {
     /**
      * Adapt JDK Comparator (since 1.2) to Functional programming. The class provides several java8 Comparator methods
      *
-     * @param <T> the type of the element to be compared
+     * @param <T>
+     *         the type of the element to be compared
      * @since 0.2
      */
     public static abstract class Comparator<T>
@@ -1900,9 +2078,12 @@ public class Lang implements Serializable {
         /**
          * See <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html#thenComparing-java.util.function.Function-java.util.Comparator-">Java 8 doc</a>
          *
-         * @param keyExtractor  The function to extract the key for comparison
-         * @param keyComparator The function to compare the extracted key
-         * @param <U>           the generic type of the key
+         * @param keyExtractor
+         *         The function to extract the key for comparison
+         * @param keyComparator
+         *         The function to compare the extracted key
+         * @param <U>
+         *         the generic type of the key
          * @return a function that extract key of type {@code U} from element of type {@code T}
          * and run {@code keyComparator} to compare the two keys
          * @since 0.2
@@ -1917,8 +2098,10 @@ public class Lang implements Serializable {
         /**
          * See <a href="http://download.java.net/jdk8/docs/api/java/util/Comparator.html#thenComparing(java.util.function.Function)">Java 8 doc</a>
          *
-         * @param keyExtractor the function that extract key of type U from instance of type T
-         * @param <U>          the key type
+         * @param keyExtractor
+         *         the function that extract key of type U from instance of type T
+         * @param <U>
+         *         the key type
          * @return a comparator that applied if the result of this comparator is even
          */
         public <U extends Comparable<? super U>> Comparator<T> thenComparing(
@@ -2004,8 +2187,10 @@ public class Lang implements Serializable {
     /**
      * Adapt a general {@link Func2} function with (T, T, Integer) type into {@link Comparator}
      *
-     * @param f   The function takes two params (the same type) and returns integer
-     * @param <T> the type of the parameter
+     * @param f
+     *         The function takes two params (the same type) and returns integer
+     * @param <T>
+     *         the type of the parameter
      * @return a {@link Comparator} instance backed by function {@code f}
      */
     @SuppressWarnings("unchecked")
@@ -2025,8 +2210,10 @@ public class Lang implements Serializable {
     /**
      * Adapt a jdk {@link java.util.Comparator} into {@link Comparator osgl Comparator}
      *
-     * @param <T> the element type the comparator compares
-     * @param c   the jdk compator
+     * @param <T>
+     *         the element type the comparator compares
+     * @param c
+     *         the jdk compator
      * @return a {@link Comparator} instance backed by comparator {@code c}
      */
     @SuppressWarnings("unchecked")
@@ -2072,7 +2259,8 @@ public class Lang implements Serializable {
         /**
          * Sub class to implement this method to test on the supplied elements
          *
-         * @param t the element to be test
+         * @param t
+         *         the element to be test
          * @return {@code true} or {@code false} depends on the implementation
          */
         public abstract boolean test(T t);
@@ -2091,7 +2279,8 @@ public class Lang implements Serializable {
          * with AND operation. For any <code>T t</code> to be tested, if any specified predicates
          * must returns <code>false</code> on it, the resulting predicate will return <code>false</code>.
          *
-         * @param predicates the predicate function array
+         * @param predicates
+         *         the predicate function array
          * @return a function that returns {@code true} only when all functions in {@code predicates} returns
          * {@code true} on a given argument
          * @since 0.2
@@ -2119,7 +2308,8 @@ public class Lang implements Serializable {
          * with OR operation. For any <code>T t</code> to be tested, if any specified predicates
          * must returns <code>true</code> on it, the resulting predicate will return <code>true</code>.
          *
-         * @param predicates the predicate functions
+         * @param predicates
+         *         the predicate functions
          * @return a function returns {@code true} if any one of the predicate functions returns
          * {@code true} on a given argument
          * @since 0.2
@@ -2174,8 +2364,10 @@ public class Lang implements Serializable {
      * <p>If the function specified is already a {@link Predicate}, then
      * the function itself is returned</p>
      *
-     * @param f   the function to be converted
-     * @param <T> the argument type
+     * @param f
+     *         the function to be converted
+     * @param <T>
+     *         the argument type
      * @return a function of {@link Predicate} type that is equivalent to function {@code f}
      * @since 0.2
      */
@@ -2201,8 +2393,10 @@ public class Lang implements Serializable {
      * <p>If the function specified is already a {@link Predicate}, then
      * the function itself is returned</p>
      *
-     * @param f   the function
-     * @param <T> the argument type
+     * @param f
+     *         the function
+     * @param <T>
+     *         the argument type
      * @return the function of {@link Predicate} type that is equivalent to the function {@code f}
      * @since 0.2
      */
@@ -2220,7 +2414,8 @@ public class Lang implements Serializable {
      * Define a processor function which applied to one parameter and return the parameter instance after
      * processing on the parameter
      *
-     * @param <T> the paramete type
+     * @param <T>
+     *         the paramete type
      */
     public abstract static class Processor<T> extends F1<T, T> {
 
@@ -2233,10 +2428,13 @@ public class Lang implements Serializable {
         /**
          * Subclass must override thie method to process the parameter
          *
-         * @param t the object to be processed
-         * @throws Break               if logic decide it shall break external loop
-         * @throws NotAppliedException if logic decide to skip further processing
-         *                             on the object passed in
+         * @param t
+         *         the object to be processed
+         * @throws Break
+         *         if logic decide it shall break external loop
+         * @throws NotAppliedException
+         *         if logic decide to skip further processing
+         *         on the object passed in
          */
         public abstract void process(T t) throws Break, NotAppliedException;
     }
@@ -2244,7 +2442,8 @@ public class Lang implements Serializable {
     /**
      * Define a visitor (known as Consumer in java 8) function which applied to one parameter and without return type
      *
-     * @param <T> the type of the parameter the visitor function applied to
+     * @param <T>
+     *         the type of the parameter the visitor function applied to
      */
     public abstract static class Visitor<T> extends F1<T, Void> {
 
@@ -2263,8 +2462,10 @@ public class Lang implements Serializable {
         /**
          * User application to implement visit logic in this method
          *
-         * @param t the element been visited
-         * @throws Break if the logic decide to break visit progress (usually when visiting a sequence of elements)
+         * @param t
+         *         the element been visited
+         * @throws Break
+         *         if the logic decide to break visit progress (usually when visiting a sequence of elements)
          */
         public abstract void visit(T t) throws Break;
     }
@@ -2322,8 +2523,10 @@ public class Lang implements Serializable {
     /**
      * Convert a {@code Function&lt;? super T, Void&gt;} function into a {@link Visitor}
      *
-     * @param f   the function to be cast
-     * @param <T> the argument type
+     * @param f
+     *         the function to be cast
+     * @param <T>
+     *         the argument type
      * @return a {@link Visitor} type function that is equal with the function {@code f}
      * @since 0.2
      */
@@ -2343,9 +2546,12 @@ public class Lang implements Serializable {
     /**
      * Return a composed visitor function that only applies when the guard predicate test returns <code>true</code>
      *
-     * @param predicate the predicate to test the element been visited
-     * @param visitor   the function that visit(accept) the element if the guard tested the element successfully
-     * @param <T>       the type of the element be tested and visited
+     * @param predicate
+     *         the predicate to test the element been visited
+     * @param visitor
+     *         the function that visit(accept) the element if the guard tested the element successfully
+     * @param <T>
+     *         the type of the element be tested and visited
      * @return the composed function
      */
     public static <T> Visitor<T>
@@ -2376,7 +2582,8 @@ public class Lang implements Serializable {
          * Construct a Break with payload specified. Note here we can't use generic type for
          * the payload as java does not support generic typed throwable
          *
-         * @param payload the payload object
+         * @param payload
+         *         the payload object
          */
         public Break(Object payload) {
             super("break out");
@@ -2386,7 +2593,8 @@ public class Lang implements Serializable {
         /**
          * Return the payload
          *
-         * @param <T> the type of the return value
+         * @param <T>
+         *         the type of the return value
          * @return the payload
          */
         public <T> T get() {
@@ -2398,8 +2606,10 @@ public class Lang implements Serializable {
     /**
      * A utility method to throw out a Break with payload
      *
-     * @param e   the payload object
-     * @param <T> the type of the payload
+     * @param e
+     *         the payload object
+     * @param <T>
+     *         the type of the payload
      * @return a Break instance with the payload specified
      */
     @SuppressWarnings("unused")
@@ -2428,8 +2638,10 @@ public class Lang implements Serializable {
      * </pre>
      * <p>Use {@code IndexedVisitor} to iterate through a {@code Map}</p>
      *
-     * @param <K> the generic type of the key
-     * @param <T> the generic type of the value
+     * @param <K>
+     *         the generic type of the key
+     * @param <T>
+     *         the generic type of the value
      */
     public static abstract class IndexedVisitor<K, T> extends F2<K, T, Void> {
 
@@ -2566,7 +2778,8 @@ public class Lang implements Serializable {
     /**
      * A Provider is a function that apply to nothing and return an element
      *
-     * @param <ELEMENT> the type of the returning element
+     * @param <ELEMENT>
+     *         the type of the returning element
      */
     public static abstract class Provider<ELEMENT> extends F0<ELEMENT> {
         @Override
@@ -2576,6 +2789,7 @@ public class Lang implements Serializable {
 
         /**
          * Get the element
+         *
          * @return the element the provider provides
          */
         public abstract ELEMENT get();
@@ -2584,7 +2798,8 @@ public class Lang implements Serializable {
     /**
      * A Producer is a provider that {@link Producer#produce()} product
      *
-     * @param <PRODUCT> the generic type of the produce the producer produces
+     * @param <PRODUCT>
+     *         the generic type of the produce the producer produces
      */
     public static abstract class Producer<PRODUCT> extends Provider<PRODUCT> {
 
@@ -2599,8 +2814,10 @@ public class Lang implements Serializable {
     /**
      * A Transformer is literally a kind of {@link F1} function
      *
-     * @param <FROM> The type of the element the transformer function applied to
-     * @param <TO>   The type of the result of transform of <code>&lt;FROM&gt;</code>
+     * @param <FROM>
+     *         The type of the element the transformer function applied to
+     * @param <TO>
+     *         The type of the result of transform of <code>&lt;FROM&gt;</code>
      */
     public static abstract class Transformer<FROM, TO> extends F1<FROM, TO> {
         @Override
@@ -2611,16 +2828,20 @@ public class Lang implements Serializable {
         /**
          * The place sub class to implement the transform logic
          *
-         * @param from the element to be transformed
+         * @param from
+         *         the element to be transformed
          * @return the transformed object
          */
         public abstract TO transform(FROM from);
     }
+
     /**
      * A `TypeConverter` is a {@link Transformer} that convert a type to another
      *
-     * @param <FROM> the generic type of input
-     * @param <TO>   the generic type of output
+     * @param <FROM>
+     *         the generic type of input
+     * @param <TO>
+     *         the generic type of output
      */
     @SuppressWarnings("unused")
     public static abstract class TypeConverter<FROM, TO> extends Transformer<FROM, TO> {
@@ -2714,15 +2935,20 @@ public class Lang implements Serializable {
 
         /**
          * Convert value into `TO` type
-         * @param from the from value
+         *
+         * @param from
+         *         the from value
          * @return the converted value
          */
         public abstract TO convert(FROM from);
 
         /**
          * Convert value into `TO` type with hint
-         * @param from the from value
-         * @param hint the convert hint (e.g. date format)
+         *
+         * @param from
+         *         the from value
+         * @param hint
+         *         the convert hint (e.g. date format)
          * @return the converted value
          */
         public TO convert(FROM from, Object hint) {
@@ -2840,6 +3066,7 @@ public class Lang implements Serializable {
 
         public static TypeConverter<String, Date> STRING_TO_DATE = new TypeConverter<String, Date>(String.class, Date.class) {
             private SimpleDateFormat format = new SimpleDateFormat();
+
             @Override
             public Date convert(String s) {
                 return convert(s, format);
@@ -2962,6 +3189,7 @@ public class Lang implements Serializable {
 
         public static TypeConverter<Date, String> DATE_TO_STRING = new TypeConverter<Date, String>(Date.class, String.class) {
             private SimpleDateFormat format = new SimpleDateFormat();
+
             @Override
             public String convert(Date date) {
                 return convert(date, format);
@@ -3031,7 +3259,7 @@ public class Lang implements Serializable {
                     Enum[] enums = enumClass.getEnumConstants();
                     for (Enum e : enums) {
                         if (Keyword.of(e.name()).equals(Keyword.of(s))) {
-                            return (ENUM)e;
+                            return (ENUM) e;
                         }
                     }
                     throw new IllegalArgumentException("No enum constant " + enumClass.getCanonicalName() + "." + s);
@@ -3348,7 +3576,7 @@ public class Lang implements Serializable {
                     }
                 }
                 if (null != defVal) {
-                    return (TO)defVal;
+                    return (TO) defVal;
                 } else {
                     if (reportError) {
                         throw new IllegalArgumentException(S.fmt("Unable to find converter from %s to %s", fromType, toType));
@@ -3358,7 +3586,7 @@ public class Lang implements Serializable {
             }
 
             TO to = null == hint ? converter.convert(from) : converter.convert(from, hint);
-            return null == to ? (TO)defVal : to;
+            return null == to ? (TO) defVal : to;
         }
 
         public boolean toBool() {
@@ -3550,9 +3778,12 @@ public class Lang implements Serializable {
          * will be put into the Map
          * </p>
          *
-         * @param <K>  the key type
-         * @param <V>  the value type
-         * @param list the list of tuples to be transformed into Map
+         * @param <K>
+         *         the key type
+         * @param <V>
+         *         the value type
+         * @param list
+         *         the list of tuples to be transformed into Map
          * @return the Map as described
          */
         @SuppressWarnings("unused")
@@ -3567,8 +3798,11 @@ public class Lang implements Serializable {
 
     /**
      * Alias of {@link Tuple}
-     * @param <LEFT> the left side element type
-     * @param <RIGHT> the right side element type
+     *
+     * @param <LEFT>
+     *         the left side element type
+     * @param <RIGHT>
+     *         the right side element type
      */
     public static class Binary<LEFT, RIGHT> extends Tuple<LEFT, RIGHT> {
         public Binary(LEFT _1, RIGHT _2) {
@@ -3584,8 +3818,11 @@ public class Lang implements Serializable {
 
     /**
      * Alias of {@link Binary}
-     * @param <LEFT> the left hand side element type
-     * @param <RIGHT> the right hand side element type
+     *
+     * @param <LEFT>
+     *         the left hand side element type
+     * @param <RIGHT>
+     *         the right hand side element type
      */
     public static class Pair<LEFT, RIGHT> extends Binary<LEFT, RIGHT> {
         public Pair(LEFT _1, RIGHT _2) {
@@ -3596,8 +3833,11 @@ public class Lang implements Serializable {
 
     /**
      * Alias of {@link Pair}
-     * @param <A> the left hand side element type
-     * @param <B> the right hand side element type
+     *
+     * @param <A>
+     *         the left hand side element type
+     * @param <B>
+     *         the right hand side element type
      */
     public static class T2<A, B> extends Pair<A, B> {
 
@@ -3621,9 +3861,13 @@ public class Lang implements Serializable {
 
     /**
      * A tuple with three elements
-     * @param <A> the first element type
-     * @param <B> the second element type
-     * @param <C> the third element type
+     *
+     * @param <A>
+     *         the first element type
+     * @param <B>
+     *         the second element type
+     * @param <C>
+     *         the third element type
      */
     public static class Triple<A, B, C> {
         final public A _1;
@@ -3636,11 +3880,17 @@ public class Lang implements Serializable {
             this._3 = _3;
         }
 
-        public A first() {return _1;}
+        public A first() {
+            return _1;
+        }
 
-        public B second() {return _2;}
+        public B second() {
+            return _2;
+        }
 
-        public C third() {return _3;}
+        public C third() {
+            return _3;
+        }
 
         public C last() {
             return _3;
@@ -3703,13 +3953,21 @@ public class Lang implements Serializable {
             this._4 = _4;
         }
 
-        public A first() {return _1;}
+        public A first() {
+            return _1;
+        }
 
-        public B second() {return _2;}
+        public B second() {
+            return _2;
+        }
 
-        public C third() {return _3;}
+        public C third() {
+            return _3;
+        }
 
-        public D forth() {return _4;}
+        public D forth() {
+            return _4;
+        }
 
         public D last() {
             return _4;
@@ -3779,13 +4037,21 @@ public class Lang implements Serializable {
             this._5 = _5;
         }
 
-        public A first() {return _1;}
+        public A first() {
+            return _1;
+        }
 
-        public B second() {return _2;}
+        public B second() {
+            return _2;
+        }
 
-        public C third() {return _3;}
+        public C third() {
+            return _3;
+        }
 
-        public D forth() {return _4;}
+        public D forth() {
+            return _4;
+        }
 
         public E fifth() {
             return _5;
@@ -3806,7 +4072,7 @@ public class Lang implements Serializable {
         public T5<A, B, C, D, E> set3(C x) {
             return T5(_1, _2, x, _4, _5);
         }
-        
+
         public T5<A, B, C, D, E> set4(D x) {
             return T5(_1, _2, _3, x, _5);
         }
@@ -3852,7 +4118,8 @@ public class Lang implements Serializable {
      * the {@code else-if} semantic in functional programming and eliminate the
      * {@code null} value
      *
-     * @param <T> the element type
+     * @param <T>
+     *         the element type
      */
     public static abstract class Option<T> implements Iterable<T>, Serializable {
 
@@ -3884,7 +4151,8 @@ public class Lang implements Serializable {
          * otherwise throws NoSuchElementException.
          *
          * @return the non-null value held by this {@code Option}
-         * @throws NoSuchElementException if this {@code Option} is {@link #NONE}
+         * @throws NoSuchElementException
+         *         if this {@code Option} is {@link #NONE}
          */
         public abstract T get() throws NoSuchElementException;
 
@@ -3893,7 +4161,8 @@ public class Lang implements Serializable {
          * return an {@code Option} describing the value, otherwise return
          * {@link #NONE}.
          *
-         * @param predicate the function to test the value held by this {@code Option}
+         * @param predicate
+         *         the function to test the value held by this {@code Option}
          * @return an {@code Option} describing the value of this {@code Option} if
          * a value is present and the value matches the given predicate,
          * otherwise {@link #NONE}
@@ -3916,12 +4185,15 @@ public class Lang implements Serializable {
          * and if the result is non-null, return an {@code Option} describing
          * the result. Otherwise return {@link #NONE}.
          *
-         * @param mapper a mapping function to apply to the value, if present
-         * @param <B>    The type of the result of the mapping function
+         * @param mapper
+         *         a mapping function to apply to the value, if present
+         * @param <B>
+         *         The type of the result of the mapping function
          * @return an Optional describing the result of applying a mapping
          * function to the value of this {@code Option}, if a value is
          * present, otherwise {@link #NONE}
-         * @throws NullPointerException if the mapper function is {@code null}
+         * @throws NullPointerException
+         *         if the mapper function is {@code null}
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -3937,13 +4209,16 @@ public class Lang implements Serializable {
          * {@code Option}, and if invoked, {@code flatMap} does not wrap it
          * with an additional {@code Option}.
          *
-         * @param <B>    The type parameter to the {@code Option} returned by
-         * @param mapper a mapping function to apply to the value,
+         * @param <B>
+         *         The type parameter to the {@code Option} returned by
+         * @param mapper
+         *         a mapping function to apply to the value,
          * @return the result of applying an {@code Option}-bearing mapping
          * function to the value of this {@code Option}, if a value
          * is present, otherwise {@link #NONE}
-         * @throws NullPointerException if the mapping function is {@code null}
-         *                              or returns a {@code null} result
+         * @throws NullPointerException
+         *         if the mapping function is {@code null}
+         *         or returns a {@code null} result
          * @since 0.2
          */
         @SuppressWarnings("unchecked")
@@ -3957,8 +4232,9 @@ public class Lang implements Serializable {
         /**
          * Return the value if present, otherwise return {@code other}.
          *
-         * @param other the value to be returned if there is no value present,
-         *              may be {@code null}
+         * @param other
+         *         the value to be returned if there is no value present,
+         *         may be {@code null}
          * @return the value, if present, otherwise {@code other}
          */
         public final T orElse(T other) {
@@ -3969,9 +4245,11 @@ public class Lang implements Serializable {
          * Return the value if present, otherwise invoke {@code other} and return
          * the result of that invocation.
          *
-         * @param other the function that is applied when no value is presented
+         * @param other
+         *         the function that is applied when no value is presented
          * @return the value if present otherwise the result of {@code other.apply()}
-         * @throws NullPointerException if value is not present and other is null
+         * @throws NullPointerException
+         *         if value is not present and other is null
          * @since 0.2
          */
         public final T orElse(Func0<? extends T> other) {
@@ -4012,10 +4290,13 @@ public class Lang implements Serializable {
         /**
          * Returns an {@code Option} with the specified present non-null value.
          *
-         * @param value the value that cannot be {@code null}
-         * @param <T>   the type of the value
+         * @param value
+         *         the value that cannot be {@code null}
+         * @param <T>
+         *         the type of the value
          * @return an Option instance describing the value
-         * @throws NullPointerException if the value specified is {@code null}
+         * @throws NullPointerException
+         *         if the value specified is {@code null}
          * @since 0.2
          */
         public static <T> Some<T> some(T value) {
@@ -4027,8 +4308,10 @@ public class Lang implements Serializable {
          * Returns an {@code Option} with the specified present value if it is not
          * {@code null} or {@link #NONE} otherwise.
          *
-         * @param value the value
-         * @param <T>   the type of the value
+         * @param value
+         *         the value
+         * @param <T>
+         *         the type of the value
          * @return an {@code Option} describing the value if it is not {@code null}
          * or {@link #NONE} if the value is {@code null}
          * @since 0.2
@@ -4075,7 +4358,8 @@ public class Lang implements Serializable {
              * Returns a function that when applied, run {@link Option#filter(Function)} on this
              * {@code Option}
              *
-             * @param predicate the predicate function
+             * @param predicate
+             *         the predicate function
              * @return the function that returns either this option or {@link #NONE} if predicate failed
              * to test on the element in this option
              */
@@ -4092,8 +4376,10 @@ public class Lang implements Serializable {
              * Returns a function that when applied, run {@link Option#map(Function)} on this
              * {@code Option}
              *
-             * @param mapper the function that map {@code T} element to {@code B} object
-             * @param <B>    the type of returning option element type
+             * @param mapper
+             *         the function that map {@code T} element to {@code B} object
+             * @param <B>
+             *         the type of returning option element type
              * @return the function returns either a {@code B} type option if this option
              * is defined or {@link #NONE} if this option is not defined
              */
@@ -4110,8 +4396,10 @@ public class Lang implements Serializable {
              * Returns a function that when applied, run {@link Option#flatMap(Function)} on this
              * {@code Option}
              *
-             * @param mapper the function that map an elemnet of type T to a {@code Option} of type B
-             * @param <B>    the element type of the {@code Option}
+             * @param mapper
+             *         the function that map an elemnet of type T to a {@code Option} of type B
+             * @param <B>
+             *         the element type of the {@code Option}
              * @return the function that flat map all {@code T} element to {@code B} Options
              */
             public final <B> F0<Option<B>> flatMap(final Function<? super T, Option<B>> mapper) {
@@ -4127,7 +4415,8 @@ public class Lang implements Serializable {
              * Returns a function that when applied, run {@link Option#orElse(Object)} on this
              * {@code Option}
              *
-             * @param other the other value to be returned if this option is empty
+             * @param other
+             *         the other value to be returned if this option is empty
              * @return the function implement {@code else if} semantic
              */
             @SuppressWarnings("unused")
@@ -4144,8 +4433,9 @@ public class Lang implements Serializable {
              * Returns a function that when applied, run {@link Option#orElse(Func0)}
              * on this {@code Option}
              *
-             * @param other the function that generates another {@code T} element when this
-             *              option is empty
+             * @param other
+             *         the function that generates another {@code T} element when this
+             *         option is empty
              * @return the function that implement the {@code else if} semantic on this Option
              */
             @SuppressWarnings("unused")
@@ -4162,7 +4452,8 @@ public class Lang implements Serializable {
              * Returns a function that when applied, run {@link Option#runWith(Visitor)}
              * on this {@code Option}
              *
-             * @param consumer the function that consumes the element in this Option
+             * @param consumer
+             *         the function that consumes the element in this Option
              * @return a function that apply to {@code consumer} function if this Option is defined
              */
             @SuppressWarnings("unused")
@@ -4466,7 +4757,7 @@ public class Lang implements Serializable {
 
         @Override
         public C.Sequence<Binary<T, Integer>> zipWithIndex() {
-            return new Var<>((Binary<T, Integer>)T2(v, 0));
+            return new Var<>((Binary<T, Integer>) T2(v, 0));
         }
 
         @Override
@@ -4500,7 +4791,7 @@ public class Lang implements Serializable {
                 return true;
             }
             if (o instanceof Var) {
-                Var v = (Var)o;
+                Var v = (Var) o;
                 return $.eq(v.get(), this.get());
             }
             return false;
@@ -4802,7 +5093,7 @@ public class Lang implements Serializable {
             if (list.size() == 0) {
                 return C.list();
             }
-            return C.list((Binary<T, B>)T2(v, list.get(0)));
+            return C.list((Binary<T, B>) T2(v, list.get(0)));
         }
 
         @Override
@@ -5091,8 +5382,10 @@ public class Lang implements Serializable {
     /**
      * Check if two object is equals to each other.
      *
-     * @param a the first object
-     * @param b the second object
+     * @param a
+     *         the first object
+     * @param b
+     *         the second object
      * @return {@code true} if {@code a} equals to {@code b}
      * @see #ne(Object, Object)
      */
@@ -5110,8 +5403,10 @@ public class Lang implements Serializable {
      * Check if two objects are equals to each other. The comparison will do
      * array equal matching if needed
      *
-     * @param a the first object
-     * @param b the second object
+     * @param a
+     *         the first object
+     * @param b
+     *         the second object
      * @return {@code true} if the first object equals to the second object
      */
     public static boolean eq2(Object a, Object b) {
@@ -5143,8 +5438,11 @@ public class Lang implements Serializable {
 
     /**
      * Check if two {@code boolean} value equals to each other
-     * @param a boolean a
-     * @param b boolean b
+     *
+     * @param a
+     *         boolean a
+     * @param b
+     *         boolean b
      * @return {@code true} if {@code a == b}
      */
     public static boolean eq(boolean a, boolean b) {
@@ -5153,8 +5451,11 @@ public class Lang implements Serializable {
 
     /**
      * Check if two {@code byte} value equals to each other
-     * @param a byte a
-     * @param b byte b
+     *
+     * @param a
+     *         byte a
+     * @param b
+     *         byte b
      * @return {@code true} if {@code a == b}
      */
     public static boolean eq(byte a, byte b) {
@@ -5163,8 +5464,11 @@ public class Lang implements Serializable {
 
     /**
      * Check if two {@code char} value equals to each other
-     * @param a char a
-     * @param b char b
+     *
+     * @param a
+     *         char a
+     * @param b
+     *         char b
      * @return {@code true} if {@code a == b}
      */
     public static boolean eq(char a, char b) {
@@ -5173,8 +5477,11 @@ public class Lang implements Serializable {
 
     /**
      * Check if two {@code short} value equals to each other
-     * @param a short a
-     * @param b short b
+     *
+     * @param a
+     *         short a
+     * @param b
+     *         short b
      * @return {@code true} if {@code a == b}
      */
     public static boolean eq(short a, short b) {
@@ -5183,8 +5490,11 @@ public class Lang implements Serializable {
 
     /**
      * Check if two {@code int} value equals to each other
-     * @param a int a
-     * @param b int b
+     *
+     * @param a
+     *         int a
+     * @param b
+     *         int b
      * @return {@code true} if {@code a == b}
      */
     public static boolean eq(int a, int b) {
@@ -5193,8 +5503,11 @@ public class Lang implements Serializable {
 
     /**
      * Check if two {@code float} value equals to each other
-     * @param a float a
-     * @param b float b
+     *
+     * @param a
+     *         float a
+     * @param b
+     *         float b
      * @return {@code true} if {@code a == b}
      */
     public static boolean eq(float a, float b) {
@@ -5203,8 +5516,11 @@ public class Lang implements Serializable {
 
     /**
      * Check if two {@code long} value equals to each other
-     * @param a long a
-     * @param b long b
+     *
+     * @param a
+     *         long a
+     * @param b
+     *         long b
      * @return {@code true} if {@code a == b}
      */
     public static boolean eq(long a, long b) {
@@ -5213,8 +5529,11 @@ public class Lang implements Serializable {
 
     /**
      * Check if two {@code double} value equals to each other
-     * @param a double a
-     * @param b double b
+     *
+     * @param a
+     *         double a
+     * @param b
+     *         double b
      * @return {@code true} if {@code a == b}
      */
     public static boolean eq(double a, double b) {
@@ -5224,8 +5543,10 @@ public class Lang implements Serializable {
     /**
      * Check if two objects are equals to each other.
      *
-     * @param a the first object
-     * @param b the second object
+     * @param a
+     *         the first object
+     * @param b
+     *         the second object
      * @return {@code false} if {@code a} equals to {@code b}
      * @see #eq(Object, Object)
      */
@@ -5261,7 +5582,8 @@ public class Lang implements Serializable {
      * </tbody>
      * </table>
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if v evaluate to true, {@code false} otherwise
      */
     public static boolean bool(Object v) {
@@ -5323,7 +5645,8 @@ public class Lang implements Serializable {
      * 1. it is null or empty, or
      * 2. it equals to `false` (case insensitive mode)
      *
-     * @param s the string to be evaluated
+     * @param s
+     *         the string to be evaluated
      * @return {@code true} if s is not empty and s is not `false`
      * @see S#empty(String)
      */
@@ -5334,7 +5657,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a collection.
      *
-     * @param c the collection to be evaluated
+     * @param c
+     *         the collection to be evaluated
      * @return {@code true} if the collection is not empty
      * @see java.util.Collection#isEmpty()
      */
@@ -5345,7 +5669,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a byte value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if the value != 0
      */
     public static boolean bool(byte v) {
@@ -5355,7 +5680,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a char value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if the value != 0
      */
     public static boolean bool(char v) {
@@ -5365,7 +5691,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a int value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if the value != 0
      */
     public static boolean bool(int v) {
@@ -5375,7 +5702,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a long value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if the value != 0
      */
     public static boolean bool(long v) {
@@ -5385,7 +5713,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a float value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if {@code Math.abs(v) > Float.MIN_NORMAL}
      */
     public static boolean bool(float v) {
@@ -5395,7 +5724,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a double value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if {@code Math.abs(v) > Double.MIN_NORMAL}
      */
     public static boolean bool(double v) {
@@ -5405,7 +5735,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a BigDecimal value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if {@code !BigDecimal.ZERO.equals(v)}
      */
     public static boolean bool(BigDecimal v) {
@@ -5415,7 +5746,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a BigInteger value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code true} if {@code !BigInteger.ZERO.equals(v)}
      */
     public static boolean bool(BigInteger v) {
@@ -5425,7 +5757,8 @@ public class Lang implements Serializable {
     /**
      * Do bool evaluation on a File instance.
      *
-     * @param v the file to be evaluated
+     * @param v
+     *         the file to be evaluated
      * @return {@code true} if {@code v.exists()}
      */
     public static boolean bool(File v) {
@@ -5437,7 +5770,8 @@ public class Lang implements Serializable {
      * the {@link Func0#apply()} method and continue to
      * do bool evaluation on the return value
      *
-     * @param v the function to be evaluated
+     * @param v
+     *         the function to be evaluated
      * @return {@code bool(v.apply())}
      */
     public static boolean bool(Func0<?> v) {
@@ -5447,7 +5781,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(java.lang.Object)}
      *
-     * @param o the object to be evaluated
+     * @param o
+     *         the object to be evaluated
      * @return {@code !(bool(o))}
      */
     public static boolean not(Object o) {
@@ -5457,7 +5792,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of a boolean value
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code !v}
      */
     public static boolean not(boolean v) {
@@ -5467,7 +5803,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(java.lang.String)}
      *
-     * @param s the String to be evaluated
+     * @param s
+     *         the String to be evaluated
      * @return {@code !(bool(s))}
      * @see #bool(String)
      */
@@ -5478,7 +5815,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(java.util.Collection)}
      *
-     * @param c the Collection to be evaluated
+     * @param c
+     *         the Collection to be evaluated
      * @return {@code !(bool(c))}
      * @see #bool(java.util.Collection)
      */
@@ -5489,7 +5827,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(byte)}
      *
-     * @param v the byte to be evaluated
+     * @param v
+     *         the byte to be evaluated
      * @return {@code !(bool(v))}
      */
     public static boolean not(byte v) {
@@ -5499,7 +5838,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(char)}
      *
-     * @param v the char to be evaluated
+     * @param v
+     *         the char to be evaluated
      * @return {@code !(bool(v))}
      */
     public static boolean not(char v) {
@@ -5509,7 +5849,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(int)}
      *
-     * @param v the int to be evaluated
+     * @param v
+     *         the int to be evaluated
      * @return {@code !(bool(v))}
      */
     public static boolean not(int v) {
@@ -5519,7 +5860,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(long)}
      *
-     * @param v the long to be evaluated
+     * @param v
+     *         the long to be evaluated
      * @return {@code !(bool(v))}
      */
     public static boolean not(long v) {
@@ -5529,7 +5871,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(float)}
      *
-     * @param v the float to be evaluated
+     * @param v
+     *         the float to be evaluated
      * @return {@code !(bool(v))}
      */
     public static boolean not(float v) {
@@ -5539,7 +5882,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(double)}
      *
-     * @param v the double to be evaluated
+     * @param v
+     *         the double to be evaluated
      * @return {@code !(bool(v))}
      */
     public static boolean not(double v) {
@@ -5549,7 +5893,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(BigDecimal)}
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code !(bool(v))}
      */
     public static boolean not(BigDecimal v) {
@@ -5559,7 +5904,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(BigInteger)}
      *
-     * @param v the value to be evaluated
+     * @param v
+     *         the value to be evaluated
      * @return {@code !(bool(v))}
      */
     public static boolean not(BigInteger v) {
@@ -5569,7 +5915,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(File)}
      *
-     * @param file the file to be evaluated
+     * @param file
+     *         the file to be evaluated
      * @return {@code !(bool(file))}
      */
     public static boolean not(File file) {
@@ -5579,7 +5926,8 @@ public class Lang implements Serializable {
     /**
      * Returns negative of {@link #bool(Func0)}
      *
-     * @param f the function to be evaluated
+     * @param f
+     *         the function to be evaluated
      * @return {@code !(bool(f))}
      */
     public static boolean not(Func0<?> f) {
@@ -5589,7 +5937,8 @@ public class Lang implements Serializable {
     /**
      * Check if an object is {@code null} or {@link #NONE}
      *
-     * @param o the object to test
+     * @param o
+     *         the object to test
      * @return {@code true} if {@code o} is {@code null} or {@link #NONE}, or `false` otherwise
      */
     public static boolean isNull(Object o) {
@@ -5599,7 +5948,8 @@ public class Lang implements Serializable {
     /**
      * Check if an object is not `null` and not {@link #NONE}
      *
-     * @param o the object to test
+     * @param o
+     *         the object to test
      * @return `false` if `o` is `null` or {@link #NONE}, or `true` otherwise
      */
     public static boolean isNotNull(Object o) {
@@ -5609,8 +5959,10 @@ public class Lang implements Serializable {
     /**
      * Check if any objects in the parameter list is null
      *
-     * @param o  the first object to be checked
-     * @param oa the array of objects to be checked
+     * @param o
+     *         the first object to be checked
+     * @param oa
+     *         the array of objects to be checked
      * @return {@code true} if any one of the argument is {@code null}
      */
     public static boolean anyNull(Object o, Object... oa) {
@@ -5624,8 +5976,10 @@ public class Lang implements Serializable {
     /**
      * Check if all objects in the parameter list is null
      *
-     * @param o  the first object to be checked
-     * @param oa the array of objects to be checked
+     * @param o
+     *         the first object to be checked
+     * @param oa
+     *         the array of objects to be checked
      * @return {@code false} if any one of the argument is not {@code null} and not {@link #NONE}
      */
     public static boolean allNull(Object o, Object... oa) {
@@ -5646,7 +6000,8 @@ public class Lang implements Serializable {
      * Returns String representation of an object instance. Predicate the object specified
      * is {@code null} or {@code NONE}, then an empty string is returned
      *
-     * @param o the object which will be converted into a string
+     * @param o
+     *         the object which will be converted into a string
      * @return a String representation of object
      */
     public static String toString(Object o) {
@@ -5680,8 +6035,10 @@ public class Lang implements Serializable {
     /**
      * Alias of {@link org.osgl.util.S#fmt(String, Object...)}
      *
-     * @param tmpl the format template
-     * @param args the format arguments
+     * @param tmpl
+     *         the format template
+     * @param args
+     *         the format arguments
      * @return the formatted string
      * @since 0.2
      */
@@ -5791,7 +6148,8 @@ public class Lang implements Serializable {
     /**
      * Calculate hashcode of double array specified
      *
-     * @param oa the double array
+     * @param oa
+     *         the double array
      * @return the hash code
      */
     public static int hc(double[] oa) {
@@ -5805,7 +6163,8 @@ public class Lang implements Serializable {
     /**
      * Calculate hashcode of objects specified
      *
-     * @param o object on which hash code to be calculated
+     * @param o
+     *         object on which hash code to be calculated
      * @return the calculated hash code
      */
     public static int hc(Object o) {
@@ -5815,8 +6174,10 @@ public class Lang implements Serializable {
     /**
      * Calculate hashcode of objects specified
      *
-     * @param o1 object 1
-     * @param o2 object 2
+     * @param o1
+     *         object 1
+     * @param o2
+     *         object 2
      * @return the calculated hash code
      */
     public static int hc(Object o1, Object o2) {
@@ -5829,9 +6190,12 @@ public class Lang implements Serializable {
     /**
      * Calculate hashcode of objects specified
      *
-     * @param o1 object 1
-     * @param o2 object 2
-     * @param o3 object 3
+     * @param o1
+     *         object 1
+     * @param o2
+     *         object 2
+     * @param o3
+     *         object 3
      * @return the calculated hash code
      */
     public static int hc(Object o1, Object o2, Object o3) {
@@ -5845,10 +6209,14 @@ public class Lang implements Serializable {
     /**
      * Calculate hashcode of objects specified
      *
-     * @param o1 object 1
-     * @param o2 object 2
-     * @param o3 object 3
-     * @param o4 object 4
+     * @param o1
+     *         object 1
+     * @param o2
+     *         object 2
+     * @param o3
+     *         object 3
+     * @param o4
+     *         object 4
      * @return the calculated hash code
      */
     public static int hc(Object o1, Object o2, Object o3, Object o4) {
@@ -5863,11 +6231,16 @@ public class Lang implements Serializable {
     /**
      * Calculate hashcode of objects specified
      *
-     * @param o1 object 1
-     * @param o2 object 2
-     * @param o3 object 3
-     * @param o4 object 4
-     * @param o5 object 5
+     * @param o1
+     *         object 1
+     * @param o2
+     *         object 2
+     * @param o3
+     *         object 3
+     * @param o4
+     *         object 4
+     * @param o5
+     *         object 5
      * @return the calculated hash code
      */
     public static int hc(Object o1, Object o2, Object o3, Object o4, Object o5) {
@@ -5883,12 +6256,18 @@ public class Lang implements Serializable {
     /**
      * Calculate hashcode of objects specified
      *
-     * @param o1   object 1
-     * @param o2   object 2
-     * @param o3   object 3
-     * @param o4   object 4
-     * @param o5   object 5
-     * @param args other objects
+     * @param o1
+     *         object 1
+     * @param o2
+     *         object 2
+     * @param o3
+     *         object 3
+     * @param o4
+     *         object 4
+     * @param o5
+     *         object 5
+     * @param args
+     *         other objects
      * @return the calculated hash code
      */
     public static int hc(Object o1, Object o2, Object o3, Object o4, Object o5, Object... args) {
@@ -5977,9 +6356,13 @@ public class Lang implements Serializable {
 
     /**
      * Return an enum value from code
-     * @param enumClass the enum class
-     * @param name the name of the enum value. `name` is case insensitive
-     * @param <T> the generic enum type
+     *
+     * @param enumClass
+     *         the enum class
+     * @param name
+     *         the name of the enum value. `name` is case insensitive
+     * @param <T>
+     *         the generic enum type
      * @return the enum value or `null` if there is no value has the name specified
      */
     public static <T extends Enum<T>> T asEnum(Class<T> enumClass, String name) {
@@ -5988,10 +6371,15 @@ public class Lang implements Serializable {
 
     /**
      * Return an enum value from code
-     * @param enumClass the enum class
-     * @param name the name of the enum value. `name` is case insensitive
-     * @param exactMatch specify whether it should do exact name lookup or keyword variable lookup
-     * @param <T> the generic enum type
+     *
+     * @param enumClass
+     *         the enum class
+     * @param name
+     *         the name of the enum value. `name` is case insensitive
+     * @param exactMatch
+     *         specify whether it should do exact name lookup or keyword variable lookup
+     * @param <T>
+     *         the generic enum type
      * @return the enum value or `null` if there is no value has the name specified
      */
     public static <T extends Enum<T>> T asEnum(final Class<T> enumClass, final String name, final boolean exactMatch) {
@@ -6002,7 +6390,7 @@ public class Lang implements Serializable {
         if (null == map) {
             T[] values = enumClass.getEnumConstants();
             map = new HashMap<>(values.length * 2);
-            for (T value: values) {
+            for (T value : values) {
                 map.put(Keyword.of(value.name()), value);
             }
             enumLookup.putIfAbsent(enumClass, map);
@@ -6015,9 +6403,12 @@ public class Lang implements Serializable {
     /**
      * Search an element in a array
      *
-     * @param element  the element to be located
-     * @param elements the array of element to be searched
-     * @param <T>      the type
+     * @param element
+     *         the element to be located
+     * @param elements
+     *         the array of element to be searched
+     * @param <T>
+     *         the type
      * @return the location of the element inside elements, or {@code -1} if not found
      */
     public static <T> int search(T element, T... elements) {
@@ -6134,12 +6525,15 @@ public class Lang implements Serializable {
     public static <T> Meta<T> meta(T t) {
         return new Meta<T>(t);
     }
+
     public static <T> Meta<T> given(T t) {
         return meta(t);
     }
+
     public static <T> Meta<T> having(T t) {
         return meta(t);
     }
+
     public static <T> Meta<T> take(T t) {
         return meta(t);
     }
@@ -6181,9 +6575,11 @@ public class Lang implements Serializable {
 
     public static class _IsModifier {
         private int m;
+
         protected _IsModifier(int modifiers) {
             m = modifiers;
         }
+
         public boolean static_() {
             return Modifier.isStatic(m);
         }
@@ -6212,7 +6608,7 @@ public class Lang implements Serializable {
         private boolean allowBoxing;
 
         public _IsClass(Object obj) {
-            this((obj instanceof Class ? (Class)obj : null == obj ? null : obj.getClass()));
+            this((obj instanceof Class ? (Class) obj : null == obj ? null : obj.getClass()));
         }
 
         public _IsClass(Class<?> clazz) {
@@ -6276,7 +6672,9 @@ public class Lang implements Serializable {
 
     /**
      * Returns all implemented interfaces of a give type
-     * @param type a class
+     *
+     * @param type
+     *         a class
      * @return all interfaces `type` implements
      */
     public static Set<Class> interfacesOf(Class<?> type) {
@@ -6296,7 +6694,8 @@ public class Lang implements Serializable {
      * Returns all super classes of a given type ordered by affinity.
      * The `Object.class` is always the last element in the list.
      *
-     * @param type a class
+     * @param type
+     *         a class
      * @return all super classes of `type`
      */
     public static List<Class> superClassesOf(Class<?> type) {
@@ -6311,6 +6710,7 @@ public class Lang implements Serializable {
 
     /**
      * Returns all types that
+     *
      * @param type
      * @return
      */
@@ -6325,9 +6725,12 @@ public class Lang implements Serializable {
      * Cast an object to a type. Returns an {@link Option} describing the casted value if
      * it can be casted to the type specified, otherwise returns {@link #NONE}.
      *
-     * @param o   the object to be casted
-     * @param c   specify the type to be casted to
-     * @param <T> the type of the result option value
+     * @param o
+     *         the object to be casted
+     * @param c
+     *         specify the type to be casted to
+     * @param <T>
+     *         the type of the result option value
      * @return an {@code Option} describing the typed value or {@link #NONE}
      * if it cannot be casted
      */
@@ -6353,10 +6756,13 @@ public class Lang implements Serializable {
      * This method is deprecated. Please use {@link #requireNotNull(Object)}
      * instead
      *
-     * @param o the object
-     * @param <T> the type parameter of object
+     * @param o
+     *         the object
+     * @param <T>
+     *         the type parameter of object
      * @return the object if it is not null
-     * @throws NullPointerException if `o` is `null`
+     * @throws NullPointerException
+     *         if `o` is `null`
      */
     @Deprecated
     public static <T> T notNull(T o) {
@@ -6368,10 +6774,13 @@ public class Lang implements Serializable {
      * Return the object if it is not null, otherwise throw
      * out `NullPointerException`.
      *
-     * @param o the object
-     * @param <T> the type parameter of object
+     * @param o
+     *         the object
+     * @param <T>
+     *         the type parameter of object
      * @return the object if it is not null
-     * @throws NullPointerException if `o` is `null`
+     * @throws NullPointerException
+     *         if `o` is `null`
      */
     public static <T> T requireNotNull(T o) {
         E.NPE(o);
@@ -6381,11 +6790,16 @@ public class Lang implements Serializable {
     /**
      * Set an object field value using reflection.
      *
-     * @param fieldName the name of the field to be set
-     * @param obj       the object on which the value will be set
-     * @param val       the value to be set to the field
-     * @param <T>       the type of the object
-     * @param <F>       the type of the field value
+     * @param fieldName
+     *         the name of the field to be set
+     * @param obj
+     *         the object on which the value will be set
+     * @param val
+     *         the value to be set to the field
+     * @param <T>
+     *         the type of the object
+     * @param <F>
+     *         the type of the field value
      * @return the object that has the new value set on the field specified
      */
     public static <T, F> T setField(String fieldName, T obj, F val) {
@@ -6407,9 +6821,13 @@ public class Lang implements Serializable {
 
     /**
      * Get value of an object field.
-     * @param obj the object
-     * @param field the field
-     * @param <T> the field type
+     *
+     * @param obj
+     *         the object
+     * @param field
+     *         the field
+     * @param <T>
+     *         the field type
      * @return the value of the field in the object
      */
     public static <T> T getFieldValue(Object obj, Field field) {
@@ -6525,7 +6943,9 @@ public class Lang implements Serializable {
      * 3. String.class
      * 4. Any class extends `Enum.class`
      * 5. Locale.class
-     * @param c the class to be checked
+     *
+     * @param c
+     *         the class to be checked
      * @return `true` if the give type `c` is simple type as described above
      */
     public static boolean isSimpleType(Class<?> c) {
@@ -6534,10 +6954,10 @@ public class Lang implements Serializable {
 
     /**
      * Check if an Object or class is immutable
+     *
      * @param o
-     *      the object to be checked
-     * @return
-     *      `true` if the object is immutable or `false` otherwise
+     *         the object to be checked
+     * @return `true` if the object is immutable or `false` otherwise
      */
     public static boolean isImmutable(Object o) {
         Class<?> type = (o instanceof Class) ? (Class) o : o.getClass();
@@ -6547,7 +6967,8 @@ public class Lang implements Serializable {
     /**
      * Check if a given class is a primitive type.
      *
-     * @param c the class
+     * @param c
+     *         the class
      * @return `true` if `c` is primitive type
      */
     public static boolean isPrimitiveType(Class<?> c) {
@@ -6559,7 +6980,8 @@ public class Lang implements Serializable {
      *
      * This method is deprecated. Please use {@link #isPrimitiveType(Class)} instead
      *
-     * @param c the class
+     * @param c
+     *         the class
      * @return `true` if `c` is primitive type
      */
     @Deprecated
@@ -6570,7 +6992,8 @@ public class Lang implements Serializable {
     /**
      * Check if a given string is a primitive type name.
      *
-     * @param name the string to be test
+     * @param name
+     *         the string to be test
      * @return `true` if `name` is primitive type name
      */
     public static boolean isPrimitiveType(String name) {
@@ -6580,7 +7003,8 @@ public class Lang implements Serializable {
     /**
      * Check if a given class is a wrapper type of a primitive type.
      *
-     * @param c the class
+     * @param c
+     *         the class
      * @return `true` if `c` is wrapper type
      */
     public static boolean isWrapperType(Class<?> c) {
@@ -6593,7 +7017,8 @@ public class Lang implements Serializable {
      * This method is deprecated, please use {@link #isWrapperType(Class)}
      * instead.
      *
-     * @param c the class
+     * @param c
+     *         the class
      * @return `true` if `c` is wrapper type
      */
     @Deprecated
@@ -6975,8 +7400,11 @@ public class Lang implements Serializable {
     /**
      * Returns non-static field of a class by name. The field might be non-public declared in super classes
      * of the supplied class
-     * @param c the class
-     * @param name the name of the field
+     *
+     * @param c
+     *         the class
+     * @param name
+     *         the name of the field
      * @return the field instance or `null` if not found
      */
     public static Field fieldOf(Class<?> c, String name) {
@@ -6986,9 +7414,13 @@ public class Lang implements Serializable {
     /**
      * Returns field of a class by name. The field could be non-public field of super class of
      * the class specified
-     * @param c the class
-     * @param name the name of the field
-     * @param noStatic specify if static fields shall be included
+     *
+     * @param c
+     *         the class
+     * @param name
+     *         the name of the field
+     * @param noStatic
+     *         specify if static fields shall be included
      * @return the field instance or `null` if not found
      */
     public static Field fieldOf(Class<?> c, String name, boolean noStatic) {
@@ -6998,10 +7430,15 @@ public class Lang implements Serializable {
     /**
      * Returns field of a class by name. The field could be non-public field of super class of
      * the class specified
-     * @param c the class
-     * @param name the name of the field
-     * @param rootClass the class that stops of the recurive operation. Default is Object.class
-     * @param noStatic specify if static fields shall be included
+     *
+     * @param c
+     *         the class
+     * @param name
+     *         the name of the field
+     * @param rootClass
+     *         the class that stops of the recurive operation. Default is Object.class
+     * @param noStatic
+     *         specify if static fields shall be included
      * @return the field instance or `null` if not found
      */
     public static Field fieldOf(Class<?> c, String name, Class<?> rootClass, boolean noStatic) {
@@ -7018,7 +7455,8 @@ public class Lang implements Serializable {
      * Returns all fields of a class and all super classes. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`
      *
-     * @param c the class
+     * @param c
+     *         the class
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c) {
@@ -7029,8 +7467,10 @@ public class Lang implements Serializable {
      * Returns all fields of a class and all super classes. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`
      *
-     * @param c the class
-     * @param filter specify which field will be put into the list if not `null`
+     * @param c
+     *         the class
+     * @param filter
+     *         specify which field will be put into the list if not `null`
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, $.Function<Field, Boolean> filter) {
@@ -7040,8 +7480,11 @@ public class Lang implements Serializable {
     /**
      * Returns all fields of a class and all super classes. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`
-     * @param c the class
-     * @param noStatic specify if static fields shall be included. Default: `true`
+     *
+     * @param c
+     *         the class
+     * @param noStatic
+     *         specify if static fields shall be included. Default: `true`
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, boolean noStatic) {
@@ -7051,9 +7494,13 @@ public class Lang implements Serializable {
     /**
      * Returns all fields of a class and all super classes until root class. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`
-     * @param c the class
-     * @param rootClass the class that stops the recursive operation
-     * @param noStatic specify if static fields should be included
+     *
+     * @param c
+     *         the class
+     * @param rootClass
+     *         the class that stops the recursive operation
+     * @param noStatic
+     *         specify if static fields should be included
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean noStatic) {
@@ -7063,24 +7510,38 @@ public class Lang implements Serializable {
     /**
      * Returns all fields of a class and all super classes until root class. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`
-     * @param c the class
-     * @param rootClass the class that stops the recursive operation
-     * @param noStatic specify if static fields should be included
+     *
+     * @param c
+     *         the class
+     * @param rootClass
+     *         the class that stops the recursive operation
+     * @param noStatic
+     *         specify if static fields should be included
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean includeRootClass, boolean noStatic) {
-        StringBuilder buf = S.builder(c.hashCode());
+        String key = c.getName();
+        StringBuilder buf = null;
         if (Object.class != rootClass) {
+            buf = new StringBuilder(key);
             buf.append(":");
-            buf.append(rootClass.hashCode());
+            buf.append(rootClass.getName());
         }
         if (includeRootClass) {
-            buf.append(":1");
+            if (null == buf) {
+                buf = new StringBuilder().append(key);
+            }
+            buf.append("+i");
         }
-        if (noStatic) {
-            buf.append(":1");
+        if (!noStatic) {
+            if (null == buf) {
+                buf = new StringBuilder().append(key);
+            }
+            buf.append("-s");
         }
-        String key = buf.toString();
+        if (null != buf) {
+            key = buf.toString();
+        }
         List<Field> fields = cache().get(key);
         if (null == fields) {
             fields = new ArrayList<>();
@@ -7099,9 +7560,13 @@ public class Lang implements Serializable {
     /**
      * Returns all fields of a class and all super classes until root class. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`.
-     * @param c the class
-     * @param rootClass the class that stops the recursive lookup
-     * @param filter specify which field should be put into the list if not `null`
+     *
+     * @param c
+     *         the class
+     * @param rootClass
+     *         the class that stops the recursive lookup
+     * @param filter
+     *         specify which field should be put into the list if not `null`
      * @return the list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, $.Function<Field, Boolean> filter) {
@@ -7113,10 +7578,15 @@ public class Lang implements Serializable {
     /**
      * Returns all fields of a class and all super classes until root class. Note all fields returned will
      * be called on {@link Field#setAccessible(boolean)} with value `true`.
-     * @param c the class
-     * @param rootClass the class that stops the recursive lookup
-     * @param includeRootClass specify root class itself needs to be checked or not
-     * @param filter specify which field should be put into the list if not `null`
+     *
+     * @param c
+     *         the class
+     * @param rootClass
+     *         the class that stops the recursive lookup
+     * @param includeRootClass
+     *         specify root class itself needs to be checked or not
+     * @param filter
+     *         specify which field should be put into the list if not `null`
      * @return the list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean includeRootClass, $.Function<Field, Boolean> filter) {
@@ -7128,9 +7598,13 @@ public class Lang implements Serializable {
     /**
      * Returns all fields of a class and all super classes until classFilter not applied. Note all fields
      * returned will be called on {@link Field#setAccessible(boolean)} with value `true`.
-     * @param c the class
-     * @param classFilter the filter to check if it should break recursive call
-     * @param fieldFilter specify which field should be put into the list if not `null`
+     *
+     * @param c
+     *         the class
+     * @param classFilter
+     *         the filter to check if it should break recursive call
+     * @param fieldFilter
+     *         specify which field should be put into the list if not `null`
      * @return the list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, $.Function<Class<?>, Boolean> classFilter, $.Function<Field, Boolean> fieldFilter) {
@@ -7188,14 +7662,20 @@ public class Lang implements Serializable {
 
     /**
      * Invoke a static method by name and parameters
-     * @param c the class
-     * @param methodName the method name
-     * @param pa the parameters
-     * @param <T> the generic type of the class
-     * @param <R> the generic type of the return result
+     *
+     * @param c
+     *         the class
+     * @param methodName
+     *         the method name
+     * @param pa
+     *         the parameters
+     * @param <T>
+     *         the generic type of the class
+     * @param <R>
+     *         the generic type of the return result
      * @return the result of method invocation
      */
-    public static <T, R> R invokeStatic(Class<T> c, String methodName, Object ... pa) {
+    public static <T, R> R invokeStatic(Class<T> c, String methodName, Object... pa) {
         return invokeMethod(null, c, null, methodName, pa);
     }
 
@@ -7203,27 +7683,38 @@ public class Lang implements Serializable {
      * Invoke a static method by name and parameters. After invocation
      * it will cache the method into method bag supplied. This method
      * will convert all checked exception into corresponding runtime exception
-     * @param methodBag the method bag
-     * @param c the class
-     * @param methodName the method name
-     * @param pa the parameters
-     * @param <T> the generic type of class
-     * @param <R> the generic type of return instance
+     *
+     * @param methodBag
+     *         the method bag
+     * @param c
+     *         the class
+     * @param methodName
+     *         the method name
+     * @param pa
+     *         the parameters
+     * @param <T>
+     *         the generic type of class
+     * @param <R>
+     *         the generic type of return instance
      * @return the result of method invocation
      */
-    public static <T, R> R invokeStatic(Var<Method> methodBag, Class<T> c, String methodName, Object ... pa) {
+    public static <T, R> R invokeStatic(Var<Method> methodBag, Class<T> c, String methodName, Object... pa) {
         return invokeMethod(methodBag, c, null, methodName, pa);
     }
 
     /**
      * Invoke a static method. This method will convert all checked exception
      * into corresponding runtime exception
-     * @param method the method
-     * @param pa the arguments to invoke the method
-     * @param <R> the generic type of the return result
+     *
+     * @param method
+     *         the method
+     * @param pa
+     *         the arguments to invoke the method
+     * @param <R>
+     *         the generic type of the return result
      * @return the result of the method invocation
      */
-    public static <R> R invokeStatic(Method method, Object ... pa) {
+    public static <R> R invokeStatic(Method method, Object... pa) {
         try {
             return (R) method.invoke(null, pa);
         } catch (Exception e) {
@@ -7237,15 +7728,21 @@ public class Lang implements Serializable {
      *
      * After invocation, the method will be cached into the method bag supplied
      *
-     * @param methodBag A function to cache the method found by name and arguments
-     * @param o the instance on which the virtual method will be invoked
-     * @param methodName the method name
-     * @param pa the arguments
-     * @param <T> generic type of the instance object
-     * @param <R> generic type of the return result
+     * @param methodBag
+     *         A function to cache the method found by name and arguments
+     * @param o
+     *         the instance on which the virtual method will be invoked
+     * @param methodName
+     *         the method name
+     * @param pa
+     *         the arguments
+     * @param <T>
+     *         generic type of the instance object
+     * @param <R>
+     *         generic type of the return result
      * @return result of method invocation
      */
-    public static <T, R> R invokeVirtual(Var<Method> methodBag, T o, String methodName, Object ... pa) {
+    public static <T, R> R invokeVirtual(Var<Method> methodBag, T o, String methodName, Object... pa) {
         E.NPE(o);
         return invokeMethod(methodBag, null, o, methodName, pa);
     }
@@ -7253,14 +7750,20 @@ public class Lang implements Serializable {
     /**
      * Invoke a virtual method by instance, method name and arguments. This method
      * will convert all checked exception into corresponding runtime exception
-     * @param o the instance on which the virtual method will be invoked
-     * @param methodName the method name
-     * @param pa the arguments
-     * @param <T> generic type of the instance object
-     * @param <R> generic type of the return result
+     *
+     * @param o
+     *         the instance on which the virtual method will be invoked
+     * @param methodName
+     *         the method name
+     * @param pa
+     *         the arguments
+     * @param <T>
+     *         generic type of the instance object
+     * @param <R>
+     *         generic type of the return result
      * @return result of method invocation
      */
-    public static <T, R> R invokeVirtual(T o, String methodName, Object ... pa) {
+    public static <T, R> R invokeVirtual(T o, String methodName, Object... pa) {
         E.NPE(o);
         return invokeMethod(null, null, o, methodName, pa);
     }
@@ -7268,14 +7771,20 @@ public class Lang implements Serializable {
     /**
      * Invoke a virtual {@link Method method}. This method will convert all checked exception
      * to corresponding runtime exception
-     * @param o the instance on which the method will be invoked
-     * @param method the method
-     * @param pa the arguments
-     * @param <T> generic type of the instance
-     * @param <R> generic type of the result
+     *
+     * @param o
+     *         the instance on which the method will be invoked
+     * @param method
+     *         the method
+     * @param pa
+     *         the arguments
+     * @param <T>
+     *         generic type of the instance
+     * @param <R>
+     *         generic type of the result
      * @return result of method invocation
      */
-    public static <T, R> R invokeVirtual(T o, Method method, Object ... pa) {
+    public static <T, R> R invokeVirtual(T o, Method method, Object... pa) {
         E.NPE(o);
         try {
             return (R) method.invoke(o, pa);
@@ -7288,21 +7797,25 @@ public class Lang implements Serializable {
 
     /**
      * Returns {@link Method} by name and parameter value
-     * @param c the class
-     * @param methodName the method name
-     * @param pa the parameter used to invoke the method
+     *
+     * @param c
+     *         the class
+     * @param methodName
+     *         the method name
+     * @param pa
+     *         the parameter used to invoke the method
      * @return the method or `null` if not found
      */
-    public static Method getMethod(Class c, String methodName, Object ... pa) {
+    public static Method getMethod(Class c, String methodName, Object... pa) {
         Method[] ma = c.getMethods();
-        for (Method m: ma) {
+        for (Method m : ma) {
             if (!m.getName().equals(methodName)) {
                 continue;
             }
             Class[] pts = m.getParameterTypes();
             boolean shouldContinue = false;
             int len = pts.length;
-            for (int i = 0; i < len ; ++i) {
+            for (int i = 0; i < len; ++i) {
                 Object p = pa[i];
                 if (!testMethodParamType(pts, p, i)) {
                     shouldContinue = true;
@@ -7319,12 +7832,16 @@ public class Lang implements Serializable {
 
     /**
      * Returns {@link Method} by name and argument type
-     * @param c the class
-     * @param methodName the method name
-     * @param argTypes the argument types
+     *
+     * @param c
+     *         the class
+     * @param methodName
+     *         the method name
+     * @param argTypes
+     *         the argument types
      * @return the method or `null` if not found
      */
-    public static Method getMethod(Class c, String methodName, Class ... argTypes) {
+    public static Method getMethod(Class c, String methodName, Class... argTypes) {
         try {
             return c.getMethod(methodName, argTypes);
         } catch (NoSuchMethodException e) {
@@ -7332,20 +7849,20 @@ public class Lang implements Serializable {
         }
     }
 
-    private static <T, R> R invokeMethod(Var<Method> methodBag, Class c, T o, String methodName, Object ... pa) {
+    private static <T, R> R invokeMethod(Var<Method> methodBag, Class c, T o, String methodName, Object... pa) {
         try {
             if (null == c) {
                 c = o.getClass();
             }
             Method[] ma = c.getMethods();
-            for (Method m: ma) {
+            for (Method m : ma) {
                 if (!m.getName().equals(methodName)) {
                     continue;
                 }
                 Class[] pts = m.getParameterTypes();
                 boolean shouldContinue = false;
                 int len = pts.length;
-                for (int i = 0; i < len ; ++i) {
+                for (int i = 0; i < len; ++i) {
                     Object p = pa[i];
                     if (!testMethodParamType(pts, p, i)) {
                         shouldContinue = true;
@@ -7420,11 +7937,11 @@ public class Lang implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getProperty(Object entity, String ... propertyPath) {
+    private static <T> T getProperty(Object entity, String... propertyPath) {
         return getProperty(null, entity, propertyPath);
     }
 
-    private static <T> T getProperty(CacheService cache, Object entity, String ... propertyPath) {
+    private static <T> T getProperty(CacheService cache, Object entity, String... propertyPath) {
         if (null == entity) {
             return null;
         }
@@ -7484,7 +8001,7 @@ public class Lang implements Serializable {
     }
 
     private static String propertyGetterKey(Class c, String p, boolean requireField) {
-        return S.builder("osgl:pg:").append(requireField ? "f:": "").append(c.getName()).append(":").append(p).toString();
+        return S.builder("osgl:pg:").append(requireField ? "f:" : "").append(c.getName()).append(":").append(p).toString();
     }
 
     @SuppressWarnings("unchecked")
@@ -7565,7 +8082,7 @@ public class Lang implements Serializable {
         } else if (type instanceof Class) {
             Class classType = (Class) type;
             if (classType.isArray()) {
-                return (List)C.list(classType.getComponentType());
+                return (List) C.list(classType.getComponentType());
             }
         }
         return null;
@@ -7574,7 +8091,7 @@ public class Lang implements Serializable {
     private static List<Class<?>> findArgumentTypes(ParameterizedType ptype) {
         List<Class<?>> retList = C.newList();
         Type[] ta = ptype.getActualTypeArguments();
-        for (Type t: ta) {
+        for (Type t : ta) {
             if (t instanceof Class) {
                 retList.add((Class) t);
             } else if (t instanceof ParameterizedType) {
@@ -7585,7 +8102,7 @@ public class Lang implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static void setProperty(final CacheService cache, Object entity, final Object val, String ... propertyPath) {
+    private static void setProperty(final CacheService cache, Object entity, final Object val, String... propertyPath) {
         E.NPE(entity);
         int len = propertyPath.length;
         E.illegalArgumentIf(len < 1);
@@ -7629,7 +8146,7 @@ public class Lang implements Serializable {
         }
     }
 
-    private static void setProperty(Object entity, Object val, String ... propertyPath) {
+    private static void setProperty(Object entity, Object val, String... propertyPath) {
         setProperty(null, entity, val, propertyPath);
     }
 
@@ -7703,8 +8220,10 @@ public class Lang implements Serializable {
     /**
      * Create an new array with specified array type and length
      *
-     * @param model the model array
-     * @param <T>   the array component type
+     * @param model
+     *         the model array
+     * @param <T>
+     *         the array component type
      * @return an new array with the same component type of model and length of model
      */
     public static <T> T[] newArray(T[] model) {
@@ -7714,9 +8233,12 @@ public class Lang implements Serializable {
     /**
      * Create an new array with specified type and length
      *
-     * @param model the model array
-     * @param size  the new array length
-     * @param <T>   the component type
+     * @param model
+     *         the model array
+     * @param size
+     *         the new array length
+     * @param <T>
+     *         the component type
      * @return an new array with the same type of model and length equals to size
      */
     @SuppressWarnings("unchecked")
@@ -8045,11 +8567,13 @@ public class Lang implements Serializable {
             array[i] = element;
         }
     }
+
     public static void fill(char element, char[] array) {
         for (int i = 0; i < array.length; ++i) {
             array[i] = element;
         }
     }
+
     public static void fill(short element, short[] array) {
         for (int i = 0; i < array.length; ++i) {
             array[i] = element;
@@ -8368,7 +8892,7 @@ public class Lang implements Serializable {
         return o;
     }
 
-    public static Class<?> commonSuperTypeOf(Object o1, Object o2, Object ... others) {
+    public static Class<?> commonSuperTypeOf(Object o1, Object o2, Object... others) {
         Class c1 = null == o1 ? null : o1.getClass();
         Class c2 = null == o2 ? null : o2.getClass();
         c1 = commonSuperTypeOf_(c1, c2);
@@ -8394,7 +8918,7 @@ public class Lang implements Serializable {
             return Object.class;
         }
         Class c1 = null;
-        for (Object o: objects) {
+        for (Object o : objects) {
             if (o == null) {
                 continue;
             }
@@ -8437,7 +8961,7 @@ public class Lang implements Serializable {
         boolean isComparable = false;
         boolean isSerializable = false;
         boolean isCloneable = false;
-        for (Class intf: interfaces) {
+        for (Class intf : interfaces) {
             if (intf == Comparable.class) {
                 isComparable = true;
                 continue;
@@ -8503,9 +9027,12 @@ public class Lang implements Serializable {
     /**
      * Execute callback asynchronously after delay specified
      *
-     * @param callback     the callback function to be executed
-     * @param milliseconds the delay
-     * @param <T>          return type
+     * @param callback
+     *         the callback function to be executed
+     * @param milliseconds
+     *         the delay
+     * @param <T>
+     *         return type
      * @return the result of the callback
      */
     public static <T> Future<T> async(final F0<T> callback, final int milliseconds) {
@@ -8551,7 +9078,9 @@ public class Lang implements Serializable {
 
     /**
      * Evaluate Annotation properties
-     * @param anno the annotation instance
+     *
+     * @param anno
+     *         the annotation instance
      * @return a Map contains annotation instance properties
      */
     public static Map<String, Object> evaluate(Annotation anno) {
@@ -8614,9 +9143,8 @@ public class Lang implements Serializable {
          * Change mapping semantic of this mapping stage.
          *
          * @param semantic
-         *      the new {@link DataMapper.Semantic mapping semantic} to be used
-         * @return
-         *      this mapping stage for chained call
+         *         the new {@link DataMapper.Semantic mapping semantic} to be used
+         * @return this mapping stage for chained call
          */
         public _MappingStage semantic(DataMapper.Semantic semantic) {
             this.semantic = $.requireNotNull(semantic);
@@ -8635,7 +9163,7 @@ public class Lang implements Serializable {
          * ```
          *
          * @param rootClass
-         *      The root class
+         *         The root class
          * @return this mapping stage for chained call
          * @see #fieldsOf(Class, Class, boolean)
          */
@@ -8651,12 +9179,12 @@ public class Lang implements Serializable {
          *
          * ```java
          * Map<String, User> userMap = $.map(sourceMap)
-         *      .targetGenericType(new TypeReference(Map<String, User>) {})
-         *      .to(new HashMap());
+         * .targetGenericType(new TypeReference(Map<String, User>) {})
+         * .to(new HashMap());
          * ```
          *
          * @param typeReference
-         *      the type reference.
+         *         the type reference.
          * @return this mapping stage for chained call
          * @see #targetGenericType(Type)
          */
@@ -8676,7 +9204,7 @@ public class Lang implements Serializable {
          * in order to effect.
          *
          * @param type
-         *      the target generic type
+         *         the target generic type
          * @return this mapping stage for chained call
          */
         public _MappingStage targetGenericType(Type type) {
@@ -8701,8 +9229,10 @@ public class Lang implements Serializable {
          * This method allows it to provide additional type converters in addition to built-in or registered
          * type converters in the global registry.
          *
-         * @param converter the first type converter
-         * @param otherConverters the rest type converters
+         * @param converter
+         *         the first type converter
+         * @param otherConverters
+         *         the rest type converters
          * @return this mapping stage for chained call
          */
         public _MappingStage withConverter(TypeConverter converter, TypeConverter... otherConverters) {
@@ -8721,7 +9251,7 @@ public class Lang implements Serializable {
          * the mapping process.
          *
          * @param converters
-         *      A collection of type converters.
+         *         A collection of type converters.
          * @return this mapping stage for chained call
          */
         public _MappingStage withConverter(Collection<TypeConverter> converters) {
@@ -8767,7 +9297,7 @@ public class Lang implements Serializable {
          * Add conversion hints indexed by class.
          *
          * @param conversionHints
-         *      A map of conversion hints
+         *         A map of conversion hints
          * @return this mapping stage for chained call
          * @see #conversionHint(Class, Object)
          */
@@ -8782,7 +9312,7 @@ public class Lang implements Serializable {
          * If not specified, then it will use {@link OsglConfig#INSTANCE_FACTORY}
          *
          * @param instanceFactory
-         *      the new instance factory
+         *         the new instance factory
          * @return this mapping stage for chained call
          */
         public _MappingStage instanceFactory(Function<Class, ?> instanceFactory) {
@@ -8833,9 +9363,8 @@ public class Lang implements Serializable {
          * * `name,email` - map only fields `name` and `email`
          *
          * @param filterSpec
-         *      the filter spec indicates which fields shall be subject or waived in the mapping process.
-         * @return
-         *      this mapping stage for chained call.
+         *         the filter spec indicates which fields shall be subject or waived in the mapping process.
+         * @return this mapping stage for chained call.
          */
         public _MappingStage filter(String filterSpec) {
             this.filterSpec = filterSpec;
@@ -8868,9 +9397,8 @@ public class Lang implements Serializable {
          * ```
          *
          * @param specialNameMappings
-         *      a Map of name mapping rules.
-         * @return
-         *      this mapping stage
+         *         a Map of name mapping rules.
+         * @return this mapping stage
          */
         public _MappingStage withSpecialNameMappings(Map<String, String> specialNameMappings) {
             if (null == specialNameMappings || specialNameMappings.isEmpty()) {
@@ -8908,9 +9436,9 @@ public class Lang implements Serializable {
          * The original `to` array will be left unchanged. The return value is the new array instance.
          *
          * @param target
-         *      target object
+         *         target object
          * @param <T>
-         *      the generic type parameter of the target.
+         *         the generic type parameter of the target.
          * @return the target been copied/mapped, might not be the same instance of `to` if `to` is an array
          */
         public <T> T to(T target) {
@@ -8922,8 +9450,9 @@ public class Lang implements Serializable {
          * the `targetClass` specified.
          *
          * @param targetClass
-         *      the class used to create target instance
-         * @param <T> the generic type parameter of targetClass
+         *         the class used to create target instance
+         * @param <T>
+         *         the generic type parameter of targetClass
          * @return the instance been copied/mapped
          * @see #to(Object)
          */
@@ -8938,9 +9467,9 @@ public class Lang implements Serializable {
      * the same time of `source`
      *
      * @param source
-     *      the source object
+     *         the source object
      * @return a {@link _MappingStage} that are ready to do deep copy to
-     *      new instance of `source` type
+     * new instance of `source` type
      */
     public static _MappingStage clone(Object source) {
         return new _MappingStage(source, DataMapper.Semantic.DEEP_COPY);
@@ -8953,11 +9482,10 @@ public class Lang implements Serializable {
      * `source` object to an new instance of `source` type
      *
      * @param source
-     *      the object to be clone
+     *         the object to be clone
      * @param <T>
-     *      the type parameter of the object class
-     * @return
-     *      the clone of `source`
+     *         the type parameter of the object class
+     * @return the clone of `source`
      */
     public static <T> T cloneOf(T source) {
         return cloneOf(source, OsglConfig.INSTANCE_FACTORY);
@@ -8970,13 +9498,12 @@ public class Lang implements Serializable {
      * `source` object to an new instance of `source` type
      *
      * @param source
-     *      the object to be clone
+     *         the object to be clone
      * @param instanceFactory
-     *      A function that is used to create new instance of the clone
+     *         A function that is used to create new instance of the clone
      * @param <T>
-     *      the type parameter of the object class
-     * @return
-     *      the clone of `source`
+     *         the type parameter of the object class
+     * @return the clone of `source`
      */
     public static <T> T cloneOf(T source, Function<Class, ?> instanceFactory) {
         Object target = instanceFactory.apply(source.getClass());
@@ -8987,7 +9514,7 @@ public class Lang implements Serializable {
      * Prepare a Mapping operation with {@link DataMapper.Semantic#SHALLOW_COPY shallow copy} semantic
      *
      * @param source
-     *      the source object
+     *         the source object
      * @return a {@link _MappingStage}
      */
     public static _MappingStage copy(Object source) {
@@ -8998,7 +9525,7 @@ public class Lang implements Serializable {
      * Prepare a Mapping operation with {@link DataMapper.Semantic#DEEP_COPY deep copy} semantic
      *
      * @param source
-     *      the source object
+     *         the source object
      * @return a {@link _MappingStage}
      */
     public static _MappingStage deepCopy(Object source) {
@@ -9009,7 +9536,7 @@ public class Lang implements Serializable {
      * Prepare a Mapping operation with {@link DataMapper.Semantic#MERGE merge} semantic
      *
      * @param source
-     *      the source object
+     *         the source object
      * @return a {@link _MappingStage}
      */
     public static _MappingStage merge(Object source) {
@@ -9022,7 +9549,7 @@ public class Lang implements Serializable {
      * and {@link DataMapper.MappingRule#KEYWORD_MATCHING keyword matching}
      *
      * @param source
-     *      the source object
+     *         the source object
      * @return a {@link _MappingStage}
      */
     public static _MappingStage map(Object source) {
@@ -9034,7 +9561,7 @@ public class Lang implements Serializable {
      * and {@link DataMapper.MappingRule#KEYWORD_MATCHING keyword matching}
      *
      * @param source
-     *      the source object
+     *         the source object
      * @return a {@link _MappingStage}
      */
     public static _MappingStage mergeMap(Object source) {
@@ -9072,7 +9599,8 @@ public class Lang implements Serializable {
          *  });
          * </pre>
          *
-         * @param tester the tester function takes an object as parameter and returns boolean
+         * @param tester
+         *         the tester function takes an object as parameter and returns boolean
          * @return the {@link Conf} instance
          */
         public Conf registerBoolTester(Function<Object, Boolean> tester) {
@@ -9099,10 +9627,14 @@ public class Lang implements Serializable {
          * Return a one variable function that throw out a {@link Break} with payload specified when a predicate return
          * <code>true</code> on an element been tested
          *
-         * @param predicate the predicate function that takes T type argument
-         * @param payload   the payload to be passed into the {@link Break} if predicate returns {@code true}
-         * @param <P>       the type of the payload object
-         * @param <T>       the type of the object to be consumed by the predicate
+         * @param predicate
+         *         the predicate function that takes T type argument
+         * @param payload
+         *         the payload to be passed into the {@link Break} if predicate returns {@code true}
+         * @param <P>
+         *         the type of the payload object
+         * @param <T>
+         *         the type of the object to be consumed by the predicate
          * @return an new function that takes T argument and apply it to the predicate. If the result is {@code true}
          * then throw out the {@code Break} with payload specified
          * @since 0.2
@@ -9124,8 +9656,10 @@ public class Lang implements Serializable {
          * <code>true</code> on an element been tested. There is no payload specified and the <code>Break</code>
          * will use test result i.e. <code>true</code> as the payload
          *
-         * @param predicate the predicate function
-         * @param <T>       the type of the object consumed by the predicate
+         * @param predicate
+         *         the predicate function
+         * @param <T>
+         *         the type of the object consumed by the predicate
          * @return a new function that applies the predicate and if the result is {@code true} then
          * throw out a {@link Break} with payload of the object been consumed
          * @since 0.2
@@ -9146,12 +9680,17 @@ public class Lang implements Serializable {
          * Return a two variables function that throw out a {@link Break} with payload specified when
          * a two variables predicate return <code>true</code> on an element been tested
          *
-         * @param predicate the function test the arguments
-         * @param payload   the payload to be thrown out if predicate function returns {@code true} on
-         *                  the argument
-         * @param <P>       the payload type
-         * @param <T1>      the type of the first argument
-         * @param <T2>      the type of the second argument
+         * @param predicate
+         *         the function test the arguments
+         * @param payload
+         *         the payload to be thrown out if predicate function returns {@code true} on
+         *         the argument
+         * @param <P>
+         *         the payload type
+         * @param <T1>
+         *         the type of the first argument
+         * @param <T2>
+         *         the type of the second argument
          * @return a function that apply predicate to arguments and throw {@link Break} with payload
          * specified
          * @since 0.2
@@ -9176,9 +9715,12 @@ public class Lang implements Serializable {
          * <code>true</code> on an element been tested. There is no payload specified and the <code>Break</code>
          * will use test result i.e. <code>true</code> as the payload
          *
-         * @param predicate the predicate function check if a break should be raised
-         * @param <T1>      the type of argument 1
-         * @param <T2>      the type of argument 2
+         * @param predicate
+         *         the predicate function check if a break should be raised
+         * @param <T1>
+         *         the type of argument 1
+         * @param <T2>
+         *         the type of argument 2
          * @return the function that raise {@link Break} if predicate function says {@code true} on the
          * two arguments
          * @since 0.2
@@ -9200,12 +9742,18 @@ public class Lang implements Serializable {
          * Return a three variables function that throw out a {@link Break} with payload specified when
          * a three variables predicate return <code>true</code> on an element been tested
          *
-         * @param predicate the predicate function that takes three arguments and returns a boolean type value
-         * @param payload   the payload object to be
-         * @param <P>       Generic type for payload
-         * @param <T1>      generic type of the first argument taken by predicate
-         * @param <T2>      generic type of the second argument taken by predicate
-         * @param <T3>      generic type of the thrid argument taken by predicate
+         * @param predicate
+         *         the predicate function that takes three arguments and returns a boolean type value
+         * @param payload
+         *         the payload object to be
+         * @param <P>
+         *         Generic type for payload
+         * @param <T1>
+         *         generic type of the first argument taken by predicate
+         * @param <T2>
+         *         generic type of the second argument taken by predicate
+         * @param <T3>
+         *         generic type of the thrid argument taken by predicate
          * @return A function of {@link F3 F3&lt;T1, T2, T3, Void&gt;} type
          * @since 0.2
          */
@@ -9229,10 +9777,14 @@ public class Lang implements Serializable {
          * <code>true</code> on an element been tested. There is no payload specified and the <code>Break</code>
          * will use test result i.e. <code>true</code> as the payload
          *
-         * @param predicate the predicate function that takes three arguments and returns a {@code boolean} type value
-         * @param <T1>      the generic type of the argument 1
-         * @param <T2>      the generic type of the argument 2
-         * @param <T3>      the generic type of the argument 3
+         * @param predicate
+         *         the predicate function that takes three arguments and returns a {@code boolean} type value
+         * @param <T1>
+         *         the generic type of the argument 1
+         * @param <T2>
+         *         the generic type of the argument 2
+         * @param <T3>
+         *         the generic type of the argument 3
          * @return a function that check on three arguments and throw out {@code true} if the check returns {@code true}
          * @since 0.2
          */
@@ -9254,13 +9806,20 @@ public class Lang implements Serializable {
          * Return a four variables function that throw out a {@link Break} with payload specified when
          * a four variables predicate return <code>true</code> on an element been tested
          *
-         * @param predicate the predicate function that takes four arguments and returns a {@code boolean} type value
-         * @param payload   the payload to be throw out if the predicate function returns {@code true} on given arguments
-         * @param <P>       the generic type of the payload
-         * @param <T1>      the generic type of the argument 1
-         * @param <T2>      the generic type of the argument 2
-         * @param <T3>      the generic type of the argument 3
-         * @param <T4>      the generic type of the argument 4
+         * @param predicate
+         *         the predicate function that takes four arguments and returns a {@code boolean} type value
+         * @param payload
+         *         the payload to be throw out if the predicate function returns {@code true} on given arguments
+         * @param <P>
+         *         the generic type of the payload
+         * @param <T1>
+         *         the generic type of the argument 1
+         * @param <T2>
+         *         the generic type of the argument 2
+         * @param <T3>
+         *         the generic type of the argument 3
+         * @param <T4>
+         *         the generic type of the argument 4
          * @return a function that check on four arguments and throw out payload if the check returns {@code true}
          * @since 0.2
          */
@@ -9283,11 +9842,16 @@ public class Lang implements Serializable {
          * <code>true</code> on an element been tested. There is no payload specified and the <code>Break</code>
          * will use test result i.e. <code>true</code> as the payload
          *
-         * @param predicate the predicate function that takes four arguments and returns a {@code boolean} type value
-         * @param <T1>      the generic type of the argument 1
-         * @param <T2>      the generic type of the argument 2
-         * @param <T3>      the generic type of the argument 3
-         * @param <T4>      the generic type of the argument 4
+         * @param predicate
+         *         the predicate function that takes four arguments and returns a {@code boolean} type value
+         * @param <T1>
+         *         the generic type of the argument 1
+         * @param <T2>
+         *         the generic type of the argument 2
+         * @param <T3>
+         *         the generic type of the argument 3
+         * @param <T4>
+         *         the generic type of the argument 4
          * @return a function that check on four arguments and throw out {@code true} if the check returns {@code true}
          * @since 0.2
          */
@@ -9309,14 +9873,22 @@ public class Lang implements Serializable {
          * Return a five variables function that throw out a {@link Break} with payload specified when
          * a five variables predicate return <code>true</code> on an element been tested
          *
-         * @param predicate the predicate function that takes five arguments and returns a {@code boolean} type value
-         * @param payload   the payload to be throw out if the predicate function returns {@code true} on given arguments
-         * @param <P>       the generic type of the payload
-         * @param <T1>      the generic type of the argument 1
-         * @param <T2>      the generic type of the argument 2
-         * @param <T3>      the generic type of the argument 3
-         * @param <T4>      the generic type of the argument 4
-         * @param <T5>      the generic type of the argument 5
+         * @param predicate
+         *         the predicate function that takes five arguments and returns a {@code boolean} type value
+         * @param payload
+         *         the payload to be throw out if the predicate function returns {@code true} on given arguments
+         * @param <P>
+         *         the generic type of the payload
+         * @param <T1>
+         *         the generic type of the argument 1
+         * @param <T2>
+         *         the generic type of the argument 2
+         * @param <T3>
+         *         the generic type of the argument 3
+         * @param <T4>
+         *         the generic type of the argument 4
+         * @param <T5>
+         *         the generic type of the argument 5
          * @return a function that check on five arguments and throw out payload if the check returns {@code true}
          * @since 0.2
          */
@@ -9340,12 +9912,18 @@ public class Lang implements Serializable {
          * <code>true</code> on an element been tested. There is no payload specified and the <code>Break</code>
          * will use test result i.e. <code>true</code> as the payload
          *
-         * @param predicate the predicate function that takes five arguments and returns a {@code boolean} type value
-         * @param <T1>      the generic type of the argument 1
-         * @param <T2>      the generic type of the argument 2
-         * @param <T3>      the generic type of the argument 3
-         * @param <T4>      the generic type of the argument 4
-         * @param <T5>      the generic type of the argument 5
+         * @param predicate
+         *         the predicate function that takes five arguments and returns a {@code boolean} type value
+         * @param <T1>
+         *         the generic type of the argument 1
+         * @param <T2>
+         *         the generic type of the argument 2
+         * @param <T3>
+         *         the generic type of the argument 3
+         * @param <T4>
+         *         the generic type of the argument 4
+         * @param <T5>
+         *         the generic type of the argument 5
          * @return a function that check on five arguments and throw out {@code true} if the check returns {@code true}
          * @since 0.2
          */
@@ -9368,8 +9946,10 @@ public class Lang implements Serializable {
          * Returns a composed {@link Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when all of the specified predicates returns <code>true</code> when applied to the parameter
          *
-         * @param predicates a collection of predicates that can be applied to a parameter and returns boolean value
-         * @param <T>        the type of the parameter the predicates applied to
+         * @param predicates
+         *         a collection of predicates that can be applied to a parameter and returns boolean value
+         * @param <T>
+         *         the type of the parameter the predicates applied to
          * @return a composed function
          * @since 0.2
          */
@@ -9394,8 +9974,10 @@ public class Lang implements Serializable {
          * Returns a composed {@link Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when all of the specified predicates returns <code>true</code> when applied to the parameter
          *
-         * @param predicates an array of predicates that can be applied to a parameter and returns boolean value
-         * @param <T>        the type of the parameter the predicates applied to
+         * @param predicates
+         *         an array of predicates that can be applied to a parameter and returns boolean value
+         * @param <T>
+         *         the type of the parameter the predicates applied to
          * @return a composed function
          * @since 0.2
          */
@@ -9410,8 +9992,10 @@ public class Lang implements Serializable {
          * Returns a composed {@link Predicate} function that for any given parameter, the test result is <code>true</code>
          * only when any one of the specified predicates returns <code>true</code> when applied to the parameter
          *
-         * @param predicates a collection of predicates that can be applied to a parameter and returns boolean value
-         * @param <T>        the type of the parameter the predicates applied to
+         * @param predicates
+         *         a collection of predicates that can be applied to a parameter and returns boolean value
+         * @param <T>
+         *         the type of the parameter the predicates applied to
          * @return a composed function
          * @since 0.2
          */
@@ -9436,8 +10020,10 @@ public class Lang implements Serializable {
          * Returns a composed {@link Predicate} function that for any given parameter, the test result is <code>true</code>
          * when any one of the specified predicates returns <code>true</code> on the parameter
          *
-         * @param predicates an array of predicates that can be applied to a parameter and returns boolean value
-         * @param <T>        the type of the parameter the predicates applied to
+         * @param predicates
+         *         an array of predicates that can be applied to a parameter and returns boolean value
+         * @param <T>
+         *         the type of the parameter the predicates applied to
          * @return a composed function
          * @since 0.2
          */
@@ -9451,8 +10037,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #or(Collection)}
          *
-         * @param predicates the predicate functions
-         * @param <T>        the element type
+         * @param predicates
+         *         the predicate functions
+         * @param <T>
+         *         the element type
          * @return a function that returns {@code true} if any one of the predicates returns {@code true}
          * on a given argument
          * @since 0.2
@@ -9464,8 +10052,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #or(Function[])}
          *
-         * @param predicates an array of predicate functions
-         * @param <T>        the argument type
+         * @param predicates
+         *         an array of predicate functions
+         * @param <T>
+         *         the argument type
          * @return the function that returns {@code true} if any one of the predicate function
          * returns {@code true}
          * @since 0.2
@@ -9477,8 +10067,10 @@ public class Lang implements Serializable {
         /**
          * Negation of {@link #or(Collection)}
          *
-         * @param predicates an iterable of predicate functions
-         * @param <T>        the generic type of the argument the predicate functions take
+         * @param predicates
+         *         an iterable of predicate functions
+         * @param <T>
+         *         the generic type of the argument the predicate functions take
          * @return a function that apply the argument to all predicate functions and return
          * {@code true} if all of them return {@code false} on the argument, or
          * {@code false} if any one of them returns {@code true}
@@ -9491,8 +10083,10 @@ public class Lang implements Serializable {
         /**
          * Negation of {@link #or(Function[])}
          *
-         * @param predicates an array of predicate functions
-         * @param <T>        the generic type of the argument the predicate functions take
+         * @param predicates
+         *         an array of predicate functions
+         * @param <T>
+         *         the generic type of the argument the predicate functions take
          * @return a function that apply the argument to all predicate functions and return
          * {@code true} if all of them return {@code false} on the argument, or
          * {@code false} if any one of them returns {@code true}
@@ -9505,7 +10099,8 @@ public class Lang implements Serializable {
         /**
          * Returns a function that evaluate an argument's boolean value and negate the value.
          *
-         * @param <T> the type of the argument the function applied to
+         * @param <T>
+         *         the type of the argument the function applied to
          * @return the function returns true if an argument evaluated to false, or vice versa
          */
         public static <T> F1<T, Boolean> not() {
@@ -9522,9 +10117,12 @@ public class Lang implements Serializable {
          * returned function map from Y to X. This function will call {@link Bijection#invert()}
          * to get the return function
          *
-         * @param f   the bijection function to be inverted
-         * @param <X> the argument type, and the result type of the return function
-         * @param <Y> the result type, and the argument type of the return function
+         * @param f
+         *         the bijection function to be inverted
+         * @param <X>
+         *         the argument type, and the result type of the return function
+         * @param <Y>
+         *         the result type, and the argument type of the return function
          * @return the inverted function of input function {@code f}
          */
         public static <X, Y> Bijection<Y, X> invert(final Bijection<X, Y> f) {
@@ -9534,7 +10132,8 @@ public class Lang implements Serializable {
         /**
          * Returns a negate function of the specified predicate function
          *
-         * @param predicate the specified function that returns boolean value
+         * @param predicate
+         *         the specified function that returns boolean value
          * @return the function that negate the specified predicate
          */
         public static F0<Boolean> negate(final Func0<Boolean> predicate) {
@@ -9550,8 +10149,10 @@ public class Lang implements Serializable {
          * Returns a negate function of the specified predicate function that applied to 1 params and
          * returns boolean value
          *
-         * @param predicate the specified function that applied to the parameter and returns boolean value
-         * @param <T>       the type of the parameter to be applied
+         * @param predicate
+         *         the specified function that applied to the parameter and returns boolean value
+         * @param <T>
+         *         the type of the parameter to be applied
          * @return the function that negate the specified predicate
          */
         public static <T> Predicate<T> negate(final Function<? super T, Boolean> predicate) {
@@ -9566,9 +10167,12 @@ public class Lang implements Serializable {
         /**
          * Returns a negate function of the specified predicate that applied to 2 parameters and returns boolean value
          *
-         * @param predicate the function applied to 2 params and return boolean value
-         * @param <P1>      type of param one
-         * @param <P2>      type of param two
+         * @param predicate
+         *         the function applied to 2 params and return boolean value
+         * @param <P1>
+         *         type of param one
+         * @param <P2>
+         *         type of param two
          * @return the function that negate predicate specified
          */
         public static <P1, P2> F2<P1, P2, Boolean> negate(final Func2<? super P1, ? super P2, Boolean> predicate) {
@@ -9583,10 +10187,14 @@ public class Lang implements Serializable {
         /**
          * Returns a negate function of the specified predicate that applied to 3 parameters and returns boolean value
          *
-         * @param predicate the function applied to 2 params and return boolean value
-         * @param <P1>      type of param one
-         * @param <P2>      type of param two
-         * @param <P3>      type of param three
+         * @param predicate
+         *         the function applied to 2 params and return boolean value
+         * @param <P1>
+         *         type of param one
+         * @param <P2>
+         *         type of param two
+         * @param <P3>
+         *         type of param three
          * @return the function that negate predicate specified
          */
         public static <P1, P2, P3> F3<P1, P2, P3, Boolean> negate(
@@ -9603,11 +10211,16 @@ public class Lang implements Serializable {
         /**
          * Returns a negate function of the specified predicate that applied to 3 parameters and returns boolean value
          *
-         * @param predicate the function applied to 2 params and return boolean value
-         * @param <P1>      type of param one
-         * @param <P2>      type of param two
-         * @param <P3>      type of param three
-         * @param <P4>      type of param four
+         * @param predicate
+         *         the function applied to 2 params and return boolean value
+         * @param <P1>
+         *         type of param one
+         * @param <P2>
+         *         type of param two
+         * @param <P3>
+         *         type of param three
+         * @param <P4>
+         *         type of param four
          * @return the function that negate predicate specified
          */
         public static <P1, P2, P3, P4> F4<P1, P2, P3, P4, Boolean> negate(
@@ -9624,12 +10237,18 @@ public class Lang implements Serializable {
         /**
          * Returns a negate function of the specified predicate that applied to 3 parameters and returns boolean value
          *
-         * @param predicate the function applied to 2 params and return boolean value
-         * @param <P1>      type of param one
-         * @param <P2>      type of param two
-         * @param <P3>      type of param three
-         * @param <P4>      type of param four
-         * @param <P5>      type of param five
+         * @param predicate
+         *         the function applied to 2 params and return boolean value
+         * @param <P1>
+         *         type of param one
+         * @param <P2>
+         *         type of param two
+         * @param <P3>
+         *         type of param three
+         * @param <P4>
+         *         type of param four
+         * @param <P5>
+         *         type of param five
          * @return the function that negate predicate specified
          */
         public static <P1, P2, P3, P4, P5> F5<P1, P2, P3, P4, P5, Boolean> negate(
@@ -9646,8 +10265,11 @@ public class Lang implements Serializable {
         /**
          * Return a provider that when called will return
          * the object specified
-         * @param obj the object to be returned when calling the returning function
-         * @param <T> the object type
+         *
+         * @param obj
+         *         the object to be returned when calling the returning function
+         * @param <T>
+         *         the object type
          * @return a provider function that returns the object specified
          */
         public static <T> $.Val<T> provides(final T obj) {
@@ -9671,7 +10293,8 @@ public class Lang implements Serializable {
         /**
          * A type-safe version of {@link #TRUE}
          *
-         * @param <T> the argument type
+         * @param <T>
+         *         the argument type
          * @return a function that always returns {@code true}
          * @since 0.2
          */
@@ -9693,7 +10316,8 @@ public class Lang implements Serializable {
         /**
          * A type-safe version of {@link #FALSE}
          *
-         * @param <T> the argument type
+         * @param <T>
+         *         the argument type
          * @return a function that always return {@code false}
          * @since 0.2
          */
@@ -9718,7 +10342,8 @@ public class Lang implements Serializable {
         /**
          * The type-safe version of {@link #IS_NULL}
          *
-         * @param <T> the argument type
+         * @param <T>
+         *         the argument type
          * @return a function that check if an argument is {@code null} or {@code NONE}
          * @since 0.2
          */
@@ -9730,8 +10355,10 @@ public class Lang implements Serializable {
         /**
          * The type-safe version of {@link #IS_NULL}
          *
-         * @param c   the class that specifies the argument type
-         * @param <T> the argument type
+         * @param c
+         *         the class that specifies the argument type
+         * @param <T>
+         *         the argument type
          * @return a function that check if the argument is {@code null} or {@code NONE}
          * @since 0.2
          */
@@ -9752,7 +10379,8 @@ public class Lang implements Serializable {
         /**
          * The type-safe version of {@link #NOT_NULL}
          *
-         * @param <T> the element type
+         * @param <T>
+         *         the element type
          * @return a function that check if argument is {@code null} or {@code NONE}
          * @since 0.2
          */
@@ -9784,7 +10412,8 @@ public class Lang implements Serializable {
         /**
          * The type-safe version of {@link #IDENTITY}
          *
-         * @param <T> the element type
+         * @param <T>
+         *         the element type
          * @return the identity function that always return the argument itself
          * @since 0.2
          */
@@ -9795,8 +10424,11 @@ public class Lang implements Serializable {
 
         /**
          * The type-safe version of {@link #IDENTITY}
-         * @param clz the class that restrict the type of &lt;T&gt;
-         * @param <T> the generic type
+         *
+         * @param clz
+         *         the class that restrict the type of &lt;T&gt;
+         * @param <T>
+         *         the generic type
          * @return the identity function that when get called, always return the parameter
          * @since 0.9
          */
@@ -9835,8 +10467,10 @@ public class Lang implements Serializable {
          * Returns a function that apply to one parameter and compare it with the value {@code v} specified,
          * returns {@code true} if the parameter applied is less than {@code v}
          *
-         * @param v   the value to be compare with the function parameter
-         * @param <T> the type of the value and parameter
+         * @param v
+         *         the value to be compare with the function parameter
+         * @param <T>
+         *         the type of the value and parameter
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -9847,8 +10481,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #lt(Comparable)}
          *
-         * @param v   a value used to check against function argument
-         * @param <T> the element type
+         * @param v
+         *         a value used to check against function argument
+         * @param <T>
+         *         the element type
          * @return a function that check if a object is lesser than the value specified
          * @since 0.2
          */
@@ -9860,8 +10496,10 @@ public class Lang implements Serializable {
          * Returns a function that apply to one parameter and compare it with the value {@code v} specified,
          * returns {@code true} if the parameter applied is greater than {@code v}
          *
-         * @param v   the value to be compare with the function parameter
-         * @param <T> the type of the value and parameter
+         * @param v
+         *         the value to be compare with the function parameter
+         * @param <T>
+         *         the type of the value and parameter
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -9872,8 +10510,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #gt(Comparable)}
          *
-         * @param v   the value used to check against function argument
-         * @param <T> the element type
+         * @param v
+         *         the value used to check against function argument
+         * @param <T>
+         *         the element type
          * @return a function that check if a object is greater than the value specified
          * @since 0.2
          */
@@ -9885,8 +10525,10 @@ public class Lang implements Serializable {
          * Returns a function that apply to one parameter and compare it with the value {@code v} specified,
          * returns {@code true} if the parameter applied is greater than or equals to {@code v}
          *
-         * @param v   the value to be compare with the function parameter
-         * @param <T> the type of the value and parameter
+         * @param v
+         *         the value to be compare with the function parameter
+         * @param <T>
+         *         the type of the value and parameter
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -9897,8 +10539,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #gte(Comparable)}
          *
-         * @param v   the value used to check against function argument
-         * @param <T> the element type
+         * @param v
+         *         the value used to check against function argument
+         * @param <T>
+         *         the element type
          * @return a function that check if an object is greater than or equals to the value specified
          * @since 0.2
          */
@@ -9911,8 +10555,10 @@ public class Lang implements Serializable {
          * Returns a function that apply to one parameter and compare it with the value {@code v} specified,
          * returns {@code true} if the parameter applied is less than or equals to {@code v}
          *
-         * @param v   the value to be compare with the function parameter
-         * @param <T> the type of the value and parameter
+         * @param v
+         *         the value to be compare with the function parameter
+         * @param <T>
+         *         the type of the value and parameter
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -9923,8 +10569,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #lte(Comparable)}
          *
-         * @param v   the value to be used to check agains function arugment
-         * @param <T> the element type
+         * @param v
+         *         the value to be used to check agains function arugment
+         * @param <T>
+         *         the element type
          * @return a function that check if a object is lesser than or equals to specified value
          * @since 0.2
          */
@@ -9973,7 +10621,8 @@ public class Lang implements Serializable {
          * Returns a function that check if a value is less than another one. This is the
          * type safe version of {@link #LESS_THAN}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -9985,7 +10634,8 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #lt()}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -9997,7 +10647,8 @@ public class Lang implements Serializable {
          * Returns a function that check if a value is less than or equals to another one.
          * This is the type safe version of {@link #LESS_THAN_OR_EQUAL_TO}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10009,7 +10660,8 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #lte()}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10020,7 +10672,8 @@ public class Lang implements Serializable {
         /**
          * Returns a function that check if a value is less than another one.
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10032,7 +10685,8 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #gt()}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10045,7 +10699,8 @@ public class Lang implements Serializable {
          * Returns a function that check if a value is greater than or equals to another one.
          * This is the type safe version of {@link #GREATER_THAN_OR_EQUAL_TO}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10056,7 +10711,8 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #gte()}
          *
-         * @param <T> the element type
+         * @param <T>
+         *         the element type
          * @return a function that check if one element is greater than or equals to another
          * @since 0.2
          */
@@ -10082,8 +10738,10 @@ public class Lang implements Serializable {
         /**
          * Returns a function that check if a value is less than another one using the {@link Comparator} specified
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10094,8 +10752,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #lt(java.util.Comparator)}
          *
-         * @param c   a comparator function
-         * @param <T> element type
+         * @param c
+         *         a comparator function
+         * @param <T>
+         *         element type
          * @return a function that use {@code c} to check if an element is lesser than another
          * @since 0.2
          */
@@ -10106,8 +10766,10 @@ public class Lang implements Serializable {
         /**
          * Returns a function that check if a value is less than another one using the {@link Comparator} specified
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10118,8 +10780,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #gt(java.util.Comparator)}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10131,8 +10795,10 @@ public class Lang implements Serializable {
          * Returns a function that check if a value is less than or equals to another one
          * using the {@link Comparator} specified
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10143,8 +10809,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #lte(java.util.Comparator)}
          *
-         * @param c   a comparator function
-         * @param <T> the element type
+         * @param c
+         *         a comparator function
+         * @param <T>
+         *         the element type
          * @return a function that use {@code c} to check if an element is lesser than or equals to another
          * @since 0.2
          */
@@ -10157,8 +10825,10 @@ public class Lang implements Serializable {
          * Returns a function that check if a value is greater than or equals to another one
          * using the {@link Comparator} specified
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10169,8 +10839,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #gte(java.util.Comparator)}
          *
-         * @param c   a comparator function
-         * @param <T> the element type
+         * @param c
+         *         a comparator function
+         * @param <T>
+         *         the element type
          * @return a function that use {@code c} to check if an element is greater than or equals to another
          * @since 0.2
          */
@@ -10195,8 +10867,10 @@ public class Lang implements Serializable {
         /**
          * Returns a function that check if a value is less than another one using the {@link Comparator} specified
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10207,8 +10881,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #lt(java.util.Comparator)}
          *
-         * @param c   a comparator function
-         * @param <T> the element type
+         * @param c
+         *         a comparator function
+         * @param <T>
+         *         the element type
          * @return a function that use function {@code c} to check if an element is lesser than another
          * @since 0.2
          */
@@ -10219,8 +10895,10 @@ public class Lang implements Serializable {
         /**
          * Returns a function that check if a value is less than another one using the {@link Comparator} specified
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10231,8 +10909,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #gt(java.util.Comparator)}
          *
-         * @param c   a comparator function
-         * @param <T> the element type
+         * @param c
+         *         a comparator function
+         * @param <T>
+         *         the element type
          * @return a function that use comparator function {@code c} to check if an object is greater than another
          * @since 0.2
          */
@@ -10244,8 +10924,10 @@ public class Lang implements Serializable {
          * Returns a function that check if a value is less than or equals to another one
          * using the {@link Comparator} specified
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10256,8 +10938,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #lte(java.util.Comparator)}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10269,8 +10953,10 @@ public class Lang implements Serializable {
          * Returns a function that check if a value is greater than or equals to another one
          * using the {@link Comparator} specified
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10281,8 +10967,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #gte(java.util.Comparator)}
          *
-         * @param <T> The type of the value been compared, should implements {@link Comparable}
-         * @param c   The comparator that can compare the value
+         * @param <T>
+         *         The type of the value been compared, should implements {@link Comparable}
+         * @param c
+         *         The comparator that can compare the value
          * @return the function that do the comparison
          * @since 0.2
          */
@@ -10311,8 +10999,10 @@ public class Lang implements Serializable {
         /**
          * The type-safe version of {@link #EQ}
          *
-         * @param <P1> the type of the first argument
-         * @param <P2> the type of the second argument
+         * @param <P1>
+         *         the type of the first argument
+         * @param <P2>
+         *         the type of the second argument
          * @return a type-safe function that check equility of two objects
          * @since 0.2
          */
@@ -10324,8 +11014,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #eq()}
          *
-         * @param <P1> the type of the first argument
-         * @param <P2> the type of the second argument
+         * @param <P1>
+         *         the type of the first argument
+         * @param <P2>
+         *         the type of the second argument
          * @return a type-safe function that check equility of two objects
          * @since 0.2
          */
@@ -10338,9 +11030,11 @@ public class Lang implements Serializable {
          * Returns a {@link Predicate} that checkes if the argument
          * equals to the element specified
          *
-         * @param element the object to be checked with argument when applying
-         *                the function
-         * @param <P>     the element type
+         * @param element
+         *         the object to be checked with argument when applying
+         *         the function
+         * @param <P>
+         *         the element type
          * @return the function that returns {@code true} if the argument equals
          * with the element specified or {@code false} otherwise
          */
@@ -10372,8 +11066,10 @@ public class Lang implements Serializable {
         /**
          * The type-safe version of {@link #NE}
          *
-         * @param <P1> type of the first argument
-         * @param <P2> type of the second argument
+         * @param <P1>
+         *         type of the first argument
+         * @param <P2>
+         *         type of the second argument
          * @return the type-safe version of {@link #NE}
          * @since 0.2
          */
@@ -10385,8 +11081,10 @@ public class Lang implements Serializable {
         /**
          * Alias of {@link #ne()}
          *
-         * @param <P1> type of the first argument
-         * @param <P2> type of the second argument
+         * @param <P1>
+         *         type of the first argument
+         * @param <P2>
+         *         type of the second argument
          * @return the type-safe version of {@link #NE}
          * @since 0.2
          */
@@ -10434,10 +11132,14 @@ public class Lang implements Serializable {
          * Construct a {@link Comparator} with a function to extract the key of type U from given object of type T and
          * a comparator to compare type U
          *
-         * @param keyExtractor  the function to extract the key for comparison
-         * @param keyComparator the {@link Comparator} that compares type U (the key type)
-         * @param <T>           the type of the object instance
-         * @param <U>           the type of the key extract from T
+         * @param keyExtractor
+         *         the function to extract the key for comparison
+         * @param keyComparator
+         *         the {@link Comparator} that compares type U (the key type)
+         * @param <T>
+         *         the type of the object instance
+         * @param <U>
+         *         the type of the key extract from T
          * @return a comparator that compares type T objects
          */
         public static <T, U> Comparator<T> comparing(
@@ -10469,7 +11171,8 @@ public class Lang implements Serializable {
         /**
          * The type-safe version of {@link #HASH_CODE}
          *
-         * @param <T> specifies the generic type of the argument passed to the returned function
+         * @param <T>
+         *         specifies the generic type of the argument passed to the returned function
          * @return a function of type {@link F1 F1&lt;T, Integer&gt;} that takes type {@code T} argument and
          * returns {@link Object#hashCode()} of the argument
          * @since 0.2
@@ -10498,7 +11201,8 @@ public class Lang implements Serializable {
          * that takes argument of type {@code T} and returns a String by calling
          * {@link Object#toString()} function on the argument
          *
-         * @param <T> the generic type T of the returning function
+         * @param <T>
+         *         the generic type T of the returning function
          * @return a function of type {@link F1 F1&lt;T, String&gt;}
          * @since 0.2
          */
@@ -10512,8 +11216,10 @@ public class Lang implements Serializable {
          * takes argument of type {@code T} and returns a String by calling
          * {@link Object#toString()} function on the argument
          *
-         * @param tClass the class specify the generic type
-         * @param <T>    the generic type T of the returning function
+         * @param tClass
+         *         the class specify the generic type
+         * @param <T>
+         *         the generic type T of the returning function
          * @return a function of type {@link F1 F1&lt;T, String&gt;}
          */
         public static <T> F1<T, String> asString(Class<T> tClass) {
@@ -10543,7 +11249,9 @@ public class Lang implements Serializable {
         /**
          * Returns a predicate function that when applied to a {@link Field} type
          * object, returns `true` if the field has specified annotation presented
-         * @param annoClass the annotation
+         *
+         * @param annoClass
+         *         the annotation
          * @return a predicate function as described above
          */
         public static Predicate<Field> fieldWithAnnotation(final Class<? extends Annotation> annoClass) {
