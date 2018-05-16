@@ -20,8 +20,6 @@ package org.osgl.util;
  * #L%
  */
 
-import static org.osgl.util.DataMapper.MappingRule.KEYWORD_MATCHING;
-
 import org.osgl.$;
 import org.osgl.Lang;
 import org.osgl.OsglConfig;
@@ -166,6 +164,8 @@ import java.util.*;
  */
 public class DataMapper {
 
+    private static final Object INTERMEDIATE_PLACEHOLDER = $.DUMB;
+
     public enum MappingRule {
 
         /**
@@ -220,10 +220,19 @@ public class DataMapper {
 
         /**
          * Recursively map data from source data structure into target data structure. This
+         * semantic is same as {@link #DEEP_COPY} except:
+         * * the terminate data type can be different, in which case type conversion will be used.
+         */
+        MAP,
+
+
+        /**
+         * Recursively map data from source data structure into target data structure. This
          * semantic is same as {@link #MERGE} except:
          * * the terminate data type can be different, in which case type conversion will be used.
          */
-        MAP;
+        MERGE_MAP
+        ;
 
         boolean isShallowCopy() {
             return this == SHALLOW_COPY;
@@ -234,7 +243,7 @@ public class DataMapper {
         }
 
         boolean isCopy() {
-            return isShallowCopy() || isDeepCopy();
+            return isShallowCopy() || isDeepCopy() || isMapping();
         }
 
         boolean isMerge() {
@@ -243,6 +252,58 @@ public class DataMapper {
 
         boolean isMapping() {
             return this == MAP;
+        }
+
+        boolean isMergeMapping() {
+            return this == MERGE_MAP;
+        }
+
+        boolean isAppend() {
+            return isMerge() || isMergeMapping();
+        }
+
+        boolean allowTypeConvert() {
+            return isMapping() || isMergeMapping();
+        }
+
+    }
+
+    private static class NameList {
+        private boolean useKeyword;
+        private Set<String> stringList = C.set();
+        private Set<Keyword> keywordList = C.set();
+
+        NameList(boolean useKeywordMatching) {
+            useKeyword = useKeywordMatching;
+            if (useKeywordMatching) {
+                keywordList = new HashSet<>();
+            } else {
+                stringList = new HashSet<>();
+            }
+        }
+
+        void add(String key) {
+            if (useKeyword) {
+                keywordList.add(Keyword.of(key));
+            } else {
+                stringList.add(key);
+            }
+        }
+
+        void remove(String key) {
+            if (useKeyword) {
+                keywordList.remove(Keyword.of(key));
+            } else {
+                stringList.remove(key);
+            }
+        }
+
+        boolean isEmpty() {
+            return stringList.isEmpty() && keywordList.isEmpty();
+        }
+
+        boolean contains(String key) {
+            return useKeyword ? keywordList.contains(Keyword.of(key)) : stringList.contains(key);
         }
     }
 
@@ -254,24 +315,18 @@ public class DataMapper {
          * Note if both {@link #whiteList} and `blackList` contains
          * elements, then `whiteList` is ignored.
          */
-        private Set<String> whiteList = C.set();
+        private NameList whiteList = new NameList(rule.keywordMatching());
 
         /**
          * Keep a set of properties that shall not be copied.
          */
-        private Set<String> blackList = C.set();
+        private NameList blackList = new NameList(rule.keywordMatching());
 
         /**
-         * Contains the {@link Keyword} correspondence of
-         * {@link #whiteList}.
+         * Keep a set of properties that by default their sub properties shall
+         * not be copied
          */
-        private Set<Keyword> whiteKeywords = C.set();
-
-        /**
-         * Contains the {@link Keyword} correspondence of
-         * {@link #blackList}
-         */
-        private Set<Keyword> blackKeywords = C.set();
+        private NameList grayList = new NameList(rule.keywordMatching());
 
         private boolean allEmpty = true;
 
@@ -280,48 +335,29 @@ public class DataMapper {
                 return;
             }
             List<String> words = S.fastSplit(spec, ",");
-            boolean useBlackList = false;
             for (String word : words) {
-                if (useBlackList && !word.startsWith("-")) {
-                    // ignore black list
-                    continue;
-                }
+                boolean isBlackList = false;
                 if (word.startsWith("-")) {
-                    useBlackList = true;
+                    isBlackList = true;
+                    word = word.substring(1);
+                } else if (word.startsWith("+")) {
                     word = word.substring(1);
                 }
                 word = word.trim();
-                if (useBlackList) {
-                    if (rule == MappingRule.KEYWORD_MATCHING) {
-                        if (blackKeywords == C.EMPTY_SET) {
-                            blackKeywords = new HashSet<>();
-                        }
-                        blackKeywords.add(Keyword.of(word));
-                    } else {
-                        if (blackList == C.EMPTY_SET) {
-                            blackList = new HashSet<>();
-                        }
+                if (isBlackList) {
+                    if (!grayList.contains(word)) {
                         blackList.add(word);
                     }
                 } else {
-                    if (rule == MappingRule.KEYWORD_MATCHING) {
-                        if (whiteKeywords == C.EMPTY_SET) {
-                            whiteKeywords = new HashSet<>();
-                        }
-                        whiteKeywords.add(Keyword.of(word));
-                    } else {
-                        if (whiteList == C.EMPTY_SET) {
-                            whiteList = new HashSet<>();
-                        }
-                        whiteList.add(word);
+                    whiteList.add(word);
+                    if (word.contains(".")) {
+                        String context = S.cut(word).beforeLast(".");
+                        blackList.remove(context);
+                        grayList.add(context);
                     }
                 }
             }
-            if (useBlackList) {
-                whiteKeywords = C.set();
-                whiteList = C.set();
-            }
-            allEmpty = whiteKeywords.isEmpty() && whiteList.isEmpty() && blackKeywords.isEmpty() && blackList.isEmpty();
+            allEmpty = blackList.isEmpty() && whiteList.isEmpty();
         }
 
         @Override
@@ -330,19 +366,23 @@ public class DataMapper {
             if (allEmpty) {
                 return true;
             }
-            String prefix = context.toString();
-            if (S.notBlank(prefix)) {
-                s = S.pathConcat(prefix, '.', s);
+            String context = s.contains(".") ? S.cut(s).beforeLast(".") : "";
+            if (whiteList.contains(s) || grayList.contains(s)) {
+                return true;
             }
-            if (rule == KEYWORD_MATCHING) {
-                Keyword keyword = Keyword.of(s);
-                return blackKeywords.isEmpty() ? whiteKeywords.contains(keyword) : !blackKeywords.contains(keyword);
-            } else {
-                return blackList.isEmpty() ? whiteList.contains(s) : !blackList.contains(s);
+            if (blackList.contains(s)) {
+                return false;
             }
+            if (grayList.contains(context)) {
+                return false;
+            }
+            return whiteList.isEmpty();
         }
 
     }
+
+    private Map<String, String> specialMappings = C.Map();
+    private Set<String> intermediates = C.set();
 
     private MappingRule rule;
 
@@ -453,7 +493,10 @@ public class DataMapper {
      */
     private Map targetMap;
 
-    public DataMapper(Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic, String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass) {
+    private DataMapper root;
+
+
+    public DataMapper(Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic, String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass, Map<String, String> specialMappings) {
         this.targetType = target.getClass();
         E.illegalArgumentIf(isImmutable(targetType), "target type is immutable: " + targetType.getName());
         this.targetGenericType = targetGenericType;
@@ -472,6 +515,17 @@ public class DataMapper {
         this.circularReferenceDetector = new HashSet<>();
         this.circularReferenceDetector.add(targetType);
         E.illegalArgumentIfNot(this.rootClass.isAssignableFrom(this.targetType), "root class[%s] must be assignable from target type[%s]", rootClass.getName(), targetType.getName());
+        if (null != specialMappings) {
+            this.intermediates = new HashSet<>();
+            this.specialMappings = specialMappings;
+            for (String s : specialMappings.keySet()) {
+                while (s.contains(".")) {
+                    s = S.cut(s).beforeLast(".");
+                    this.intermediates.add(s);
+                }
+            }
+        }
+        this.root = this;
         this.doMapping();
     }
 
@@ -505,6 +559,8 @@ public class DataMapper {
         this.circularReferenceDetector = new HashSet<>();
         this.circularReferenceDetector.addAll(parentMapper.circularReferenceDetector);
         this.circularReferenceDetector.add(targetType);
+        this.specialMappings = parentMapper.specialMappings;
+        this.root = parentMapper.root;
         this.doMapping();
     }
 
@@ -516,12 +572,12 @@ public class DataMapper {
         try {
             this.probeTargetType();
             if (targetIsArray || targetIsCollection) {
-                mapToArrayOrCollection();
+                toArrayOrCollection();
             } else {
                 if (targetIsMap) {
-                    mapToMap();
+                    toMap();
                 } else {
-                    mapToPojo();
+                    toPojo();
                 }
             }
         } catch (MappingException e) {
@@ -535,7 +591,7 @@ public class DataMapper {
      * Array mapping require the source type to
      * be sequenced, i.e. array or iterable
      */
-    private void mapToArrayOrCollection() {
+    private void toArrayOrCollection() {
         List sourceList;
 
         // ensure we have a source as list
@@ -592,7 +648,7 @@ public class DataMapper {
 
             // handle null value
             if (null == sourceComponent) {
-                if (semantic.isMapping() || semantic.isMerge()) {
+                if (semantic.isAppend()) {
                     continue;
                 }
                 if (targetIsList) {
@@ -605,7 +661,7 @@ public class DataMapper {
 
             // sanity check on type matching
             boolean componentRawTypeMatches = $.is(sourceComponent).allowBoxing().instanceOf(targetComponentRawType);
-            if (!semantic.isMapping() && !componentRawTypeMatches) {
+            if (!semantic.allowTypeConvert() && !componentRawTypeMatches) {
                 logError("component type mismatch. Source component type: %s, target component type: %s", sourceComponent.getClass().getName(), targetComponentRawType.getName());
                 continue;
             }
@@ -639,7 +695,7 @@ public class DataMapper {
         }
     }
 
-    private void mapToMap() {
+    private void toMap() {
         targetMap.clear();
 
         // build target keyword index if needed
@@ -661,7 +717,7 @@ public class DataMapper {
             if (!ignoreGlobalFilter && sourceKey instanceof String && OsglConfig.globalMappingFilter_shouldIgnore(sourceKey.toString())) {
                 continue;
             }
-            if (!semantic.isMapping() && !$.is(sourceKey).allowBoxing().instanceOf(targetKeyType)) {
+            if (!semantic.allowTypeConvert() && !$.is(sourceKey).allowBoxing().instanceOf(targetKeyType)) {
                 logError("map key type mismatch, required: %s; found: %s", targetKeyType, sourceKey.getClass().getName());
                 continue;
             }
@@ -678,6 +734,9 @@ public class DataMapper {
                 targetKey = semantic.isMapping() ? convert(sourceKey).to(targetKeyType) : sourceKey;
             }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
+            if (!filter.test(key)) {
+                continue;
+            }
             Object targetVal = targetMap.get(targetKey);
             targetVal = prepareTargetComponent(
                     sourceVal, targetVal, targetComponentRawType,
@@ -686,7 +745,7 @@ public class DataMapper {
         }
     }
 
-    private void mapToPojo() {
+    private void toPojo() {
         Map<Object, Object> sourceMap = Map.class.isAssignableFrom(sourceType) ? (Map) source : null;
         Map<Keyword, Object> sourceMapByKeyword = null;
         if (rule.keywordMatching()) {
@@ -715,40 +774,57 @@ public class DataMapper {
             if (!filter.test(key)) {
                 continue;
             }
+            String specialMap = specialMappings.get(key);
             Type type = targetField.getGenericType();
             ParameterizedType targetFieldGenericType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
-            Object sourcePropValue;
-            if (null != sourceMapByKeyword) {
-                sourcePropValue = sourceMapByKeyword.get(Keyword.of(targetFieldName));
-                if (null == sourcePropValue) {
-                    continue;
-                }
-                if (sourcePropValue instanceof Field) {
-                    sourcePropValue = $.getFieldValue(source, (Field) sourcePropValue);
-                }
-            } else if (null != sourceMap) {
-                sourcePropValue = sourceMap.get(targetFieldName);
-            } else {
-                Field sourceField = $.fieldOf(sourceType, targetFieldName);
-                if (null == sourceField) {
-                    continue;
-                }
-                sourcePropValue = $.getFieldValue(source, sourceField);
-            }
+            Object sourcePropValue = null == specialMap ? null : $.getProperty(root.source, specialMap);
             if (null == sourcePropValue) {
-                if (semantic.isCopy()) {
-                    $.setFieldValue(target, targetField, $.convert(null).to(targetFieldType));
+                if (null != sourceMapByKeyword) {
+                    sourcePropValue = sourceMapByKeyword.get(Keyword.of(targetFieldName));
+                    if (null == sourcePropValue) {
+                        continue;
+                    }
+                    if (sourcePropValue instanceof Field) {
+                        sourcePropValue = $.getFieldValue(source, (Field) sourcePropValue);
+                    }
+                } else if (null != sourceMap) {
+                    sourcePropValue = sourceMap.get(targetFieldName);
+                } else {
+                    Field sourceField = $.fieldOf(sourceType, targetFieldName);
+                    sourcePropValue = null == sourceField ? null : $.getFieldValue(source, sourceField);
+                }
+                if (null == sourcePropValue) {
+                    if (!semantic.isShallowCopy() && intermediates.contains(key)) {
+                        sourcePropValue = INTERMEDIATE_PLACEHOLDER;
+                    }
+                    if (null == sourcePropValue) {
+                        if (semantic.isCopy()) {
+                            $.setFieldValue(target, targetField, $.convert(null).to(targetFieldType));
+                        }
+                        continue;
+                    }
+                }
+            }
+
+            if (semantic.isShallowCopy()) {
+                try {
+                    $.setFieldValue(target, targetField, sourcePropValue);
+                } catch (Exception e) {
+                    logError(e, "Error setting field for shallow copy");
                 }
                 continue;
             }
 
             boolean targetFieldIsContainer = isContainer(targetFieldType);
-            if (!targetFieldIsContainer && !semantic.isMapping() && !$.is(sourcePropValue).allowBoxing().instanceOf(targetFieldType)) {
+            if (!targetFieldIsContainer && !semantic.allowTypeConvert() && INTERMEDIATE_PLACEHOLDER != sourcePropValue && !$.is(sourcePropValue).allowBoxing().instanceOf(targetFieldType)) {
                 logError("Type mismatch copy source [%s] to field[%s|%s]", sourcePropValue.getClass().getName(), targetFieldName, targetFieldType.getName());
                 continue;
             }
 
             Object targetFieldValue = $.getFieldValue(target, targetField);
+            if (INTERMEDIATE_PLACEHOLDER == sourcePropValue) {
+                sourcePropValue = instanceFactory.apply(targetFieldType);
+            }
             targetFieldValue = prepareTargetComponent(
                     sourcePropValue, targetFieldValue, targetFieldType,
                     targetFieldGenericType, targetFieldIsContainer, targetFieldName);
@@ -833,7 +909,7 @@ public class DataMapper {
             String key
     ) {
         if (semantic.isShallowCopy() || isImmutable(targetComponentType)) {
-            if (semantic.isMapping() && !$.is(sourceComponent).allowBoxing().instanceOf(targetComponentType)) {
+            if (semantic.allowTypeConvert() && !$.is(sourceComponent).allowBoxing().instanceOf(targetComponentType)) {
                 return convert(sourceComponent).to(targetComponentType);
             }
             return sourceComponent;

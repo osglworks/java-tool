@@ -1,6 +1,10 @@
 # OSGL Tool Change Log
 
 1.13.0
+* Mapping framework - Add MERGE_MAPPING semantic #100
+* Allow it to inject flexible logic to decide whether a class is immutable #99
+* Mapping framework - improve filter spec handling #98
+* Mapping framework: allow map between different names #97
 * Mapping framework: copy from a container to another container should always be allowed #94
 * Support internal cache #95
 

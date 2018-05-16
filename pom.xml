@@ -37,6 +37,12 @@
     <scm.url>git@github.com:osglworks/java-tool.git</scm.url>
     <commons-codec.version>1.11</commons-codec.version>
     <commons-beanutils.version>1.8.3</commons-beanutils.version>
+    <easy-mapper.version>1.0.4</easy-mapper.version>
+    <dozer.version>5.5.1</dozer.version>
+    <orika.version>1.5.2</orika.version>
+    <commons-lang3.version>3.7</commons-lang3.version>
+    <model-mapper.version>1.1.0</model-mapper.version>
+    <hutool.version>4.0.12</hutool.version>
     <fastjson.version>1.2.47</fastjson.version>
     <osgl-storage.version>1.5.2</osgl-storage.version>
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
@@ -64,7 +70,35 @@
     <dependency>
       <groupId>com.baidu.unbiz</groupId>
       <artifactId>easy-mapper</artifactId>
-      <version>1.0.4</version>
+      <version>${easy-mapper.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.dozer</groupId>
+      <artifactId>dozer</artifactId>
+      <version>${dozer.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.modelmapper</groupId>
+      <artifactId>modelmapper</artifactId>
+      <version>${model-mapper.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cn.hutool</groupId>
+      <artifactId>hutool-core</artifactId>
+      <version>${hutool.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ma.glasnost.orika</groupId>
+      <artifactId>orika-core</artifactId>
+      <version>${orika.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

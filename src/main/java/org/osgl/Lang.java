@@ -5968,6 +5968,11 @@ public class Lang implements Serializable {
     public static void nil() {
     }
 
+    /**
+     * A dumb object instance
+     */
+    public static final Object DUMB = new Object();
+
     private static ConcurrentHashMap<Class<? extends Enum>, Map<Keyword, Enum>> enumLookup = new ConcurrentHashMap<>();
 
     /**
@@ -6226,10 +6231,10 @@ public class Lang implements Serializable {
             }
             boolean result = clz.isAssignableFrom(c);
             if (!result && allowBoxing) {
-                if (isPrimitive(c)) {
+                if (isPrimitiveType(c)) {
                     return clz.isAssignableFrom(wrapperClassOf(c));
                 }
-                if (isWrapper(c)) {
+                if (isWrapperType(c)) {
                     return clz.isAssignableFrom(primitiveTypeOf(c));
                 }
             }
@@ -7064,7 +7069,18 @@ public class Lang implements Serializable {
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean includeRootClass, boolean noStatic) {
-        String key = S.concat(c, rootClass, includeRootClass, noStatic);
+        StringBuilder buf = S.builder(c.hashCode());
+        if (Object.class != rootClass) {
+            buf.append(":");
+            buf.append(rootClass.hashCode());
+        }
+        if (includeRootClass) {
+            buf.append(":1");
+        }
+        if (noStatic) {
+            buf.append(":1");
+        }
+        String key = buf.toString();
         List<Field> fields = cache().get(key);
         if (null == fields) {
             fields = new ArrayList<>();
@@ -7355,17 +7371,7 @@ public class Lang implements Serializable {
     public static PropertyHandlerFactory propertyHandlerFactory = new ReflectionPropertyHandlerFactory();
 
     public static <T> T getProperty(Object entity, String property) {
-        E.NPE(entity);
-        if (property.contains("]")) {
-            property = property.replace('[', '.').replace("]", "");
-        }
-        if (property.contains(".")) {
-            return getProperty(entity, property.split("\\."));
-        } else if (property.contains("/")) {
-            return getProperty(entity, property.split("\\/"));
-        }
-        PropertyGetter gettter = propertyGetter(null, entity, property, false);
-        return cast(gettter.get(entity, property));
+        return getProperty(OsglConfig.internalCache(), entity, property);
     }
 
     @SuppressWarnings("unchecked")
@@ -8565,7 +8571,28 @@ public class Lang implements Serializable {
      * A stage of object for mapping operation
      */
     public static class _MappingStage {
-        private Object from;
+
+        public class __SpecialMappingStage {
+            private String from;
+
+            private __SpecialMappingStage(String sourceField) {
+                E.illegalArgumentIf(S.blank(sourceField));
+                this.from = sourceField;
+            }
+
+            public _MappingStage to(String toField) {
+                E.illegalArgumentIf(S.blank(toField));
+                _MappingStage stage = _MappingStage.this;
+                if (null == stage.specialMappings) {
+                    stage.specialMappings = new HashMap<>();
+                }
+                stage.specialMappings.put(toField, from);
+
+                return stage;
+            }
+        }
+
+        private Object source;
         private Function<Class, ?> instanceFactory = OsglConfig.INSTANCE_FACTORY;
         private Map<Class, Object> hints = C.EMPTY_MAP;
         private DataMapper.MappingRule rule = STRICT_MATCHING;
@@ -8576,21 +8603,22 @@ public class Lang implements Serializable {
         private boolean ignoreGlobalFilter;
         private Class<?> rootClass = Object.class;
         private ParameterizedType targetGenericType;
+        private Map<String, String> specialMappings;
 
-        private _MappingStage(Object from, DataMapper.Semantic semantic) {
-            this.from = $.requireNotNull(from);
+        private _MappingStage(Object source, DataMapper.Semantic semantic) {
+            this.source = $.requireNotNull(source);
             this.semantic = $.requireNotNull(semantic);
         }
 
         /**
-         * Change mapping semantic of this mappign stage.
+         * Change mapping semantic of this mapping stage.
          *
          * @param semantic
          *      the new {@link DataMapper.Semantic mapping semantic} to be used
          * @return
          *      this mapping stage for chained call
          */
-        public _MappingStage sematic(DataMapper.Semantic semantic) {
+        public _MappingStage semantic(DataMapper.Semantic semantic) {
             this.semantic = $.requireNotNull(semantic);
             return this;
         }
@@ -8644,7 +8672,7 @@ public class Lang implements Serializable {
          * for the container's component types, like key and value type of a map or element
          * type of a list.
          *
-         * Note the type specifeid must be an instance of {@link ParameterizedType}
+         * Note the type specified must be an instance of {@link ParameterizedType}
          * in order to effect.
          *
          * @param type
@@ -8657,6 +8685,10 @@ public class Lang implements Serializable {
                 this.targetGenericType = (ParameterizedType) type;
             }
             return this;
+        }
+
+        public __SpecialMappingStage map(String sourceField) {
+            return new __SpecialMappingStage(sourceField);
         }
 
         /**
@@ -8810,8 +8842,41 @@ public class Lang implements Serializable {
             return this;
         }
 
+        /**
+         * Indicate this mapping process shall ignore global filter settings in {@link OsglConfig}.
+         *
+         * @return this mapping stage
+         * @see OsglConfig#addGlobalMappingFilter(String)
+         * @see OsglConfig#addGlobalMappingFilters(String, String...)
+         */
         public _MappingStage ignoreGlobalFilter() {
             this.ignoreGlobalFilter = true;
+            return this;
+        }
+
+        /**
+         * Specify special name mapping rules.
+         *
+         * The rules shall be a string to string map with key be the target field name,
+         * and value be the source field name. For example, if it shall map `id` in source
+         * bean to `no` in the target bean, the map shall be
+         *
+         * ```
+         * Map<String, String> rules = new HashMap();
+         * rules.put("no", "id");
+         * $.deepCopy(src).withSpecialNameMappings(rules).to(tgt);
+         * ```
+         *
+         * @param specialNameMappings
+         *      a Map of name mapping rules.
+         * @return
+         *      this mapping stage
+         */
+        public _MappingStage withSpecialNameMappings(Map<String, String> specialNameMappings) {
+            if (null == specialNameMappings || specialNameMappings.isEmpty()) {
+                return this;
+            }
+            this.specialMappings = specialNameMappings;
             return this;
         }
 
@@ -8842,14 +8907,28 @@ public class Lang implements Serializable {
          * an new array instance with the same component type with `to` will be created and populated.
          * The original `to` array will be left unchanged. The return value is the new array instance.
          *
-         * @param to
-         *      the target
+         * @param target
+         *      target object
          * @param <T>
          *      the generic type parameter of the target.
-         * @return the target been copied, might not be the same instance of `to` if `to` is an array
+         * @return the target been copied/mapped, might not be the same instance of `to` if `to` is an array
          */
-        public <T> T to(T to) {
-            return (T) new DataMapper(from, to, targetGenericType, rule, semantic, filterSpec, ignoreError, ignoreGlobalFilter, hints, instanceFactory, converterRegistry, rootClass).getTarget();
+        public <T> T to(T target) {
+            return (T) new DataMapper(source, target, targetGenericType, rule, semantic, filterSpec, ignoreError, ignoreGlobalFilter, hints, instanceFactory, converterRegistry, rootClass, specialMappings).getTarget();
+        }
+
+        /**
+         * Commit the mapping stage and trigger the mapping process on an new instance created from
+         * the `targetClass` specified.
+         *
+         * @param targetClass
+         *      the class used to create target instance
+         * @param <T> the generic type parameter of targetClass
+         * @return the instance been copied/mapped
+         * @see #to(Object)
+         */
+        public <T> T to(Class<T> targetClass) {
+            return (T) to(instanceFactory.apply(targetClass));
         }
 
     }
@@ -8939,7 +9018,8 @@ public class Lang implements Serializable {
 
 
     /**
-     * Prepare a Mapping operation with {@link DataMapper.MappingRule#KEYWORD_MATCHING keyword matching}
+     * Prepare a Mapping operation with {@link DataMapper.Semantic#MAP map} semantic
+     * and {@link DataMapper.MappingRule#KEYWORD_MATCHING keyword matching}
      *
      * @param source
      *      the source object
@@ -8947,6 +9027,18 @@ public class Lang implements Serializable {
      */
     public static _MappingStage map(Object source) {
         return new _MappingStage(source, MAP).keywordMatching();
+    }
+
+    /**
+     * Prepare a Mapping operation with {@link DataMapper.Semantic#MERGE_MAP merge map} semantic
+     * and {@link DataMapper.MappingRule#KEYWORD_MATCHING keyword matching}
+     *
+     * @param source
+     *      the source object
+     * @return a {@link _MappingStage}
+     */
+    public static _MappingStage mergeMap(Object source) {
+        return new _MappingStage(source, MERGE_MAP).keywordMatching();
     }
 
     // --- eof common utilities

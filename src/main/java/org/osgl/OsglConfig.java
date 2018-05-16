@@ -21,7 +21,7 @@ package org.osgl;
  */
 
 import org.osgl.cache.CacheService;
-import org.osgl.cache.impl.SimpleCacheService;
+import org.osgl.cache.impl.InteralCacheService;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.util.E;
 import org.osgl.util.IO;
@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class OsglConfig {
 
-    private static CacheService internalCache = new SimpleCacheService("osgl-tool");
+    private static CacheService internalCache = new InteralCacheService();
 
     public static void setInternalCache(CacheService cache) {
         internalCache = $.requireNotNull(cache);
@@ -74,6 +74,7 @@ public class OsglConfig {
     };
 
     private static final Set<String> immutableClassNames = new HashSet<>();
+    private static $.Predicate<Class> immutableClassPredicate = $.F.no();
     static {
         immutableClassNames.addAll(IO.read(OsglConfig.class.getResource("immutable-classes.list")).toLines());
     }
@@ -82,8 +83,12 @@ public class OsglConfig {
         OsglConfig.immutableClassNames.addAll(immutableClassNames);
     }
 
+    public static void registerImmutableClassPredicate($.Predicate<Class> predicate) {
+        immutableClassPredicate = $.requireNotNull(predicate);
+    }
+
     static boolean isImmutable(Class<?> c) {
-        return immutableClassNames.contains(c.getName());
+        return immutableClassNames.contains(c.getName()) || immutableClassPredicate.test(c);
     }
 
 

@@ -39,6 +39,7 @@ public class MappingTest extends TestBase {
     static class Foo {
         public int id = N.randInt();
         public int[] ia = {1, 2, 3};
+        public List<String> l1 = C.list("a", "b");
         public String name = S.random();
         public Date createDate = new Date();
         public Set<Integer> si = C.newSet(1, 2);
@@ -73,6 +74,7 @@ public class MappingTest extends TestBase {
         public DateTime create_date = DateTime.now();
         public int id = N.randInt();
         public int[] ia = {1, 2};
+        public String[] l1 = {"1", "x"};
         public String name = S.random();
         public long value = N.randLong();
         public Set<Integer> si = C.newSet(10, 20);
@@ -119,7 +121,6 @@ public class MappingTest extends TestBase {
 
         @Override
         public int hashCode() {
-
             return Objects.hash(foo, map);
         }
     }
@@ -283,7 +284,7 @@ public class MappingTest extends TestBase {
 
             Object source = foo_3_array;
             Bar[] ba = bar_3_array;
-            Bar[] result = $.map(source).withConverter(DATE_TO_DATETIME, DATETIME_TO_DATE).to(ba);
+            Bar[] result = $.mergeMap(source).withConverter(DATE_TO_DATETIME, DATETIME_TO_DATE).to(ba);
 
             same(result, ba);
             meq(foo1, result[0]);
@@ -329,8 +330,7 @@ public class MappingTest extends TestBase {
             eq(source.ia, target.ia);
             eq(source.si, target.si);
             notSame(source.ia, target.ia);
-            notNull(target.create_date); // there are initial value
-            ne(source.createDate.getTime(), target.create_date.getMillis());
+            isNull(target.create_date);
         }
 
         @Test(expected = MappingException.class)
@@ -365,8 +365,27 @@ public class MappingTest extends TestBase {
             eq(source.name, target.name);
             eq(source.ia, target.ia);
             ne(source.si, target.si);
-            notNull(target.create_date); // there is initial value
+            // because merge use strict name matching thus
+            // foo.createDate cannot be map into bar.create_date
+            // however merge will leave target field unchanged if source field is null
+            // in this case it assume foo.create_date (which doesn't exits) is null
+            notNull(target.create_date);
             ne(source.createDate.getTime(), target.create_date.getMillis());
+            yes(target.si.containsAll(source.si));
+        }
+
+        @Test
+        public void testMergeMapping() {
+            Foo source = foo1;
+            Bar target = bar1;
+            $.mergeMap(source).withConverter(DATE_TO_DATETIME).to(target);
+            eq(source.id, target.id);
+            eq(source.name, target.name);
+            eq(source.ia, target.ia);
+            ne(source.si, target.si);
+            yes(target.si.containsAll(source.si));
+            notNull(target.create_date);
+            eq(source.createDate.getTime(), target.create_date.getMillis());
             yes(target.si.containsAll(source.si));
         }
 
@@ -378,7 +397,7 @@ public class MappingTest extends TestBase {
             eq(source.id, target.id);
             eq(source.name, target.name);
             eq(source.ia, target.ia);
-            ne(source.si, target.si);
+            eq(source.si, target.si);
             yes(target.si.containsAll(source.si));
             notNull(target.create_date);
             eq(source.createDate.getTime(), target.create_date.getMillis());
@@ -462,6 +481,22 @@ public class MappingTest extends TestBase {
             same(source.foo, target.foo);
             same(source.map.get("bar1"), target.map.get("bar1"));
             same(source.foo.si, target.foo.si);
+        }
+
+        @Test(expected = MappingException.class)
+        public void testShallowCopyToDifferentType() {
+            Foo source = new Foo();
+            $.copy(source).to(Bar.class);
+        }
+
+        @Test
+        public void testShallowCopyToDifferentTypeIgnoreError() {
+            Foo source = new Foo();
+            Bar target = $.copy(source).ignoreError().to(Bar.class);
+            same(target.ia, source.ia);
+            eq(target.id, source.id);
+            same(target.name, source.name);
+            same(target.si, source.si);
         }
     }
 

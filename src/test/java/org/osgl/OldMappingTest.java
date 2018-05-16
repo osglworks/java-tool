@@ -109,9 +109,9 @@ public class OldMappingTest extends TestBase {
         Bar bar = new Bar();
         String name = S.random();
         bar.name = name;
-        $.map(foo).to(bar);
+        $.mergeMap(foo).to(bar);
         eq(foo.id, bar.id);
-        eq(name, bar.name); // map won't update target with null
+        eq(name, bar.name); // merge map won't update target with null
 
         $.copy(foo).to(bar);
         eq(foo.id, bar.id);

@@ -20,22 +20,17 @@ package benchmark;
  * #L%
  */
 
-import com.baidu.unbiz.easymapper.MapperFactory;
-import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
-import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Test;
 import org.osgl.$;
-import org.osgl.BenchmarkBase;
 import org.osgl.util.C;
 import org.osgl.util.N;
 import org.osgl.util.S;
 
+import java.io.Serializable;
 import java.util.Map;
 
-@BenchmarkOptions(warmupRounds = 10000 * 5, benchmarkRounds = 10000 * 10 * 5)
-public class BeanCopyBenchmark extends BenchmarkBase {
+public class CopyBenchmarkModels {
 
-    public static class Bar {
+    public static class Bar implements Cloneable, Serializable {
         private boolean flag = $.random(true, false);
         private double d = N.randDouble();
         private int[] ia = $.copy(C.range(0, 30)).to(new int[30]);
@@ -63,12 +58,17 @@ public class BeanCopyBenchmark extends BenchmarkBase {
         public void setIa(int[] ia) {
             this.ia = ia;
         }
+
+        @Override
+        public Bar clone() throws CloneNotSupportedException {
+            return (Bar) super.clone();
+        }
     }
 
-    public static class Foo {
+    public static class Foo implements Cloneable, Serializable {
         private int id = N.randInt();
         private String name = S.random();
-        private Map<String, Bar> map = C.Map("a", new Bar(), "b", new Bar());
+        private Map<String, Bar> map = C.newMap("a", new Bar(), "b", new Bar());
 
         public int getId() {
             return id;
@@ -93,28 +93,11 @@ public class BeanCopyBenchmark extends BenchmarkBase {
         public void setMap(Map<String, Bar> map) {
             this.map = map;
         }
+
+        @Override
+        public Foo clone() throws CloneNotSupportedException {
+            return (Foo) super.clone();
+        }
     }
 
-    private Foo source = new Foo();
-    private Foo target = new Foo();
-
-    @Test
-    public void testOsglCopy() {
-        $.copy(source).to(target);
-    }
-
-    @Test
-    public void testBeanUtilsCopy() throws Exception {
-        BeanUtils.copyProperties(target, source);
-    }
-
-    //@Test
-    public void testOsglDeepCopy() {
-        $.deepCopy(source).to(target);
-    }
-
-    @Test
-    public void testEasyMapper() {
-        MapperFactory.getCopyByRefMapper().mapClass(Foo.class, Foo.class).registerAndMap(source, target);
-    }
 }
