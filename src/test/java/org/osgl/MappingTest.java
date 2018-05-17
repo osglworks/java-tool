@@ -342,8 +342,9 @@ public class MappingTest extends TestBase {
         }
 
         @Test
-        public void deepCopyIgnoreError() {
+        public void deepCopyIgnoreError() throws Exception {
             Foo source = foo1;
+            Thread.sleep(10);
             Bar target = new Bar();
             $.deepCopy(source).keywordMatching().ignoreError().to(target);
             eq(source.id, target.id);
