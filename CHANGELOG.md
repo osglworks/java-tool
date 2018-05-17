@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.13.0
+* Add `Lang.resetArray(x)` utils #101
 * Mapping framework - Add MERGE_MAPPING semantic #100
 * Allow it to inject flexible logic to decide whether a class is immutable #99
 * Mapping framework - improve filter spec handling #98
