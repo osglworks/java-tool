@@ -73,6 +73,59 @@ OSGL mapping framework support the following three different name mapping rules:
     * Foo_Bar
 3. Special matching rules can be set for each mapping process to match completely two different names.
 
+Here is an example of using special mapping rules:
+
+```java
+$.deepCopy(foo)
+    .map("id").to("no")
+    .map("subject").to("title")
+    .to(bar);
+```
+
+The above call tells mapping framework to map `id` field in `foo` to `no` field in target `bar`, and map `subject` field in `foo` to `title` field in `bar`.
+
 ### 2.3 Filter
 
+Filter can be used to skip copying/mapping certain fields. Filter is provided with a list of field names separated by `,`, if a field name is prefixed with `-` it means the field must not be copied/mapped. If the field were prefixed with `+` or without prefix, then it means the field shall be copied/mapped and the fields that are not mentioned shall NOT be copied/mapped. Examples:
+
+* `-email,-password` - do not copy/map email and password fields, all other fields shall be copied/mapped
+* `+email` - copy only email field, all other fields shall not be copied.
+* `-cc.cvv` - do not copy `cvv` field in the instance of `cc` field, all other fields shall be copied
+* `-cc,+cc.cvv` - copy `cvv` field in the instance of `cc` field, all other fields in the `cc` instance shall not be copied, all fields other than `cc` instance shall be copied.
+
+To apply filter use the following API:
+
+```java
+$.deepCopy(foo).filter("-password,-address.streetNo").to(bar);
+```
+
+**Note** filter matches the field names in the target object.
+
+### 2.4 root class
+
+OSGL copy/mapping tool applied on fields instead of Getter/Setter methods. The exploring of fields of a bean is a recursive procedure till it reaches the `Object.class`. However there are cases that it needs to stop the fields exploring journey at a certain parent class. For example, suppose we have defined the following Base class:
+
+```java
+public abstract class ModelBase {
+    public Date _created;
+}
+```
+
+Your other model classes extends from `ModelBase`, and your Dao use the `_created` field to check whether the instance is new (when _created is `null`) or an existing record.
+
+Now you want to copy an existing record int an new record to prepopulate that new record for updates, and in the end you will save the updated copy as an new record. Thus in this case you do not want to copy the `_created` field which is defined in `ModelBase`. Here is how to do it with `rootClass`:
+
+```java
+MyModel copy = $.copy(existing).rootClass(ModelBase.class).to(MyModel.class);
+```
+
+### 2.5 Target generic type
+
+If you want to map from a container to another container with different element type, you need to provide the `targetGenericType` parameter to make it work:
+
+```java
+List<Foo> fooList = C.list(new Foo(), new Foo());
+List<Bar> barList = C.newList();
+$.map(fooList).targetGenericType(new TypeReference<List<Bar>>(){}).to(barList);
+```
 

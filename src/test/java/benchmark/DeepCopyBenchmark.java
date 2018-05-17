@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.osgl.$;
 import org.osgl.BenchmarkBase;
 
-@BenchmarkOptions(warmupRounds = 100 * 100, benchmarkRounds = 100 * 100 * 10)
+@BenchmarkOptions(warmupRounds = 100 * 100 * 10, benchmarkRounds = 100 * 100 * 50)
 public class DeepCopyBenchmark extends BenchmarkBase {
 
     private Foo source = new Foo();
@@ -52,8 +52,10 @@ public class DeepCopyBenchmark extends BenchmarkBase {
         dozer.map(source, target);
     }
 
+
     @Test
     public void osgl() {
+        //for (int i = 0; i < 100 * 100 * 100; ++i)
         $.deepCopy(source).to(target);
     }
 

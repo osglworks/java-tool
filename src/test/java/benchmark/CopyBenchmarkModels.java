@@ -20,10 +20,8 @@ package benchmark;
  * #L%
  */
 
-import org.osgl.$;
 import org.osgl.util.C;
 import org.osgl.util.N;
-import org.osgl.util.S;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -31,9 +29,9 @@ import java.util.Map;
 public class CopyBenchmarkModels {
 
     public static class Bar implements Cloneable, Serializable {
-        private boolean flag = $.random(true, false);
+        private boolean flag = false;
         private double d = N.randDouble();
-        private int[] ia = $.copy(C.range(0, 30)).to(new int[30]);
+        private int[] ia = {N.randInt(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
         public boolean isFlag() {
             return flag;
@@ -66,8 +64,8 @@ public class CopyBenchmarkModels {
     }
 
     public static class Foo implements Cloneable, Serializable {
-        private int id = N.randInt();
-        private String name = S.random();
+        private int id = 273;
+        private String name = "ABCDEFGHIJK";
         private Map<String, Bar> map = C.newMap("a", new Bar(), "b", new Bar());
 
         public int getId() {

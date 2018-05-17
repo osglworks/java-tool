@@ -8342,6 +8342,101 @@ public class Lang implements Serializable {
         return new boolean[size];
     }
 
+    private static final int EMPTY_ARRAY_LEN = 100;
+    private static boolean[] _empty_boolean_array = new boolean[EMPTY_ARRAY_LEN];
+    private static byte[] _empty_byte_array = new byte[EMPTY_ARRAY_LEN];
+    private static short[] _empty_short_array = new short[EMPTY_ARRAY_LEN];
+    private static char[] _empty_char_array = new char[EMPTY_ARRAY_LEN];
+    private static int[] _empty_int_array = new int[EMPTY_ARRAY_LEN];
+    private static long[] _empty_long_array = new long[EMPTY_ARRAY_LEN];
+    private static float[] _empty_float_array = new float[EMPTY_ARRAY_LEN];
+    private static double[] _empty_double_array = new double[EMPTY_ARRAY_LEN];
+    private static Object[] _empty_object_array = new Object[EMPTY_ARRAY_LEN];
+
+    public static boolean[] resetArray(boolean[] array) {
+        _resetArray(array, _empty_boolean_array, array.length);
+        return array;
+    }
+
+    public static byte[] resetArray(byte[] array) {
+        _resetArray(array, _empty_byte_array, array.length);
+        return array;
+    }
+
+    public static short[] resetArray(short[] array) {
+        _resetArray(array, _empty_short_array, array.length);
+        return array;
+    }
+
+    public static char[] resetArray(char[] array) {
+        _resetArray(array, _empty_char_array, array.length);
+        return array;
+    }
+
+    public static int[] resetArray(int[] array) {
+        _resetArray(array, _empty_int_array, array.length);
+        return array;
+    }
+
+    public static float[] resetArray(float[] array) {
+        _resetArray(array, _empty_float_array, array.length);
+        return array;
+    }
+
+    public static long[] resetArray(long[] array) {
+        _resetArray(array, _empty_long_array, array.length);
+        return array;
+    }
+
+    public static double[] resetArray(double[] array) {
+        _resetArray(array, _empty_double_array, array.length);
+        return array;
+    }
+
+    public static <T> T[] resetArray(T[] array) {
+        _resetArray(array, _empty_object_array, array.length);
+        return array;
+    }
+
+    public static Object resetArray(Object array) {
+        Class<?> c = array.getClass();
+        if (char[].class == c) {
+            return resetArray((char[]) array);
+        } else if (byte[].class == c) {
+            return resetArray((byte[]) array);
+        } else if (int[].class == c) {
+            return resetArray((int[]) array);
+        } else if (double[].class == c) {
+            return resetArray((double[]) array);
+        } else if (long[].class == c) {
+            return resetArray((long[]) array);
+        } else if (boolean[].class == c) {
+            return resetArray((boolean[]) array);
+        } else if (float[].class == c) {
+            return resetArray((float[]) array);
+        } else if (short[].class == c) {
+            return resetArray((short[]) array);
+        }
+        _resetArray(array, _empty_object_array, Array.getLength(array));
+        return array;
+    }
+
+    private static void _resetArray(Object array, Object empty, int len) {
+        if (len <= EMPTY_ARRAY_LEN) {
+            System.arraycopy(empty, 0, array, 0, len);
+        } else {
+            int limit = len - EMPTY_ARRAY_LEN;
+            for (int i = 0; i < limit; i += EMPTY_ARRAY_LEN) {
+                System.arraycopy(empty, 0, array, i, EMPTY_ARRAY_LEN);
+            }
+            int reminder = len % EMPTY_ARRAY_LEN;
+            if (0 == reminder) {
+                reminder = EMPTY_ARRAY_LEN;
+            }
+            System.arraycopy(empty, 0, array, len - reminder, reminder);
+        }
+    }
+
     public static <T> T[] concat(T[] a, T t) {
         int l = a.length;
         T[] ret = Arrays.copyOf(a, l + 1);

@@ -30,6 +30,7 @@ import org.osgl.exception.MappingException;
 import org.osgl.util.C;
 import org.osgl.util.N;
 import org.osgl.util.S;
+import org.osgl.util.TypeReference;
 
 import java.util.*;
 
@@ -500,8 +501,20 @@ public class MappingTest extends TestBase {
         }
     }
 
-    @Ignore // TBD
     public static class CopyListToList extends Base {
+
+        public List<Foo> fooList = C.list(new Foo(), new Foo());
+        public List<Bar> barList = C.newList();
+
+        @Test
+        public void test() {
+            $.map(fooList).targetGenericType(new TypeReference<List<Bar>>(){}).to(barList);
+            eq(2, barList.size());
+            Foo foo = fooList.get(0);
+            Bar bar = barList.get(0);
+            eq(foo.name, bar.name);
+            eq(foo.ia, bar.ia);
+        }
 
     }
 

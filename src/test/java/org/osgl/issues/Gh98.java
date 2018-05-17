@@ -47,9 +47,24 @@ public class Gh98 extends TestBase {
         $.deepCopy(source).filter("-bar,+bar.s2").to(target);
         Bar sourceBar = source.bar;
         Bar targetBar = target.bar;
+        eq(source.id, target.id);
         ne(sourceBar.s1, targetBar.s1);
         eq(sourceBar.s2, targetBar.s2);
         ne(sourceBar.s1, targetBar.s1);
+    }
+
+    @Test
+    public void testReverseCase() {
+        Foo source = new Foo();
+        Foo target = new Foo();
+
+        $.deepCopy(source).filter("-bar.s2").to(target);
+        Bar sourceBar = source.bar;
+        Bar targetBar = target.bar;
+        eq(source.id, target.id);
+        eq(sourceBar.s1, targetBar.s1);
+        ne(sourceBar.s2, targetBar.s2);
+        eq(sourceBar.s1, targetBar.s1);
     }
 
 }

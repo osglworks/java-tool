@@ -31,7 +31,7 @@ import org.modelmapper.ModelMapper;
 import org.osgl.$;
 import org.osgl.BenchmarkBase;
 
-@BenchmarkOptions(warmupRounds = 100 * 100, benchmarkRounds = 100 * 100 * 10)
+@BenchmarkOptions(warmupRounds = 100 * 100, benchmarkRounds = 100 * 100 * 50)
 public class CloneBenchmark extends BenchmarkBase {
 
     private static Foo foo = new Foo();

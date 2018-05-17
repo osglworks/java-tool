@@ -328,6 +328,12 @@ public class DataMapper {
          */
         private NameList grayList = new NameList(rule.keywordMatching());
 
+        /**
+         * Keep a set of property contexts that by default their sub properties
+         * shall be copied
+         */
+        private NameList greenList = new NameList(rule.keywordMatching());
+
         private boolean allEmpty = true;
 
         PropertyFilter(String spec) {
@@ -344,14 +350,18 @@ public class DataMapper {
                     word = word.substring(1);
                 }
                 word = word.trim();
+                String context = "";
+                if (word.contains(".")) {
+                    context = S.cut(word).beforeLast(".");
+                }
                 if (isBlackList) {
                     if (!grayList.contains(word)) {
                         blackList.add(word);
+                        greenList.add(context);
                     }
                 } else {
                     whiteList.add(word);
                     if (word.contains(".")) {
-                        String context = S.cut(word).beforeLast(".");
                         blackList.remove(context);
                         grayList.add(context);
                     }
@@ -375,6 +385,9 @@ public class DataMapper {
             }
             if (grayList.contains(context)) {
                 return false;
+            }
+            if (greenList.contains(context)) {
+                return true;
             }
             return whiteList.isEmpty();
         }
@@ -592,17 +605,23 @@ public class DataMapper {
      * be sequenced, i.e. array or iterable
      */
     private void toArrayOrCollection() {
-        List sourceList;
+        List sourceList = null;
+        Object sourceArray = null;
+        int sourceLength;
 
-        // ensure we have a source as list
-        if (!isSequence(sourceType)) {
-            sourceList = convert(source).to(List.class);
-            if (null == sourceList) {
-                logError("Cannot map source[%s] into array or collection", sourceType.getName());
-                return;
-            }
+        if (sourceType.isArray()) {
+            sourceArray = source;
+            sourceLength = Array.getLength(sourceArray);
+        } else if (List.class.isAssignableFrom(sourceType)) {
+            sourceList = (List) source;
+            sourceLength = sourceList.size();
+        } else if (Collection.class.isAssignableFrom(sourceType)) {
+            Collection c = (Collection) source;
+            sourceList = new ArrayList(c);
+            sourceLength = sourceList.size();
         } else {
-            sourceList = convert(source).to(List.class);
+            logError("Cannot map source[%s] into array or collection", sourceType.getName());
+            return;
         }
 
         final Object nullVal = $.convert(null).to(targetComponentRawType);
@@ -610,9 +629,7 @@ public class DataMapper {
         // clear target for copy operations
         if (semantic.isCopy()) {
             if (targetIsArray) {
-                for (int i = 0; i < targetLength; ++i) {
-                    Array.set(target, i, nullVal);
-                }
+                $.resetArray(target);
             } else if (targetIsList) {
                 for (int i = 0; i < targetLength; ++i) {
                     targetList.set(i, nullVal);
@@ -623,7 +640,6 @@ public class DataMapper {
         }
 
         // make sure target has enough size if it is an array or list
-        int sourceLength = sourceList.size();
         final int originTargetLength = targetLength;
         if (targetLength < sourceLength) {
             if (targetIsArray) {
@@ -640,8 +656,15 @@ public class DataMapper {
         }
 
         // now map from source list into target
+
+        // super optimization for array if target and source is the same type
+        if (targetIsArray && targetType == sourceType && isImmutable(targetComponentRawType)) {
+            System.arraycopy(sourceArray, 0, target, 0, sourceLength);
+            return;
+        }
+
         boolean targetComponentIsContainer = isContainer(targetComponentRawType);
-        Iterator itr = sourceList.iterator();
+        Iterator itr = null == sourceList ? new ArrayObjectIterator(sourceArray) : sourceList.iterator();
         int cursor = 0;
         while (itr.hasNext()) {
             Object sourceComponent = itr.next();
