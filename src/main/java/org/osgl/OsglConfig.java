@@ -73,6 +73,14 @@ public class OsglConfig {
         }
     };
 
+    public static $.Function<Class, ?> globalInstanceFactory() {
+        return INSTANCE_FACTORY;
+    }
+
+    public static void registerGlobalInstanceFactory($.Function<Class, ?> instanceFactory) {
+        INSTANCE_FACTORY = $.requireNotNull(instanceFactory);
+    }
+
     private static final Set<String> immutableClassNames = new HashSet<>();
     private static $.Predicate<Class> immutableClassPredicate = $.F.no();
     static {
@@ -234,9 +242,5 @@ public class OsglConfig {
 
     public static int getThreadLocalByteArrayBufferInitSize() {
         return UtilConfig.getThreadLocalByteArrayBufferInitSize();
-    }
-
-    public static void setInstanceFactory($.Function<Class, ?> instanceFactory) {
-        INSTANCE_FACTORY = $.requireNotNull(instanceFactory);
     }
 }

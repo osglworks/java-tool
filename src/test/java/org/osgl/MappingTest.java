@@ -32,6 +32,7 @@ import org.osgl.util.N;
 import org.osgl.util.S;
 import org.osgl.util.TypeReference;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RunWith(Enclosed.class)
@@ -539,5 +540,54 @@ public class MappingTest extends TestBase {
             notNull(bar.ia);
             eq(foo.ia, bar.ia);
         }
+    }
+
+    public static class Miscs extends TestBase {
+
+        public static class RawData {
+            Calendar date;
+            public RawData(long currentTimeMillis) {
+                date = Calendar.getInstance();
+                date.setTimeInMillis(currentTimeMillis);
+            }
+        }
+
+        public static class ConvertedData {
+            DateTime date;
+        }
+
+        public static Lang.TypeConverter<Calendar, DateTime> converter = new Lang.TypeConverter<Calendar, DateTime>() {
+            @Override
+            public DateTime convert(Calendar calendar) {
+                return new DateTime(calendar.getTimeInMillis());
+            }
+        };
+
+        @Test
+        public void testWithTypeConverter() {
+            RawData src = new RawData($.ms());
+            ConvertedData tgt = $.map(src).withConverter(converter).to(ConvertedData.class);
+            eq(tgt.date.getMillis(), src.date.getTimeInMillis());
+        }
+
+public static class RawDataV2 {
+    String date;
+    public RawDataV2(String date) {
+        this.date = date;
+    }
+}
+
+public static class ConvertedDataV2 {
+    Date date;
+}
+
+@Test
+public void testTypeConvertWithHint() throws Exception {
+    RawDataV2 src = new RawDataV2("20180518");
+    ConvertedDataV2 tgt = $.map(src).conversionHint(Date.class, "yyyyMMdd").to(ConvertedDataV2.class);
+    Date expected = new SimpleDateFormat("yyyyMMdd").parse("20180518");
+    eq(expected, tgt.date);
+}
+
     }
 }

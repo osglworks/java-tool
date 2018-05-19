@@ -518,7 +518,7 @@ public class DataMapper {
         this.semantic = $.requireNotNull(semantic);
         this.filter = new PropertyFilter(filterSpec);
         this.conversionHints = null == conversionHints ? C.<Class, Object>Map() : conversionHints;
-        this.instanceFactory = null == instanceFactory ? OsglConfig.INSTANCE_FACTORY : instanceFactory;
+        this.instanceFactory = null == instanceFactory ? OsglConfig.globalInstanceFactory() : instanceFactory;
         this.source = source;
         this.target = target;
         this.ignoreError = ignoreError;
@@ -754,7 +754,7 @@ public class DataMapper {
                 targetKey = targetMapKeywordLookup.get(sourceKeyword);
             }
             if (targetKey == null) {
-                targetKey = semantic.isMapping() ? convert(sourceKey).to(targetKeyType) : sourceKey;
+                targetKey = semantic.isMapping() ? convert(sourceKey, targetKeyType).to(targetKeyType) : sourceKey;
             }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
             if (!filter.test(key)) {
@@ -933,13 +933,13 @@ public class DataMapper {
     ) {
         if (semantic.isShallowCopy() || isImmutable(targetComponentType)) {
             if (semantic.allowTypeConvert() && !$.is(sourceComponent).allowBoxing().instanceOf(targetComponentType)) {
-                return convert(sourceComponent).to(targetComponentType);
+                return convert(sourceComponent, targetComponentType).to(targetComponentType);
             }
             return sourceComponent;
         }
         Object convertedTargetComponent = null;
         if (!targetComponentIsContainer && semantic.isMapping()) {
-            convertedTargetComponent = convert(sourceComponent).to(targetComponentType);
+            convertedTargetComponent = convert(sourceComponent, targetComponentType).to(targetComponentType);
         }
         if (null != convertedTargetComponent) {
             return convertedTargetComponent;
@@ -1000,7 +1000,7 @@ public class DataMapper {
 
     private <T> T convertSourceTo(Class<T> type) {
         try {
-            return convertStage(!ignoreError).to(type);
+            return convertStage(type, !ignoreError).to(type);
         } catch (Exception e) {
             logError(e, "Cannot convert source into " + type.getName());
             return null;
@@ -1008,23 +1008,23 @@ public class DataMapper {
     }
 
     private <T> T tryConvertSourceTo(Class<T> type) {
-        return convertStage(false).to(type);
+        return convertStage(type, false).to(type);
     }
 
     private $._ConvertStage<?> convertStage() {
-        return convert(source, !ignoreError);
+        return convert(source, targetType, !ignoreError);
     }
 
-    private $._ConvertStage<?> convertStage(boolean reportError) {
-        return convert(source, reportError);
+    private $._ConvertStage<?> convertStage(Class targetType, boolean reportError) {
+        return convert(source, targetType, reportError);
     }
 
-    private $._ConvertStage<?> convert(Object source) {
-        return convert(source, !ignoreError);
+    private $._ConvertStage<?> convert(Object source, Class targetType) {
+        return convert(source, targetType, !ignoreError);
     }
 
-    private $._ConvertStage<?> convert(Object source, boolean reportError) {
-        $._ConvertStage stage = $.convert(source).customTypeConverters(typeConverterRegistry).hint(convertHintOf(sourceType));
+    private $._ConvertStage<?> convert(Object source, Class targetType, boolean reportError) {
+        $._ConvertStage stage = $.convert(source).customTypeConverters(typeConverterRegistry).hint(convertHintOf(targetType));
         if (!reportError) {
             stage.reportError();
         }

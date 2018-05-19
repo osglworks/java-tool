@@ -3244,6 +3244,22 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<Date, Calendar> DATE_TO_CALENDAR = new TypeConverter<Date, Calendar>() {
+            @Override
+            public Calendar convert(Date date) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(date.getTime());
+                return calendar;
+            }
+        };
+
+        public static TypeConverter<Calendar, Date> CALENDAR_TO_DATE = new TypeConverter<Calendar, Date>() {
+            @Override
+            public Date convert(Calendar calendar) {
+                return new Date(calendar.getTimeInMillis());
+            }
+        };
+
         public static <ENUM extends Enum<ENUM>> TypeConverter<String, ENUM> stringToEnum(final Class<ENUM> enumClass) {
             return new TypeConverter<String, ENUM>(String.class, enumClass) {
                 @Override
@@ -9217,7 +9233,7 @@ public class Lang implements Serializable {
         }
 
         private Object source;
-        private Function<Class, ?> instanceFactory = OsglConfig.INSTANCE_FACTORY;
+        private Function<Class, ?> instanceFactory = OsglConfig.globalInstanceFactory();
         private Map<Class, Object> hints = C.EMPTY_MAP;
         private DataMapper.MappingRule rule = STRICT_MATCHING;
         private DataMapper.Semantic semantic;
@@ -9404,7 +9420,7 @@ public class Lang implements Serializable {
         /**
          * Specify a function used to create new instance during mapping process.
          *
-         * If not specified, then it will use {@link OsglConfig#INSTANCE_FACTORY}
+         * If not specified, then it will use {@link OsglConfig#globalInstanceFactory()}
          *
          * @param instanceFactory
          *         the new instance factory
@@ -9583,7 +9599,7 @@ public class Lang implements Serializable {
      * @return the clone of `source`
      */
     public static <T> T cloneOf(T source) {
-        return cloneOf(source, OsglConfig.INSTANCE_FACTORY);
+        return cloneOf(source, OsglConfig.globalInstanceFactory());
     }
 
     /**

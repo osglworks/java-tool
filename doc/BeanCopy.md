@@ -129,3 +129,97 @@ List<Bar> barList = C.newList();
 $.map(fooList).targetGenericType(new TypeReference<List<Bar>>(){}).to(barList);
 ```
 
+### 2.6 Type convert
+
+If you need to map from a type to a different type field in the target bean, OSGL allows you to specify a type converter, for example, suppose you have a source bean defined as:
+
+```java
+public class RawData {
+    Calendar date;
+    public RawData(long currentTimeMillis) {
+        date = Calendar.getInstance();
+        date.setTimeInMillis(currentTimeMillis);
+    }
+}
+```
+
+And your target type is:
+
+```java
+public static class ConvertedData {
+    DateTime date;
+}
+```
+
+If you want to map from `RawData` to `ConvertedData`, you need a type converter to help convert `Calendar date` in `RawData` to `DateTime date` in `ConvertedData`:
+
+```
+public static Lang.TypeConverter<Calendar, DateTime> converter = new Lang.TypeConverter<Calendar, DateTime>() {
+    @Override
+    public DateTime convert(Calendar calendar) {
+        return new DateTime(calendar.getTimeInMillis());
+    }
+};
+```
+
+Now you can use the following API to specify the converter defined:
+
+```
+@Test
+public void testWithTypeConverter() {
+    RawData src = new RawData($.ms());
+    ConvertedData tgt = $.map(src).withConverter(converter).to(ConvertedData.class);
+    eq(tgt.date.getMillis(), src.date.getTimeInMillis());
+}
+```
+
+**Note**
+
+1. you probably don't need to define too many type converters for common types as most of them has already been defined and registered in OSGL. See Converter document (TBD).
+
+2. type converter only applied on MAP and MERGE_MAP semantic. For SHALLOW_COPY, DEEP_COPY and MERGE, converter will not be used.
+
+#### 2.6.1 Convert hint
+
+There are some case that your type convert relies on certain configuration. For example you want to convert a String to a Date, you need to provide the date format string as a convert hint; Another case is you convert a string to int, you can provide a convert int as the radix.
+
+The source type:
+
+```java
+public static class RawDataV2 {
+    String date;
+    public RawDataV2(String date) {
+        this.date = date;
+    }
+}
+```
+
+The target type:
+
+```java
+public static class ConvertedDataV2 {
+    Date date;
+}
+```
+
+As shown above, we need to map String typed date in source to Date typed date in target, so in the following code we provide the date format string as the hint:
+
+```java
+RawDataV2 src = new RawDataV2("20180518");
+ConvertedDataV2 tgt = $.map(src).conversionHint(Date.class, "yyyyMMdd").to(ConvertedDataV2.class);
+```
+
+It's worth note that the hint `"yyyyMMdd"` is provided along with a type `Date.class`, this tells OSGL to use the hint when the convert target is of `Date.class` type.
+
+### 2.7 Instance Factory
+
+During the copy/mapping process it might need to create an new instance of a certain type, by default OSGL relies on `Lang.newInstance(Class)` call to create the new instance. In certain environment it might have the need to inject other instance create logic, for example when app running in ActFramework might want to delegate the instance creation to `Act.getInstance(Class)` call. OSGL allows it to
+
+1. replace global instance factory
+2. specify instance factory for one copy/mapping operation
+
+#### 2.7.1 Register a global instance factory
+
+```java
+OsglConfig.
+```
