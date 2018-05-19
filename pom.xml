@@ -44,7 +44,6 @@
     <model-mapper.version>1.1.0</model-mapper.version>
     <hutool.version>4.0.12</hutool.version>
     <fastjson.version>1.2.47</fastjson.version>
-    <osgl-storage.version>1.5.2</osgl-storage.version>
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
   </properties>
 
@@ -123,18 +122,6 @@
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
       <version>${fastjson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.osgl</groupId>
-      <artifactId>osgl-storage</artifactId>
-      <version>${osgl-storage.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.osgl</groupId>
-          <artifactId>osgl-tool</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 

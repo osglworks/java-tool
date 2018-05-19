@@ -1,6 +1,9 @@
 # OSGL Tool Change Log
 
-1.13.0
+1.13.1 19/May/2018
+* Move `ISObject`, `IStorageService` and `SObject` file from osgl-storage project to the tool project as `IO` utility refers to these symbols
+
+1.13.0 19/May/2018
 * Add `Lang.resetArray(x)` utils #101
 * Mapping framework - Add MERGE_MAPPING semantic #100
 * Allow it to inject flexible logic to decide whether a class is immutable #99
