@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.13.2 20/May/2018
+* Make mapping framework support `C.Range` #92
+
 1.13.1 19/May/2018
 * Move `ISObject`, `IStorageService` and `SObject` file from osgl-storage project to the tool project as `IO` utility refers to these symbols
 

@@ -619,6 +619,10 @@ public class DataMapper {
             Collection c = (Collection) source;
             sourceList = new ArrayList(c);
             sourceLength = sourceList.size();
+        } else if (Iterable.class.isAssignableFrom(sourceType)) {
+            Iterable iterable = (Iterable) source;
+            sourceList = C.list(iterable);
+            sourceLength = sourceList.size();
         } else {
             logError("Cannot map source[%s] into array or collection", sourceType.getName());
             return;
