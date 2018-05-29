@@ -263,8 +263,69 @@ public final class Keyword implements Comparable<Keyword> {
         return camelCase().compareTo(o.camelCase());
     }
 
+    /**
+     * Create a `Keyword` for the given `chars`
+     *
+     * @param chars
+     *      A `CharSequence`
+     * @return a `Keyword` of the `chars`
+     */
     public static Keyword of(CharSequence chars) {
         return new Keyword(chars);
+    }
+
+    /**
+     * Check if two {@link CharSequence}s are keyword identical.
+     *
+     * This method is an alias of {@link #equals(CharSequence, CharSequence)}.
+     *
+     * @param a
+     *      the first char sequence
+     * @param b
+     *      the second char sequence
+     * @return `true` if `a` and `b` are keyword identical
+     */
+    public static boolean eq(CharSequence a, CharSequence b) {
+        return of(a).equals(of(b));
+    }
+
+    /**
+     * Check if two {@link CharSequence}s are not keyword identical.
+     * @param a
+     *      the first char sequence
+     * @param b
+     *      the second char sequence
+     * @return `true` if `a` and `b` are not keyword identical
+     */
+    public static boolean neq(CharSequence a, CharSequence b) {
+        return !eq(a, b);
+    }
+
+    /**
+     * Check if two {@link CharSequence}s are keyword identical.
+     *
+     * This method is an alias of {@link #notEquals(CharSequence, CharSequence)}.
+     *
+     * @param a
+     *      the first char sequence
+     * @param b
+     *      the second char sequence
+     * @return `true` if `a` and `b` are keyword identical
+     */
+    public static boolean equals(CharSequence a, CharSequence b) {
+        return eq(a, b);
+    }
+
+    /**
+     * Check if two {@link CharSequence}s are not keyword identical.
+     * @param a
+     *      the first char sequence
+     * @param b
+     *      the second char sequence
+     * @return `true` if `a` and `b` are not keyword identical
+     */
+    public static boolean notEquals(CharSequence a, CharSequence b) {
+        return !eq(a, b);
     }
 
     private void init(CharSequence chars) {

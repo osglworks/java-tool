@@ -29,6 +29,7 @@ import org.osgl.exception.NotAppliedException;
 import org.osgl.util.algo.StringReplace;
 
 import java.io.File;
+import java.io.Writer;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
@@ -3262,7 +3263,7 @@ public class S {
      * **Note** Unlike {@link StringBuilder} when appending `null`
      * it will **NOT** change the state of this object.
      */
-    public static class Buffer implements Appendable, CharSequence {
+    public static class Buffer extends Writer implements Appendable, CharSequence {
 
         /**
          * The value is used for character storage.
@@ -3367,59 +3368,6 @@ public class S {
         public void ensureCapacity(int minimumCapacity) {
             if (minimumCapacity > 0)
                 ensureCapacityInternal(minimumCapacity);
-        }
-
-        /**
-         * For positive values of {@code minimumCapacity}, this method
-         * behaves like {@code ensureCapacity}, however it is never
-         * synchronized.
-         * If {@code minimumCapacity} is non positive due to numeric
-         * overflow, this method throws {@code OutOfMemoryError}.
-         */
-        private void ensureCapacityInternal(int minimumCapacity) {
-            // overflow-conscious code
-            if (minimumCapacity - value.length > 0) {
-                value = Arrays.copyOf(value,
-                        newCapacity(minimumCapacity));
-            }
-        }
-
-        /**
-         * The maximum size of array to allocate (unless necessary).
-         * Some VMs reserve some header words in an array.
-         * Attempts to allocate larger arrays may result in
-         * OutOfMemoryError: Requested array size exceeds VM limit
-         */
-        private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
-
-        /**
-         * Returns a capacity at least as large as the given minimum capacity.
-         * Returns the current capacity increased by the same amount + 2 if
-         * that suffices.
-         * Will not return a capacity greater than {@code MAX_ARRAY_SIZE}
-         * unless the given minimum capacity is greater than that.
-         *
-         * @param minCapacity the desired minimum capacity
-         * @throws OutOfMemoryError if minCapacity is less than zero or
-         *                          greater than Integer.MAX_VALUE
-         */
-        private int newCapacity(int minCapacity) {
-            // overflow-conscious code
-            int newCapacity = (value.length << 1) + 2;
-            if (newCapacity - minCapacity < 0) {
-                newCapacity = minCapacity;
-            }
-            return (newCapacity <= 0 || MAX_ARRAY_SIZE - newCapacity < 0)
-                    ? hugeCapacity(minCapacity)
-                    : newCapacity;
-        }
-
-        private int hugeCapacity(int minCapacity) {
-            if (Integer.MAX_VALUE - minCapacity < 0) { // overflow
-                throw new OutOfMemoryError();
-            }
-            return (minCapacity > MAX_ARRAY_SIZE)
-                    ? minCapacity : MAX_ARRAY_SIZE;
         }
 
         /**
@@ -4913,6 +4861,52 @@ public class S {
             return insert(offset, String.valueOf(d));
         }
 
+        @Override
+        public void write(char[] cbuf, int off, int len) {
+            append(cbuf, off, len);
+        }
+
+        /**
+         * Write a character `c` to this buf.
+         *
+         * Special note, this method is **NOT** the same with
+         * {@link #append(int)}, which will append String representation
+         * of passed in int, while this method, instead,
+         * treats the int as a character
+         *
+         * @param c
+         *      the character `c`
+         */
+        @Override
+        public void write(int c) {
+            append((char) c);
+        }
+
+        @Override
+        public void write(char[] cbuf) {
+            write(cbuf, 0, cbuf.length);
+        }
+
+        @Override
+        public void write(String str) {
+            write(str, 0, str.length());
+        }
+
+        @Override
+        public void write(String str, int off, int len) {
+            append(str, off, off + len);
+        }
+
+        @Override
+        public void flush() {
+
+        }
+
+        @Override
+        public void close() {
+
+        }
+
         /**
          * Returns the index within this string of the first occurrence of the
          * specified substring. The integer returned is the smallest value
@@ -5032,6 +5026,59 @@ public class S {
                 reverseAllValidSurrogatePairs();
             }
             return this;
+        }
+
+        /**
+         * The maximum size of array to allocate (unless necessary).
+         * Some VMs reserve some header words in an array.
+         * Attempts to allocate larger arrays may result in
+         * OutOfMemoryError: Requested array size exceeds VM limit
+         */
+        private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+
+        /**
+         * For positive values of {@code minimumCapacity}, this method
+         * behaves like {@code ensureCapacity}, however it is never
+         * synchronized.
+         * If {@code minimumCapacity} is non positive due to numeric
+         * overflow, this method throws {@code OutOfMemoryError}.
+         */
+        private void ensureCapacityInternal(int minimumCapacity) {
+            // overflow-conscious code
+            if (minimumCapacity - value.length > 0) {
+                value = Arrays.copyOf(value,
+                        newCapacity(minimumCapacity));
+            }
+        }
+
+        /**
+         * Returns a capacity at least as large as the given minimum capacity.
+         * Returns the current capacity increased by the same amount + 2 if
+         * that suffices.
+         * Will not return a capacity greater than {@code MAX_ARRAY_SIZE}
+         * unless the given minimum capacity is greater than that.
+         *
+         * @param minCapacity the desired minimum capacity
+         * @throws OutOfMemoryError if minCapacity is less than zero or
+         *                          greater than Integer.MAX_VALUE
+         */
+        private int newCapacity(int minCapacity) {
+            // overflow-conscious code
+            int newCapacity = (value.length << 1) + 2;
+            if (newCapacity - minCapacity < 0) {
+                newCapacity = minCapacity;
+            }
+            return (newCapacity <= 0 || MAX_ARRAY_SIZE - newCapacity < 0)
+                    ? hugeCapacity(minCapacity)
+                    : newCapacity;
+        }
+
+        private int hugeCapacity(int minCapacity) {
+            if (Integer.MAX_VALUE - minCapacity < 0) { // overflow
+                throw new OutOfMemoryError();
+            }
+            return (minCapacity > MAX_ARRAY_SIZE)
+                    ? minCapacity : MAX_ARRAY_SIZE;
         }
 
         /**

@@ -6799,7 +6799,9 @@ public class Lang implements Serializable {
      *         if `o` is `null`
      */
     public static <T> T requireNotNull(T o) {
-        E.NPE(o);
+        if (null == o) {
+            throw new NullPointerException();
+        }
         return o;
     }
 

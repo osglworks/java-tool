@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.14.0 23/May/2018
+* Add string comparison methods to `Keyword` #104
+* Make `S.Buffer` extends `java.io.Writer` #103
+
 1.13.2 20/May/2018
 * Make mapping framework support `C.Range` #92
 
