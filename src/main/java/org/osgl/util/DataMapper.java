@@ -20,6 +20,7 @@ package org.osgl.util;
  * #L%
  */
 
+import com.alibaba.fastjson.JSONArray;
 import org.osgl.$;
 import org.osgl.Lang;
 import org.osgl.OsglConfig;
@@ -951,26 +952,61 @@ public class DataMapper {
         if (null != targetComponent) {
             if (targetComponentType.isInterface()) {
                 Class realComponentType = targetComponent.getClass();
-                if (Map.class == targetComponentType && HashMap.class != realComponentType) {
-                    Map map = new HashMap();
-                    map.putAll((Map) targetComponent);
-                    targetComponent = map;
-                } else if (List.class == targetComponentType && ArrayList.class != realComponentType) {
-                    List list = new ArrayList();
-                    list.addAll((List) targetComponent);
-                    targetComponent = list;
-                } else if (Set.class == targetComponentType && HashSet.class != realComponentType) {
-                    Set set = new HashSet();
-                    set.addAll((Set) targetComponent);
-                    targetComponent = set;
-                } else if (SortedMap.class == targetComponentType && TreeMap.class != realComponentType) {
-                    Map map = new TreeMap();
-                    map.putAll((Map) targetComponent);
-                    targetComponent = map;
-                } else if (SortedSet.class == targetComponentType && TreeSet.class != realComponentType) {
-                    Set set = new TreeSet();
-                    set.addAll((Set) targetComponent);
-                    targetComponent = set;
+                if (Map.class == targetComponentType) {
+                    if (HashMap.class != realComponentType && LinkedHashMap.class != realComponentType && TreeMap.class != realComponentType) {
+                        if (C.Map.class.isAssignableFrom(realComponentType)) {
+                            C.Map map = (C.Map) targetComponent;
+                            if (map.isReadOnly()) {
+                                C.Map newMap = C.newMap(map);
+                                targetComponent = newMap;
+                            }
+                        } else {
+                            Map map = new HashMap();
+                            map.putAll((Map) targetComponent);
+                            targetComponent = map;
+                        }
+                    }
+                } else if (List.class == targetComponentType) {
+                    if (ArrayList.class != realComponentType && LinkedList.class != realComponentType && JSONArray.class != realComponentType && Vector.class != realComponentType) {
+                        if (C.List.class.isAssignableFrom(realComponentType)) {
+                            C.List realComponentList = (C.List) targetComponent;
+                            if (realComponentList.is(C.Feature.READONLY)) {
+                                C.List list = C.newList();
+                                list.addAll(realComponentList);
+                                targetComponent = list;
+                            }
+                        } else {
+                            List list = new ArrayList();
+                            list.addAll((List) targetComponent);
+                            targetComponent = list;
+                        }
+                    }
+                } else if (Set.class == targetComponentType) {
+                    if (HashSet.class != realComponentType && TreeSet.class != realComponentType && LinkedHashSet.class != realComponentType) {
+                        if (C.Set.class.isAssignableFrom(realComponentType)) {
+                            C.Set set = (C.Set) targetComponent;
+                            if (set.is(C.Feature.READONLY)) {
+                                C.Set newSet = C.newSet(set);
+                                targetComponent = newSet;
+                            }
+                        } else {
+                            Set set = new HashSet();
+                            set.addAll((Set) targetComponent);
+                            targetComponent = set;
+                        }
+                    }
+                } else if (SortedMap.class == targetComponentType) {
+                    if (TreeMap.class != realComponentType) {
+                        Map map = new TreeMap();
+                        map.putAll((Map) targetComponent);
+                        targetComponent = map;
+                    }
+                } else if (SortedSet.class == targetComponentType) {
+                    if (TreeSet.class != realComponentType) {
+                        Set set = new TreeSet();
+                        set.addAll((Set) targetComponent);
+                        targetComponent = set;
+                    }
                 }
             }
             targetComponent = new DataMapper(sourceComponent, targetComponent, key, targetComponentGenericType, this).getTarget();

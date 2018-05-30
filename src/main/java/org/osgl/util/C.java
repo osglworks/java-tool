@@ -2327,7 +2327,7 @@ public class C {
         }
 
         @SuppressWarnings("unused")
-        public boolean readOnly() {
+        public boolean isReadOnly() {
             return ro;
         }
 
@@ -2383,7 +2383,7 @@ public class C {
                     map.put(k, entry.getValue());
                 }
             }
-            Map<K, V> filtered = new Map<>(readOnly(), map);
+            Map<K, V> filtered = new Map<>(isReadOnly(), map);
             return filtered;
         }
 

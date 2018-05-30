@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.14.1
+* Bean copy utility shall not create new target component instance if it exists #105
+
 1.14.0 23/May/2018
 * Add string comparison methods to `Keyword` #104
 * Make `S.Buffer` extends `java.io.Writer` #103
