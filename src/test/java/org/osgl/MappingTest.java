@@ -117,8 +117,8 @@ public class MappingTest extends TestBase {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Bean bean = (Bean) o;
-            return Objects.equals(foo, bean.foo) &&
-                    Objects.equals(map, bean.map);
+            return $.eq(foo, bean.foo) &&
+                    $.eq(C.Map(map), C.Map(bean.map));
         }
 
         @Override

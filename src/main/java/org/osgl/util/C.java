@@ -2187,7 +2187,7 @@ public class C {
 
         @SuppressWarnings("unchecked")
         protected Map(boolean readOnly, Object... args) {
-            HashMap<K, V> map = new HashMap<K, V>();
+            HashMap<K, V> map = new HashMap<>();
             int len = args.length;
             for (int i = 0; i < len; i += 2) {
                 K k = (K) args[i];
@@ -3498,6 +3498,12 @@ public class C {
         }
         return new Map<>(true, args);
     }
+
+    public static <K, V> Map<K, V> Map(java.util.Map<K, V> map) {
+        return Map(true, map);
+    }
+
+    public static <K, V> Map<K, V> Map(boolean readOnly, java.util.Map<K, V> map)
 
     /**
      * This method is deprecated, please use {@link #Map(Collection)} instead
