@@ -3503,7 +3503,9 @@ public class C {
         return Map(true, map);
     }
 
-    public static <K, V> Map<K, V> Map(boolean readOnly, java.util.Map<K, V> map)
+    public static <K, V> Map<K, V> Map(boolean readOnly, java.util.Map<K, V> map) {
+        return new Map(true, map);
+    }
 
     /**
      * This method is deprecated, please use {@link #Map(Collection)} instead

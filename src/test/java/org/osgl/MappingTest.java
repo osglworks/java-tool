@@ -9,9 +9,9 @@ package org.osgl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -183,13 +183,13 @@ public class MappingTest extends TestBase {
             bar2 = new Bar();
             bar3 = new Bar();
 
-            foo_1_array = new Foo[] {foo1};
-            foo_2_array = new Foo[] {foo1, foo2};
-            foo_3_array = new Foo[] {foo1, foo2, foo3};
+            foo_1_array = new Foo[]{foo1};
+            foo_2_array = new Foo[]{foo1, foo2};
+            foo_3_array = new Foo[]{foo1, foo2, foo3};
 
-            bar_1_array = new Bar[] {bar1};
-            bar_2_array = new Bar[] {bar1, bar2};
-            bar_3_array = new Bar[] {bar1, bar2, bar3};
+            bar_1_array = new Bar[]{bar1};
+            bar_2_array = new Bar[]{bar1, bar2};
+            bar_3_array = new Bar[]{bar1, bar2, bar3};
 
             foo_1_list = C.list(foo1);
             foo_2_list = C.list(foo1, foo2);
@@ -201,7 +201,7 @@ public class MappingTest extends TestBase {
 
             bean = new Bean();
 
-            int_3_array = new int[] {1, 2, 3};
+            int_3_array = new int[]{1, 2, 3};
 
             OsglConfig.addGlobalMappingFilters("contains:super");
             OsglConfig.addGlobalMappingFilters("reg:.*xx.*");
@@ -454,7 +454,7 @@ public class MappingTest extends TestBase {
             Bean target = new Bean();
             $.deepCopy(source).filter("-map.name,-foo.name").to(target);
             ne(target, source);
-            
+
             Foo sourceFoo = source.foo;
             Foo targetFoo = target.foo;
             ne(sourceFoo, targetFoo);
@@ -510,7 +510,8 @@ public class MappingTest extends TestBase {
 
         @Test
         public void test() {
-            $.map(fooList).targetGenericType(new TypeReference<List<Bar>>(){}).to(barList);
+            $.map(fooList).targetGenericType(new TypeReference<List<Bar>>() {
+            }).to(barList);
             eq(2, barList.size());
             Foo foo = fooList.get(0);
             Bar bar = barList.get(0);
@@ -546,6 +547,7 @@ public class MappingTest extends TestBase {
 
         public static class RawData {
             Calendar date;
+
             public RawData(long currentTimeMillis) {
                 date = Calendar.getInstance();
                 date.setTimeInMillis(currentTimeMillis);
@@ -570,24 +572,37 @@ public class MappingTest extends TestBase {
             eq(tgt.date.getMillis(), src.date.getTimeInMillis());
         }
 
-public static class RawDataV2 {
-    String date;
-    public RawDataV2(String date) {
-        this.date = date;
-    }
-}
+        public static class RawDataV2 {
+            String date;
 
-public static class ConvertedDataV2 {
-    Date date;
-}
+            public RawDataV2(String date) {
+                this.date = date;
+            }
+        }
 
-@Test
-public void testTypeConvertWithHint() throws Exception {
-    RawDataV2 src = new RawDataV2("20180518");
-    ConvertedDataV2 tgt = $.map(src).conversionHint(Date.class, "yyyyMMdd").to(ConvertedDataV2.class);
-    Date expected = new SimpleDateFormat("yyyyMMdd").parse("20180518");
-    eq(expected, tgt.date);
-}
+        public static class ConvertedDataV2 {
+            Date date;
+        }
+
+        @Test
+        public void testTypeConvertWithHint() throws Exception {
+            RawDataV2 src = new RawDataV2("20180518");
+            ConvertedDataV2 tgt = $.map(src).conversionHint(Date.class, "yyyyMMdd").to(ConvertedDataV2.class);
+            Date expected = new SimpleDateFormat("yyyyMMdd").parse("20180518");
+            eq(expected, tgt.date);
+        }
+
+        @Test
+        public void testObjectToMap() {
+            Foo foo = new Foo();
+            Map map = $.deepCopy(foo).to(Map.class);
+            eq(foo.name, map.get("name"));
+            eq(foo.si, map.get("si"));
+            eq(foo.id, map.get("id"));
+            eq(foo.ia, map.get("ia"));
+            eq(foo.createDate, map.get("createDate"));
+            eq(foo.l1, map.get("l1"));
+        }
 
     }
 }

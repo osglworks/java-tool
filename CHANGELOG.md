@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.14.1
+* Bean copy to Map issue #106
 * Bean copy utility shall not create new target component instance if it exists #105
 
 1.14.0 23/May/2018

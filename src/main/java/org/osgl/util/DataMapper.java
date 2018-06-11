@@ -1155,6 +1155,9 @@ public class DataMapper {
             return source;
         }
         Object target;
+        if (Object.class == targetType || targetType.isAssignableFrom(sourceType)) {
+            targetType = sourceType;
+        }
         if (targetType.isArray()) {
             int len;
             if (sourceType.isArray()) {

@@ -38,6 +38,8 @@ $.mergeMap(foo).to(bar);
 
 ## 2. Concept
 
+OSGL bean copy framework relies on Java reflection to get internal structure of the source and target bean. Unlike some other bean copy tools, OSGL bean copy framework use field instead of getter/setter methods.
+
 ### 2.1 Semantic
 
 OSGL mapping framework support the following five different semantics:
@@ -49,6 +51,8 @@ OSGL mapping framework support the following five different semantics:
 5. `MERGE_MAP`, similar to `MERGE`, with value type conversion support
 
 #### 2.1.1 Immutable type
+
+Immutable type is an important concept. When OSGL detect a source bean property is immutable typed, it will stop dig further down the structure, and copy the reference to the target bean directly.
 
 The following types are considered to be immutable types:
 
@@ -220,6 +224,15 @@ During the copy/mapping process it might need to create an new instance of a cer
 
 #### 2.7.1 Register a global instance factory
 
+Sample code of registering a global instance factory:
+
 ```java
-OsglConfig.
+OsglConfig.registerGlobalInstanceFactory(new $.Function<Class, Object>() {
+    final App app = Act.app();
+    @Override
+    public Object apply(Class aClass) throws NotAppliedException, $.Break {
+        return app.getInstance(aClass);
+    }
+});
 ```
+
