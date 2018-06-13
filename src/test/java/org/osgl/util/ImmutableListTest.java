@@ -47,6 +47,11 @@ public class ImmutableListTest extends ListTestBase {
         return C.listOf(ta);
     }
 
+    @Override
+    protected C.List<Foo> preparePojoData(Foo... fooArray) {
+        return C.listOf(fooArray);
+    }
+
     @Test
     public void testToMapByKey() {
         String keys = "abcd,xyz,funny";

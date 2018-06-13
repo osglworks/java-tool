@@ -81,7 +81,7 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
     }
 
     @Override
-    public <R> C.Set<R> map($.Function<? super T, ? extends R> mapper) {
+    public <R> C.Traversable<R> map($.Function<? super T, ? extends R> mapper) {
         boolean immutable = isImmutable();
         int sz = size();
         if (immutable) {
@@ -90,25 +90,34 @@ public abstract class SetBase<T> extends AbstractSet<T> implements C.Set<T> {
             }
             ListBuilder<R> lb = new ListBuilder<>(sz);
             forEach($.visitor($.f1(mapper).andThen(C.F.addTo(lb))));
-            return C.set(lb.toList());
+            return lb.toList();
         } else {
             if (0 == sz) {
                 return C.newSet();
             }
             C.List<R> l = C.newSizedList(sz);
             forEach($.visitor($.f1(mapper).andThen(C.F.addTo(l))));
-            return C.set(l);
+            return l;
         }
     }
 
     @Override
-    public <R> C.Set<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
-        C.Set<R> set = C.newSet();
+    public <R> C.Traversable<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper) {
+        C.List<R> list = C.newList();
         for (T t : this) {
             Iterable<? extends R> iterable = mapper.apply(t);
-            set.addAll(C.list(iterable));
+            list.addAll(C.list(iterable));
         }
-        return set;
+        return list;
+    }
+
+    @Override
+    public <R> C.Traversable<R> collect(String path) {
+        C.List<R> list = C.newList();
+        for (T t : this) {
+            list.add((R) $.getProperty(t, path));
+        }
+        return list;
     }
 
     @Override

@@ -290,6 +290,11 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
+    public <R> C.Sequence<R> collect(String path) {
+        return CollectorSeq.of(this, path);
+    }
+
+    @Override
     public <T2> C.Sequence<$.Binary<T, T2>> zip(Iterable<T2> iterable) {
         return new ZippedSeq<T, T2>(this, iterable);
     }

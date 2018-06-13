@@ -149,6 +149,11 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
     }
 
     @Override
+    public <R> C.Sequence<R> collect(String path) {
+        return CollectorRSeq.of(this, path);
+    }
+
+    @Override
     public C.ReversibleSequence<T> append(C.ReversibleSequence<T> seq) {
         if (seq.isEmpty()) {
             return this;
@@ -171,7 +176,6 @@ abstract class ReversibleSeqBase<T> extends SequenceBase<T> implements C.Reversi
 
     @Override
     public C.ReversibleSequence<T> tail(int n) throws UnsupportedOperationException, IndexOutOfBoundsException {
-        boolean immutable = isImmutable();
         int sz = size();
         if (n < 0) {
             return head(-n);

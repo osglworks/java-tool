@@ -9,9 +9,9 @@ package org.osgl.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,9 @@ import org.junit.Test;
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,8 +38,26 @@ import java.util.Iterator;
  */
 public abstract class TraversableTestBase extends UtilTestBase {
 
+    protected static class Bar {
+        public int id = N.randInt();
+    }
+
+    protected static class Foo {
+        public String id = S.random();
+        public Bar bar = new Bar();
+
+        public Foo() {}
+
+        public Foo(boolean nullBar) {
+            if (nullBar) {
+                bar = null;
+            }
+        }
+    }
+
 
     protected C.Traversable<Integer> data;
+    protected C.Traversable<Foo> pojoData;
 
     protected final boolean isMutable() {
         return !(data.is(C.Feature.IMMUTABLE) || data.is(C.Feature.READONLY));
@@ -59,7 +79,13 @@ public abstract class TraversableTestBase extends UtilTestBase {
         return prepareData(1, 2, 3, 4, 5);
     }
 
+    protected C.Traversable<Foo> preparePojoData() {
+        return preparePojoData(new Foo(), new Foo(), null, new Foo(true), new Foo());
+    }
+
     protected abstract C.Traversable<Integer> prepareData(int ... ia);
+
+    protected abstract C.Traversable<Foo> preparePojoData(Foo ... fooArray);
 
     protected abstract C.Traversable<Integer> prepareEmptyData();
 
@@ -119,6 +145,19 @@ public abstract class TraversableTestBase extends UtilTestBase {
             }
         });
         eq(seqOf(0, 0, 1, 2, 3), newData);
+    }
+
+    @Test
+    public void testCollect() {
+        pojoData = preparePojoData();
+        List<String> fooIdList = new ArrayList<>();
+        List<Integer> barIdList = new ArrayList<>();
+        for (Foo foo : pojoData) {
+            fooIdList.add(null == foo ? null : foo.id);
+            barIdList.add(null == foo ? null : null == foo.bar ? null : foo.bar.id);
+        }
+        eq(fooIdList, pojoData.collect("id"));
+        eq(barIdList, pojoData.collect("bar.id"));
     }
 
     @Test

@@ -31,7 +31,6 @@ import java.util.Iterator;
 class LazySeq<T> extends SequenceBase<T> implements C.Sequence<T> {
     protected T head;
     protected $.F0<C.Sequence<T>> tail;
-    private volatile C.Sequence<T> tail_;
 
 
     /**
@@ -41,8 +40,7 @@ class LazySeq<T> extends SequenceBase<T> implements C.Sequence<T> {
     }
 
     LazySeq(T head, $.Func0<? extends C.Sequence<T>> tail) {
-        E.NPE(head, tail);
-        this.head = head;
+        this.head = $.requireNotNull(head);
         this.tail = $.f0(tail);
     }
 

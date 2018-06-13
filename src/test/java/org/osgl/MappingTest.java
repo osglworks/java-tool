@@ -604,5 +604,20 @@ public class MappingTest extends TestBase {
             eq(foo.l1, map.get("l1"));
         }
 
+        @Test
+        public void testListObjectToListMap() {
+            Foo foo = new Foo();
+            List<Foo> fooList = C.list(foo);
+            List list = $.map(fooList).targetGenericType(new TypeReference<List<Map>>() {
+            }).to(List.class);
+            Map map = (Map) list.get(0);
+            eq(foo.name, map.get("name"));
+            eq(foo.si, map.get("si"));
+            eq(foo.id, map.get("id"));
+            eq(foo.ia, map.get("ia"));
+            eq(foo.createDate, map.get("createDate"));
+            eq(foo.l1, map.get("l1"));
+        }
+
     }
 }

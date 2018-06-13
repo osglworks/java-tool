@@ -42,6 +42,7 @@ package org.osgl.util;
 import static org.osgl.Lang.Visitor;
 
 import org.osgl.$;
+import org.osgl.Lang;
 import org.osgl.Lang.Func2;
 import org.osgl.Lang.IndexedVisitor;
 import org.osgl.Osgl;
@@ -244,6 +245,8 @@ public class C {
          */
         <R> Traversable<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper);
 
+        <R> Traversable<R> collect(String path);
+
         /**
          * Returns an new traversable that contains all elements in the current traversable
          * except that does not pass the test of the filter function specified.
@@ -372,17 +375,17 @@ public class C {
          * @return this {@code Traversable} instance for chained call
          * @since 0.2
          */
-        Traversable<T> accept($.Visitor<? super T> visitor);
+        Traversable<T> accept(Lang.Visitor<? super T> visitor);
 
         /**
-         * Alias of {@link #accept(Osgl.Visitor)}
+         * Alias of {@link #accept(Lang.Visitor)}
          * @param visitor the visitor to tranverse the elements
          * @return this {@code Traversable} instance
          */
         Traversable<T> each($.Visitor<? super T> visitor);
 
         /**
-         * Alias of {@link #accept(Osgl.Visitor)}
+         * Alias of {@link #accept(Lang.Visitor)}
          * @param visitor the visitor function
          * @return this {@code Traversable} instance
          */
@@ -709,6 +712,9 @@ public class C {
          */
         @Override
         <R> Sequence<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper);
+
+        @Override
+        <R> Sequence<R> collect(String path);
 
         /**
          * {@inheritDoc}
@@ -1795,6 +1801,9 @@ public class C {
          */
         @Override
         <R> List<R> flatMap($.Function<? super T, ? extends Iterable<? extends R>> mapper);
+
+        @Override
+        <R> List<R> collect(String path);
 
         @Override
         List<T> filter($.Function<? super T, Boolean> predicate);

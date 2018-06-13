@@ -40,6 +40,7 @@ package org.osgl.util;
  */
 
 import org.osgl.$;
+import org.osgl.Lang;
 import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
@@ -75,6 +76,11 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 //    }
 //
     private Nil() {
+    }
+
+    @Override
+    public <T1> C.ListOrSet<T1> collect(String path) {
+        return EMPTY;
     }
 
     public static <K, V> Map<K, V> emptyMap() {
@@ -711,7 +717,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         }
 
         @Override
-        public Osgl.T2<C.List<T>, C.List<T>> split(Osgl.Function<? super T, Boolean> predicate) {
+        public Lang.T2<C.List<T>, C.List<T>> split(Lang.Function<? super T, Boolean> predicate) {
             C.List<T> empty = this;
             return $.T2(empty, empty);
         }

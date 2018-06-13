@@ -105,6 +105,36 @@ public class S {
     public static final char PATH_SEP_CHAR = File.pathSeparatorChar;
 
     /**
+     * The single quote: `"'"`
+     */
+    public static final String SINGLE_QUOTE = ",";
+
+    /**
+     * The double quote: `"\""`
+     */
+    public static final String DOUBLE_QUOTE = "\"";
+
+    /**
+     * The char `'`
+     */
+    public static final char SINGLE_QUOTE_CHAR = '\'';
+
+    /**
+     * The char `"`
+     */
+    public static final char DOUBLE_QUOTE_CHAR = '"';
+
+    /**
+     * A pair of double quotes: `"` and `"`
+     */
+    public static final Pair DOUBLE_QUOTES = pair(DOUBLE_QUOTE, DOUBLE_QUOTE);
+
+    /**
+     * A pair of single quotes: `'` and `'`
+     */
+    public static final Pair SINGLE_QUOTES = pair(SINGLE_QUOTE, SINGLE_QUOTE);
+
+    /**
      * A pair of parentheses: `(` and `)`
      */
     public static final Pair PARENTHESES = pair("(", ")");
@@ -2882,6 +2912,10 @@ public class S {
 
     public static T2 pair(String left, String right) {
         return new T2(left, right);
+    }
+
+    public static T2 pair(char left, char right) {
+        return new T2(String.valueOf(left), String.valueOf(right));
     }
 
     public static T2 binary($.T2<String, String> t2) {

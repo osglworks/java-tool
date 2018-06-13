@@ -40,6 +40,9 @@ public abstract class SequenceTestBase extends TraversableTestBase {
     protected abstract C.Sequence<Integer> prepareData(int... ia);
 
     @Override
+    protected abstract C.Sequence<Foo> preparePojoData(Foo... fooArray);
+
+    @Override
     protected abstract C.Sequence<Integer> prepareEmptyData();
 
     protected abstract <T> C.Sequence<T> prepareTypedData(T... ta);

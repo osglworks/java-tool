@@ -554,7 +554,7 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             if (0 == sz) {
                 return Nil.list();
             }
-            ListBuilder<R> lb = new ListBuilder<R>(sz * 3);
+            ListBuilder<R> lb = new ListBuilder<>(sz * 3);
             forEach($.visitor($.f1(mapper).andThen(C.F.addAllTo(lb))));
             return lb.toList();
         } else {
@@ -564,6 +564,28 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
             C.List<R> l = C.newSizedList(sz * 3);
             forEach($.visitor($.f1(mapper).andThen(C.F.addAllTo(l))));
             return l;
+        }
+    }
+
+    @Override
+    public <R> C.List<R> collect(String path) {
+        boolean immutable = isImmutable();
+        int sz = size();
+        if (0 == sz) {
+            return immutable ? Nil.<R>list() : C.<R>newList();
+        }
+        if (immutable) {
+            ListBuilder<R> lb = new ListBuilder<>(sz);
+            for (T t : this) {
+                lb.add((R) $.getProperty(t, path));
+            }
+            return lb.toList();
+        } else {
+            C.List<R> list = C.newSizedList(sz);
+            for (T t : this) {
+                list.add((R) $.getProperty(t, path));
+            }
+            return list;
         }
     }
 

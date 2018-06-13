@@ -30,6 +30,12 @@ public class DelegatingListTest extends ListTestBase {
     }
 
     @Override
+    protected C.List<Foo> preparePojoData(Foo... fooArray) {
+        C.List<Foo> l = C.newListOf(fooArray);
+        return l;
+    }
+
+    @Override
     protected C.List<Integer> prepareEmptyData() {
         return C.newList();
     }

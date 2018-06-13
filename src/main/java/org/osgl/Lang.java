@@ -7911,7 +7911,9 @@ public class Lang implements Serializable {
 
     @SuppressWarnings("unchecked")
     public static <T> T getProperty(CacheService cache, Object entity, String property) {
-        E.NPE(entity);
+        if (null == entity) {
+            return null;
+        }
         if (property.contains("]")) {
             property = property.replace('[', '.').replace("]", "");
         }

@@ -83,4 +83,8 @@ public enum Iterators {
         return new FlatMappedIterator<>(itr, mapper);
     }
 
+    public static <T, R> Iterator<R> collect(Iterator<? extends T> itr, String path) {
+        return new CollectorIterator<>(itr, path);
+    }
+
 }

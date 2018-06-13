@@ -41,7 +41,7 @@ public class LazySeqTest extends SequenceTestBase {
                 @Override
                 public C.Sequence<T> apply() throws NotAppliedException, $.Break {
                     if (cursor < data.size() - 1) {
-                        return new MyLazySeq<T>(data, cursor + 1);
+                        return new MyLazySeq<>(data, cursor + 1);
                     }
                     return Nil.seq();
                 }
@@ -51,7 +51,12 @@ public class LazySeqTest extends SequenceTestBase {
 
     @Override
     protected C.Sequence<Integer> prepareData(final int... ia) {
-        return new MyLazySeq<Integer>(Arrays.asList($.asObject(ia)), 0);
+        return new MyLazySeq<>(Arrays.asList($.asObject(ia)), 0);
+    }
+
+    @Override
+    protected C.Sequence<Foo> preparePojoData(Foo... fooArray) {
+        return new MyLazySeq<>(Arrays.asList(fooArray), 0);
     }
 
     @Override

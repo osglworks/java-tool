@@ -42,6 +42,9 @@ public abstract class ReversibleSeqTestBase extends SequenceTestBase {
     protected abstract C.ReversibleSequence<Integer> prepareData(int... ia);
 
     @Override
+    protected abstract C.ReversibleSequence<Foo> preparePojoData(Foo... fooArray);
+
+    @Override
     protected abstract C.ReversibleSequence<Integer> prepareEmptyData();
 
     protected abstract <T> C.ReversibleSequence<T> prepareTypedData(T... ta);

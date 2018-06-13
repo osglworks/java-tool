@@ -55,6 +55,9 @@ public abstract class ListTestBase extends ReversibleSeqTestBase {
 
     protected abstract <T> C.List<T> prepareTypedData(T... ta);
 
+    @Override
+    protected abstract C.List<Foo> preparePojoData(Foo... fooArray);
+
     protected final <T> ArrayList<T> arrayList(T... ta) {
         ArrayList<T> l = new ArrayList<T>();
         l.addAll(Arrays.asList(ta));

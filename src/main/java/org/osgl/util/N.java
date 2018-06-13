@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -70,7 +71,7 @@ public class N {
      */
     public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
 
-    private static Random random = new Random();
+    private static Random random = ThreadLocalRandom.current();
 
     N() {
     }
@@ -1040,7 +1041,7 @@ public class N {
      * @return a random int value
      */
     public static int randInt() {
-        return new Random().nextInt();
+        return ThreadLocalRandom.current().nextInt();
     }
 
     public static int randIntWithSymbol() {
@@ -1053,7 +1054,7 @@ public class N {
      * @return a random int value
      */
     public static int randInt(int max) {
-        return new Random().nextInt(max);
+        return ThreadLocalRandom.current().nextInt(max);
     }
 
     public static int randIntWithSymbol(int max) {
@@ -1061,7 +1062,7 @@ public class N {
     }
 
     public static float randFloat() {
-        return new Random().nextFloat();
+        return ThreadLocalRandom.current().nextFloat();
     }
 
     public static float randFloatWithSymbol() {
@@ -1069,7 +1070,7 @@ public class N {
     }
 
     public static long randLong() {
-        return new Random().nextLong();
+        return ThreadLocalRandom.current().nextLong();
     }
 
     public static long randLongWithSymbol() {
@@ -1081,7 +1082,7 @@ public class N {
      * @return a random double value
      */
     public static double randDouble() {
-        return new Random().nextDouble();
+        return ThreadLocalRandom.current().nextDouble();
     }
 
     public static double randDoubleWithSymbol() {
@@ -1577,6 +1578,6 @@ public class N {
     }
 
     private static int randSymbol() {
-        return new Random().nextInt(2) == 0 ? -1 : 1;
+        return ThreadLocalRandom.current().nextInt(2) == 0 ? -1 : 1;
     }
 }

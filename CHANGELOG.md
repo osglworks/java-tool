@@ -1,6 +1,10 @@
 # OSGL Tool Change Log
 
-1.14.1
+1.15.0
+* NPE with `LazySeq` when array contains `null` value #110
+* Use `ThreadLocalRandom.current()` to replace `new Random()` in `N.randXxx()` method #109
+* Add constants for quotes and single quotes in `S` #108
+* Add `collect(String)` to `C.Traversable` #107
 * Bean copy to Map issue #106
 * Bean copy utility shall not create new target component instance if it exists #105
 
