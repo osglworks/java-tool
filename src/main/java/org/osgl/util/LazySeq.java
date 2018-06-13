@@ -40,7 +40,7 @@ class LazySeq<T> extends SequenceBase<T> implements C.Sequence<T> {
     }
 
     LazySeq(T head, $.Func0<? extends C.Sequence<T>> tail) {
-        this.head = $.requireNotNull(head);
+        this.head = head;
         this.tail = $.f0(tail);
     }
 
