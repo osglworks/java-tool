@@ -55,7 +55,6 @@ public class DeepCopyBenchmark extends BenchmarkBase {
 
     @Test
     public void osgl() {
-        //for (int i = 0; i < 100 * 100 * 100; ++i)
         $.deepCopy(source).to(target);
     }
 

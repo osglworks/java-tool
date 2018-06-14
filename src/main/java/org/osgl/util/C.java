@@ -432,8 +432,8 @@ public class C {
         T first() throws NoSuchElementException;
 
         /**
-         * Returns an {@link Osgl.Option} of the first element in the
-         * {@code Sequence} or {@link Osgl#NONE} if the {@code Sequence} is empty
+         * Returns an {@link Lang.Option} of the first element in the
+         * {@code Sequence}
          *
          * @return the first element from the {@code Sequence}
          * @throws NoSuchElementException if the {@code Sequence} is empty
@@ -690,6 +690,11 @@ public class C {
          */
         Sequence<T> prepend(T t);
 
+        /**
+         * Returns a List contains all the elements in this sequence with the same order.
+         * @return the list as described above
+         */
+        List<T> asList();
 
         /**
          * {@inheritDoc}
@@ -1156,8 +1161,8 @@ public class C {
          *
          * @param visitor the function to visit elements in this sequence
          * @return this sequence
-         * @see Traversable#accept(Osgl.Visitor)
-         * @see Sequence#acceptLeft(Osgl.Visitor)
+         * @see Traversable#accept(Lang.Visitor)
+         * @see Sequence#acceptLeft(Lang.Visitor)
          * @since 0.2
          */
         ReversibleSequence<T> acceptRight($.Visitor<? super T> visitor);
@@ -1279,6 +1284,7 @@ public class C {
             return of(newData);
         }
 
+        @Override
         public C.List<T> asList() {
             return C.listOf(data);
         }
@@ -2183,7 +2189,7 @@ public class C {
                 if (me.ro) {
                     Map<K, V> mapBuffer = C.newMap(me);
                     mapBuffer.put(key, val);
-                    return C.map(mapBuffer);
+                    return C.Map(mapBuffer);
                 }
                 Map.this.put(key, val);
                 return Map.this;
@@ -3243,6 +3249,13 @@ public class C {
     }
 
 
+    /**
+     * Alias of {@link #collect(Iterable, String)}
+     * @param collection
+     * @param propertyPath
+     * @param <PROPERTY>
+     * @return
+     */
     public static <PROPERTY> C.List<PROPERTY> extract(java.util.Collection<?> collection, final String propertyPath) {
         if (collection.isEmpty()) {
             return C.list();
@@ -3266,20 +3279,27 @@ public class C {
         return map(iterable, extractor);
     }
 
-    public static <T, R> Sequence<R> map(Iterable<T> seq, $.Function<? super T, ? extends R> mapper) {
+    public static <T, R> Sequence<R> map(Iterable<? extends T> seq, $.Function<? super T, ? extends R> mapper) {
+        if (null == seq) {
+            return C.list();
+        }
         if (seq instanceof ReversibleSequence) {
-            return map((ReversibleSequence<T>) seq, mapper);
+            ReversibleSequence<? extends T> rseq = $.cast(seq);
+            return map(rseq, mapper);
         }
         return new MappedSeq<>(seq, mapper);
     }
 
-    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<T> seq, $.Function<? super T, ? extends R> mapper
+    public static <T, R> ReversibleSequence<R> map(ReversibleSequence<? extends T> seq, $.Function<? super T, ? extends R> mapper
     ) {
-        return new ReversibleMappedSeq<T, R>(seq, mapper);
+        if (null == seq) {
+            return C.list();
+        }
+        return new ReversibleMappedSeq<>(seq, mapper);
     }
 
-    public static <T> Sequence<T> filter(Sequence<T> seq, $.Function<? super T, Boolean> predicate) {
-        return new FilteredSeq<T>(seq, predicate);
+    public static <T> Sequence<T> filter(Iterable<? extends T> iterable, $.Function<? super T, Boolean> predicate) {
+        return new FilteredSeq<>(iterable, predicate);
     }
 
     @SuppressWarnings("unchecked")
@@ -3471,17 +3491,6 @@ public class C {
     }
 
     /**
-     * This method is deprecated. please use {@link #Map(Object...)} instead
-     */
-    @Deprecated
-    public static <K, V> Map<K, V> map(Object... args) {
-        if (null == args || args.length == 0) {
-            return Nil.EMPTY_MAP;
-        }
-        return new Map(true, args);
-    }
-
-    /**
      * Create a immutable {@link Map} from elements specified in an array.
      * <p>Example</p>
      * <pre>
@@ -3508,24 +3517,8 @@ public class C {
         return new Map<>(true, args);
     }
 
-    public static <K, V> Map<K, V> Map(java.util.Map<K, V> map) {
-        return Map(true, map);
-    }
-
     public static <K, V> Map<K, V> Map(boolean readOnly, java.util.Map<K, V> map) {
-        return new Map(true, map);
-    }
-
-    /**
-     * This method is deprecated, please use {@link #Map(Collection)} instead
-     */
-    @Deprecated
-    public static <K, V> Map<K, V> map(Collection<$.Tuple<K, V>> kvCol) {
-        Map<K, V> map = C.newMap();
-        for ($.Tuple<K, V> entry : kvCol) {
-            map.put(entry._1, entry._2);
-        }
-        return map;
+        return new Map(readOnly, map);
     }
 
     public static <K, V> Map<K, V> Map(Collection<$.Tuple<K, V>> kvCol) {
@@ -3543,7 +3536,7 @@ public class C {
      * @param <V> the value type
      * @return an immutable map of the existing map
      */
-    public static <K, V> Map<K, V> map(java.util.Map<? extends K, ? extends V> map) {
+    public static <K, V> Map<K, V> Map(java.util.Map<? extends K, ? extends V> map) {
         if (null == map) {
             return Nil.EMPTY_MAP;
         }
@@ -3568,7 +3561,7 @@ public class C {
      * @param <K> the key type
      * @param <V> the value type
      * @return a map contains of specified entries
-     * @see #map(Object...)
+     * @see #Map(Object...)
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> newMap(Object... args) {
@@ -3695,7 +3688,7 @@ public class C {
      * @param indexedVisitor the function that takes (key,value) pair
      * @param <K> the generic type of Key
      * @param <V> the generic type of Value
-     * @throws $.Break the {@link org.osgl.Osgl.Break} with payload throwed out by indexedVisitor function to break to loop
+     * @throws $.Break the {@link org.osgl.Lang.Break} with payload throwed out by indexedVisitor function to break to loop
      */
     public static <K, V> void forEach(java.util.Map<K, V> map, IndexedVisitor<? super K, ? super V> indexedVisitor) throws $.Break {
         for (java.util.Map.Entry<K, V> entry : map.entrySet()) {
@@ -3705,6 +3698,109 @@ public class C {
                 // ignore
             }
         }
+    }
+
+    public static class _CollectStage {
+        Iterable source;
+        public _CollectStage(Iterable source) {
+            this.source = source;
+        }
+        public <T> List<T> by(String propertyPath) {
+            return C.collect(source, propertyPath);
+        }
+    }
+
+    public static class _CollectStage2 {
+        String propertyPath;
+        public _CollectStage2(String propertyPath) {
+            this.propertyPath = propertyPath;
+        }
+
+        public <T> List<T> on(Iterable source) {
+            return C.collect(source, propertyPath);
+        }
+    }
+
+    public static _CollectStage collect(Iterable source) {
+        return new _CollectStage(source);
+    }
+
+    public static _CollectStage2 collect(String propertyPath) {
+        return new _CollectStage2(propertyPath);
+    }
+
+    public static <T> List<T> collect(Iterable source, String propertyPath) {
+        if (null == source) {
+            return C.list();
+        }
+        int sz = 10;
+        if (source instanceof Collection) {
+            sz = ((Collection) source).size();
+            if (0 == sz) {
+                return C.list();
+            }
+        }
+        List<T> retList = newSizedList(sz);
+        for (Object o: source) {
+            retList.add((T) $.getProperty(o, propertyPath));
+        }
+        return retList;
+    }
+
+    public static class _MapStage<T> {
+        Iterable<? extends T> source;
+        _MapStage(Iterable<? extends T> source) {
+            this.source = source;
+        }
+        public <R> Sequence<R> with($.Function<? super T, ? extends R> mapper) {
+            return C.map(source, mapper);
+        }
+    }
+
+    public static class _MapStage2<T, R> {
+        $.Function<? super T, ? extends R> mapper;
+        _MapStage2($.Function<? super T, ? extends R> mapper) {
+            this.mapper = $.requireNotNull(mapper);
+        }
+        public Sequence<R> on(Iterable<T> source) {
+            return C.map(source, mapper);
+        }
+    }
+
+    public static <T> _MapStage<T> map(Iterable<? extends T> source) {
+        return new _MapStage<>(source);
+    }
+
+    public static <T, R> _MapStage2 map($.Function<? super T, ? extends R> mapper) {
+        return new _MapStage2<T, R>(mapper);
+    }
+
+    public static class _FilterStage<T> {
+        Iterable<? extends T> source;
+        _FilterStage(Iterable<? extends T> source) {
+            this.source = source;
+        }
+        public Sequence<T> by($.Predicate<? super T> predicate) {
+            return filter(source, predicate);
+        }
+    }
+
+    public static class _FilterStage2<T> {
+        $.Predicate<? super T> predicate;
+        _FilterStage2($.Predicate<? super T> predicate) {
+            this.predicate = $.requireNotNull(predicate);
+        }
+        public Sequence<T> on(Iterable<? extends T> source) {
+            return filter(source, predicate);
+        }
+    }
+
+    public static <T> _FilterStage<T> filter(Iterable<? extends T> source) {
+        return new _FilterStage<>(source);
+    }
+
+    public static <T> _FilterStage2<T> filter($.Predicate<? super T> predicate) {
+        return new _FilterStage2<>(predicate);
     }
 
     private static void ensureWritable(boolean ro, String containerName) {
@@ -4257,7 +4353,7 @@ public class C {
          * @param visitor the function to be used to loop through the argument
          * @param <T> the element type
          * @return the function as described
-         * @see C#forEach(Iterable, Osgl.Visitor)
+         * @see C#forEach(Iterable, org.osgl.Lang.Visitor)
          */
         @SuppressWarnings("unused")
         public static <T> $.F1<Iterable<? extends T>, Void> forEachIterable(final $.Visitor<? super T> visitor) {
@@ -4270,5 +4366,6 @@ public class C {
             };
         }
     }
+
 
 }

@@ -21,16 +21,22 @@ package org.osgl.util;
  */
 
 import org.junit.Test;
+import org.osgl.$;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class C_Test extends UtilTestBase {
+    enum Color {R, G, B}
 
     private static class Foo {
-        int id;
-        String name;
+        int id = N.randInt();
+        Color color = $.random(Color.class);
+        String name = S.random();
+
+        Foo() {}
 
         public Foo(int id, String name) {
             this.id = id;
@@ -133,8 +139,33 @@ public class C_Test extends UtilTestBase {
         Map<String, Integer> jdkMap = new HashMap<>();
         jdkMap.put("abc", 3);
         jdkMap.put("ab", 2);
-        C.Map<String, Integer> osglMap = C.map(jdkMap);
+        C.Map<String, Integer> osglMap = C.Map(jdkMap);
         eq(3, osglMap.get("abc"));
+    }
+
+    @Test
+    public void testCollectStage() {
+        Foo f1 = new Foo();
+        Foo f2 = new Foo();
+        eq(C.list(f1.color, f2.color), C.collect(C.list(f1, f2)).by("color"));
+    }
+
+    @Test
+    public void testFilterStage() {
+        List<Foo> list = new ArrayList<>();
+        for (int i = 0; i < 100; ++i) {
+            list.add(new Foo());
+        }
+        List<Color> colors = C.collect(list).by("color");
+        colors = C.filter(colors).by(new $.Predicate<Color>() {
+            @Override
+            public boolean test(Color color) {
+                return color == Color.R;
+            }
+        }).asList();
+        for (Color color: colors) {
+            same(Color.R, color);
+        }
     }
 
 }

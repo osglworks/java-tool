@@ -84,6 +84,11 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     @Override
+    public C.List<T> asList() {
+        return C.list(this);
+    }
+
+    @Override
     public SequenceBase<T> accept($.Visitor<? super T> visitor) {
         C.forEach(this, visitor);
         return this;

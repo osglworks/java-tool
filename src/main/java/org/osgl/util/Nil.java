@@ -83,6 +83,11 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
         return EMPTY;
     }
 
+    @Override
+    public C.List<T> asList() {
+        return list();
+    }
+
     public static <K, V> Map<K, V> emptyMap() {
         return $.cast(EMPTY_MAP);
     }

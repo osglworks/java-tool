@@ -524,7 +524,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
     }
 
     public static Map<Class, StringValueResolver> predefined() {
-        return C.map(predefined);
+        return C.Map(predefined);
     }
 
     @SuppressWarnings("unchecked")

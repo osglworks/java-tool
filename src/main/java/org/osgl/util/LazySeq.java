@@ -65,6 +65,11 @@ class LazySeq<T> extends SequenceBase<T> implements C.Sequence<T> {
     }
 
     @Override
+    public C.List<T> asList() {
+        return C.list(this);
+    }
+
+    @Override
     public Iterator<T> iterator() {
         final C.Sequence<T> seq = this;
         return new Iterator<T>() {

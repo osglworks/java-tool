@@ -335,6 +335,11 @@ public abstract class ListBase<T> extends AbstractList<T> implements C.List<T> {
 
 
     @Override
+    public C.List<T> asList() {
+        return this;
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return listIterator();
     }

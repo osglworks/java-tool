@@ -1,5 +1,10 @@
 # OSGL Tool Change Log
 
+1.15.1
+* Add `_CollectStage`, `_MapStage` and `_FilterStage` to `C` #111
+* Add `asList()` method to `C.Sequence` #112
+* Remove `Map C.map(Map)` method #113
+
 1.15.0
 * NPE with `LazySeq` when array contains `null` value #110
 * Use `ThreadLocalRandom.current()` to replace `new Random()` in `N.randXxx()` method #109

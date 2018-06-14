@@ -38,10 +38,13 @@ import java.util.*;
 @RunWith(Enclosed.class)
 public class MappingTest extends TestBase {
 
+    enum Color {R, G, B}
+
     static class Foo {
         public int id = N.randInt();
         public int[] ia = {1, 2, 3};
         public List<String> l1 = C.list("a", "b");
+        public String color = $.random("R", "G", "B");
         public String name = S.random();
         public Date createDate = new Date();
         public Set<Integer> si = C.newSet(1, 2);
@@ -74,6 +77,7 @@ public class MappingTest extends TestBase {
 
     static class Bar {
         public DateTime create_date = DateTime.now();
+        public Color color = $.random(Color.values());
         public int id = N.randInt();
         public int[] ia = {1, 2};
         public String[] l1 = {"1", "x"};
@@ -318,6 +322,7 @@ public class MappingTest extends TestBase {
             notSame(source.ia, target.ia);
             eq(source.si, target.si);
             notSame(source.si, target.si);
+            same(source.color, target.color);
         }
 
         @Test
@@ -325,7 +330,7 @@ public class MappingTest extends TestBase {
             Foo source = foo1;
             Thread.sleep(10);
             Bar target = new Bar();
-            Bar result = $.deepCopy(source).to(target);
+            Bar result = $.deepCopy(source).filter("-color").to(target);
             same(result, target);
             eq(source.id, target.id);
             eq(source.name, target.name);
@@ -402,6 +407,7 @@ public class MappingTest extends TestBase {
             eq(source.ia, target.ia);
             eq(source.si, target.si);
             yes(target.si.containsAll(source.si));
+            eq(source.color, target.color.name());
             notNull(target.create_date);
             eq(source.createDate.getTime(), target.create_date.getMillis());
         }

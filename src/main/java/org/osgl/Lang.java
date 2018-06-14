@@ -8967,6 +8967,10 @@ public class Lang implements Serializable {
         return oa;
     }
 
+    public static <T extends Enum> T random(Class<T> enumType) {
+        return random(enumType.getEnumConstants());
+    }
+
     public static <T> T random(T t1, T... ta) {
         int l = ta.length;
         if (l == 0) return t1;
