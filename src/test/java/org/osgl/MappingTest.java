@@ -368,7 +368,7 @@ public class MappingTest extends TestBase {
             Foo source = foo1;
             Thread.sleep(10);
             Bar target = new Bar();
-            $.merge(source).to(target);
+            $.merge(source).filter("-color").to(target);
             eq(source.id, target.id);
             eq(source.name, target.name);
             eq(source.ia, target.ia);
@@ -416,7 +416,7 @@ public class MappingTest extends TestBase {
         public void testGlobalFilter() {
             Foo source = foo1;
             Bar target = new Bar();
-            $.deepCopy(source).to(target);
+            $.deepCopy(source).filter("-color").to(target);
             eq(source.id, target.id);
             eq(source.name, target.name);
             ne(source.__a_super_value, target.__a_super_value);
@@ -431,7 +431,7 @@ public class MappingTest extends TestBase {
         public void testIgnoreGlobalFilter() {
             Foo source = foo1;
             Bar target = new Bar();
-            $.deepCopy(source).ignoreGlobalFilter().to(target);
+            $.deepCopy(source).filter("-color").ignoreGlobalFilter().to(target);
             eq(source.id, target.id);
             eq(source.name, target.name);
             eq(source.__a_super_value, target.__a_super_value);
