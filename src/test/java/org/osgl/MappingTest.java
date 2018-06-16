@@ -243,6 +243,14 @@ public class MappingTest extends TestBase {
             eq("1230", S.join(result).get());
         }
 
+        @Test
+        public void testArrayClone() {
+            int[] ia = {10, 9, 8, 7};
+            int[] result = $.cloneOf(ia);
+            eq(ia, result);
+            notSame(ia, result);
+        }
+
     }
 
     public static class MergeArrayToArray extends Base {

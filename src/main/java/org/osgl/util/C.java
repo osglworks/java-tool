@@ -3398,6 +3398,14 @@ public class C {
     }
 
     /**
+     * This method is deprecated. Please use {@link #Set(Collection)} instead
+     */
+    @Deprecated
+    public static <T> Set<T> set(Collection<? extends T> col) {
+        return ImmutableSet.of(col);
+    }
+
+    /**
      * Create an immutable set of all elements contained in the collection specified
      * @param col the collection from which elements will be added into the
      *            result set
@@ -3405,7 +3413,7 @@ public class C {
      * @return the set contains all elements in the collection
      * @see #newSet(Collection)
      */
-    public static <T> Set<T> set(Collection<? extends T> col) {
+    public static <T> Set<T> Set(Collection<? extends T> col) {
         return ImmutableSet.of(col);
     }
 

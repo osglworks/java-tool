@@ -23,6 +23,7 @@ package org.osgl.util;
 import org.osgl.$;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +34,28 @@ import java.util.Iterator;
  */
 public enum Iterators {
     ;
+
+    public static final Iterator NULL = new Iterator() {
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Object next() {
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("remove");
+        }
+    };
+
+    public static <T> Iterator<T> nil() {
+        return $.cast(NULL);
+    }
+
     public static <T> Iterator<T> filterIndex(Iterator<? extends T> itr, $.Function<Integer, Boolean> predicate) {
         return new IndexFilteredIterator<>(itr, predicate);
     }

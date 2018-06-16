@@ -9610,6 +9610,96 @@ public class Lang implements Serializable {
         return cloneOf(source, OsglConfig.globalInstanceFactory());
     }
 
+    public static String[] cloneOf(String[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return S.EMPTY_ARRAY;
+        }
+        String[] clone = new String[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
+    public static boolean[] cloneOf(boolean[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return new boolean[0];
+        }
+        boolean[] clone = new boolean[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
+    public static short[] cloneOf(short[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return new short[0];
+        }
+        short[] clone = new short[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
+    public static byte[] cloneOf(byte[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return new byte[0];
+        }
+        byte[] clone = new byte[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
+    public static char[] cloneOf(char[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return new char[0];
+        }
+        char[] clone = new char[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
+    public static int[] cloneOf(int[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return new int[0];
+        }
+        int[] clone = new int[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
+    public static float[] cloneOf(float[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return new float[0];
+        }
+        float[] clone = new float[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
+    public static long[] cloneOf(long[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return new long[0];
+        }
+        long[] clone = new long[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
+    public static double[] cloneOf(double[] array) {
+        int len = array.length;
+        if (0 == len) {
+            return new double[0];
+        }
+        double[] clone = new double[len];
+        System.arraycopy(array, 0, clone, 0, len);
+        return clone;
+    }
+
     /**
      * Returns clone of a given `source` object.
      *
@@ -9625,7 +9715,14 @@ public class Lang implements Serializable {
      * @return the clone of `source`
      */
     public static <T> T cloneOf(T source, Function<Class, ?> instanceFactory) {
-        Object target = instanceFactory.apply(source.getClass());
+        Class type = source.getClass();
+        Object target;
+        if (type.isArray()) {
+            int len = Array.getLength(source);
+            target = Array.newInstance(type.getComponentType(), len);
+        } else {
+            target = instanceFactory.apply(source.getClass());
+        }
         return (T) deepCopy(source).to(target);
     }
 

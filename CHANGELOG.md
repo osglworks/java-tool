@@ -1,6 +1,10 @@
 # OSGL Tool Change Log
 
-1.15.1
+1.16.0 16/Jun/2018
+* `$.cloneOf(array)` error #115
+* Add `StringTokenSet` utility #114
+
+1.15.1 14/Jun/2018
 * Add `_CollectStage`, `_MapStage` and `_FilterStage` to `C` #111
 * Add `asList()` method to `C.Sequence` #112
 * Remove `Map C.map(Map)` method #113
