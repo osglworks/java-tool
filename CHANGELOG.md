@@ -1,13 +1,15 @@
 # OSGL Tool Change Log
 
-1.16.0 16/Jun/2018
+1.16.0 19/Jun/2018
+* Deprecate `C.set()`, replace it with `C.Set()` #117
+* Add `E.asRuntimeException(Exception)` method #116
 * `$.cloneOf(array)` error #115
 * Add `StringTokenSet` utility #114
 
 1.15.1 14/Jun/2018
 * Add `_CollectStage`, `_MapStage` and `_FilterStage` to `C` #111
 * Add `asList()` method to `C.Sequence` #112
-* Remove `Map C.map(Map)` method #113
+* Remove `Map C.map(Map)` method #113 (broken change)
 
 1.15.0
 * NPE with `LazySeq` when array contains `null` value #110

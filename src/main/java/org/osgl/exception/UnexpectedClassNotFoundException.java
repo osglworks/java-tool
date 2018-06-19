@@ -25,11 +25,19 @@ package org.osgl.exception;
  */
 public class UnexpectedClassNotFoundException extends UnexpectedException {
 
-    public UnexpectedClassNotFoundException(ClassNotFoundException cause) {
+    public UnexpectedClassNotFoundException(NoClassDefFoundError cause) {
         super(cause.getCause(), cause.getMessage());
     }
 
-    public UnexpectedClassNotFoundException(ClassNotFoundException cause, String message, Object... args) {
+    public UnexpectedClassNotFoundException(NoClassDefFoundError cause, String message, Object... args) {
         super(cause.getCause(), message, args);
+    }
+
+    public UnexpectedClassNotFoundException(ClassNotFoundException cause) {
+        super(cause.getMessage());
+    }
+
+    public UnexpectedClassNotFoundException(String message, Object... args) {
+        super(message, args);
     }
 }

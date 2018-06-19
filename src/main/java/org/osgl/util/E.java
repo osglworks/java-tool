@@ -804,6 +804,18 @@ public class E {
     }
 
     /**
+     * Convert an Exception to RuntimeException
+     * @param e the Exception instance
+     * @return a RuntimeException instance
+     */
+    public static RuntimeException asRuntimeException(Exception e) {
+        if (e instanceof RuntimeException) {
+            return (RuntimeException) e;
+        }
+        return UnexpectedMethodInvocationException.triage(e);
+    }
+
+    /**
      * Returns the error stack trace of a {@link Throwable} specified as a String.
      *
      * @param t

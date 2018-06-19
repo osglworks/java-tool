@@ -23,10 +23,7 @@ package org.osgl;
 import org.osgl.cache.CacheService;
 import org.osgl.cache.impl.InteralCacheService;
 import org.osgl.exception.NotAppliedException;
-import org.osgl.util.E;
-import org.osgl.util.IO;
-import org.osgl.util.S;
-import org.osgl.util.UtilConfig;
+import org.osgl.util.*;
 import org.osgl.util.algo.StringReplace;
 import org.osgl.util.algo.StringSearch;
 
@@ -68,6 +65,10 @@ public class OsglConfig {
                 return new TreeSet<>();
             } else if (SortedMap.class == aClass) {
                 return new TreeMap<>();
+            } else if (C.Map.class == aClass) {
+                return C.newMap();
+            } else if (C.List.class == aClass) {
+                return C.newList();
             }
             return $.newInstance(aClass);
         }

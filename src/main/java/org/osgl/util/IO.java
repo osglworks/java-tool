@@ -173,8 +173,7 @@ public class IO {
          *      the number of bytes that has been written to the file.
          */
         public int to(File file) {
-            E.illegalArgumentIfNot(file.canWrite(), "Target file not writable");
-            BufferedOutputStream bos = buffered(os(file));
+            BufferedOutputStream bos = buffered(outputStream(file));
             return to(bos);
         }
 

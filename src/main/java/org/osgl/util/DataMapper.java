@@ -1152,27 +1152,53 @@ public class DataMapper {
 
     private Object copyOrReferenceOf(Object source, Class sourceType, String targetName, Class targetType, ParameterizedType targetGenericType) {
         if (semantic.isShallowCopy() || isImmutable(sourceType)) {
+            if (!targetType.isInstance(source)) {
+                if (semantic.isMapping() || semantic.isMergeMapping()) {
+                    return convert(source, targetType).reportError().to(targetType);
+                } else {
+                    throw E.unexpected("Cannot convert source[%s] to target type: %s", source, targetType);
+                }
+            }
             return source;
         }
-        Object target;
+        Object target = null;
         if (Object.class == targetType || targetType.isAssignableFrom(sourceType)) {
-            targetType = sourceType;
-        }
-        if (targetType.isArray()) {
-            int len;
-            if (sourceType.isArray()) {
-                len = Array.getLength(source);
-            } else if (Collection.class.isAssignableFrom(sourceType)) {
-                len = ((Collection) source).size();
+            if (!sourceType.isArray()) {
+                try {
+                    target = instanceFactory.apply(sourceType);
+                    targetType = sourceType;
+                } catch (Exception e) {
+                    if (List.class.isAssignableFrom(sourceType) && targetType.isAssignableFrom(List.class)) {
+                        targetType = ArrayList.class;
+                    } else if (Map.class.isAssignableFrom(sourceType) && targetType.isAssignableFrom(Map.class)) {
+                        targetType = HashMap.class;
+                    } else if (Set.class.isAssignableFrom(sourceType) && targetType.isAssignableFrom(Set.class)) {
+                        targetType = HashSet.class;
+                    } else {
+                        // ignore
+                    }
+                }
             } else {
-                throw new UnexpectedException("oops, how come source is not a array/collection??");
+                targetType = sourceType;
             }
-            target = Array.newInstance(targetType.getComponentType(), len);
-        } else {
-            try {
-                target = instanceFactory.apply(targetType);
-            } catch (Exception e) {
-                return source;
+        }
+        if (null == target) {
+            if (targetType.isArray()) {
+                int len;
+                if (sourceType.isArray()) {
+                    len = Array.getLength(source);
+                } else if (Collection.class.isAssignableFrom(sourceType)) {
+                    len = ((Collection) source).size();
+                } else {
+                    throw new UnexpectedException("oops, how come source is not a array/collection??");
+                }
+                target = Array.newInstance(targetType.getComponentType(), len);
+            } else {
+                try {
+                    target = instanceFactory.apply(targetType);
+                } catch (Exception e) {
+                    throw E.unexpected(e, "");
+                }
             }
         }
         return new DataMapper(source, target, targetName, targetGenericType, this).getTarget();

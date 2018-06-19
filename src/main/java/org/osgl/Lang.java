@@ -7068,6 +7068,8 @@ public class Lang implements Serializable {
         if (null != c) return c;
         try {
             return (Class<T>) Class.forName(className);
+        } catch (NoClassDefFoundError e) {
+            throw new UnexpectedClassNotFoundException(e);
         } catch (ClassNotFoundException e) {
             throw new UnexpectedClassNotFoundException(e);
         }
@@ -7081,6 +7083,8 @@ public class Lang implements Serializable {
                 className = S.buffer().append("[L").append(S.before(className, "[")).append(";").toString();
             }
             return (Class<T>) Class.forName(className, true, classLoader);
+        } catch (NoClassDefFoundError e) {
+            throw new UnexpectedClassNotFoundException(e);
         } catch (ClassNotFoundException e) {
             throw new UnexpectedClassNotFoundException(e);
         }
