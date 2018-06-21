@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1044,8 +1045,21 @@ public class N {
         return ThreadLocalRandom.current().nextInt();
     }
 
+    /**
+     * The secure version of {@link #randInt()}
+     * @return
+     */
+    public static int secureRandInt() {
+        return new SecureRandom().nextInt();
+    }
+
     public static int randIntWithSymbol() {
         return randSymbol() * randInt();
+    }
+
+    public static int secureRandIntWithSymbol() {
+        Random r = new SecureRandom();
+        return randSymbol(r) * r.nextInt();
     }
 
     /**
@@ -1057,24 +1071,51 @@ public class N {
         return ThreadLocalRandom.current().nextInt(max);
     }
 
+    public static int secureRandInt(int max) {
+        return new SecureRandom().nextInt(max);
+    }
+
     public static int randIntWithSymbol(int max) {
         return randSymbol() * randInt(max);
+    }
+
+    public static int secureRandIntWithSymbol(int max) {
+        Random r = new SecureRandom();
+        return randSymbol(r) * r.nextInt(max);
     }
 
     public static float randFloat() {
         return ThreadLocalRandom.current().nextFloat();
     }
 
+    public static float secureRandFloat() {
+        return new SecureRandom().nextFloat();
+    }
+
     public static float randFloatWithSymbol() {
         return randSymbol() * randFloat();
+    }
+
+    public static float secureRandFloatWithSymbol() {
+        Random r = new SecureRandom();
+        return randSymbol(r) * r.nextFloat();
     }
 
     public static long randLong() {
         return ThreadLocalRandom.current().nextLong();
     }
 
+    public static long secureRandLong() {
+        return new SecureRandom().nextLong();
+    }
+
     public static long randLongWithSymbol() {
         return randSymbol() * randLong();
+    }
+
+    public static long secureRandLongWithSymbol() {
+        Random r = new SecureRandom();
+        return randSymbol(r) * r.nextLong();
     }
 
     /**
@@ -1085,8 +1126,17 @@ public class N {
         return ThreadLocalRandom.current().nextDouble();
     }
 
+    public static double secureRandDouble() {
+        return new SecureRandom().nextDouble();
+    }
+
     public static double randDoubleWithSymbol() {
         return randSymbol() * randDouble();
+    }
+
+    public static double secureRandDoubleWithSymbol() {
+        Random r = new SecureRandom();
+        return randSymbol(r) * r.nextDouble();
     }
 
     public static int abs(int a) {
@@ -1578,6 +1628,11 @@ public class N {
     }
 
     private static int randSymbol() {
-        return ThreadLocalRandom.current().nextInt(2) == 0 ? -1 : 1;
+        return randSymbol(ThreadLocalRandom.current());
     }
+
+    private static int randSymbol(Random r) {
+        return r.nextInt(2) == 0 ? -1 : 1;
+    }
+
 }

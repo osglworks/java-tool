@@ -47,6 +47,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
@@ -95,6 +96,33 @@ public enum Crypto {
     private static final HashType DEFAULT_HASH_TYPE = HashType.MD5;
 
     static final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+    public static char[] generatePassword() {
+        return generatePassword(null);
+    }
+
+    public static char[] generatePassword(int len) {
+        return generatePassword(new char[len]);
+    }
+
+    public static char[] generatePassword(char[] ca) {
+        return generatePassword(ca, new SecureRandom());
+    }
+
+    private static char[] generatePassword(char[] ca, Random r) {
+        int len = null == ca ? 0 : ca.length;
+        if (0 == len) {
+            len = Math.abs(r.nextInt(6)) + 12;
+            ca = new char[len];
+        }
+        char[] chars = S._COMMON_CHARS_;
+        int charsLen = S._COMMON_CHARS_LEN_;
+        while (len-- > 0) {
+            int i = r.nextInt(charsLen);
+            ca[len] = chars[i];
+        }
+        return ca;
+    }
 
     /**
      * Sign a message with a key
@@ -515,6 +543,10 @@ public enum Crypto {
         Arrays.fill(charBuffer.array(), '\u0000'); // clear sensitive data
         Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
         return bytes;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Crypto.generatePassword());
     }
 
 }

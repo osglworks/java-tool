@@ -1,5 +1,11 @@
 # OSGL Tool Change Log
 
+1.17.0 21/Jun/2018
+* add `IO.write(char[])` method #121
+* add `char[] Crypto.generatePassword(char[])` method #120
+* Add secureRandom methods #119
+* Mapping framework - Special field mapping shall not keep original mapping #118
+
 1.16.0 19/Jun/2018
 * Deprecate `C.set()`, replace it with `C.Set()` #117
 * Add `E.asRuntimeException(Exception)` method #116

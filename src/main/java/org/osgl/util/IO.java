@@ -624,6 +624,10 @@ public class IO {
         return new CharSequenceReadStage(csq);
     }
 
+    public static CharSequenceWriteStage write(char[] chars) {
+        return write(FastStr.of(chars));
+    }
+
     public static ReaderReadStage read(Reader reader) {
         return new ReaderReadStage(reader);
     }

@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.Writer;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -2558,6 +2559,17 @@ public class S {
         return UUID.randomUUID().toString();
     }
 
+    final static char[] _COMMON_CHARS_ = {'0', '1', '2', '3', '4',
+            '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+            'U', 'V', 'W', 'X', 'Y', 'Z',
+            '~', '!', '@'};
+    static final int _COMMON_CHARS_LEN_ = _COMMON_CHARS_.length;
+
     /**
      * Generate random string.
      * The generated string is safe to be used as filename
@@ -2566,31 +2578,39 @@ public class S {
      * @return a random string with specified number of chars
      */
     public static String random(int len) {
-        final char[] chars = {'0', '1', '2', '3', '4',
-                '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
-                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-                'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                'u', 'v', 'w', 'x', 'y', 'z',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                'U', 'V', 'W', 'X', 'Y', 'Z',
-                '~', '!', '@'};
-
-        final int max = chars.length;
-        Random r = ThreadLocalRandom.current();
-        StringBuilder sb = new StringBuilder(len);
-        while (len-- > 0) {
-            int i = r.nextInt(max);
-            sb.append(chars[i]);
-        }
-        return sb.toString();
+        return random(len, ThreadLocalRandom.current());
     }
 
     /**
      * @return a random string with 8 chars
      */
-    public static final String random() {
+    public static String random() {
         return random(8);
+    }
+
+    /**
+     * This is the secure version of {@link #random(int)}.
+     */
+    public static String secureRandom(int len) {
+        return random(len, new SecureRandom());
+    }
+
+    /**
+     * This is the secure version of {@link #random()}.
+     */
+    public static String secureRandom() {
+        return secureRandom(8);
+    }
+
+    private static String random(int len, Random r) {
+        char[] chars = _COMMON_CHARS_;
+        int charsLen = _COMMON_CHARS_LEN_;
+        StringBuilder sb = new StringBuilder(len);
+        while (len-- > 0) {
+            int i = r.nextInt(charsLen);
+            sb.append(chars[i]);
+        }
+        return sb.toString();
     }
 
     /**

@@ -271,8 +271,8 @@ public class DataMapper {
 
     private static class NameList {
         private boolean useKeyword;
-        private Set<String> stringList = C.set();
-        private Set<Keyword> keywordList = C.set();
+        private Set<String> stringList = C.Set();
+        private Set<Keyword> keywordList = C.Set();
 
         NameList(boolean useKeywordMatching) {
             useKeyword = useKeywordMatching;
@@ -393,10 +393,14 @@ public class DataMapper {
             return whiteList.isEmpty();
         }
 
+        private void addIntoBlackList(String s) {
+            blackList.add(s);
+            allEmpty = false;
+        }
     }
 
     private Map<String, String> specialMappings = C.Map();
-    private Set<String> intermediates = C.set();
+    private Set<String> intermediates = C.Set();
 
     private MappingRule rule;
 
@@ -510,7 +514,11 @@ public class DataMapper {
     private DataMapper root;
 
 
-    public DataMapper(Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic, String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, Map<Class, Object> conversionHints, $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass, Map<String, String> specialMappings) {
+    public DataMapper(
+            Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic,
+            String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, Map<Class, Object> conversionHints,
+            $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass,
+            Map<String, String> specialMappings) {
         this.targetType = target.getClass();
         E.illegalArgumentIf(isImmutable(targetType), "target type is immutable: " + targetType.getName());
         this.targetGenericType = targetGenericType;
@@ -532,11 +540,13 @@ public class DataMapper {
         if (null != specialMappings) {
             this.intermediates = new HashSet<>();
             this.specialMappings = specialMappings;
-            for (String s : specialMappings.keySet()) {
+            for (Map.Entry<String, String> entry : specialMappings.entrySet()) {
+                String s = entry.getKey();
                 while (s.contains(".")) {
                     s = S.cut(s).beforeLast(".");
                     this.intermediates.add(s);
                 }
+                this.filter.addIntoBlackList(entry.getValue());
             }
         }
         this.root = this;

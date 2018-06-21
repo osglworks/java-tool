@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8971,10 +8972,26 @@ public class Lang implements Serializable {
         return oa;
     }
 
+    /**
+     * Pickup a random enum value from the enum type.
+     *
+     * @param enumType the enum type
+     * @param <T> the type parameter
+     * @return the random enum value
+     */
     public static <T extends Enum> T random(Class<T> enumType) {
         return random(enumType.getEnumConstants());
     }
 
+    /**
+     * Returns a random element picked from `t1` and elements in `ta`.
+     *
+     * @param t1 the first element
+     * @param ta the rest elements
+     * @param <T> type parameter
+     * @return the random picked up element.
+     */
+    @SafeVarargs
     public static <T> T random(T t1, T... ta) {
         int l = ta.length;
         if (l == 0) return t1;
@@ -8983,6 +9000,24 @@ public class Lang implements Serializable {
         return ta[i];
     }
 
+    /**
+     * The secure version of {@link #random(Object, Object[])}.
+     */
+    public static <T> T secureRandom(T t1, T... ta) {
+        int l = ta.length;
+        if (l == 0) return t1;
+        int i = new SecureRandom().nextInt(l + 1);
+        if (i == l) return t1;
+        return ta[i];
+    }
+
+    /**
+     * Returns a random element picked from elements in `ta`.
+     *
+     * @param ta the elements
+     * @param <T> type parameter
+     * @return the random picked up element.
+     */
     public static <T> T random(T[] ta) {
         int l = ta.length;
         if (0 == l) return null;
@@ -8990,6 +9025,23 @@ public class Lang implements Serializable {
         return ta[i];
     }
 
+    /**
+     * The secure version of {@link #random(Object[])}.
+     */
+    public static <T> T secureRandom(T[] ta) {
+        int l = ta.length;
+        if (0 == l) return null;
+        int i = new SecureRandom().nextInt(l);
+        return ta[i];
+    }
+
+    /**
+     * Returns a random element picked from elements in a `list`.
+     *
+     * @param list the element list
+     * @param <T> type parameter
+     * @return the random picked up element.
+     */
     public static <T> T random(List<T> list) {
         int l = list.size();
         if (0 == l) return null;
@@ -8997,15 +9049,46 @@ public class Lang implements Serializable {
         return list.get(i);
     }
 
+    /**
+     * The secure version of {@link #random(List)}.
+     */
+    public static <T> T secureRandom(List<T> list) {
+        int l = list.size();
+        if (0 == l) return null;
+        int i = new SecureRandom().nextInt(l);
+        return list.get(i);
+    }
+
+    /**
+     * Returns a random element picked from elements in a `range`.
+     *
+     * @param range the range
+     * @param <T> type parameter
+     * @return the random picked up element.
+     */
     public static <T> T random(C.Range<T> range) {
         int n = ThreadLocalRandom.current().nextInt(range.size()) + 1;
         return range.tail(n).head();
     }
 
+    /**
+     * The secure version of {@link #random(C.Range)}.
+     */
+    public static <T> T secureRandom(C.Range<T> range) {
+        int n = new SecureRandom().nextInt(range.size()) + 1;
+        return range.tail(n).head();
+    }
+
+    /**
+     * Alias of {@link S#random()}
+     */
     public static String randomStr() {
         return S.random();
     }
 
+    /**
+     * Alias of {@link S#random(int)}
+     */
     public static String randomStr(int len) {
         return S.random(len);
     }
