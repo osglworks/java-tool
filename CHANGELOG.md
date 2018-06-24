@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0 24/Jun/2018
+* Make `IO` and Conversion framework work with `BufferedImage` #126
+* Improve `Img.randomPixels` effect #125
 * Generalize `Img.WaterMarker` to `Img.TextWriter` #124
 * Add `Noiser` processor #123
 * Fields of `Img.ProcessorStage` shall be in protected scope #122

@@ -44,6 +44,7 @@ import org.osgl.exception.NotAppliedException;
 import org.osgl.storage.ISObject;
 import org.osgl.storage.impl.SObject;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
@@ -221,6 +222,31 @@ public class IO {
             byte[] ba = source.toString().getBytes(charset);
             sink.write(ba);
             return ba.length;
+        }
+    }
+
+    public static class BufferedImageWriteStage extends WriteStageBase<BufferedImage, BufferedImageWriteStage> {
+
+        private String contentType = "image/png";
+
+        protected BufferedImageWriteStage(BufferedImage bufferedImage) {
+            super(bufferedImage);
+        }
+
+        protected BufferedImageWriteStage(BufferedImage image, String contentType) {
+            super(image);
+            this.contentType = S.requireNotBlank(contentType);
+        }
+
+        @Override
+        protected int doWriteTo(Writer sink) {
+            throw E.unsupport();
+        }
+
+        @Override
+        protected int doWriteTo(OutputStream sink) {
+            Img.source(source).writeTo(sink, contentType);
+            return -1;
         }
     }
 
@@ -611,6 +637,14 @@ public class IO {
 
     public static UrlWriteStage write(URL url) {
         return new UrlWriteStage(url);
+    }
+
+    public static BufferedImageWriteStage write(BufferedImage img) {
+        return new BufferedImageWriteStage(img);
+    }
+
+    public static BufferedImageWriteStage write(BufferedImage img, String contentType) {
+        return new BufferedImageWriteStage(img, contentType);
     }
 
     public static SObjectWriteStage write(ISObject sobj) {

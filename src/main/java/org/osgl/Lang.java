@@ -34,6 +34,7 @@ import org.osgl.util.*;
 import org.osgl.util.converter.TypeConverterRegistry;
 import osgl.version.Version;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -3484,11 +3485,11 @@ public class Lang implements Serializable {
                     }
 
                     @Override
-                    public void flush() throws IOException {
+                    public void flush() {
                     }
 
                     @Override
-                    public void close() throws IOException {
+                    public void close() {
                     }
                 };
             }
@@ -3515,6 +3516,14 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<BufferedImage, byte[]> BUFFERED_IMG_TO_OUTPUTSTREAM = new TypeConverter<BufferedImage, byte[]>() {
+            @Override
+            public byte[] convert(BufferedImage bufferedImage) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                IO.write(bufferedImage).to(baos);
+                return baos.toByteArray();
+            }
+        };
 
     }
 

@@ -716,6 +716,10 @@ public enum Img {
         return new _Load(is);
     }
 
+    public static _Load source(URL url) {
+        return new _Load(IO.inputStream(url));
+    }
+
     public static _Load source(File file) {
         return new _Load(IO.inputStream(file));
     }
