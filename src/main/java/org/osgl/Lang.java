@@ -3519,8 +3519,17 @@ public class Lang implements Serializable {
         public static TypeConverter<BufferedImage, byte[]> BUFFERED_IMG_TO_OUTPUTSTREAM = new TypeConverter<BufferedImage, byte[]>() {
             @Override
             public byte[] convert(BufferedImage bufferedImage) {
+                return convert(bufferedImage, null);
+            }
+
+            @Override
+            public byte[] convert(BufferedImage bufferedImage, Object hint) {
+                String contentType = "image/png";
+                if (null != hint) {
+                    contentType = hint.toString();
+                }
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                IO.write(bufferedImage).to(baos);
+                IO.write(bufferedImage, contentType).to(baos);
                 return baos.toByteArray();
             }
         };
