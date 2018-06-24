@@ -9069,6 +9069,37 @@ public class Lang implements Serializable {
     }
 
     /**
+     * Create a list contains random selected elements in the `list` specified.
+     * @param list the list
+     * @param <T> the type parameter
+     * @return a list contains random selected elements in `list`
+     */
+    public static <T> List<T> randomSubList(List<T> list) {
+        return randomSubList(list, 0);
+    }
+
+    /**
+     * Create a list contains random selected elements in the `list` specified.
+     * @param list the list
+     * @param minSize the minimum number of elements in the result list
+     * @param <T> the type parameter
+     * @return a list contains random selected elements in `list`
+     */
+    public static <T> List<T> randomSubList(List<T> list, int minSize) {
+        List<T> copy = C.newList(list);
+        int listSize = list.size();
+        E.illegalArgumentIf(minSize >= listSize || minSize < 0);
+        Random r = new SecureRandom();
+        int randomSize = minSize + r.nextInt(copy.size() - minSize);
+        int toBeRemoved = listSize - randomSize;
+        while (toBeRemoved-- > 0) {
+            int i = r.nextInt(copy.size());
+            copy.remove(i);
+        }
+        return copy;
+    }
+
+    /**
      * The secure version of {@link #random(List)}.
      */
     public static <T> T secureRandom(List<T> list) {
