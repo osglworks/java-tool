@@ -470,27 +470,6 @@ public enum Img {
             return target();
         }
 
-        /**
-         * Pipeline the target image as an input (source) image to to another processor
-         *
-         * @param processor the next processor
-         * @param <B>       the processor builder type
-         * @param <P>       the processor type
-         * @return a {@link ProcessBuilder} for the processor specified
-         */
-        public <B extends ProcessorStage<B, P>, P extends Processor<P, B>> B pipeline(P processor) {
-            return processor.createStage(get());
-        }
-
-        public <B extends ProcessorStage<B, P>, P extends Processor<P, B>> B pipeline(Class<? extends P> processorClass) {
-            return $.newInstance(processorClass).createStage(get());
-        }
-
-        public STAGE compressionQuality(float compressionQuality) {
-            this.compressionQuality = N.requireAlpha(compressionQuality);
-            return me();
-        }
-
         public STAGE source(InputStream is) {
             this.source = read(is);
             return me();
@@ -608,6 +587,41 @@ public enum Img {
         @Override
         public BufferedImage get() {
             return source;
+        }
+
+        /**
+         * Pipeline the target image as an input (source) image to to another processor
+         *
+         * @param processor the next processor
+         * @param <B>       the processor builder type
+         * @param <P>       the processor type
+         * @return a {@link ProcessBuilder} for the processor specified
+         */
+        public <B extends ProcessorStage<B, P>, P extends Processor<P, B>> B pipeline(P processor) {
+            return processor.createStage(get());
+        }
+
+        public ProcessorStage pipeline(Processor p, Processor... others) {
+            ProcessorStage stage = pipeline(p);
+            for (Processor other : others) {
+                stage = stage.pipeline(other);
+            }
+            return stage;
+        }
+
+        public ProcessorStage pipeline(List<Processor> processors) {
+            org.osgl.util.E.illegalArgumentIf(processors.isEmpty());
+            int sz = processors.size();
+            Processor first = processors.get(0);
+            ProcessorStage stage = pipeline(first);
+            for (int i = 1; i < sz; ++i) {
+                stage = stage.pipeline(processors.get(i));
+            }
+            return stage;
+        }
+
+        public <B extends ProcessorStage<B, P>, P extends Processor<P, B>> B pipeline(Class<? extends P> processorClass) {
+            return $.newInstance(processorClass).createStage(get());
         }
 
         public Resizer.Stage resize() {

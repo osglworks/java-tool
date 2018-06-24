@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class ImgTest {
 
@@ -106,7 +107,15 @@ source(img1())
                 .crop(50, 50, 250, 350)
                 .pipeline()
                 .watermark("HELLO OSGL")
+                .pipeline(new Sunglass())
                 .writeTo("/tmp/img1_pipeline.png");
+    }
+
+    private static void testPipelineMultiple() {
+        ArrayList<Img.Processor> list = new ArrayList();
+        list.add(new Img.Resizer(2.0f));
+        list.add(new Img.TextWriter("OSGL"));
+        source(img1()).pipeline(list).writeTo("/tmp/img1_mpipeline.png");
     }
 
     private static void testResizeByScale() {
@@ -165,6 +174,7 @@ source(img1())
         source(img2())
                 .resize(0.3f)
                 .pipeline(new Sunglass())
+                .pipeline().blur(3)
                 .writeTo("/tmp/img2_sunglass_style_b.png");
     }
 
@@ -287,8 +297,9 @@ source(img1())
 //        testIllegalArguments();
 //        testBlur();
 //        testFlip();
-        randomPixels();
-        noises();
+//        randomPixels();
+//        noises();
+        testPipelineMultiple();
     }
 
 }
