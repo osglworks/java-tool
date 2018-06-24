@@ -32,7 +32,7 @@ public class EnumerationIterator<T> implements Iterator<T> {
     private Enumeration<? extends T> e;
 
     public EnumerationIterator(Enumeration<? extends T> enumeration) {
-        e = $.notNull(enumeration);
+        e = $.requireNotNull(enumeration);
     }
 
     @Override

@@ -22,7 +22,7 @@ package org.osgl.util;
 
 import org.junit.Test;
 import org.osgl.$;
-import org.osgl.Osgl;
+import org.osgl.Lang;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -30,7 +30,7 @@ import java.util.TreeSet;
 public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
 
     private static $.Predicate<Character> charIsIn(final char ... ca) {
-        return new Osgl.Predicate<Character>() {
+        return new Lang.Predicate<Character>() {
             @Override
             public boolean test(Character character) {
                 for (char c: ca) {
@@ -42,7 +42,7 @@ public abstract class StrTestBase<T extends StrBase<T>> extends StrTestUtil<T> {
     }
 
     private static $.Predicate<Character> charIsNotIn(final char ... ca) {
-        return new Osgl.Predicate<Character>() {
+        return new Lang.Predicate<Character>() {
             @Override
             public boolean test(Character character) {
                 for (char c: ca) {

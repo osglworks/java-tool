@@ -21,7 +21,7 @@ package org.osgl.util;
  */
 
 import org.osgl.$;
-import org.osgl.Osgl;
+import org.osgl.Lang;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -39,15 +39,15 @@ abstract class ReflectionPropertyHandler extends PropertyHandlerBase {
     protected transient Class propertyClass;
     protected String propertyClassName;
 
-    ReflectionPropertyHandler(Osgl.Function<Class<?>, Object> objectFactory,
-                              Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    ReflectionPropertyHandler(Lang.Function<Class<?>, Object> objectFactory,
+                              Lang.Func2<String, Class<?>, ?> stringValueResolver,
                               Class entityClass, Method m, Field f) {
         super(objectFactory, stringValueResolver);
         init(entityClass, m, f);
     }
 
-    ReflectionPropertyHandler(Osgl.Function<Class<?>, Object> objectFactory,
-                              Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    ReflectionPropertyHandler(Lang.Function<Class<?>, Object> objectFactory,
+                              Lang.Func2<String, Class<?>, ?> stringValueResolver,
                               PropertyGetter.NullValuePolicy nullValuePolicy,
                               Class entityClass, Method m, Field f) {
         super(objectFactory, stringValueResolver, nullValuePolicy);

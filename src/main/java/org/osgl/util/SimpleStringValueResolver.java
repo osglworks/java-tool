@@ -20,12 +20,12 @@ package org.osgl.util;
  * #L%
  */
 
-import org.osgl.Osgl;
+import org.osgl.Lang;
 import org.osgl.exception.NotAppliedException;
 
 import java.util.Map;
 
-public class SimpleStringValueResolver extends Osgl.F2<String, Class<?>, Object> {
+public class SimpleStringValueResolver extends Lang.F2<String, Class<?>, Object> {
 
     public static final SimpleStringValueResolver INSTANCE = new SimpleStringValueResolver();
 
@@ -36,7 +36,7 @@ public class SimpleStringValueResolver extends Osgl.F2<String, Class<?>, Object>
     }
 
     @Override
-    public Object apply(String s, Class<?> aClass) throws NotAppliedException, Osgl.Break {
+    public Object apply(String s, Class<?> aClass) throws NotAppliedException, Lang.Break {
         StringValueResolver r = resolvers.get(aClass);
         if (null != r) {
             return r.resolve(s);

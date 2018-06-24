@@ -21,7 +21,7 @@ package org.osgl.util;
  */
 
 import org.osgl.$;
-import org.osgl.Osgl;
+import org.osgl.Lang;
 import org.osgl.exception.NotAppliedException;
 
 import java.lang.reflect.Field;
@@ -34,27 +34,27 @@ public class ReflectionPropertyGetter extends ReflectionPropertyHandler implemen
 
     private ReflectionPropertyHandlerFactory factory;
 
-    public ReflectionPropertyGetter(Osgl.Function<Class<?>, Object> objectFactory,
-                                    Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    public ReflectionPropertyGetter(Lang.Function<Class<?>, Object> objectFactory,
+                                    Lang.Func2<String, Class<?>, ?> stringValueResolver,
                                     Class entityClass, Method m, Field f,
                                     ReflectionPropertyHandlerFactory factory) {
         super(objectFactory, stringValueResolver, entityClass, m, f);
-        this.factory = $.notNull(factory);
+        this.factory = $.requireNotNull(factory);
     }
 
-    public ReflectionPropertyGetter(Osgl.Function<Class<?>, Object> objectFactory,
-                                    Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    public ReflectionPropertyGetter(Lang.Function<Class<?>, Object> objectFactory,
+                                    Lang.Func2<String, Class<?>, ?> stringValueResolver,
                                     NullValuePolicy nullValuePolicy,
                                     Class entityClass, Method m, Field f,
                                     ReflectionPropertyHandlerFactory factory) {
         super(objectFactory, stringValueResolver, nullValuePolicy, entityClass, m, f);
-        this.factory = $.notNull(factory);
+        this.factory = $.requireNotNull(factory);
     }
 
     public ReflectionPropertyGetter(Class entityClass, Method m, Field f,
                                     ReflectionPropertyHandlerFactory factory) {
         super(entityClass, m, f);
-        this.factory = $.notNull(factory);
+        this.factory = $.requireNotNull(factory);
     }
 
     public ReflectionPropertyGetter(NullValuePolicy nullValuePolicy,
@@ -69,7 +69,7 @@ public class ReflectionPropertyGetter extends ReflectionPropertyHandler implemen
     }
 
     @SuppressWarnings("unchecked")
-    private Object getProperty(Object entity) throws NotAppliedException, Osgl.Break {
+    private Object getProperty(Object entity) throws NotAppliedException, Lang.Break {
         if (null == entity) {
             return null;
         }

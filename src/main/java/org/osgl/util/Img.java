@@ -20,12 +20,14 @@ package org.osgl.util;
  * #L%
  */
 
-import static org.osgl.Osgl.notNull;
+import static org.osgl.Lang.requireNotNull;
 import static org.osgl.util.E.*;
 import static org.osgl.util.N.*;
 import static org.osgl.util.S.requireNotBlank;
 
 import org.osgl.$;
+import org.osgl.Lang;
+import org.osgl.exception.NotAppliedException;
 
 import java.awt.*;
 import java.awt.Dimension;
@@ -38,6 +40,8 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -186,6 +190,7 @@ public enum Img {
         @Override
         public BufferedImage produce() {
             try {
+                beforeRun();
                 return run();
             } finally {
                 if (null != g) {
@@ -193,6 +198,8 @@ public enum Img {
                 }
             }
         }
+
+        protected void beforeRun() {}
 
         /*
          * Sub class shall implement the image process logic in
@@ -214,7 +221,7 @@ public enum Img {
          * @return this Processor instance
          */
         public Processor source(BufferedImage source) {
-            this.source = notNull(source);
+            this.source = requireNotNull(source);
             this.sourceWidth = source.getWidth();
             this.sourceHeight = source.getHeight();
             this.sourceRatio = (double) this.sourceWidth / this.sourceHeight;
@@ -239,6 +246,11 @@ public enum Img {
             if (null == g) {
                 g = createGraphics2D();
             }
+            return g;
+        }
+
+        protected Graphics2D cloneSource() {
+            g().drawImage(source, 0, 0, null);
             return g;
         }
 
@@ -300,6 +312,21 @@ public enum Img {
                 stageClass = null;
             }
         }
+    }
+
+    public static abstract class Filter<FILTER extends Filter<FILTER, STAGE>, STAGE extends ProcessorStage<STAGE, FILTER>> extends Processor<FILTER, STAGE> {
+
+        @Override
+        protected void beforeRun() {
+            createTarget();
+        }
+
+        @Override
+        protected void createTarget() {
+            target = source;
+        }
+
+
     }
 
     /**
@@ -380,7 +407,7 @@ public enum Img {
          * @return this Processor instance
          */
         public Processor secondSource(BufferedImage source) {
-            this.source2 = notNull(source);
+            this.source2 = requireNotNull(source);
             this.source2Width = source.getWidth();
             this.source2Height = source.getHeight();
             this.source2Ratio = (double) this.sourceWidth / this.sourceHeight;
@@ -390,25 +417,21 @@ public enum Img {
     }
 
 
-    public static class ProcessorStage<STAGE extends ProcessorStage<STAGE, PROCESSOR>, PROCESSOR extends Processor<PROCESSOR, STAGE>> extends $.Provider<BufferedImage> {
-        /**
-         * The image source to be processed
-         */
-        BufferedImage source;
+    public static class ProcessorStage<STAGE extends ProcessorStage<STAGE, PROCESSOR>, PROCESSOR extends Processor<PROCESSOR, STAGE>> extends _Load<STAGE> {
         /**
          * The image target as a result of processing. Note if {@link #processor} is not provided
          * then it will use {@link #source} directly as the target
          */
-        volatile BufferedImage target;
+        protected volatile BufferedImage target;
         /**
          * The processor that apply a certain logic on source
          * and generates the target
          */
-        PROCESSOR processor;
+        protected PROCESSOR processor;
         /**
          * Define the compression quality of the target image
          */
-        float compressionQuality = Float.NaN;
+        protected float compressionQuality = Float.NaN;
 
         private ProcessorStage($.Func0<BufferedImage> source) {
             this(source.apply(), (PROCESSOR) COPIER);
@@ -433,8 +456,8 @@ public enum Img {
          * @param source the image source to be processed
          */
         public ProcessorStage(BufferedImage source, PROCESSOR processor) {
-            this.source = notNull(source);
-            this.processor = notNull(processor);
+            super(source);
+            this.processor = requireNotNull(processor);
         }
 
         /**
@@ -474,7 +497,7 @@ public enum Img {
         }
 
         public STAGE source(BufferedImage source) {
-            this.source = notNull(source);
+            this.source = requireNotNull(source);
             return me();
         }
 
@@ -482,16 +505,54 @@ public enum Img {
             return new _Load(target());
         }
 
+        private BufferedImage target() {
+            if (null == target) {
+                doJob();
+            }
+            return target;
+        }
+
+        private synchronized void doJob() {
+            preTransform();
+            target = null == processor ? source : processor.source(source).produce();
+        }
+
+        protected void preTransform() {
+        }
+
+    }
+
+    public static class _Load<T extends _Load> extends $.Provider<BufferedImage> {
+
+        protected BufferedImage source;
+        /**
+         * Define the compression quality of the target image
+         */
+        protected float compressionQuality = Float.NaN;
+
+        private _Load(InputStream is) {
+            this.source = read(is);
+        }
+
+        private _Load(BufferedImage source) {
+            this.source = requireNotNull(source);
+        }
+
+        public T compressionQuality(float compressionQuality) {
+            this.compressionQuality = N.requireAlpha(compressionQuality);
+            return me();
+        }
+
         public void writeTo(String fileName) {
             writeTo(new File(fileName));
         }
 
         public void writeTo(File file, String mimeType) {
-            writeTo(IO.os(file), mimeType);
+            writeTo(IO.outputStream(file), mimeType);
         }
 
         public void writeTo(File file) {
-            writeTo(IO.os(file), mimeType(file));
+            writeTo(IO.outputStream(file), mimeType(file));
         }
 
         public void writeTo(OutputStream os, String mimeType) {
@@ -507,7 +568,7 @@ public enum Img {
 
             ImageOutputStream ios = os(os);
             writer.setOutput(ios);
-            IIOImage image = new IIOImage(target(), null, null);
+            IIOImage image = new IIOImage(get(), null, null);
             try {
                 writer.write(null, image, params);
             } catch (IOException e) {
@@ -535,13 +596,6 @@ public enum Img {
             return Img.toBase64(toByteArray(mimeType), mimeType);
         }
 
-        private BufferedImage target() {
-            if (null == target) {
-                doJob();
-            }
-            return target;
-        }
-
         public void dropAlphaChannelIfJPEG(ImageWriter writer) {
             if (writer.getClass().getSimpleName().toUpperCase().contains("JPEG")) {
                 BufferedImage src = source;
@@ -549,32 +603,6 @@ public enum Img {
                 convertedImg.getGraphics().drawImage(src, 0, 0, null);
                 source = convertedImg;
             }
-        }
-
-        private synchronized void doJob() {
-            preTransform();
-            target = null == processor ? source : processor.source(source).produce();
-        }
-
-        protected void preTransform() {
-        }
-
-        private STAGE me() {
-            return $.cast(this);
-        }
-    }
-
-
-    public static class _Load extends $.Provider<BufferedImage> {
-
-        private BufferedImage source;
-
-        private _Load(InputStream is) {
-            this.source = read(is);
-        }
-
-        private _Load(BufferedImage source) {
-            this.source = notNull(source);
         }
 
         @Override
@@ -614,12 +642,16 @@ public enum Img {
             return crop(leftTop._1, leftTop._2, rightBottom._1, rightBottom._2);
         }
 
-        public WaterMarker.Stage watermark() {
-            return new WaterMarker.Stage(source);
+        public TextWriter.Stage text(String text) {
+            return new TextWriter.Stage(source).text(text);
         }
 
-        public WaterMarker.Stage watermark(String text) {
-            return new WaterMarker.Stage(source).text(text);
+        public TextWriter.Stage watermark() {
+            return new TextWriter.Stage(source);
+        }
+
+        public TextWriter.Stage watermark(String text) {
+            return new TextWriter.Stage(source).color(Color.LIGHT_GRAY).alpha(0.8f).rotate(-Math.PI / 7).offset(-130, 80).text(text);
         }
 
         public Blur.Stage blur() {
@@ -628,6 +660,10 @@ public enum Img {
 
         public Blur.Stage blur(int level) {
             return new Blur.Stage(source).level(level);
+        }
+
+        public NoiseMaker.Stage makeNoise() {
+            return new NoiseMaker.Stage(source);
         }
 
         public Flip.Stage flip() {
@@ -670,6 +706,10 @@ public enum Img {
             return appendWith(firstImage).reverse();
         }
 
+        protected T me() {
+            return $.cast(this);
+        }
+
     }
 
     public static _Load source(InputStream is) {
@@ -677,7 +717,7 @@ public enum Img {
     }
 
     public static _Load source(File file) {
-        return new _Load(IO.is(file));
+        return new _Load(IO.inputStream(file));
     }
 
     public static _Load source($.Func0<BufferedImage> imageProducer) {
@@ -704,7 +744,7 @@ public enum Img {
         return source(imageProvider).blur();
     }
 
-    public static WaterMarker.Stage watermark($.Func0<BufferedImage> imageProvider) {
+    public static TextWriter.Stage watermark($.Func0<BufferedImage> imageProvider) {
         return source(imageProvider).watermark();
     }
 
@@ -722,8 +762,8 @@ public enum Img {
      * @param image The image file
      * @return The base64 encoded value
      */
-    public static String toBase64(File image) throws IOException {
-        return toBase64(IO.is(image), mimeType(image));
+    public static String toBase64(File image) {
+        return toBase64(IO.inputStream(image), mimeType(image));
     }
 
     /**
@@ -1029,7 +1069,7 @@ public enum Img {
             }
 
             Flip.Stage dir(Direction dir) {
-                processor.dir = notNull(dir);
+                processor.dir = requireNotNull(dir);
                 return this;
             }
         }
@@ -1057,9 +1097,9 @@ public enum Img {
     }
 
 
-    private static class Blur extends Processor<Blur, Blur.Stage> {
+    public static class Blur extends Filter<Blur, Blur.Stage> {
 
-        static class Stage extends ProcessorStage<Stage, Blur> {
+        public static class Stage extends ProcessorStage<Stage, Blur> {
             public Stage(BufferedImage source) {
                 super(source, new Blur());
             }
@@ -1099,78 +1139,168 @@ public enum Img {
 
         @Override
         protected BufferedImage run() {
-            Graphics2D g = g();
-            g.drawImage(source, 0, 0, null);
             BufferedImageOp op = new ConvolveOp(new Kernel(level, level, matrix), ConvolveOp.EDGE_NO_OP, null);
             target = op.filter(target, null);
             return target;
         }
     }
 
-    public static class WaterMarker extends Processor<WaterMarker, WaterMarker.Stage> {
+    public static class NoiseMaker extends Filter<NoiseMaker, NoiseMaker.Stage> {
 
-        public static class Stage extends ProcessorStage<Stage, WaterMarker> {
+        public static class Stage extends ProcessorStage<Stage, NoiseMaker> {
             public Stage(BufferedImage source) {
-                super(source, new WaterMarker());
+                super(source, new NoiseMaker());
             }
-
-            public Stage(BufferedImage source, WaterMarker processor) {
+            public Stage(BufferedImage source, NoiseMaker processor) {
                 super(source, processor);
             }
 
-            public Stage text(String text) {
+            public Stage setMinArcs(int n) {
+                processor.minArcs = N.requireNonNegative(n);
+                return this;
+            }
+            public Stage setMaxArcs(int n) {
+                processor.maxArcs = N.requirePositive(n);
+                return this;
+            }
+            public Stage setMaxArcSize(int size) {
+                processor.maxArcSize = size;
+                return this;
+            }
+            public Stage setMaxLines(int n) {
+                processor.maxLines = N.requireNonNegative(n);
+                return this;
+            }
+        }
+
+        private int minArcs = 100;
+        private int maxArcs = 200;
+        private int maxArcSize = 5;
+        private int minLines = 1;
+        private int maxLines = 5;
+
+        @Override
+        protected NoiseMaker.Stage createStage(BufferedImage source) {
+            return new NoiseMaker.Stage(source, this);
+        }
+
+        @Override
+        protected BufferedImage run() {
+            int w = sourceWidth;
+            int h = sourceHeight;
+            Random r = ThreadLocalRandom.current();
+
+            Graphics2D g = g();
+
+            // draw random arcs
+            if (maxArcs < minArcs) {
+                int tmp = maxArcs;
+                maxArcs = minArcs;
+                minArcs = tmp;
+            }
+            int dots = minArcs + r.nextInt(maxArcs);
+            for (int i = 0; i < dots; i++) {
+                // set a random color
+                g.setColor(new Color(randomColorValue()));
+
+                // pick up a random position
+                int xInt = r.nextInt(w - 1);
+                int yInt = r.nextInt(h - 1);
+
+                // random angle
+                int sAngleInt = r.nextInt(360);
+                int eAngleInt = r.nextInt(360);
+
+                // size of the arc
+                int wInt = 1 + r.nextInt(maxArcSize);
+                int hInt = 1 + r.nextInt(maxArcSize);
+
+                g.fillArc(xInt, yInt, wInt, hInt, sAngleInt, eAngleInt);
+            }
+
+            // draw random lines;
+            int lines = minLines + r.nextInt(maxLines - minLines);
+            for (int i = 0; i < lines; ++i) {
+                int xInt = r.nextInt(w - 1);
+                int yInt = r.nextInt(h - 1);
+
+                int xInt2 = r.nextInt(w - 1);
+                int yInt2 = r.nextInt(h - 1);
+                g.setColor(new Color(randomColorValue()));
+                g.drawLine(xInt, yInt, xInt2, yInt2);
+            }
+
+            return target;
+        }
+    }
+
+    public static class TextWriter extends Filter<TextWriter, TextWriter.Stage> {
+        public static class Stage extends ProcessorStage<Stage, TextWriter> {
+            public Stage(BufferedImage source) {
+                super(source, new TextWriter());
+            }
+
+            public Stage(BufferedImage source, TextWriter processor) {
+                super(source, processor);
+            }
+
+            public TextWriter.Stage text(String text) {
                 processor.text = requireNotBlank(text);
                 return this;
             }
 
-            public Stage color(Color color) {
-                processor.color = notNull(color);
+            public TextWriter.Stage color(Color color) {
+                processor.color = requireNotNull(color);
                 return this;
             }
 
-            public Stage font(Font font) {
-                processor.font = notNull(font);
+            public TextWriter.Stage font(Font font) {
+                processor.font = requireNotNull(font);
                 return this;
             }
 
-            public Stage alpha(float alpha) {
+            public TextWriter.Stage alpha(float alpha) {
                 processor.alpha = requireAlpha(alpha);
                 return this;
             }
 
-            public Stage offset(int offsetX, int offsetY) {
+            public TextWriter.Stage offset(int offsetX, int offsetY) {
                 processor.offsetX = offsetX;
                 processor.offsetY = offsetY;
                 return this;
             }
 
-            public Stage offsetY(int offsetY) {
+            public TextWriter.Stage offsetY(int offsetY) {
                 this.processor.offsetY = offsetY;
                 return this;
             }
 
-            public Stage offsetX(int offsetX) {
+            public TextWriter.Stage offsetX(int offsetX) {
                 this.processor.offsetX = offsetX;
                 return this;
             }
 
-        }
+            public TextWriter.Stage rotate(double theta) {
+                this.processor.theta = theta;
+                return this;
+            }
 
-        Color color = Color.LIGHT_GRAY;
-        Font font = new Font("Arial", Font.BOLD, 28);
-        float alpha = 0.8f;
+        }
+        Color color = Color.DARK_GRAY;
+        Font font = new Font("Arial", Font.BOLD, 32);
+        float alpha = 1.0f;
         String text;
         int offsetX;
         int offsetY;
-
-        WaterMarker() {
+        Double theta;
+        TextWriter() {
         }
 
-        WaterMarker(String text) {
+        TextWriter(String text) {
             this.text = text;
         }
 
-        WaterMarker(String text, int offsetX, int offsetY, Color color, Font font, float alpha) {
+        TextWriter(String text, int offsetX, int offsetY, Color color, Font font, float alpha) {
             this.text = text;
             this.offsetX = offsetX;
             this.offsetY = offsetY;
@@ -1189,9 +1319,11 @@ public enum Img {
             int w = sourceWidth;
             int h = sourceHeight;
             Graphics2D g = g();
-            g.drawImage(source, 0, 0, w, h, null);
             g.setColor(color);
             g.setFont(font);
+            if (null != theta) {
+                g.rotate(theta);
+            }
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
 
             FontMetrics fontMetrics = g.getFontMetrics();
@@ -1213,7 +1345,7 @@ public enum Img {
             }
 
             public Stage dir(Direction dir) {
-                this.processor.dir = notNull(dir);
+                this.processor.dir = requireNotNull(dir);
                 return this;
             }
 
@@ -1243,12 +1375,12 @@ public enum Img {
             }
 
             public Stage scaleFix(ScaleFix scaleFix) {
-                this.processor.scaleFix = notNull(scaleFix);
+                this.processor.scaleFix = requireNotNull(scaleFix);
                 return this;
             }
 
             public Stage background(Color backgroundColor) {
-                this.processor.background = notNull(backgroundColor);
+                this.processor.background = requireNotNull(backgroundColor);
                 return this;
             }
 
@@ -1301,9 +1433,9 @@ public enum Img {
 
         Concatenater(BufferedImage secondImage, Direction dir, ScaleFix scaleFix, Color background) {
             this.secondSource(secondImage);
-            this.dir = notNull(dir);
-            this.scaleFix = notNull(scaleFix);
-            this.background = notNull(background);
+            this.dir = requireNotNull(dir);
+            this.scaleFix = requireNotNull(scaleFix);
+            this.background = requireNotNull(background);
         }
 
         @Override
@@ -1344,11 +1476,14 @@ public enum Img {
 
 
     private static int randomColorValue() {
+        return randomColorValue(true);
+    }
+
+    private static int randomColorValue(boolean withAlpha) {
         int a = N.randInt(256);
         int r = N.randInt(256);
         int g = N.randInt(256);
-        int b = N.randInt(256);
-        return (a << 24) | (r << 16) | (g << 8) | b;
+        return withAlpha ? a << 24 | r << 16 | g << 8 : a << 24 | r << 16 | g << 8;
     }
 
     /**
@@ -1357,10 +1492,11 @@ public enum Img {
     public enum F {
         ;
 
-        public static $.Producer<Integer> RANDOM_COLOR_VALUE = new $.Producer<Integer>() {
+        public static $.Producer<Color> RANDOM_COLOR = new $.Producer<Color>() {
             @Override
-            public Integer produce() {
-                return randomColorValue();
+            public Color produce() {
+                Random r = ThreadLocalRandom.current();
+                return new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255), r.nextInt(255));
             }
         };
 
@@ -1384,18 +1520,75 @@ public enum Img {
          * @return a function as described above
          */
         public static $.Producer<BufferedImage> background(final int w, final int h) {
-            return background(w, h, $.val(COLOR_TRANSPARENT.getRGB()));
+            return background(w, h, $.val(COLOR_TRANSPARENT));
         }
 
         /**
-         * A function that generates a background image with pixels with random color
+         * A function that generates a image with random picked pixels with random color. The
+         * background is transparent. There are about 6 percent of pixels in the image selected
+         * to be rendered with random color.
          *
          * @param w the width
          * @param h the height
          * @return a function as described above
          */
         public static $.Producer<BufferedImage> randomPixels(final int w, final int h) {
-            return background(w, h, RANDOM_COLOR_VALUE);
+            return randomPixels(w, h, 6);
+        }
+
+
+        /**
+         * A function that generates a image with random picked pixels with random color.
+         * The image background color is specified as `background`. There are about 6 percent
+         * of pixels in the image selected to be rendered with random color.
+         *
+         *
+         * @param w the width
+         * @param h the height
+         * @return a function as described above
+         */
+        public static $.Producer<BufferedImage> randomPixels(final int w, final int h, Color background) {
+            return randomPixels(w, h, 7, background);
+        }
+        /**
+         * A function that generates a image with random picked pixels with random color. The
+         * background is transparent.
+         *
+         * @param w the width
+         * @param h the height
+         * @param percent the percent of pixels selected from all pixels in the image
+         * @return a function as described above
+         */
+        public static $.Producer<BufferedImage> randomPixels(final int w, final int h, final int percent) {
+            return randomPixels(w, h, percent, COLOR_TRANSPARENT);
+        }
+
+        /**
+         * A function that generates a image with random picked pixels with random color. The image
+         * use `background` color as the background
+         *
+         * @param w the width
+         * @param h the height
+         * @param percent the percent of pixels selected from all pixels in the image
+         * @param background the background color
+         * @return a function as described above
+         */
+        public static $.Producer<BufferedImage> randomPixels(final int w, final int h, final int percent, final Color background) {
+            return background(w, h, $.val(background)).andThen(new $.Function<BufferedImage, BufferedImage>() {
+                @Override
+                public BufferedImage apply(BufferedImage img) throws NotAppliedException, Lang.Break {
+                    Random r = ThreadLocalRandom.current();
+                    for (int i = 0; i < w; ++i) {
+                        for (int j = 0; j < h; ++j) {
+                            if (r.nextInt(100) < percent) {
+                                int v = Img.randomColorValue(false);
+                                img.setRGB(i, j, v);
+                            }
+                        }
+                    }
+                    return img;
+                }
+            });
         }
 
         /**
@@ -1403,21 +1596,32 @@ public enum Img {
          *
          * @param w the width
          * @param h the height
+         * @param color the background color
          * @return a function as described above
          */
-        public static $.Producer<BufferedImage> background(final int w, final int h, final $.Func0<Integer> colorValueProvider) {
+        public static $.Producer<BufferedImage> background(final int w, final int h, final Color color) {
+            return background(w, h, $.val(color));
+        }
+
+        /**
+         * A function that generates a background in rectangular area with color specified
+         *
+         * @param w the width
+         * @param h the height
+         * @param colorValueProvider the background color provider
+         * @return a function as described above
+         */
+        public static $.Producer<BufferedImage> background(final int w, final int h, final $.Func0<Color> colorValueProvider) {
             $.NPE(colorValueProvider);
             requirePositive(w);
             requirePositive(h);
             return new $.Producer<BufferedImage>() {
                 @Override
                 public BufferedImage produce() {
-                    BufferedImage b = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
-                    for (int i = 0; i < w; ++i) {
-                        for (int j = 0; j < h; ++j) {
-                            b.setRGB(i, j, colorValueProvider.apply());
-                        }
-                    }
+                    BufferedImage b = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g = b.createGraphics();
+                    g.setPaint(colorValueProvider.apply());
+                    g.fillRect(0, 0, w, h);
                     return b;
                 }
             };

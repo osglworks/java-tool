@@ -126,7 +126,7 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     /**
-     * Delegate to {@link TraversableBase#reduce(Object, org.osgl.Osgl.Func2)}
+     * Delegate to {@link TraversableBase#reduce(Object, org.osgl.Lang.Func2)}
      * @param identity {@inheritDoc}
      * @param accumulator {@inheritDoc}
      * @param <R> {@inheritDoc}
@@ -138,7 +138,7 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     /**
-     * Delegate to {@link TraversableBase#reduce(org.osgl.Osgl.Func2)}
+     * Delegate to {@link TraversableBase#reduce(org.osgl.Lang.Func2)}
      * @param accumulator {@inheritDoc}
      * @return {@inheritDoc}
      */
@@ -148,7 +148,7 @@ extends TraversableBase<T> implements C.Sequence<T> {
     }
 
     /**
-     * Delegate to {@link TraversableBase#findOne(org.osgl.Osgl.Function)}
+     * Delegate to {@link TraversableBase#findOne(org.osgl.Lang.Function)}
      * @param predicate the function map the element to Boolean
      * @return {@inheritDoc}
      */

@@ -30,7 +30,7 @@ public class WriterOutput implements Output {
     private Writer w;
 
     public WriterOutput(Writer w) {
-        this.w = $.notNull(w);
+        this.w = $.requireNotNull(w);
     }
 
     @Override

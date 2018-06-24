@@ -33,7 +33,7 @@ public class OutputStreamOutput implements Output {
     private OutputStream os;
 
     public OutputStreamOutput(OutputStream os) {
-        this.os = $.notNull(os);
+        this.os = $.requireNotNull(os);
     }
 
     @Override

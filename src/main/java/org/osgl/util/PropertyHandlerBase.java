@@ -21,11 +21,11 @@ package org.osgl.util;
  */
 
 import org.osgl.$;
-import org.osgl.Osgl;
+import org.osgl.Lang;
 
 abstract class PropertyHandlerBase implements PropertyHandler {
-    protected Osgl.Function<Class<?>, Object> objectFactory;
-    protected Osgl.Func2<String, Class<?>, ?> stringValueResolver;
+    protected Lang.Function<Class<?>, Object> objectFactory;
+    protected Lang.Func2<String, Class<?>, ?> stringValueResolver;
     protected PropertyGetter.NullValuePolicy nullValuePolicy;
 
     PropertyHandlerBase() {
@@ -36,14 +36,14 @@ abstract class PropertyHandlerBase implements PropertyHandler {
         this(SimpleObjectFactory.INSTANCE, SimpleStringValueResolver.INSTANCE, nullValuePolicy);
     }
 
-    PropertyHandlerBase(Osgl.Function<Class<?>, Object> objectFactory, Osgl.Func2<String, Class<?>, ?> stringValueResolver) {
+    PropertyHandlerBase(Lang.Function<Class<?>, Object> objectFactory, Lang.Func2<String, Class<?>, ?> stringValueResolver) {
         setObjectFactory(objectFactory);
         setStringValueResolver(stringValueResolver);
         setNullValuePolicy(PropertyGetter.NullValuePolicy.RETURN_NULL);
     }
 
-    PropertyHandlerBase(Osgl.Function<Class<?>, Object> objectFactory,
-                        Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    PropertyHandlerBase(Lang.Function<Class<?>, Object> objectFactory,
+                        Lang.Func2<String, Class<?>, ?> stringValueResolver,
                         PropertyGetter.NullValuePolicy nullValuePolicy) {
         setObjectFactory(objectFactory);
         setStringValueResolver(stringValueResolver);
@@ -54,16 +54,16 @@ abstract class PropertyHandlerBase implements PropertyHandler {
     }
 
     @Override
-    public void setObjectFactory(Osgl.Function<Class<?>, Object> factory) {
-        this.objectFactory = $.notNull(factory);
+    public void setObjectFactory(Lang.Function<Class<?>, Object> factory) {
+        this.objectFactory = $.requireNotNull(factory);
     }
 
     @Override
-    public void setStringValueResolver(Osgl.Func2<String, Class<?>, ?> stringValueResolver) {
-        this.stringValueResolver = $.notNull(stringValueResolver);
+    public void setStringValueResolver(Lang.Func2<String, Class<?>, ?> stringValueResolver) {
+        this.stringValueResolver = $.requireNotNull(stringValueResolver);
     }
 
     public void setNullValuePolicy(PropertyGetter.NullValuePolicy nvp) {
-        this.nullValuePolicy = $.notNull(nvp);
+        this.nullValuePolicy = $.requireNotNull(nvp);
     }
 }

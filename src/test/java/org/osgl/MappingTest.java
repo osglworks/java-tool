@@ -20,6 +20,8 @@ package org.osgl;
  * #L%
  */
 
+import static org.osgl.Lang.requireNotNull;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -366,7 +368,7 @@ public class MappingTest extends TestBase {
             eq(source.ia, target.ia);
             eq(source.si, target.si);
             notSame(source.ia, target.ia);
-            notNull(target.create_date); // there are initial value
+            requireNotNull(target.create_date); // there are initial value
             ne(source.createDate.getTime(), target.create_date.getMillis());
         }
 
@@ -385,7 +387,7 @@ public class MappingTest extends TestBase {
             // foo.createDate cannot be map into bar.create_date
             // however merge will leave target field unchanged if source field is null
             // in this case it assume foo.create_date (which doesn't exits) is null
-            notNull(target.create_date);
+            requireNotNull(target.create_date);
             ne(source.createDate.getTime(), target.create_date.getMillis());
             yes(target.si.containsAll(source.si));
         }
@@ -400,7 +402,7 @@ public class MappingTest extends TestBase {
             eq(source.ia, target.ia);
             ne(source.si, target.si);
             yes(target.si.containsAll(source.si));
-            notNull(target.create_date);
+            requireNotNull(target.create_date);
             eq(source.createDate.getTime(), target.create_date.getMillis());
             yes(target.si.containsAll(source.si));
         }
@@ -416,7 +418,7 @@ public class MappingTest extends TestBase {
             eq(source.si, target.si);
             yes(target.si.containsAll(source.si));
             eq(source.color, target.color.name());
-            notNull(target.create_date);
+            requireNotNull(target.create_date);
             eq(source.createDate.getTime(), target.create_date.getMillis());
         }
 
@@ -552,7 +554,7 @@ public class MappingTest extends TestBase {
         if (null == foo.ia) {
             isNull(bar.ia);
         } else {
-            notNull(bar.ia);
+            requireNotNull(bar.ia);
             eq(foo.ia, bar.ia);
         }
     }

@@ -20,7 +20,7 @@ package org.osgl.util;
  * #L%
  */
 
-import org.osgl.Osgl;
+import org.osgl.Lang;
 
 import java.util.Map;
 
@@ -37,15 +37,15 @@ public class MapPropertyGetter extends MapPropertyHandler implements PropertyGet
         super(nullValuePolicy, keyType, valType);
     }
 
-    public MapPropertyGetter(Osgl.Function<Class<?>, Object> objectFactory,
-                             Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    public MapPropertyGetter(Lang.Function<Class<?>, Object> objectFactory,
+                             Lang.Func2<String, Class<?>, ?> stringValueResolver,
                              Class<?> keyType,
                              Class<?> valType) {
         super(objectFactory, stringValueResolver, keyType, valType);
     }
 
-    public MapPropertyGetter(Osgl.Function<Class<?>, Object> objectFactory,
-                             Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    public MapPropertyGetter(Lang.Function<Class<?>, Object> objectFactory,
+                             Lang.Func2<String, Class<?>, ?> stringValueResolver,
                              PropertyGetter.NullValuePolicy nullValuePolicy,
                              Class<?> keyType,
                              Class<?> valType) {

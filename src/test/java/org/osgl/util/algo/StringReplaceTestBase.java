@@ -27,7 +27,7 @@ import org.osgl.TestBase;
 public abstract class StringReplaceTestBase<LOGIC extends StringReplace> extends TestBase {
     private LOGIC replacer;
     public StringReplaceTestBase(LOGIC replacer) {
-        this.replacer = $.notNull(replacer);
+        this.replacer = $.requireNotNull(replacer);
     }
 
     protected char[] text;

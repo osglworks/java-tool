@@ -220,12 +220,12 @@ public class Lang implements Serializable {
          * @throws NullPointerException
          *         if {@code before} is null
          */
-        public <T> F0<T> andThen(final Function<? super R, ? extends T> after) {
+        public <T> Producer<T> andThen(final Function<? super R, ? extends T> after) {
             E.NPE(after);
             final F0<R> me = this;
-            return new F0<T>() {
+            return new Producer<T>() {
                 @Override
-                public T apply() {
+                public T produce() {
                     return after.apply(me.apply());
                 }
             };
@@ -2785,6 +2785,7 @@ public class Lang implements Serializable {
     public static abstract class Provider<ELEMENT> extends F0<ELEMENT> {
         @Override
         public final ELEMENT apply() throws NotAppliedException, Break {
+
             return get();
         }
 
@@ -5285,7 +5286,7 @@ public class Lang implements Serializable {
 
         @Override
         public C.Set<T> withIn(Collection<? extends T> col) {
-            return col.contains(v) ? this : C.<T>set();
+            return col.contains(v) ? this : C.<T>Set();
         }
 
         public Var<T> update(Function<T, T> changer) {
@@ -10688,7 +10689,7 @@ public class Lang implements Serializable {
          * @since 0.2
          */
         @SuppressWarnings({"unused", "unchecked"})
-        public static <T> Predicate<T> notNull() {
+        public static <T> Predicate<T> requireNotNull() {
             return NOT_NULL;
         }
 

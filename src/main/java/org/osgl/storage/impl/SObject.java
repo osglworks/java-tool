@@ -408,7 +408,7 @@ public abstract class SObject implements ISObject {
      * @see #of(String, String, Map)
      */
     public static SObject of(String key, String content) {
-        return new StringSObject(key, $.notNull(content));
+        return new StringSObject(key, $.requireNotNull(content));
     }
 
     /**

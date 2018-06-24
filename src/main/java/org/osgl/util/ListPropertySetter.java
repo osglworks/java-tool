@@ -21,7 +21,7 @@ package org.osgl.util;
  */
 
 import org.osgl.$;
-import org.osgl.Osgl;
+import org.osgl.Lang;
 
 import java.util.List;
 
@@ -35,8 +35,8 @@ public class ListPropertySetter extends ListPropertyHandler implements PropertyS
         setNullValuePolicy(PropertyGetter.NullValuePolicy.CREATE_NEW);
     }
 
-    public ListPropertySetter(Osgl.Function<Class<?>, Object> objectFactory,
-                       Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    public ListPropertySetter(Lang.Function<Class<?>, Object> objectFactory,
+                       Lang.Func2<String, Class<?>, ?> stringValueResolver,
                        Class<?> itemType) {
         super(objectFactory, stringValueResolver, itemType);
         setNullValuePolicy(PropertyGetter.NullValuePolicy.CREATE_NEW);

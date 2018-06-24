@@ -41,7 +41,6 @@ package org.osgl.util;
 
 import org.osgl.$;
 import org.osgl.Lang;
-import org.osgl.Osgl;
 import org.osgl.exception.NotAppliedException;
 
 import java.io.Serializable;
@@ -387,12 +386,12 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public C.Sequence<T> append(C.Sequence<? extends T> seq) {
-            return Osgl.cast(seq);
+            return Lang.cast(seq);
         }
 
         @Override
         public C.Sequence<T> prepend(C.Sequence<? extends T> seq) {
-            return Osgl.cast(seq);
+            return Lang.cast(seq);
         }
 
         @Override
@@ -789,7 +788,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public C.Set<T> onlyIn(Collection<? extends T> col) {
-            return C.set(col);
+            return C.Set(col);
         }
 
         @Override
@@ -804,7 +803,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public C.Set<T> with(Collection<? extends T> col) {
-            return C.set(col);
+            return C.Set(col);
         }
 
         @Override
@@ -894,7 +893,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public C.Set<T> with(Collection<? extends T> col) {
-            return C.set(col);
+            return C.Set(col);
         }
 
         @Override
@@ -909,7 +908,7 @@ abstract class Nil<T> extends SequenceBase<T> implements C.Traversable<T>, Colle
 
         @Override
         public C.Set<T> onlyIn(Collection<? extends T> col) {
-            return C.set(col);
+            return C.Set(col);
         }
 
         @Override

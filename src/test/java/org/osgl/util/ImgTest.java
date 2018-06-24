@@ -77,18 +77,16 @@ source(img1())
         }
     }
 
-    static void testWatermarkWithDefSetting() {
-        source(img1())
-                .watermark("CONFIDENTIAL")
-                .writeTo("/tmp/img1_watermark_def.png");
-    }
-
     static void testWatermark() {
         source(img1())
                 .watermark("CONFIDENTIAL")
-                .offsetY(-200)
-                .color(Color.DARK_GRAY)
                 .writeTo("/tmp/img1_watermark.png");
+    }
+
+    static void testTextWriter() {
+        source(img1())
+                .text("Hello World!")
+                .writeTo("/tmp/img1_text.png");
     }
 
     private static void testCompress() {
@@ -214,6 +212,8 @@ source(img1())
                 .resize(0.3f)
                 .pipeline(FluentSunglass.class)
                 .lighter()
+                .pipeline()
+                .makeNoise()
                 .writeTo("/tmp/img2_f_sunglass_lighter.png");
 
         source(img2())
@@ -225,7 +225,12 @@ source(img1())
 
 
     private static void randomPixels() {
-        source(Img.F.randomPixels(400, 200)).blur().writeTo("/tmp/img_random_pixels.png");
+        source(Img.F.randomPixels(400, 200, Color.WHITE)).writeTo("/tmp/img_random_pixels.png");
+    }
+
+    private static void noises() {
+        source(Img.F.randomPixels(400, 200, Color.WHITE))
+                .makeNoise().writeTo("/tmp/img_noise.png");
     }
 
     private static void testBlur() {
@@ -265,24 +270,25 @@ source(img1())
     }
 
     public static void main(String[] args) {
-        testCustomizedFluentProcessor();
-        testConcatenate();
-        testResize();
-        testResizeByScale();
-        testResizeKeepRatio();
-        testCrop();
-        testWatermarkWithDefSetting();
-        testWatermark();
-        testCompress();
-        testCopy();
-        testPipeline();
-        testProcessJPEGfile();
-        testGenerateTrackingPixel();
-        testCustomizedProcessor();
-        testIllegalArguments();
-        testBlur();
-        testFlip();
+//        testConcatenate();
+//        testResize();
+//        testResizeByScale();
+//        testResizeKeepRatio();
+//        testCrop();
+//        testWatermark();
+//        testTextWriter();
+//        testWatermark();
+//        testCompress();
+//        testCopy();
+//        testPipeline();
+//        testProcessJPEGfile();
+//        testGenerateTrackingPixel();
+//        testCustomizedProcessor();
+//        testIllegalArguments();
+//        testBlur();
+//        testFlip();
         randomPixels();
+        noises();
     }
 
 }

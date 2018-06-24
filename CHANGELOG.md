@@ -1,5 +1,10 @@
 # OSGL Tool Change Log
 
+1.18.0 24/Jun/2018
+* Generalize `Img.WaterMarker` to `Img.TextWriter` #124
+* Add `Noiser` processor #123
+* Fields of `Img.ProcessorStage` shall be in protected scope #122
+
 1.17.0 21/Jun/2018
 * add `IO.write(char[])` method #121
 * add `char[] Crypto.generatePassword(char[])` method #120

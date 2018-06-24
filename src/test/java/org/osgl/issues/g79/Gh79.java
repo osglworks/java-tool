@@ -20,6 +20,8 @@ package org.osgl.issues.g79;
  * #L%
  */
 
+import static org.osgl.Lang.requireNotNull;
+
 import org.junit.Test;
 import org.osgl.$;
 import org.osgl.TestBase;
@@ -44,10 +46,10 @@ public class Gh79 extends TestBase {
         Bean bean = new Bean();
         $.map(beanData).to(bean);
         List<Bar> theBarList = bean.barMap.get("xyz");
-        notNull(theBarList);
+        requireNotNull(theBarList);
         eq(1, theBarList.size());
         Bar theBar = theBarList.get(0);
-        notNull(theBar);
+        requireNotNull(theBar);
         List<Foo> theFooList = theBar.fooMap.get("abc");
         eq(2, theFooList.size());
         Foo theFoo1 = theFooList.get(0);

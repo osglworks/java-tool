@@ -21,7 +21,7 @@ package org.osgl.util;
  */
 
 import org.osgl.$;
-import org.osgl.Osgl;
+import org.osgl.Lang;
 
 import java.io.*;
 
@@ -54,29 +54,29 @@ public final class Const<T> implements Serializable {
         return S.string(v);
     }
 
-    public Osgl.Var<T> toVar() {
-        return Osgl.var(v);
+    public Lang.Var<T> toVar() {
+        return Lang.var(v);
     }
 
-    public Osgl.Val<T> toVal() {
-        return Osgl.val(v);
+    public Lang.Val<T> toVal() {
+        return Lang.val(v);
     }
 
     @Override
     public boolean equals(Object o) {
-        return (this == o || ((o instanceof Const) && Osgl.eq(((Const)o).v, v)));
+        return (this == o || ((o instanceof Const) && Lang.eq(((Const)o).v, v)));
     }
 
     @Override
     public int hashCode() {
-        return Osgl.hc(v);
+        return Lang.hc(v);
     }
 
     public static <E> Const of(E t) {
         return new Const<E>(t);
     }
 
-    public static <E> Const of(Osgl.Var<E> var) {
+    public static <E> Const of(Lang.Var<E> var) {
         return null == var ? new Const<E>(null) : new Const<E>(var.get());
     }
 

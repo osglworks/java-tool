@@ -58,7 +58,7 @@ public abstract class StringReplace implements $.Func4<char[], char[], char[], I
     public abstract char[] replace(char[] text, char[] target, char[] replacement, int firstId);
 
     public static StringReplace wrap(final $.Func4<char[], char[], char[], Integer, char[]> replaceLogic) {
-        return $.notNull(replaceLogic) instanceof StringReplace ? (StringReplace) replaceLogic : new StringReplace() {
+        return $.requireNotNull(replaceLogic) instanceof StringReplace ? (StringReplace) replaceLogic : new StringReplace() {
             @Override
             public char[] replace(char[] text, char[] target, char[] replacement, int firstId) {
                 return replaceLogic.apply(text, target, replacement, firstId);
@@ -71,7 +71,7 @@ public abstract class StringReplace implements $.Func4<char[], char[], char[], I
         private final StringSearch searcher;
 
         public SimpleStringReplace(StringSearch searcher) {
-            this.searcher = $.notNull(searcher);
+            this.searcher = $.requireNotNull(searcher);
         }
 
         public SimpleStringReplace() {

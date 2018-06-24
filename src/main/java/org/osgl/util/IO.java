@@ -76,7 +76,7 @@ public class IO {
      * ```
      *
      * @param <STAGE>
-     *     type parameter specify the implementation class
+     *         type parameter specify the implementation class
      */
     public static abstract class WriteStageBase<SOURCE, STAGE extends WriteStageBase> {
 
@@ -100,6 +100,7 @@ public class IO {
         /**
          * Specify that it shall close the target (output stream or writer) once
          * the written operation finished.
+         *
          * @return
          */
         public STAGE ensureCloseSink() {
@@ -112,7 +113,7 @@ public class IO {
          * or outputstream/writer conversion.
          *
          * @param charset
-         *      the charset to be used to encode byte array into string
+         *         the charset to be used to encode byte array into string
          * @return this write stage instance
          */
         public STAGE encoding(Charset charset) {
@@ -124,9 +125,8 @@ public class IO {
          * Commit the write stage to a {@link Writer}.
          *
          * @param sink
-         *      the target writer to which this write stage is committed.
-         * @return
-         *      the number of chars that has been written to the writer.
+         *         the target writer to which this write stage is committed.
+         * @return the number of chars that has been written to the writer.
          */
         public int to(Writer sink) {
             try {
@@ -146,9 +146,8 @@ public class IO {
          * Commit this write stage to a {@link OutputStream}.
          *
          * @param sink
-         *      the target output stream to which this write stage is committed.
-         * @return
-         *      the number of bytes that has been written to the output stream.
+         *         the target output stream to which this write stage is committed.
+         * @return the number of bytes that has been written to the output stream.
          */
         public int to(OutputStream sink) {
             try {
@@ -168,9 +167,8 @@ public class IO {
          * Commit this write stage into a {@link File}.
          *
          * @param file
-         *      the target file to which this write stage is committed.
-         * @return
-         *      the number of bytes that has been written to the file.
+         *         the target file to which this write stage is committed.
+         * @return the number of bytes that has been written to the file.
          */
         public int to(File file) {
             BufferedOutputStream bos = buffered(outputStream(file));
@@ -181,11 +179,10 @@ public class IO {
          * Sub class to implement the commit to a `Writer` logic.
          *
          * @param sink
-         *      the writer target to which this write stage committed.
-         * @return
-         *      the number of chars written to the writer.
+         *         the writer target to which this write stage committed.
+         * @return the number of chars written to the writer.
          * @throws IOException
-         *      in case IOException encountered.
+         *         in case IOException encountered.
          */
         protected abstract int doWriteTo(Writer sink) throws IOException;
 
@@ -193,11 +190,10 @@ public class IO {
          * Sub class to implement the commit to a `OutputStream` logic.
          *
          * @param sink
-         *      the output stream target to which this write stage committed.
-         * @return
-         *      the number of bytes written to the output stream.
+         *         the output stream target to which this write stage committed.
+         * @return the number of bytes written to the output stream.
          * @throws IOException
-         *      in case IOException encountered.
+         *         in case IOException encountered.
          */
         protected abstract int doWriteTo(OutputStream sink) throws IOException;
 
@@ -343,7 +339,7 @@ public class IO {
 
         @Override
         protected int doWriteTo(OutputStream sink) throws IOException {
-            return new InputStreamWriteStage(buffered(is(source))).doWriteTo(sink);
+            return new InputStreamWriteStage(buffered(inputStream(source))).doWriteTo(sink);
         }
     }
 
@@ -406,7 +402,7 @@ public class IO {
          * or outputstream/writer conversion.
          *
          * @param charset
-         *      the charset to be used to encode byte array into string
+         *         the charset to be used to encode byte array into string
          * @return this write stage instance
          */
         public STAGE encoding(Charset charset) {
@@ -487,7 +483,8 @@ public class IO {
 
         protected abstract InputStream load() throws IOException;
 
-        protected void ensureCloseSource() {}
+        protected void ensureCloseSource() {
+        }
 
         protected STAGE me() {
             return (STAGE) this;
@@ -523,7 +520,7 @@ public class IO {
 
         @Override
         protected InputStream load() throws IOException {
-            return buffered(is(source));
+            return buffered(inputStream(source));
         }
     }
 
@@ -750,7 +747,11 @@ public class IO {
      * @return an output stream that can be used to write to file specified
      */
     public static OutputStream outputStream(File file) {
-        return os(file);
+        try {
+            return new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            throw E.ioException(e);
+        }
     }
 
     /**
@@ -764,11 +765,7 @@ public class IO {
      */
     @Deprecated
     public static OutputStream os(File file) {
-        try {
-            return new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
-            throw E.ioException(e);
-        }
+        return outputStream(file);
     }
 
     /**
@@ -801,7 +798,8 @@ public class IO {
      * @return an empty input stream
      */
     public static InputStream inputStream() {
-        return is();
+        byte[] ba = {};
+        return new ByteArrayInputStream(ba);
     }
 
     /**
@@ -813,8 +811,7 @@ public class IO {
      */
     @Deprecated
     public static InputStream is() {
-        byte[] ba = {};
-        return new ByteArrayInputStream(ba);
+        return inputStream();
     }
 
     /**
@@ -825,20 +822,6 @@ public class IO {
      * @return inputstream that read the file
      */
     public static InputStream inputStream(File file) {
-        return is(file);
-    }
-
-    /**
-     * Returns a file input stream.
-     *
-     * Use {@link #inputStream(File)} to replace this method
-     *
-     * @param file
-     *         the file to be read
-     * @return inputstream that read the file
-     */
-    @Deprecated
-    public static InputStream is(File file) {
         // workaround http://stackoverflow.com/questions/36880692/java-file-does-not-exists-but-file-getabsolutefile-exists
         if (!file.exists()) {
             file = file.getAbsoluteFile();
@@ -854,22 +837,39 @@ public class IO {
     }
 
     /**
+     * Returns a file input stream.
+     *
+     * Use {@link #inputStream(File)} to replace this method
+     *
+     * @param file
+     *         the file to be read
+     * @return inputstream that read the file
+     */
+    @Deprecated
+    public static InputStream is(File file) {
+        return inputStream(file);
+    }
+
+    /**
      * Create an input stream from given byte array.
-     * @param ba the byte array
+     *
+     * @param ba
+     *         the byte array
      * @return an input stream
      */
     public static InputStream inputStream(byte[] ba) {
-        return is(ba);
+        return new ByteArrayInputStream(ba);
     }
 
     /**
      * Use {@link #inputStream(byte[])} to replace this method
+     *
      * @param ba
      * @return
      */
     @Deprecated
     public static InputStream is(byte[] ba) {
-        return new ByteArrayInputStream(ba);
+        return inputStream(ba);
     }
 
     /**
@@ -877,9 +877,8 @@ public class IO {
      * will be encoded with UTF-8
      *
      * @param content
-     *      the string content
-     * @return
-     *      an new inputstream
+     *         the string content
+     * @return an new inputstream
      */
     public static InputStream inputStream(String content) {
         return inputStream(content.getBytes(StandardCharsets.UTF_8));
@@ -897,31 +896,29 @@ public class IO {
      */
     @Deprecated
     public static InputStream is(String content) {
-        return is(content.getBytes());
+        return inputStream(content.getBytes());
     }
 
     /**
      * Create an input stream from a URL.
+     *
      * @param url
-     *      the URL.
-     * @return
-     *      the new inputstream.
+     *         the URL.
+     * @return the new inputstream.
      */
     public static InputStream inputStream(URL url) {
-                return is(url);
-    }
-
-    /**
-     * Use {@link #inputStream(URL)} to replace this method.
-     * @param url
-     * @return
-     */
-    public static InputStream is(URL url) {
         try {
             return url.openStream();
         } catch (IOException e) {
             throw E.ioException(e);
         }
+    }
+
+    /**
+     * Use {@link #inputStream(URL)} to replace this method.
+     */
+    public static InputStream is(URL url) {
+        return inputStream(url);
     }
 
     /**
@@ -1016,7 +1013,7 @@ public class IO {
      * @return the checksum of the file
      */
     public static String checksum(File file) {
-        return checksum(is(file));
+        return checksum(inputStream(file));
     }
 
     /**
@@ -1084,7 +1081,7 @@ public class IO {
      * @return the properties loaded from the file specified
      */
     public static Properties loadProperties(File file) {
-        return loadProperties(IO.is(file));
+        return loadProperties(IO.inputStream(file));
     }
 
     /**
@@ -1519,11 +1516,10 @@ public class IO {
      * operation is done.
      *
      * @param reader
-     *      A reader - the source
+     *         A reader - the source
      * @param writer
-     *      a writer - the target
-     * @return
-     *      the number of chars copied
+     *         a writer - the target
+     * @return the number of chars copied
      */
     public static int copy(Reader reader, Writer writer) {
         return copy(reader, writer, true);
@@ -1533,13 +1529,12 @@ public class IO {
      * Copy from a `Reader` into a `Writer`.
      *
      * @param reader
-     *      A reader - the source
+     *         A reader - the source
      * @param writer
-     *      a writer - the target
+     *         a writer - the target
      * @param closeWriter
-     *      indicate if it shall close the writer after operation
-     * @return
-     *      the number of chars copied
+     *         indicate if it shall close the writer after operation
+     * @return the number of chars copied
      */
     public static int copy(Reader reader, Writer writer, boolean closeWriter) {
         if (closeWriter) {
@@ -1660,9 +1655,8 @@ public class IO {
      * Zip a list of sobject into a single sobject.
      *
      * @param objects
-     *      the sobjects to be zipped.
-     * @return
-     *      an sobject that is a zip package of `objects`.
+     *         the sobjects to be zipped.
+     * @return an sobject that is a zip package of `objects`.
      */
     public static ISObject zip(ISObject... objects) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1688,9 +1682,8 @@ public class IO {
      * is randomly picked up in the temp dir.
      *
      * @param files
-     *      the files to be zipped.
-     * @return
-     *      a file that is a zip package of the `files`
+     *         the files to be zipped.
+     * @return a file that is a zip package of the `files`
      */
     public static File zip(File... files) {
         try {
@@ -1704,10 +1697,11 @@ public class IO {
 
     /**
      * Zip a list of files into specified target file.
+     *
      * @param target
-     *      the target file as the zip package
+     *         the target file as the zip package
      * @param files
-     *      the files to be zipped.
+     *         the files to be zipped.
      */
     public static void zipInto(File target, File... files) {
         ZipOutputStream zos = null;

@@ -21,7 +21,7 @@ package org.osgl.util;
  */
 
 import org.osgl.$;
-import org.osgl.Osgl;
+import org.osgl.Lang;
 
 class MapPropertyHandler extends PropertyHandlerBase {
 
@@ -29,35 +29,35 @@ class MapPropertyHandler extends PropertyHandlerBase {
     protected final Class<?> valType;
 
     public MapPropertyHandler(Class<?> keyType, Class<?> valType) {
-        this.keyType = $.notNull(keyType);
-        this.valType = $.notNull(valType);
+        this.keyType = $.requireNotNull(keyType);
+        this.valType = $.requireNotNull(valType);
     }
 
     public MapPropertyHandler(PropertyGetter.NullValuePolicy nullValuePolicy,
                               Class<?> keyType,
                               Class<?> valType) {
         super(nullValuePolicy);
-        this.keyType = $.notNull(keyType);
-        this.valType = $.notNull(valType);
+        this.keyType = $.requireNotNull(keyType);
+        this.valType = $.requireNotNull(valType);
     }
 
-    public MapPropertyHandler(Osgl.Function<Class<?>, Object> objectFactory,
-                              Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    public MapPropertyHandler(Lang.Function<Class<?>, Object> objectFactory,
+                              Lang.Func2<String, Class<?>, ?> stringValueResolver,
                               Class<?> keyType,
                               Class<?> valType) {
         super(objectFactory, stringValueResolver);
-        this.keyType = $.notNull(keyType);
-        this.valType = $.notNull(valType);
+        this.keyType = $.requireNotNull(keyType);
+        this.valType = $.requireNotNull(valType);
     }
 
-    public MapPropertyHandler(Osgl.Function<Class<?>, Object> objectFactory,
-                              Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    public MapPropertyHandler(Lang.Function<Class<?>, Object> objectFactory,
+                              Lang.Func2<String, Class<?>, ?> stringValueResolver,
                               PropertyGetter.NullValuePolicy nullValuePolicy,
                               Class<?> keyType,
                               Class<?> valType) {
         super(objectFactory, stringValueResolver, nullValuePolicy);
-        this.keyType = $.notNull(keyType);
-        this.valType = $.notNull(valType);
+        this.keyType = $.requireNotNull(keyType);
+        this.valType = $.requireNotNull(valType);
     }
 
     protected Object keyFrom(Object index) {

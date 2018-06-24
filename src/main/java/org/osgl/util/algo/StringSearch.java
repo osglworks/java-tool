@@ -45,7 +45,7 @@ public abstract class StringSearch implements $.Func3<char[], char[], Integer, I
     }
 
     public static StringSearch wrap(final $.Func3<char[], char[], Integer, Integer> searchLogic) {
-        return $.notNull(searchLogic) instanceof StringSearch ? (StringSearch) searchLogic : new StringSearch() {
+        return $.requireNotNull(searchLogic) instanceof StringSearch ? (StringSearch) searchLogic : new StringSearch() {
             @Override
             public int search(char[] text, char[] target, int from) {
                 return searchLogic.apply(text, target, from);

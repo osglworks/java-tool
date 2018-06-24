@@ -20,7 +20,7 @@ package org.osgl.util;
  * #L%
  */
 
-import org.osgl.Osgl;
+import org.osgl.Lang;
 
 import java.util.Map;
 
@@ -33,8 +33,8 @@ public class MapPropertySetter extends MapPropertyHandler implements PropertySet
         super(keyType, valType);
     }
 
-    MapPropertySetter(Osgl.Function<Class<?>, Object> objectFactory,
-                      Osgl.Func2<String, Class<?>, ?> stringValueResolver,
+    MapPropertySetter(Lang.Function<Class<?>, Object> objectFactory,
+                      Lang.Func2<String, Class<?>, ?> stringValueResolver,
                       Class<?> keyType,
                       Class<?> valType) {
         super(objectFactory, stringValueResolver, keyType, valType);

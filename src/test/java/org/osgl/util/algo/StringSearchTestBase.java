@@ -29,7 +29,7 @@ public abstract class StringSearchTestBase<SEARCH extends StringSearch> extends 
     private SEARCH logic;
 
     public StringSearchTestBase(SEARCH logic) {
-        this.logic = $.notNull(logic);
+        this.logic = $.requireNotNull(logic);
     }
 
     protected char[] text;

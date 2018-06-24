@@ -45,7 +45,7 @@ import org.osgl.$;
 import org.osgl.Lang;
 import org.osgl.Lang.Func2;
 import org.osgl.Lang.IndexedVisitor;
-import org.osgl.Osgl;
+import org.osgl.Lang;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.exception.ReadOnlyException;
 import org.osgl.util.algo.Algorithms;
@@ -794,7 +794,7 @@ public class C {
          * </pre>
          *
          * @param accumulator the function accumulate each element to the final result
-         * @return an {@link Osgl.Option} describing the accumulating result
+         * @return an {@link Lang.Option} describing the accumulating result
          * @since 0.2
          */
         $.Option<T> reduceLeft(Func2<T, T, T> accumulator);
@@ -802,7 +802,7 @@ public class C {
         /**
          * Apply the predicate specified to the element of this sequence
          * from head to tail. Stop at the element that returns {@code true},
-         * and returns an {@link Osgl.Option} describing the element. If none
+         * and returns an {@link Lang.Option} describing the element. If none
          * of the element applications in the sequence returns {@code true}
          * then {@link Osgl#none()} is returned
          *
@@ -825,8 +825,8 @@ public class C {
          *
          * @param visitor the function to visit elements in this sequence
          * @return this sequence
-         * @see Traversable#accept(Osgl.Visitor)
-         * @see ReversibleSequence#acceptRight(Osgl.Visitor)
+         * @see Traversable#accept(Lang.Visitor)
+         * @see ReversibleSequence#acceptRight(Lang.Visitor)
          * @since 0.2
          */
         Sequence<T> acceptLeft($.Visitor<? super T> visitor);
@@ -1112,7 +1112,7 @@ public class C {
          * </pre>
          *
          * @param accumulator the function accumulate each element to the final result
-         * @return an {@link Osgl.Option} describing the accumulating result
+         * @return an {@link Lang.Option} describing the accumulating result
          * @since 0.2
          */
         $.Option<T> reduceRight(Func2<T, T, T> accumulator);
@@ -1121,7 +1121,7 @@ public class C {
         /**
          * Apply the predicate specified to the element of this sequence
          * from tail to head. Stop at the element that returns {@code true},
-         * and returns an {@link Osgl.Option} describing the element. If none
+         * and returns an {@link Lang.Option} describing the element. If none
          * of the element applications in the sequence returns {@code true}
          * then {@link Osgl#none()} is returned
          *
@@ -1818,9 +1818,9 @@ public class C {
          * Split this list into two list based on the predicate specified.
          * <p>
          *     The function use the predicate to test all elements in this list. If test passed
-         *     then it add the element into {@link Osgl.T2#_1 left side list}, otherwise the
-         *     element will be added into {@link Osgl.T2#_2 right side list}. The result
-         *     is returned as a {@link org.osgl.Osgl.Tuple tuple} contains the left and
+         *     then it add the element into {@link Lang.T2#_1 left side list}, otherwise the
+         *     element will be added into {@link Lang.T2#_2 right side list}. The result
+         *     is returned as a {@link org.osgl.Lang.Tuple tuple} contains the left and
          *     right side lift
          * </p>
          * @param predicate the function to test the elements in this list
@@ -3657,7 +3657,7 @@ public class C {
 
     /**
      * Run visitor function on each element supplied by the iterable. The visitor function can throw out
-     * {@link org.osgl.Osgl.Break} if it need to break the loop.
+     * {@link org.osgl.Lang.Break} if it need to break the loop.
      * <p>Note if {@link NotAppliedException} thrown out by visitor function, it will be ignored
      * and keep looping through the Map entry set. It is kind of {@code continue} mechanism in a funcitonal
      * way</p>
@@ -3679,7 +3679,7 @@ public class C {
 
     /**
      * Run visitor function on each element supplied by the iterator. The visitor function can throw out
-     * {@link org.osgl.Osgl.Break} if it need to break the loop.
+     * {@link org.osgl.Lang.Break} if it need to break the loop.
      * <p>Note if {@link NotAppliedException} thrown out by visitor function, it will be ignored
      * and keep looping through the Map entry set. It is kind of {@code continue} mechanism in a funcitonal
      * way</p>
@@ -3696,7 +3696,7 @@ public class C {
 
     /**
      * Run indexedVisitor function on all key/value pair in a given map. The indexedVisitor function can
-     * throw out {@link org.osgl.Osgl.Break} if it need to break the loop.
+     * throw out {@link org.osgl.Lang.Break} if it need to break the loop.
      * <p>Note if {@link NotAppliedException} thrown out by indexedVisitor function, it will be ignored
      * and keep looping through the Map entry set. It is kind of {@code continue} mechanism in a funcitonal
      * way</p>
@@ -3839,7 +3839,7 @@ public class C {
         ;
 
         public static <T> $.Transformer<Iterable<T>, Collection<T>> asCollection() {
-            return new Osgl.Transformer<Iterable<T>, Collection<T>>() {
+            return new Lang.Transformer<Iterable<T>, Collection<T>>() {
                 @Override
                 public Collection<T> transform(Iterable<T> iterable) {
                     return C.asCollection(iterable);
@@ -3997,7 +3997,7 @@ public class C {
         public static <L extends List<? super T>, T> $.F1<L, L> add(final int index, final T element) {
             return new $.F1<L, L>() {
                 @Override
-                public L apply(L list) throws NotAppliedException, Osgl.Break {
+                public L apply(L list) throws NotAppliedException, Lang.Break {
                     list.add(index, element);
                     return list;
                 }
@@ -4144,7 +4144,7 @@ public class C {
          */
         @SuppressWarnings("unused")
         public static <T> $.Predicate<Collection<? extends T>> removeAllFrom(final Collection<? super T> fromCollection) {
-            return new Osgl.Predicate<Collection<? extends T>>() {
+            return new Lang.Predicate<Collection<? extends T>>() {
                 @Override
                 public boolean test(Collection<? extends T> theCollection) {
                     return fromCollection.removeAll(theCollection);
@@ -4163,7 +4163,7 @@ public class C {
          * @see #removeAllFrom(Collection)
          */
         public static <T> $.Predicate<Collection<? super T>> removeAll(final Collection<? extends T> source) {
-            return new Osgl.Predicate<Collection<? super T>>() {
+            return new Lang.Predicate<Collection<? super T>>() {
                 @Override
                 public boolean test(Collection<? super T> collection) {
                     return collection.removeAll(source);
@@ -4245,7 +4245,7 @@ public class C {
         public static <T> $.Processor<Deque<? super T>> dequePrepend(final T element) {
             return new $.Processor<Deque<? super T>>() {
                 @Override
-                public void process(Deque<? super T> deque) throws Osgl.Break, NotAppliedException {
+                public void process(Deque<? super T> deque) throws Lang.Break, NotAppliedException {
                     deque.addFirst(element);
                 }
             };
@@ -4282,7 +4282,7 @@ public class C {
         public static <T> $.Processor<Deque<? super T>> dequeAppend(final T element) {
             return new $.Processor<Deque<? super T>>() {
                 @Override
-                public void process(Deque<? super T> deque) throws Osgl.Break, NotAppliedException {
+                public void process(Deque<? super T> deque) throws Lang.Break, NotAppliedException {
                     deque.add(element);
                 }
             };
@@ -4317,9 +4317,9 @@ public class C {
          */
         @SuppressWarnings("unused")
         public static <T> $.Processor<Sequence<? super T>> sequencePrepend(final T element) {
-            return new Osgl.Processor<Sequence<? super T>>() {
+            return new Lang.Processor<Sequence<? super T>>() {
                 @Override
-                public void process(Sequence<? super T> sequence) throws Osgl.Break, NotAppliedException {
+                public void process(Sequence<? super T> sequence) throws Lang.Break, NotAppliedException {
                     sequence.prepend(element);
                 }
             };
@@ -4356,9 +4356,9 @@ public class C {
          */
         @SuppressWarnings("unused")
         public static <T> $.Processor<Sequence<? super T>> sequenceAppend(final T element) {
-            return new Osgl.Processor<Sequence<? super T>>() {
+            return new Lang.Processor<Sequence<? super T>>() {
                 @Override
-                public void process(Sequence<? super T> sequence) throws Osgl.Break, NotAppliedException {
+                public void process(Sequence<? super T> sequence) throws Lang.Break, NotAppliedException {
                     sequence.append(element);
                 }
             };

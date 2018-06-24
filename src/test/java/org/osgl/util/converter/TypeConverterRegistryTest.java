@@ -20,6 +20,8 @@ package org.osgl.util.converter;
  * #L%
  */
 
+import static org.osgl.Lang.requireNotNull;
+
 import org.junit.Test;
 import org.osgl.$;
 import org.osgl.Lang;
@@ -53,7 +55,7 @@ public class TypeConverterRegistryTest extends TestBase {
     public void testNewTypeConverterRegistry() {
         TypeConverterRegistry registry = new TypeConverterRegistry();
         Lang.TypeConverter<Foo, String> converter = registry.get(Foo.class, String.class);
-        notNull(converter);
+        requireNotNull(converter);
         Foo foo = new Foo();
         eq(S.wrap(foo.id).with(S.BRACKETS), converter.convert(foo));
     }
