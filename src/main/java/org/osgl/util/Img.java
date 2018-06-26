@@ -31,7 +31,6 @@ import org.osgl.exception.NotAppliedException;
 
 import java.awt.*;
 import java.awt.Dimension;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
@@ -609,7 +608,7 @@ public enum Img {
             return stage;
         }
 
-        public ProcessorStage pipeline(List<Processor> processors) {
+        public ProcessorStage pipeline(List<? extends Processor> processors) {
             org.osgl.util.E.illegalArgumentIf(processors.isEmpty());
             int sz = processors.size();
             Processor first = processors.get(0);
@@ -1344,10 +1343,9 @@ public enum Img {
             }
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
 
-            FontMetrics fontMetrics = g.getFontMetrics();
-            Rectangle2D rect = fontMetrics.getStringBounds(text, g);
-            int centerX = (w - (int) rect.getWidth() + offsetX) / 2;
-            int centerY = (h - (int) rect.getHeight() + offsetY) / 2;
+            FontMetrics metrics = g.getFontMetrics();
+            int centerX = (w - metrics.stringWidth(text)) / 2;
+            int centerY = ((h - metrics.getHeight()) / 2) + metrics.getAscent();
             g.drawString(text, centerX, centerY);
             return target;
         }

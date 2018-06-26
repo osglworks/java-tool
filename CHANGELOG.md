@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0 24/Jun/2018
+* Img - default text vertical alignment issue #129
 * Create a method to pick up random elements in an existing list #128
 * Make `Img.ProcessorStage` support pipeline with a list of processors #127
 * Make `IO` and Conversion framework work with `BufferedImage` #126

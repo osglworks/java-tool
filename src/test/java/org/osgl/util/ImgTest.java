@@ -238,6 +238,10 @@ source(img1())
         source(Img.F.randomPixels(400, 200, Color.WHITE)).writeTo("/tmp/img_random_pixels.png");
     }
 
+    private static void testWriteTextToSmallImage() {
+        source(Img.F.background(200,  100, Color.WHITE)).text("Hello World").writeTo("/tmp/img_text.png");
+    }
+
     private static void noises() {
         source(Img.F.randomPixels(400, 200, Color.WHITE))
                 .makeNoise().writeTo("/tmp/img_noise.png");
@@ -299,7 +303,8 @@ source(img1())
 //        testFlip();
 //        randomPixels();
 //        noises();
-        testPipelineMultiple();
+//        testPipelineMultiple();
+        testWriteTextToSmallImage();
     }
 
 }
