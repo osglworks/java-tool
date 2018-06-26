@@ -1071,8 +1071,16 @@ public class N {
         return ThreadLocalRandom.current().nextInt(max);
     }
 
+    public static int randInt(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(max - min) + min;
+    }
+
     public static int secureRandInt(int max) {
         return new SecureRandom().nextInt(max);
+    }
+
+    public static int secureRandInt(int min, int max) {
+        return new SecureRandom().nextInt(max - min) + min;
     }
 
     public static int randIntWithSymbol(int max) {

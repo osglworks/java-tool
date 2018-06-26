@@ -239,7 +239,9 @@ source(img1())
     }
 
     private static void testWriteTextToSmallImage() {
-        source(Img.F.background(200,  100, Color.WHITE)).text("Hello World").writeTo("/tmp/img_text.png");
+        source(Img.F.randomPixels(200,  100, new Color(85, 85, 85)))
+                .text("Hello World")
+                .writeTo("/tmp/img_text.png");
     }
 
     private static void noises() {

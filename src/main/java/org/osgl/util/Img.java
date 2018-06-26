@@ -39,7 +39,6 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -119,6 +118,89 @@ public enum Img {
             }
             g.drawImage(source2, x2, y2, source2.getWidth(), source2.getHeight(), null);
         }
+    }
+
+    public enum Random {
+        ;
+
+        public static Color color() {
+            return new Color(randInt(255), randInt(255), randInt(255));
+        }
+
+        public static Color lightColor() {
+            return randomColor(170, 255, 170, 255, 170, 255);
+        }
+
+        public static Color darkColor() {
+            return randomColor(0, 85, 0, 85, 0, 85);
+        }
+
+        public static Color moderateColor() {
+            return randomColor(85,  170, 85, 170, 85, 170);
+        }
+
+        public static Color grayColor() {
+            int n = randInt(255);
+            return new Color(n, n, n);
+        }
+
+        public static Color lightGrayColor() {
+            return randomGrayColor(170, 255);
+        }
+
+        public static Color darkGrayColor() {
+            return randomGrayColor(0, 85);
+        }
+
+        public static Color moderateGrayColor() {
+            return randomGrayColor(85, 170);
+        }
+
+        public static Color randomLightRedColor() {
+            return randomColor(170, 255, 85, 170, 85, 170);
+        }
+
+        public static Color randomDarkRedColor() {
+            return randomColor(85, 170, 0, 85, 0, 85);
+        }
+
+        public static Color randomModerateRedColor() {
+            return randomColor(170, 255, 0, 85, 0, 85);
+        }
+
+        public static Color randomLightGreenColor() {
+            return randomColor(85, 170, 170, 255, 85, 170);
+        }
+
+        public static Color randomDarkGreenColor() {
+            return randomColor(0, 85, 85, 170, 0, 85);
+        }
+
+        public static Color randomModerateGreenColor() {
+            return randomColor(0, 85, 170, 255, 0, 85);
+        }
+
+        public static Color randomLightBlueColor() {
+            return randomColor(85, 170, 85, 170, 170, 255);
+        }
+
+        public static Color randomDarkBlueColor() {
+            return randomColor(0, 85, 0, 85, 85, 170);
+        }
+
+        public static Color randomModerateBlueColor() {
+            return randomColor(0, 85, 0, 85, 170, 255);
+        }
+
+        public static Color randomGrayColor(int min, int max) {
+            int r = randInt(min, max);
+            return new Color(r, r, r);
+        }
+
+        public static Color randomColor(int minR, int maxR, int minG, int maxG, int minB, int maxB) {
+            return new Color(randInt(minR, maxR), randInt(minG, maxG), randInt(minB, maxB));
+        }
+
     }
 
     /**
@@ -624,15 +706,15 @@ public enum Img {
         }
 
         public Resizer.Stage resize() {
-            return new Resizer.Stage(source);
+            return new Resizer.Stage(get());
         }
 
         public Resizer.Stage resize(float scale) {
-            return new Resizer.Stage(source).scale(scale);
+            return new Resizer.Stage(get()).scale(scale);
         }
 
         public Resizer.Stage resize(int w, int h) {
-            return new Resizer.Stage(source).dimension(w, h);
+            return new Resizer.Stage(get()).dimension(w, h);
         }
 
         public Resizer.Stage resize($.Tuple<Integer, Integer> dimension) {
@@ -644,11 +726,11 @@ public enum Img {
         }
 
         public Cropper.Stage crop() {
-            return new Cropper.Stage(source);
+            return new Cropper.Stage(get());
         }
 
         public Cropper.Stage crop(int x1, int y1, int x2, int y2) {
-            return new Cropper.Stage(source).from(x1, y1).to(x2, y2);
+            return new Cropper.Stage(get()).from(x1, y1).to(x2, y2);
         }
 
         public Cropper.Stage crop($.Tuple<Integer, Integer> leftTop, $.Tuple<Integer, Integer> rightBottom) {
@@ -656,27 +738,27 @@ public enum Img {
         }
 
         public TextWriter.Stage text(String text) {
-            return new TextWriter.Stage(source).text(text);
+            return new TextWriter.Stage(get()).text(text);
         }
 
         public TextWriter.Stage watermark() {
-            return new TextWriter.Stage(source);
+            return new TextWriter.Stage(get());
         }
 
         public TextWriter.Stage watermark(String text) {
-            return new TextWriter.Stage(source).color(Color.LIGHT_GRAY).alpha(0.8f).rotate(-Math.PI / 7).offset(-130, 80).text(text);
+            return new TextWriter.Stage(get()).color(Color.LIGHT_GRAY).alpha(0.8f).rotate(-Math.PI / 7).offset(-130, 80).text(text);
         }
 
         public Blur.Stage blur() {
-            return new Blur.Stage(source);
+            return new Blur.Stage(get());
         }
 
         public Blur.Stage blur(int level) {
-            return new Blur.Stage(source).level(level);
+            return new Blur.Stage(get()).level(level);
         }
 
         public NoiseMaker.Stage makeNoise() {
-            return new NoiseMaker.Stage(source);
+            return new NoiseMaker.Stage(get());
         }
 
         public Flip.Stage flip() {
@@ -688,15 +770,15 @@ public enum Img {
         }
 
         public Flip.Stage flip(Direction dir) {
-            return new Flip.Stage(source).dir(dir);
+            return new Flip.Stage(get()).dir(dir);
         }
 
         public ProcessorStage compress(float compressionQuality) {
-            return new ProcessorStage(source).compressionQuality(compressionQuality).pipeline(COPIER);
+            return new ProcessorStage(get()).compressionQuality(compressionQuality).pipeline(COPIER);
         }
 
         public ProcessorStage copy() {
-            return new ProcessorStage(source).pipeline(COPIER);
+            return new ProcessorStage(get()).pipeline(COPIER);
         }
 
         public ProcessorStage processor(Processor processor) {
@@ -704,7 +786,7 @@ public enum Img {
         }
 
         public Concatenater.Stage appendWith($.Func0<BufferedImage> secondImange) {
-            return new Concatenater.Stage(source).with(secondImange);
+            return new Concatenater.Stage(get()).with(secondImange);
         }
 
         public Concatenater.Stage appendTo($.Func0<BufferedImage> firstImage) {
@@ -712,7 +794,7 @@ public enum Img {
         }
 
         public Concatenater.Stage appendWith(BufferedImage secondImange) {
-            return new Concatenater.Stage(source).with(F.source(secondImange));
+            return new Concatenater.Stage(get()).with(F.source(secondImange));
         }
 
         public Concatenater.Stage appendTo(BufferedImage firstImage) {
@@ -1185,7 +1267,11 @@ public enum Img {
                 return this;
             }
             public Stage setMaxLines(int n) {
-                processor.maxLines = N.requireNonNegative(n);
+                processor.maxLines = N.requirePositive(n);
+                return this;
+            }
+            public Stage setMaxLineWidth(int n) {
+                processor.maxLineWidth = N.requirePositive(n);
                 return this;
             }
         }
@@ -1195,6 +1281,7 @@ public enum Img {
         private int maxArcSize = 5;
         private int minLines = 1;
         private int maxLines = 5;
+        private int maxLineWidth = 2;
 
         @Override
         protected NoiseMaker.Stage createStage(BufferedImage source) {
@@ -1205,7 +1292,7 @@ public enum Img {
         protected BufferedImage run() {
             int w = sourceWidth;
             int h = sourceHeight;
-            Random r = ThreadLocalRandom.current();
+            java.util.Random r = ThreadLocalRandom.current();
 
             Graphics2D g = g();
 
@@ -1243,7 +1330,12 @@ public enum Img {
 
                 int xInt2 = r.nextInt(w - 1);
                 int yInt2 = r.nextInt(h - 1);
-                g.setColor(new Color(randomColorValue()));
+                g.setColor(Random.color());
+                if (1 < maxLineWidth) {
+                    int width = N.randInt(1, maxLineWidth + 1);
+                    Stroke stroke = new BasicStroke((float) width);
+                    g.setStroke(stroke);
+                }
                 g.drawLine(xInt, yInt, xInt2, yInt2);
             }
 
@@ -1496,9 +1588,9 @@ public enum Img {
     }
 
     private static int randomColorValue(boolean withAlpha) {
-        int a = N.randInt(256);
-        int r = N.randInt(256);
-        int g = N.randInt(256);
+        int a = randInt(256);
+        int r = randInt(256);
+        int g = randInt(256);
         return withAlpha ? a << 24 | r << 16 | g << 8 : a << 24 | r << 16 | g << 8;
     }
 
@@ -1511,7 +1603,7 @@ public enum Img {
         public static $.Producer<Color> RANDOM_COLOR = new $.Producer<Color>() {
             @Override
             public Color produce() {
-                Random r = ThreadLocalRandom.current();
+                java.util.Random r = ThreadLocalRandom.current();
                 return new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255), r.nextInt(255));
             }
         };
@@ -1593,7 +1685,7 @@ public enum Img {
             return background(w, h, $.val(background)).andThen(new $.Function<BufferedImage, BufferedImage>() {
                 @Override
                 public BufferedImage apply(BufferedImage img) throws NotAppliedException, Lang.Break {
-                    Random r = ThreadLocalRandom.current();
+                    java.util.Random r = ThreadLocalRandom.current();
                     for (int i = 0; i < w; ++i) {
                         for (int j = 0; j < h; ++j) {
                             if (r.nextInt(100) < percent) {
