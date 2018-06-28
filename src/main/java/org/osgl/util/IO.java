@@ -1108,6 +1108,21 @@ public class IO {
     }
 
     /**
+     * Load properties from a URL
+     *
+     * @param url the URL of the properties file
+     * @return
+     *      the properties contains the content of the URL or an empty properties
+     *      if the URL is invalid or null
+     */
+    public static Properties loadProperties(URL url) {
+        if (null == url) {
+            return new Properties();
+        }
+        return loadProperties(inputStream(url));
+    }
+
+    /**
      * Load properties from a file
      *
      * @param file

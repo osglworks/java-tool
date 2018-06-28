@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0 24/Jun/2018
+* Add `IO.loadProperties(URL)` method #131
 * Add random utilities to Img for random color generation #130
 * Img - default text vertical alignment issue #129
 * Create a method to pick up random elements in an existing list #128

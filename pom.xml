@@ -88,6 +88,7 @@
       <groupId>cn.hutool</groupId>
       <artifactId>hutool-core</artifactId>
       <version>${hutool.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
