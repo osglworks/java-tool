@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0 24/Jun/2018
+* add `NOT_BLANK` to `S.F` namespace #132
 * Add `IO.loadProperties(URL)` method #131
 * Add random utilities to Img for random color generation #130
 * Img - default text vertical alignment issue #129

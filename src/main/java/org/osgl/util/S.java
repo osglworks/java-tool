@@ -3162,6 +3162,8 @@ public class S {
             }
         };
 
+        public static $.Predicate<String> NOT_EMPTY = IS_EMPTY.negate();
+
         public static $.Predicate<String> IS_BLANK = new $.Predicate<String>() {
             @Override
             public boolean test(String s) {
@@ -3169,7 +3171,7 @@ public class S {
             }
         };
 
-        public static $.Predicate<String> NOT_EMPTY = IS_EMPTY.negate();
+        public static $.Predicate<String> NOT_BLANK = IS_BLANK.negate();
 
         public static $.F2<String, Integer, String> MAX_LENGTH = new $.F2<String, Integer, String>() {
             @Override
