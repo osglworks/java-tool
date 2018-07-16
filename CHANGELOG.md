@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
-1.18.0 24/Jun/2018
+1.18.0
+* TypeConverter - add direct long to string converter mapping #134
 * add `NOT_BLANK` to `S.F` namespace #132
 * Add `IO.loadProperties(URL)` method #131
 * Add random utilities to Img for random color generation #130

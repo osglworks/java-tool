@@ -21,6 +21,7 @@ package org.osgl.util.converter;
  */
 
 import org.osgl.$;
+import org.osgl.Lang;
 import org.osgl.util.C;
 import org.osgl.util.E;
 import org.osgl.util.N;
@@ -319,6 +320,7 @@ public class TypeConverterRegistry {
                     return o;
                 }
             });
+            addIntoPath(keyOf(numberClass, String.class), Lang.TypeConverter.ANY_TO_STRING);
         }
         for (Field field : $.TypeConverter.class.getFields()) {
             if ($.TypeConverter.class.isAssignableFrom(field.getType())) {
