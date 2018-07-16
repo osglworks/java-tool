@@ -8489,8 +8489,16 @@ public class Lang implements Serializable {
     }
 
     public static <T> T[] concat(T[] a1, T[] a2) {
-        T[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        T[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8500,20 +8508,32 @@ public class Lang implements Serializable {
             len += a.length;
         }
         T[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (T[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
-            offset += la;
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+                offset += la;
+            }
         }
 
         return ret;
     }
 
     public static int[] concat(int[] a1, int[] a2) {
-        int[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        int[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8523,11 +8543,15 @@ public class Lang implements Serializable {
             len += a.length;
         }
         int[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (int[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+            }
             offset += la;
         }
 
@@ -8535,8 +8559,16 @@ public class Lang implements Serializable {
     }
 
     public static boolean[] concat(boolean[] a1, boolean[] a2) {
-        boolean[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        boolean[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8546,11 +8578,15 @@ public class Lang implements Serializable {
             len += a.length;
         }
         boolean[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (boolean[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+            }
             offset += la;
         }
 
@@ -8558,8 +8594,16 @@ public class Lang implements Serializable {
     }
 
     public static byte[] concat(byte[] a1, byte[] a2) {
-        byte[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        byte[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8569,11 +8613,15 @@ public class Lang implements Serializable {
             len += a.length;
         }
         byte[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (byte[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+            }
             offset += la;
         }
 
@@ -8581,8 +8629,16 @@ public class Lang implements Serializable {
     }
 
     public static short[] concat(short[] a1, short[] a2) {
-        short[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        short[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8592,11 +8648,15 @@ public class Lang implements Serializable {
             len += a.length;
         }
         short[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (short[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+            }
             offset += la;
         }
 
@@ -8604,8 +8664,16 @@ public class Lang implements Serializable {
     }
 
     public static char[] concat(char[] a1, char[] a2) {
-        char[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        char[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8615,11 +8683,15 @@ public class Lang implements Serializable {
             len += a.length;
         }
         char[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (char[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+            }
             offset += la;
         }
 
@@ -8627,8 +8699,16 @@ public class Lang implements Serializable {
     }
 
     public static long[] concat(long[] a1, long[] a2) {
-        long[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        long[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8638,11 +8718,15 @@ public class Lang implements Serializable {
             len += a.length;
         }
         long[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (long[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+            }
             offset += la;
         }
 
@@ -8650,8 +8734,16 @@ public class Lang implements Serializable {
     }
 
     public static float[] concat(float[] a1, float[] a2) {
-        float[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        float[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8661,11 +8753,15 @@ public class Lang implements Serializable {
             len += a.length;
         }
         float[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (float[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+            }
             offset += la;
         }
 
@@ -8673,8 +8769,16 @@ public class Lang implements Serializable {
     }
 
     public static double[] concat(double[] a1, double[] a2) {
-        double[] ret = Arrays.copyOf(a1, a1.length + a2.length);
-        System.arraycopy(a2, 0, ret, a1.length, a2.length);
+        int l1 = a1.length;
+        if (0 == l1) {
+            return a2;
+        }
+        int l2 = a2.length;
+        if (0 == l2) {
+            return a1;
+        }
+        double[] ret = Arrays.copyOf(a1, l1 + l2);
+        System.arraycopy(a2, 0, ret, l1, l2);
         return ret;
     }
 
@@ -8684,11 +8788,15 @@ public class Lang implements Serializable {
             len += a.length;
         }
         double[] ret = Arrays.copyOf(a1, len);
-        System.arraycopy(a2, 0, ret, l1, l2);
+        if (l2 > 0) {
+            System.arraycopy(a2, 0, ret, l1, l2);
+        }
         int offset = l12;
         for (double[] a : rest) {
             int la = a.length;
-            System.arraycopy(a, 0, ret, offset, la);
+            if (la > 0) {
+                System.arraycopy(a, 0, ret, offset, la);
+            }
             offset += la;
         }
 

@@ -158,5 +158,50 @@ public class ArrayUtilsTest {
 
     }
 
+    public static class ConcatTest extends TestBase {
+        @Test
+        public void concat2arrays() {
+            String[] empty = {};
+            String[] a1 = {"A", "B"};
+            String[] a2 = {"C", "D"};
+            eq(new String[]{"A", "B", "C", "D"}, $.concat(a1, a2));
+            same(a1, $.concat(a1, empty));
+            same(a2, $.concat(empty, a2));
+        }
+
+        @Test
+        public void concat2intArrays() {
+            int[] empty = {};
+            int[] a1 = {1, 2};
+            int[] a2 = {3, 4};
+            eq(new int[]{1, 2, 3, 4}, $.concat(a1, a2));
+            same(a1, $.concat(a1, empty));
+            same(a2, $.concat(empty, a2));
+        }
+
+        @Test
+        public void concat3intArrays() {
+            int[] empty = {};
+            int[] a1 = {1, 2};
+            int[] a2 = {3, 4};
+            int[] a3 = {5, 6};
+            eq(new int[]{1, 2, 3, 4, 5, 6}, $.concat(a1, a2, a3));
+            eq(a1, $.concat(a1, empty, empty));
+            eq(a2, $.concat(empty, a2, empty));
+            eq(a3, $.concat(empty, empty, a3));
+            eq($.concat(a1, a3), $.concat(a1, empty, a3));
+        }
+
+        @Test
+        public void concat2booleanArrays() {
+            boolean[] empty = {};
+            boolean[] a1 = {true, false};
+            boolean[] a2 = {true, true};
+            eq(new boolean[]{true, false, true, true}, $.concat(a1, a2));
+            same(a1, $.concat(a1, empty));
+            same(a2, $.concat(empty, a2));
+        }
+    }
+
 
 }
