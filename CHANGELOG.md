@@ -1,6 +1,9 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Support `AdaptiveMap` in Bean copying/mapping framework #138
+* Add `AdaptiveMap` interface #137
+* Add `BeanInfo` interface #136
 * Optimize $.concat(array) methods #135
 * TypeConverter - add direct long to string converter mapping #134
 * add `NOT_BLANK` to `S.F` namespace #132

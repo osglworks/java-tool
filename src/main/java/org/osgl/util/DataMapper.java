@@ -601,7 +601,10 @@ public class DataMapper {
                 if (targetIsMap) {
                     toMap();
                 } else {
-                    toPojo();
+                    Set<String> mapped = toPojo();
+                    if (target instanceof AdaptiveMap) {
+                        toAdaptiveMap(mapped);
+                    }
                 }
             }
         } catch (MappingException e) {
@@ -733,6 +736,53 @@ public class DataMapper {
         }
     }
 
+    private void toAdaptiveMap(Set<String> mapped) {
+        AdaptiveMap adaptiveMap = (AdaptiveMap) target;
+        Set<Keyword> mappedKeywords = new HashSet<>();
+        final boolean keywordMatching = rule.keywordMatching();
+        if (keywordMatching) {
+            for (String s : mapped) {
+                mappedKeywords.add(Keyword.of(s));
+            }
+        }
+
+        // do map work
+        boolean targetComponentIsSequence = isSequence(targetComponentRawType);
+        boolean targetComponentIsMap = !targetComponentIsSequence && isMap(targetComponentRawType);
+        boolean targetComponentIsContainer = targetComponentIsMap || targetComponentIsSequence;
+        String prefix = context.toString();
+        for ($.Triple<Object, Keyword, $.Producer<Object>> sourceProperty : sourceProperties()) {
+            Object sourceKey = sourceProperty.first();
+            if (mapped.contains(sourceKey)) {
+                continue;
+            }
+            if (keywordMatching && mappedKeywords.contains(Keyword.of(S.string(sourceKey)))) {
+                continue;
+            }
+            if (!ignoreGlobalFilter && sourceKey instanceof String && OsglConfig.globalMappingFilter_shouldIgnore(sourceKey.toString())) {
+                continue;
+            }
+            if (!semantic.allowTypeConvert() && !$.is(sourceKey).allowBoxing().instanceOf(targetKeyType)) {
+                logError("map key type mismatch, required: %s; found: %s", targetKeyType, sourceKey.getClass().getName());
+                continue;
+            }
+            Object sourceVal = sourceProperty.last().produce();
+            if (null == sourceVal) {
+                continue;
+            }
+            Object targetKey = sourceKey;
+            String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
+            if (!filter.test(key)) {
+                continue;
+            }
+            Object targetVal = adaptiveMap.getValue(targetKey.toString());
+            targetVal = prepareTargetComponent(
+                    sourceVal, targetVal, targetComponentRawType,
+                    targetComponentType, targetComponentIsContainer, "");
+            adaptiveMap.putValue(targetKey.toString(), targetVal);
+        }
+    }
+
     private void toMap() {
         targetMap.clear();
 
@@ -783,7 +833,8 @@ public class DataMapper {
         }
     }
 
-    private void toPojo() {
+    private Set<String> toPojo() {
+        Set<String> mapped = new HashSet<>();
         Map<Object, Object> sourceMap = Map.class.isAssignableFrom(sourceType) ? (Map) source : null;
         Map<Keyword, Object> sourceMapByKeyword = null;
         if (rule.keywordMatching()) {
@@ -867,7 +918,9 @@ public class DataMapper {
                     sourcePropValue, targetFieldValue, targetFieldType,
                     targetFieldGenericType, targetFieldIsContainer, targetFieldName);
             $.setFieldValue(target, targetField, targetFieldValue);
+            mapped.add(key);
         }
+        return mapped;
     }
 
     private Iterable<$.Triple<Object, Keyword, $.Producer<Object>>> sourceProperties() {
