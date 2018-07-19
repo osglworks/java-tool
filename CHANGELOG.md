@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Add `S.F.LOWER_FIRST` function #140
+* Bean copying/mapping framework - transform keys #139
 * Support `AdaptiveMap` in Bean copying/mapping framework #138
 * Add `AdaptiveMap` interface #137
 * Add `BeanInfo` interface #136

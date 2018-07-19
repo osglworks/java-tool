@@ -25,6 +25,7 @@ import org.osgl.$;
 import org.osgl.Lang;
 import org.osgl.OsglConfig;
 import org.osgl.exception.MappingException;
+import org.osgl.exception.NotAppliedException;
 import org.osgl.exception.UnexpectedException;
 import org.osgl.util.converter.TypeConverterRegistry;
 
@@ -513,10 +514,12 @@ public class DataMapper {
 
     private DataMapper root;
 
+    private $.Function<Object, Object> keyTransformer;
+
 
     public DataMapper(
             Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic,
-            String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, Map<Class, Object> conversionHints,
+            String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, $.Function keyTransformer, Map<Class, Object> conversionHints,
             $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass,
             Map<String, String> specialMappings) {
         this.targetType = target.getClass();
@@ -549,6 +552,7 @@ public class DataMapper {
                 this.filter.addIntoBlackList(entry.getValue());
             }
         }
+        this.keyTransformer = keyTransformer;
         this.root = this;
         this.doMapping();
     }
@@ -585,6 +589,7 @@ public class DataMapper {
         this.circularReferenceDetector.add(targetType);
         this.specialMappings = parentMapper.specialMappings;
         this.root = parentMapper.root;
+        this.keyTransformer = parentMapper.keyTransformer;
         this.doMapping();
     }
 
@@ -776,6 +781,9 @@ public class DataMapper {
                 continue;
             }
             Object targetVal = adaptiveMap.getValue(targetKey.toString());
+            if (null != keyTransformer) {
+                targetKey = keyTransformer.apply(targetKey);
+            }
             targetVal = prepareTargetComponent(
                     sourceVal, targetVal, targetComponentRawType,
                     targetComponentType, targetComponentIsContainer, "");
@@ -820,6 +828,9 @@ public class DataMapper {
             }
             if (targetKey == null) {
                 targetKey = semantic.isMapping() ? convert(sourceKey, targetKeyType).to(targetKeyType) : sourceKey;
+            }
+            if (null != keyTransformer) {
+                targetKey = keyTransformer.apply(targetKey);
             }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
             if (!filter.test(key)) {
@@ -1290,6 +1301,22 @@ public class DataMapper {
 
     private static boolean isImmutable(Class<?> type) {
         return !type.isArray() && ($.isSimpleType(type) || Lang.isImmutable(type));
+    }
+
+    private static Map<Keyword.Style, $.Function> keywordTransformers = Collections.synchronizedMap(new EnumMap<Keyword.Style, $.Function>(Keyword.Style.class));
+
+    public static $.Function keyTransformer(final Keyword.Style targetStyle) {
+        Lang.Function f = keywordTransformers.get(targetStyle);
+        if (null == f) {
+            f = new Lang.Function() {
+                @Override
+                public Object apply(Object o) throws NotAppliedException, Lang.Break {
+                    return targetStyle.toString(Keyword.of(o.toString()));
+                }
+            };
+            keywordTransformers.put(targetStyle, f);
+        }
+        return f;
     }
 
 }

@@ -3155,6 +3155,13 @@ public class S {
             }
         };
 
+        public static $.F1<String, String> LOWER_FIRST = new $.F1<String, String>() {
+            @Override
+            public String apply(String s) throws NotAppliedException, $.Break {
+                return S.lowerFirst(s);
+            }
+        };
+
         public static $.Predicate<String> IS_EMPTY = new $.Predicate<String>() {
             @Override
             public boolean test(String s) throws NotAppliedException, $.Break {

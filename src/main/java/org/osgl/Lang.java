@@ -9487,6 +9487,7 @@ public class Lang implements Serializable {
 
         private Object source;
         private Function<Class, ?> instanceFactory = OsglConfig.globalInstanceFactory();
+        private Function keyTransformer;
         private Map<Class, Object> hints = C.EMPTY_MAP;
         private DataMapper.MappingRule rule = STRICT_MATCHING;
         private DataMapper.Semantic semantic;
@@ -9772,6 +9773,16 @@ public class Lang implements Serializable {
             return this;
         }
 
+        public _MappingStage withKeyTransformer($.Function transformer) {
+            this.keyTransformer = transformer;
+            return this;
+        }
+
+        public _MappingStage withKeyTransformer(Keyword.Style targetStyle) {
+            this.keyTransformer = DataMapper.keyTransformer(targetStyle);
+            return this;
+        }
+
         /**
          * Indicate ignore exceptions encountered during mapping process.
          *
@@ -9806,7 +9817,7 @@ public class Lang implements Serializable {
          * @return the target been copied/mapped, might not be the same instance of `to` if `to` is an array
          */
         public <T> T to(T target) {
-            return (T) new DataMapper(source, target, targetGenericType, rule, semantic, filterSpec, ignoreError, ignoreGlobalFilter, hints, instanceFactory, converterRegistry, rootClass, specialMappings).getTarget();
+            return (T) new DataMapper(source, target, targetGenericType, rule, semantic, filterSpec, ignoreError, ignoreGlobalFilter, keyTransformer, hints, instanceFactory, converterRegistry, rootClass, specialMappings).getTarget();
         }
 
         /**
