@@ -1113,6 +1113,10 @@ public class N {
         return ThreadLocalRandom.current().nextLong();
     }
 
+    public static long randLong(long max) {
+        return ThreadLocalRandom.current().nextLong(max);
+    }
+
     public static long secureRandLong() {
         return new SecureRandom().nextLong();
     }
