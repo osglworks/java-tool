@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0
+* `OsglConfig` - allow set `SingletonChecker` #143
+* `$.cloneOf` take consideration of `Clonable` and `Singleton` #142
 * Add `N.randLong(long)` function #141
 * Add `S.F.LOWER_FIRST` function #140
 * Bean copying/mapping framework - transform keys #139

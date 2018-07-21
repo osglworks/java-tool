@@ -7914,6 +7914,9 @@ public class Lang implements Serializable {
                 if (shouldContinue) {
                     continue;
                 }
+                if (!Modifier.isPublic(m.getModifiers())) {
+                    m.setAccessible(true);
+                }
                 if (null != methodBag) {
                     methodBag.set(m);
                 }
@@ -9971,6 +9974,12 @@ public class Lang implements Serializable {
      * @return the clone of `source`
      */
     public static <T> T cloneOf(T source, Function<Class, ?> instanceFactory) {
+        if (OsglConfig.isSingleton(source)) {
+            return source;
+        }
+        if (source instanceof Cloneable) {
+            return (T) $.invokeVirtual(source, "clone");
+        }
         Class type = source.getClass();
         Object target;
         if (type.isArray()) {

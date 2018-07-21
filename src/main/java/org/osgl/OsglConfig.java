@@ -29,6 +29,7 @@ import org.osgl.util.algo.StringSearch;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import javax.inject.Singleton;
 
 public class OsglConfig {
 
@@ -76,6 +77,22 @@ public class OsglConfig {
 
     public static $.Function<Class, ?> globalInstanceFactory() {
         return INSTANCE_FACTORY;
+    }
+
+    private static $.Predicate _singletonChecker = new $.Predicate() {
+        @Override
+        public boolean test(Object o) {
+            Class<?> type = o instanceof Class ? (Class) o : o.getClass();
+            return null != type.getAnnotation(Singleton.class);
+        }
+    };
+
+    public static void setSingletonChecker($.Predicate singletonChecker) {
+        _singletonChecker = $.requireNotNull(singletonChecker);
+    }
+
+    public static boolean isSingleton(Object o) {
+        return _singletonChecker.test(o);
     }
 
     public static void registerGlobalInstanceFactory($.Function<Class, ?> instanceFactory) {
