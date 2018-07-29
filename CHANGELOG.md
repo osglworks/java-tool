@@ -1,6 +1,9 @@
 # OSGL Tool Change Log
 
 1.18.0
+* New `TypeConverters` for `URL`, `URI` and `File` #146
+* Add `IO.checksum(byte[])` method #145
+* `Lang.newInstance(Class)` - support common interfaces #144
 * `OsglConfig` - allow set `SingletonChecker` #143
 * `$.cloneOf` take consideration of `Clonable` and `Singleton` #142
 * Add `N.randLong(long)` function #141

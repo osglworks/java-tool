@@ -1082,6 +1082,21 @@ public class IO {
         }
     }
 
+    public static String checksum(byte[] ba) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            md.update(ba);
+            byte[] mdbytes = md.digest();
+            S.Buffer sb = S.buffer();
+            for (int i = 0; i < mdbytes.length; i++) {
+                sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw E.unexpected("SHA1 algorithm not found");
+        }
+    }
+
     public static void delete(File file) {
         delete(file, false);
     }

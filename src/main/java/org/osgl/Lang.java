@@ -40,6 +40,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -3412,6 +3415,20 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<File, InputStream> FILE_TO_INPUTSTREAM = new TypeConverter<File, InputStream>() {
+            @Override
+            public InputStream convert(File file) {
+                return IO.inputStream(file);
+            }
+        };
+
+        public static TypeConverter<File, Reader> FILE_TO_READER = new TypeConverter<File, Reader>() {
+            @Override
+            public Reader convert(File file) {
+                return IO.reader(file);
+            }
+        };
+
         public static TypeConverter<byte[], InputStream> BYTES_TO_INPUT_STREAM = new TypeConverter<byte[], InputStream>() {
             @Override
             public InputStream convert(byte[] bytes) {
@@ -3474,6 +3491,34 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<URL, InputStream> URL_TO_INPUT_STREAM = new TypeConverter<URL, InputStream>() {
+            @Override
+            public InputStream convert(URL url) {
+                return IO.inputStream(url);
+            }
+        };
+
+        public static TypeConverter<URI, URL> URI_TO_URL = new TypeConverter<URI, URL>() {
+            @Override
+            public URL convert(URI uri) {
+                try {
+                    return uri.toURL();
+                } catch (MalformedURLException e) {
+                    throw E.unexpected(e);
+                }
+            }
+        };
+
+        public static TypeConverter<File, URL> FILE_TO_URL = new TypeConverter<File, URL>() {
+            @Override
+            public URL convert(File file) {
+                try {
+                    return file.toURI().toURL();
+                } catch (MalformedURLException e) {
+                    throw E.unexpected(e);
+                }
+            }
+        };
 
         public static TypeConverter<Appendable, Writer> APPENDABLE_TO_WRITER = new TypeConverter<Appendable, Writer>() {
             @Override
@@ -7190,6 +7235,29 @@ public class Lang implements Serializable {
         Object o = __primitiveInstances.get(c);
         if (null != o) {
             return (T) o;
+        }
+        if (c.isInterface()) {
+            if (Map.class == c) {
+                return (T) new HashMap();
+            } else if (List.class == c) {
+                return (T) new ArrayList();
+            } else if (Set.class == c) {
+                return (T) new HashSet();
+            } else if (SortedMap.class == c) {
+                return (T) new TreeMap();
+            } else if (SortedSet.class == c) {
+                return (T) new TreeSet();
+            } else if (ConcurrentMap.class == c) {
+                return (T) new ConcurrentHashMap<>();
+            } else if (Deque.class == c) {
+                return (T) new ArrayDeque<>();
+            } else if (BlockingDeque.class == c) {
+                return (T) new LinkedBlockingDeque<>();
+            } else if (Queue.class == c) {
+                return (T) new LinkedList<>();
+            } else {
+                throw new UnsupportedOperationException("Instantiation of interface not supported: " + c);
+            }
         }
         try {
             Constructor<T> ct = c.getDeclaredConstructor();
