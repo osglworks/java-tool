@@ -1622,6 +1622,10 @@ public class S {
      * @return the string as described
      */
     public static String times(char c, int times) {
+        E.illegalArgumentIf(times < 0);
+        if (0 == times) {
+            return "";
+        }
         char[] ca = new char[times];
         for (int i = 0; i < times; ++i) {
             ca[i] = c;

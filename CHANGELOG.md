@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Add `C.Map.flipped()` method #148
+* Bean copy framework: special key mapping not working for Map to Map copy #147
 * New `TypeConverters` for `URL`, `URI` and `File` #146
 * Add `IO.checksum(byte[])` method #145
 * `Lang.newInstance(Class)` - support common interfaces #144

@@ -45,7 +45,6 @@ import org.osgl.$;
 import org.osgl.Lang;
 import org.osgl.Lang.Func2;
 import org.osgl.Lang.IndexedVisitor;
-import org.osgl.Lang;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.exception.ReadOnlyException;
 import org.osgl.util.algo.Algorithms;
@@ -311,7 +310,7 @@ public class C {
          * @param accumulator the function takes previous accumulating
          *                    result and the current element being
          *                    iterated
-         * @return an option describing the accumulating result or {@link Osgl#none()} if
+         * @return an option describing the accumulating result or {@link Lang#none()} if
          * the structure is empty
          * @since 0.2
          */
@@ -357,7 +356,7 @@ public class C {
          *
          * @param predicate the function map element to Boolean
          * @return an element in this traversal that matches the predicate or
-         * {@link Osgl#NONE} if no element matches
+         * {@link Lang#NONE} if no element matches
          * @since 0.2
          */
         $.Option<T> findOne($.Function<? super T, Boolean> predicate);
@@ -804,11 +803,11 @@ public class C {
          * from head to tail. Stop at the element that returns {@code true},
          * and returns an {@link Lang.Option} describing the element. If none
          * of the element applications in the sequence returns {@code true}
-         * then {@link Osgl#none()} is returned
+         * then {@link Lang#none()} is returned
          *
          * @param predicate the function map the element to Boolean
          * @return an option describe the first element matches the
-         * predicate or {@link Osgl#none()}
+         * predicate or {@link Lang#none()}
          * @since 0.2
          */
         $.Option<T> findFirst($.Function<? super T, Boolean> predicate);
@@ -1123,11 +1122,11 @@ public class C {
          * from tail to head. Stop at the element that returns {@code true},
          * and returns an {@link Lang.Option} describing the element. If none
          * of the element applications in the sequence returns {@code true}
-         * then {@link Osgl#none()} is returned
+         * then {@link Lang#none()} is returned
          *
          * @param predicate the function map the element to Boolean
          * @return an option describe the first element matches the
-         * predicate or {@link Osgl#none()}
+         * predicate or {@link Lang#none()}
          * @since 0.2
          */
         $.Option<T> findLast($.Function<? super T, Boolean> predicate);
@@ -2353,6 +2352,14 @@ public class C {
             } else {
                 return this;
             }
+        }
+
+        public Map<V, K> flipped() {
+            Map<V, K> flip = C.newMap();
+            for (java.util.Map.Entry<K, V> entry : entrySet()) {
+                flip.put(entry.getValue(), entry.getKey());
+            }
+            return flip;
         }
 
         /**

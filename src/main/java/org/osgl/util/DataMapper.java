@@ -400,7 +400,8 @@ public class DataMapper {
         }
     }
 
-    private Map<String, String> specialMappings = C.Map();
+    private Map<String, String> specialMapping = C.Map();
+    private Map<String, String> specialMappingsReversed = C.Map();
     private Set<String> intermediates = C.Set();
 
     private MappingRule rule;
@@ -521,7 +522,7 @@ public class DataMapper {
             Object source, Object target, ParameterizedType targetGenericType, MappingRule rule, Semantic semantic,
             String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, $.Function keyTransformer, Map<Class, Object> conversionHints,
             $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass,
-            Map<String, String> specialMappings) {
+            Map<String, String> specialMapping) {
         this.targetType = target.getClass();
         E.illegalArgumentIf(isImmutable(targetType), "target type is immutable: " + targetType.getName());
         this.targetGenericType = targetGenericType;
@@ -540,10 +541,11 @@ public class DataMapper {
         this.circularReferenceDetector = new HashSet<>();
         this.circularReferenceDetector.add(targetType);
         E.illegalArgumentIfNot(this.rootClass.isAssignableFrom(this.targetType), "root class[%s] must be assignable from target type[%s]", rootClass.getName(), targetType.getName());
-        if (null != specialMappings) {
+        if (null != specialMapping) {
             this.intermediates = new HashSet<>();
-            this.specialMappings = specialMappings;
-            for (Map.Entry<String, String> entry : specialMappings.entrySet()) {
+            this.specialMapping = specialMapping;
+            this.specialMappingsReversed = C.Map(specialMapping).flipped();
+            for (Map.Entry<String, String> entry : specialMapping.entrySet()) {
                 String s = entry.getKey();
                 while (s.contains(".")) {
                     s = S.cut(s).beforeLast(".");
@@ -587,7 +589,8 @@ public class DataMapper {
         this.circularReferenceDetector = new HashSet<>();
         this.circularReferenceDetector.addAll(parentMapper.circularReferenceDetector);
         this.circularReferenceDetector.add(targetType);
-        this.specialMappings = parentMapper.specialMappings;
+        this.specialMapping = parentMapper.specialMapping;
+        this.specialMappingsReversed = parentMapper.specialMappingsReversed;
         this.root = parentMapper.root;
         this.keyTransformer = parentMapper.keyTransformer;
         this.doMapping();
@@ -822,12 +825,14 @@ public class DataMapper {
                 continue;
             }
             Keyword sourceKeyword = sourceProperty.second();
-            Object targetKey = null;
-            if (targetMapKeywordLookup != null) {
-                targetKey = targetMapKeywordLookup.get(sourceKeyword);
-            }
-            if (targetKey == null) {
-                targetKey = semantic.isMapping() ? convert(sourceKey, targetKeyType).to(targetKeyType) : sourceKey;
+            Object targetKey = specialMappingsReversed.get(sourceKey);
+            if (null == targetKey) {
+                if (targetMapKeywordLookup != null) {
+                    targetKey = targetMapKeywordLookup.get(sourceKeyword);
+                }
+                if (targetKey == null) {
+                    targetKey = semantic.isMapping() ? convert(sourceKey, targetKeyType).to(targetKeyType) : sourceKey;
+                }
             }
             if (null != keyTransformer) {
                 targetKey = keyTransformer.apply(targetKey);
@@ -874,7 +879,7 @@ public class DataMapper {
             if (!filter.test(key)) {
                 continue;
             }
-            String specialMap = specialMappings.get(key);
+            String specialMap = specialMapping.get(key);
             Type type = targetField.getGenericType();
             ParameterizedType targetFieldGenericType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
             Object sourcePropValue = null == specialMap ? null : $.getProperty(root.source, specialMap);

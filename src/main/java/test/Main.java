@@ -20,35 +20,15 @@ package test;
  * #L%
  */
 
-import org.osgl.util.S;
-
 public class Main {
 
 
     public static void main(String[] args) throws Exception {
-        final String s = "Hello World";
-        foo(s);
-        System.gc();
-        System.out.println("Press any key to continue");
-        System.in.read();
-
-        System.out.println(foo(s));
-        System.out.println("Press any key to continue2");
-        System.in.read();
-
-        System.out.println(foo(s));
-        System.out.println("Press any key to exit");
-        System.in.read();
+        String s = "## <a name=\"intro\"></a>1. 介绍";
+        System.out.println(s.indexOf("<"));
+        System.out.println(s.charAt(2));
+        System.out.println(s.substring(12));
     }
 
-    private static long foo(String s) {
-        long count = 0L;
-        for (int i = 0; i < 1000 * 1000; ++i) {
-            if (S.is(s).startsWith("Hello")) {
-                count++;
-            }
-        }
-        return count;
-    }
 
 }
