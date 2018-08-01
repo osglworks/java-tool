@@ -759,6 +759,7 @@ public class DataMapper {
         boolean targetComponentIsMap = !targetComponentIsSequence && isMap(targetComponentRawType);
         boolean targetComponentIsContainer = targetComponentIsMap || targetComponentIsSequence;
         String prefix = context.toString();
+        final Class<String> targetKeyType = String.class;
         for ($.Triple<Object, Keyword, $.Producer<Object>> sourceProperty : sourceProperties()) {
             Object sourceKey = sourceProperty.first();
             if (mapped.contains(sourceKey)) {
@@ -778,25 +779,22 @@ public class DataMapper {
             if (null == sourceVal) {
                 continue;
             }
-            Object targetKey = specialMappingsReversed.get(sourceKey);
+            String targetKey = specialMappingsReversed.get(sourceKey);
             if (null == targetKey) {
-                targetKey = semantic.isMapping() ? convert(sourceKey, targetKeyType).to(targetKeyType) : sourceKey;
+                targetKey = S.string(sourceKey);
             }
             if (null != keyTransformer) {
-                targetKey = keyTransformer.apply(targetKey);
+                targetKey = S.string(keyTransformer.apply(targetKey));
             }
-            String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
+            String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey) : targetKey;
             if (!filter.test(key)) {
                 continue;
             }
-            Object targetVal = adaptiveMap.getValue(targetKey.toString());
-            if (null != keyTransformer) {
-                targetKey = keyTransformer.apply(targetKey);
-            }
+            Object targetVal = adaptiveMap.getValue(targetKey);
             targetVal = prepareTargetComponent(
                     sourceVal, targetVal, targetComponentRawType,
                     targetComponentType, targetComponentIsContainer, "");
-            adaptiveMap.putValue(targetKey.toString(), targetVal);
+            adaptiveMap.putValue(targetKey, targetVal);
         }
     }
 
