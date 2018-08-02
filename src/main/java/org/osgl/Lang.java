@@ -9651,6 +9651,16 @@ public class Lang implements Serializable {
             return this;
         }
 
+        public _MappingStage map(Map<String, String> mapping) {
+            Map<String, String> fliped = C.Map(mapping).flipped();
+            if (specialMappings != null) {
+                specialMappings.putAll(fliped);
+            } else {
+                specialMappings = C.newMap(fliped);
+            }
+            return this;
+        }
+
         public __SpecialMappingStage map(String sourceField) {
             return new __SpecialMappingStage(sourceField);
         }

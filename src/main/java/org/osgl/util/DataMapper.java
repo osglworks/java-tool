@@ -785,10 +785,10 @@ public class DataMapper {
                 if (null != keyTransformer) {
                     targetKey = S.string(keyTransformer.apply(targetKey));
                 }
-            }
-            String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey) : targetKey;
-            if (!filter.test(key)) {
-                continue;
+                String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey) : targetKey;
+                if (!filter.test(key)) {
+                    continue;
+                }
             }
             Object targetVal = adaptiveMap.getValue(targetKey);
             targetVal = prepareTargetComponent(
@@ -840,10 +840,10 @@ public class DataMapper {
                 if (null != keyTransformer) {
                     targetKey = keyTransformer.apply(targetKey);
                 }
-            }
-            String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
-            if (!filter.test(key)) {
-                continue;
+                String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
+                if (!filter.test(key)) {
+                    continue;
+                }
             }
             Object targetVal = targetMap.get(targetKey);
             targetVal = prepareTargetComponent(
