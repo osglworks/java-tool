@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Bean maping - specific mapping rule shall overwrite keyTransformer setting #149
 * Add `C.Map.flipped()` method #148
 * Bean copy framework: special key mapping not working for Map to Map copy #147
 * New `TypeConverters` for `URL`, `URI` and `File` #146

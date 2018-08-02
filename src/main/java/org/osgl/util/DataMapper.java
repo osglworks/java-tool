@@ -782,9 +782,9 @@ public class DataMapper {
             String targetKey = specialMappingsReversed.get(sourceKey);
             if (null == targetKey) {
                 targetKey = S.string(sourceKey);
-            }
-            if (null != keyTransformer) {
-                targetKey = S.string(keyTransformer.apply(targetKey));
+                if (null != keyTransformer) {
+                    targetKey = S.string(keyTransformer.apply(targetKey));
+                }
             }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey) : targetKey;
             if (!filter.test(key)) {
@@ -837,9 +837,9 @@ public class DataMapper {
                 if (targetKey == null) {
                     targetKey = semantic.isMapping() ? convert(sourceKey, targetKeyType).to(targetKeyType) : sourceKey;
                 }
-            }
-            if (null != keyTransformer) {
-                targetKey = keyTransformer.apply(targetKey);
+                if (null != keyTransformer) {
+                    targetKey = keyTransformer.apply(targetKey);
+                }
             }
             String key = S.notBlank(prefix) ? S.pathConcat(prefix, '.', targetKey.toString()) : targetKey.toString();
             if (!filter.test(key)) {
