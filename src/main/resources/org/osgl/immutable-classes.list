@@ -1,3 +1,5 @@
+java.math.BigInteger
+java.math.BigDecimal
 org.joda.time.DateTime
 org.joda.time.LocalDateTime
 org.joda.time.LocalDate

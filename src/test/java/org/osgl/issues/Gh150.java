@@ -30,17 +30,25 @@ import java.math.BigInteger;
 public class Gh150 extends TestBase {
 
     public static class Foo {
-        BigInteger a = new BigInteger("100");
+        BigInteger a;
         Bar bar = new Bar();
+        Foo init() {
+            bar.init();
+            a = new BigInteger("1001");
+            return this;
+        }
     }
 
     public static class Bar {
-        BigDecimal b = new BigDecimal("1.01");
+        BigDecimal b;
+        void init() {
+            b = new BigDecimal("1.01");
+        }
     }
 
     @Test
     public void testToMap() {
-        Foo src = new Foo();
+        Foo src = new Foo().init();
         Foo tgt = $.deepCopy(src).to(Foo.class);
         eq(src.a, tgt.a);
         eq(src.bar.b, tgt.bar.b);
