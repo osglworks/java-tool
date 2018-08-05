@@ -133,37 +133,37 @@ public class TypeConverterRegistry {
             }
         }
 
-        private Link pathTo(Node target, TypeConverterRegistry registry, Set<Node> recursiveDetector) {
+        private Link pathTo(Node target, TypeConverterRegistry registry, Set<Node> crDetector4To, Set<Node> crDetector4From) {
             Link directLink = fanOut.get(target);
             if (null != directLink) {
                 return directLink;
             }
             SortedSet<Link> candidates = new TreeSet<>(linkComparator);
-            exploreLinks(candidates, target, registry, recursiveDetector);
+            exploreLinks(candidates, target, registry, crDetector4To, crDetector4From);
             return candidates.isEmpty() ? null : candidates.iterator().next();
         }
 
-        private void exploreLinks(Set<Link> linkJar, Node target, TypeConverterRegistry registry, Set<Node> recursiveDetector) {
+        private void exploreLinks(Set<Link> linkJar, Node target, TypeConverterRegistry registry, Set<Node> crDetector4To, Set<Node> crDetector4From) {
             Link direct = fanOut.get(target);
             if (null != direct) {
                 linkJar.add(direct);
                 return;
             }
             for (Link link : fanOutLinks()) {
-                if (link.to == this || recursiveDetector.contains(link.to) || recursiveDetector.contains(link.from)) {
+                if (link.to == this || crDetector4To.contains(link.to) || crDetector4From.contains(link.from)) {
                     continue;
                 }
-                recursiveDetector.add(link.to);
-                recursiveDetector.add(link.from);
-                Link downstream = link.to.pathTo(target, registry, recursiveDetector);
-                recursiveDetector.remove(link.to);
-                recursiveDetector.remove(link.from);
+                crDetector4To.add(link.to);
+                crDetector4From.add(link.from);
+                Link downstream = link.to.pathTo(target, registry, crDetector4To, crDetector4From);
+                crDetector4To.remove(link.to);
+                crDetector4From.remove(link.from);
                 if (null != downstream) {
                     linkJar.add(link.cascadeWith(downstream, registry));
                 }
             }
             for (Node superType : superTypes) {
-                superType.exploreLinks(linkJar, target, registry, recursiveDetector);
+                superType.exploreLinks(linkJar, target, registry, crDetector4To, crDetector4From);
             }
         }
 
@@ -274,7 +274,7 @@ public class TypeConverterRegistry {
         $.TypeConverter converter = paths.get(key);
         if (null == converter) {
             Node node = nodeOf(fromType);
-            Link link = node.pathTo(nodeOf(toType), this, new HashSet<Node>());
+            Link link = node.pathTo(nodeOf(toType), this, new HashSet<Node>(), new HashSet<Node>());
             if (null != link) {
                 paths.put(key, link.converter);
                 return link.converter;
