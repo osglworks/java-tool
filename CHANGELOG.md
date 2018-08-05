@@ -2,6 +2,7 @@
 
 1.18.0
 * Convert framework - path exploring issue #151
+* Error on `$.deepCopy` when there are BigDecimal fields #150
 * Bean maping - specific mapping rule shall overwrite keyTransformer setting #149
 * Add `C.Map.flipped()` method #148
 * Bean copy framework: special key mapping not working for Map to Map copy #147
