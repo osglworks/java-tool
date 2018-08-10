@@ -6871,6 +6871,7 @@ public class Lang implements Serializable {
     }
 
     /**
+     *
      * Set an object field value using reflection.
      *
      * @param fieldName
@@ -6900,6 +6901,39 @@ public class Lang implements Serializable {
             E.unexpected(e);
         }
         return obj;
+    }
+
+    /**
+     * Alias of {@link #setField(String, Object, Object)}
+     */
+    public static <T, F> T setFieldValue(String fieldName, T obj, F val) {
+        return setField(fieldName, obj, val);
+    }
+
+    /**
+     * Set value to a static field of given class
+     * @param fieldName
+     *      the name of the field
+     * @param type
+     *      the class hosts the field
+     * @param val
+     *      the value to be set on the static field
+     */
+    public static void setField(String fieldName, Class<?> type, Object val) {
+        Field f = fieldOf(type, fieldName, false);
+        try {
+            f.setAccessible(true);
+            f.set(null, val);
+        } catch (IllegalAccessException e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    /**
+     * Alias of {@link #setField(String, Class, Object)}
+     */
+    public static void setFieldValue(String fieldName, Class<?> type, Object val) {
+        setField(fieldName, type, val);
     }
 
     /**
@@ -9652,6 +9686,9 @@ public class Lang implements Serializable {
         }
 
         public _MappingStage map(Map<String, String> mapping) {
+            if (mapping.isEmpty()) {
+                return this;
+            }
             Map<String, String> fliped = C.Map(mapping).flipped();
             if (specialMappings != null) {
                 specialMappings.putAll(fliped);

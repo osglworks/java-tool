@@ -1451,7 +1451,7 @@ public class IO {
         try {
             os = new FileOutputStream(file);
             PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(os, encoding));
-            printWriter.println(content);
+            printWriter.print(content);
             printWriter.flush();
             os.flush();
         } catch (IOException e) {
@@ -1514,7 +1514,7 @@ public class IO {
     public static void write(CharSequence content, Writer writer, boolean closeOs) {
         try {
             PrintWriter printWriter = new PrintWriter(writer);
-            printWriter.println(content);
+            printWriter.print(content);
             printWriter.flush();
             writer.flush();
         } catch (IOException e) {
