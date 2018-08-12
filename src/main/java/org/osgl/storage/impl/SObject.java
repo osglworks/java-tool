@@ -43,12 +43,9 @@ import org.osgl.$;
 import org.osgl.exception.UnexpectedIOException;
 import org.osgl.storage.ISObject;
 import org.osgl.storage.IStorageService;
-import org.osgl.util.MimeTypes;
 import org.osgl.util.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.ref.SoftReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -204,8 +201,12 @@ public abstract class SObject implements ISObject {
     public static SObject of(String key, File file) {
         if (file.canRead() && file.isFile()) {
             SObject sobj = new FileSObject(key, file);
+            String fileName = file.getName();
             sobj.setAttribute(ATTR_FILE_NAME, file.getName());
-            sobj.setAttribute(ATTR_CONTENT_TYPE, MimeTypes.mimeType(file));
+            String fileExtension = S.fileExtension(fileName);
+            MimeType mimeType = MimeType.findByFileExtension(fileExtension);
+            String type = null != mimeType ? mimeType.type() : null;
+            sobj.setAttribute(ATTR_CONTENT_TYPE, type);
             sobj.setAttribute(ATTR_CONTENT_LENGTH, S.string(file.length()));
             return sobj;
         } else {

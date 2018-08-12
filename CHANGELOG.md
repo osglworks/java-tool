@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Provide a mechanism to enable application plug in logic to extend the IO read process #154
+* Create new `MimeType` utility #153
 * `IO.write(CharSequence content, Writer writer)` shall not append line separator at the end of the content #152
 * Convert framework - path exploring issue #151
 * Error on `$.deepCopy` when there are BigDecimal fields #150

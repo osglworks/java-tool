@@ -52,10 +52,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.imageio.stream.ImageInputStream;
@@ -65,6 +62,106 @@ import javax.imageio.stream.ImageInputStream;
  */
 // Some code come from Play!Framework IO.java, under Apache License 2.0
 public class IO {
+
+    /**
+     * An `InputStreamHandler` provides logic to read an
+     * {@link InputStream} into specified {@link Type}.
+     *
+     * If the read is successful then it returns an
+     * instance of given type. Otherwise it raised
+     * an {@link org.osgl.exception.UnexpectedException}.
+     */
+    public interface InputStreamHandler {
+        /**
+         * Report if the given `type` is supported by
+         * the handler.
+         *
+         * @param type
+         *      A type
+         * @return
+         *      `true` if the `type` specified is supported or
+         *      `false` otherwise.
+         */
+        boolean support(Type type);
+
+        /**
+         * Read an {@link InputStream} and construct an instance
+         * of `type`.
+         *
+         * @param is
+         *      the inputstream
+         * @param type
+         *      the type
+         * @param <T>
+         *      the generic type
+         * @return
+         *      an instance of the type
+         */
+        <T> T read(InputStream is, Type type);
+    }
+
+    private static class InputStreamHandlerDispatcher implements InputStreamHandler {
+        private List<InputStreamHandler> realHandlers = new ArrayList<>();
+        private InputStreamHandler priotyHandler;
+        void add(InputStreamHandler handler) {
+            realHandlers.add(handler);
+        }
+
+        InputStreamHandlerDispatcher(InputStreamHandler h) {
+            realHandlers.add($.requireNotNull(h));
+        }
+
+        @Override
+        public boolean support(Type type) {
+            InputStreamHandler h = priotyHandler;
+            if (null != h && h.support(type)) {
+                return true;
+            }
+            for (InputStreamHandler h0: realHandlers) {
+                if (h0.support(type)) {
+                    priotyHandler = h0;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public <T> T read(InputStream is, Type type) {
+            InputStreamHandler h = priotyHandler;
+            if (null != h && h.support(type)) {
+                return h.read(is, type);
+            }
+            for (InputStreamHandler h0: realHandlers) {
+                if (h0.support(type)) {
+                    priotyHandler = h0;
+                    return h0.read(is, type);
+                }
+            }
+            throw new UnsupportedOperationException("Type[%s] not supported");
+        }
+    }
+
+    private static Map<String, InputStreamHandlerDispatcher> inputStreamHandlerLookupBySuffix = new HashMap<>();
+
+    /**
+     * Register an {@link InputStreamHandler} to a suffix.
+     * @param suffix
+     *      a file extension suffix.
+     * @param handler
+     *      the handler
+     */
+    public static void registerInputStreamHandler(String suffix, InputStreamHandler handler) {
+        suffix = suffix.trim().toLowerCase();
+        $.requireNotNull(handler);
+        InputStreamHandlerDispatcher dispatcher = inputStreamHandlerLookupBySuffix.get(suffix);
+        if (null == dispatcher) {
+            dispatcher = new InputStreamHandlerDispatcher(handler);
+            inputStreamHandlerLookupBySuffix.put(suffix, dispatcher);
+        } else {
+            dispatcher.add(handler);
+        }
+    }
 
     /**
      * A stage class support fluent IO write operations.
@@ -481,11 +578,28 @@ public class IO {
             return _to(type);
         }
 
+        public <T> T to(BeanInfo beanInfo) {
+            return _to(beanInfo.type());
+        }
+
+        public <T> T to(TypeReference typeReference) {
+            return _to(typeReference.getType());
+        }
+
         private <T> T _to(Type type) {
             Object o;
+            InputStreamHandlerDispatcher h = null;
+            String sourceName = sourceName();
+            if (null != sourceName) {
+                String suffix = S.fileExtension(sourceName);
+                h = inputStreamHandlerLookupBySuffix.get(suffix);
+            }
             if (String.class == type) {
                 o = toString();
             } else if (TypeReference.LIST_STRING == type) {
+                if (null != h && h.support(type)) {
+                    return h.read(toInputStream(), type);
+                }
                 o = toLines();
             } else if (InputStream.class == type) {
                 o = toInputStream();
@@ -494,17 +608,16 @@ public class IO {
             } else if (ISObject.class == type || SObject.class == type) {
                 o = toSObject();
             } else if (Properties.class == type) {
+                if (null != h && h.support(type)) {
+                    return h.read(toInputStream(), type);
+                }
                 o = toProperties();
             } else if (byte[].class == type) {
                 o = toByteArray();
             } else {
-                throw new UnsupportedOperationException();
+                o = toUnknownType(type);
             }
             return $.cast(o);
-        }
-
-        public <T> T to(TypeReference typeReference) {
-            return _to(typeReference.getType());
         }
 
         protected abstract InputStream load() throws IOException;
@@ -514,6 +627,21 @@ public class IO {
 
         protected STAGE me() {
             return (STAGE) this;
+        }
+
+        protected <T> T toUnknownType(Type type) {
+            String suffix = S.fileExtension(sourceName());
+            if (S.notBlank(suffix)) {
+                InputStreamHandlerDispatcher h = inputStreamHandlerLookupBySuffix.get(suffix);
+                if (null != h && h.support(type)) {
+                    return h.read(toInputStream(), type);
+                }
+            }
+            throw new UnsupportedOperationException();
+        }
+
+        protected String sourceName() {
+            return null == hint ? null : S.string(hint);
         }
     }
 
@@ -540,6 +668,7 @@ public class IO {
     }
 
     public static class FileReadStage extends ReadStageBase<File, FileReadStage> {
+
         public FileReadStage(File file) {
             super(file);
         }
@@ -547,6 +676,12 @@ public class IO {
         @Override
         protected InputStream load() throws IOException {
             return buffered(inputStream(source));
+        }
+
+        @Override
+        protected String sourceName() {
+            String sourceName = super.sourceName();
+            return null != sourceName ? sourceName : source.getName();
         }
     }
 
@@ -1312,17 +1447,15 @@ public class IO {
     }
 
     public static List<String> readLines(File file, String encoding, int limit) {
-        List<String> lines = null;
         InputStream is = null;
         try {
             is = new FileInputStream(file);
-            lines = readLines(is, encoding, limit);
+            return readLines(is, encoding, limit);
         } catch (IOException ex) {
             throw E.ioException(ex);
         } finally {
             close(is);
         }
-        return lines;
     }
 
     public static List<String> readLines(InputStream is, String encoding) {

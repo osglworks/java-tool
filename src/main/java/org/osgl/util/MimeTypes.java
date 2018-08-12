@@ -25,7 +25,16 @@ import java.util.Map;
 import java.util.Properties;
 import javax.activation.MimetypesFileTypeMap;
 
+/**
+ * This class is deprecated, alternative is {@link MimeType}
+ */
+@Deprecated
 public class MimeTypes {
+
+    public static final String BMP = "image/bmp";
+    public static final String PDF = "application/pdf";
+    public static final String PNG = "image/png";
+
     // some common types that are missing from java activation utils
     private static Map<String, String> commonMimeTypes = C.Map(
             "pdf", "application/pdf",
@@ -50,8 +59,7 @@ public class MimeTypes {
     }
 
     public static String mimeType(String fileName) {
-        String suffix = S.afterLast(fileName, ".");
-        String mimeType = commonMimeTypes.get(suffix);
+        String mimeType = commonMimeTypes.get(S.fileExtension(fileName));
         if (null != mimeType) {
             return mimeType;
         }

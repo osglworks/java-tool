@@ -31,7 +31,7 @@
   <parent>
     <groupId>org.osgl</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0-BETA-1</version>
+    <version>1.0.0-BETA-3</version>
   </parent>
 
   <properties>
@@ -114,17 +114,6 @@
       <artifactId>joda-time</artifactId>
       <version>2.9.9</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.osgl</groupId>
-      <artifactId>osgl-ut</artifactId>
-      <version>2.0.0-BETA-1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.osgl</groupId>
-      <artifactId>osgl-version</artifactId>
-      <version>2.0.0-BETA-2</version>
     </dependency>
     <dependency>
       <groupId>com.carrotsearch</groupId>

@@ -1882,7 +1882,7 @@ public class S {
         if (i == -1) {
             return "";
         }
-        return s0.substring(i + search.length(), s0.length());
+        return s0.substring(i + search.length());
     }
 
     public static String afterFirst(String s0, String search) {
@@ -1893,7 +1893,7 @@ public class S {
         if (i == -1) {
             return "";
         }
-        return s0.substring(i + search.length(), s0.length());
+        return s0.substring(i + search.length());
     }
 
     public static String before(String s0, String search) {
@@ -2550,13 +2550,15 @@ public class S {
     }
 
     /**
-     * Get the extension of a filename
+     * Get the extension of a filename.
+     *
+     * The returned string will be trimed and converted to lowercase
      *
      * @param fileName the (supposed) file name
      * @return the extension from the file name
      */
     public static String fileExtension(String fileName) {
-        return S.after(fileName, ".");
+        return S.after(fileName, ".").trim().toLowerCase();
     }
 
     public static String uuid() {
