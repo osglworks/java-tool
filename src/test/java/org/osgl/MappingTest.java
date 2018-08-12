@@ -635,5 +635,21 @@ public class MappingTest extends TestBase {
             eq(foo.l1, map.get("l1"));
         }
 
+        @Test
+        public void testFlatMapFromMap() {
+            Map<String, Object> source = new HashMap<>();
+            source.put("id", S.random());
+            Map<String, Object> nest1 = new HashMap<>();
+            nest1.put("id", S.random());
+            Map<String, Object> nest2 = new HashMap<>();
+            nest2.put("id", S.random());
+            nest1.put("nest2", nest2);
+            source.put("nest1", nest1);
+            Map<String, Object> target = $.flatCopy(source).to(Map.class);
+            eq(source.get("id"), target.get("id"));
+            eq(nest1.get("id"), target.get("nest1.id"));
+            eq(nest2.get("id"), target.get("nest1.nest2.id"));
+        }
+
     }
 }

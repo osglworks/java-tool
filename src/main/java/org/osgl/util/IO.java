@@ -89,8 +89,8 @@ public class IO {
          * of `type`.
          *
          * @param is
-         *      the inputstream
-         * @param type
+         *      the input stream
+         * @param targetType
          *      the type
          * @param hint
          *      the read hint
@@ -99,7 +99,7 @@ public class IO {
          * @return
          *      an instance of the type
          */
-        <T> T read(InputStream is, Type type, Object hint);
+        <T> T read(InputStream is, Type targetType, MimeType mimeType, Object hint);
     }
 
     private static class InputStreamHandlerDispatcher implements InputStreamHandler {
@@ -110,7 +110,9 @@ public class IO {
         }
 
         InputStreamHandlerDispatcher(InputStreamHandler h) {
-            realHandlers.add($.requireNotNull(h));
+            if (!realHandlers.contains($.requireNotNull(h))) {
+                realHandlers.add(h);
+            }
         }
 
         @Override
@@ -129,25 +131,25 @@ public class IO {
         }
 
         @Override
-        public <T> T read(InputStream is, Type type, Object hint) {
+        public <T> T read(InputStream is, Type targetType, MimeType mimeType, Object hint) {
             InputStreamHandler h = priotyHandler;
-            if (null != h && h.support(type)) {
-                return h.read(is, type, hint);
+            if (null != h && h.support(targetType)) {
+                return h.read(is, targetType, mimeType, hint);
             }
             for (InputStreamHandler h0: realHandlers) {
-                if (h0.support(type)) {
+                if (h0.support(targetType)) {
                     priotyHandler = h0;
-                    return h0.read(is, type, hint);
+                    return h0.read(is, targetType, mimeType, hint);
                 }
             }
             throw new UnsupportedOperationException("Type[%s] not supported");
         }
     }
 
-    private static Map<MimeType, InputStreamHandlerDispatcher> inputStreamHandlerLookupBySuffix = new HashMap<>();
+    private static Map<MimeType, InputStreamHandlerDispatcher> inputStreamHandlerLookup = new HashMap<>();
 
     /**
-     * Register an {@link InputStreamHandler} to a suffix.
+     * Associate an {@link InputStreamHandler} with a specific {@link MimeType}
      * @param type
      *      The mimetype the handler listen to
      * @param handler
@@ -155,12 +157,28 @@ public class IO {
      */
     public static void registerInputStreamHandler(MimeType type, InputStreamHandler handler) {
         $.requireNotNull(handler);
-        InputStreamHandlerDispatcher dispatcher = inputStreamHandlerLookupBySuffix.get(type);
+        InputStreamHandlerDispatcher dispatcher = inputStreamHandlerLookup.get(type);
         if (null == dispatcher) {
             dispatcher = new InputStreamHandlerDispatcher(handler);
-            inputStreamHandlerLookupBySuffix.put(type, dispatcher);
+            inputStreamHandlerLookup.put(type, dispatcher);
         } else {
             dispatcher.add(handler);
+        }
+    }
+
+    /**
+     * Register an {@link InputStreamHandler} with all {@link MimeType mime types} by {@link MimeType.Trait}.
+     *
+     * @param trait
+     *      the trait of mimetype
+     * @param handler
+     *      the input stream handler
+     */
+    public static void registerInputStreamHandler(MimeType.Trait trait, InputStreamHandler handler) {
+        $.requireNotNull(handler);
+        List<MimeType> mimeTypes = MimeType.filterByTrait(trait);
+        for (MimeType mimeType : mimeTypes) {
+            registerInputStreamHandler(mimeType, handler);
         }
     }
 
@@ -626,14 +644,14 @@ public class IO {
                     mimeType = MimeType.findByFileExtension(suffix);
                 }
                 if (null != mimeType) {
-                    inputStreamHandler = inputStreamHandlerLookupBySuffix.get(mimeType);
+                    inputStreamHandler = inputStreamHandlerLookup.get(mimeType);
                 }
             }
             if (String.class == type) {
                 o = toString();
             } else if (TypeReference.LIST_STRING == type) {
                 if (null != inputStreamHandler && inputStreamHandler.support(type)) {
-                    return inputStreamHandler.read(toInputStream(), type, hint);
+                    return inputStreamHandler.read(toInputStream(), type, mimeType, hint);
                 }
                 o = toLines();
             } else if (InputStream.class == type) {
@@ -644,12 +662,15 @@ public class IO {
                 o = toSObject();
             } else if (Properties.class == type) {
                 if (null != inputStreamHandler && inputStreamHandler.support(type)) {
-                    return inputStreamHandler.read(toInputStream(), type, hint);
+                    return inputStreamHandler.read(toInputStream(), type, mimeType, hint);
                 }
                 o = toProperties();
             } else if (byte[].class == type) {
                 o = toByteArray();
             } else {
+                if (null != inputStreamHandler) {
+                    return inputStreamHandler.read(toInputStream(), type, mimeType, hint);
+                }
                 o = toUnknownType(type);
             }
             return $.cast(o);
@@ -665,11 +686,10 @@ public class IO {
         }
 
         protected <T> T toUnknownType(Type type) {
-            String suffix = S.fileExtension(sourceName());
-            if (S.notBlank(suffix)) {
-                InputStreamHandlerDispatcher h = inputStreamHandlerLookupBySuffix.get(suffix);
-                if (null != h && h.support(type)) {
-                    return h.read(toInputStream(), type, hint);
+            if (null != mimeType) {
+                InputStreamHandler h = inputStreamHandlerLookup.get(mimeType);
+                if (null != h) {
+                    return h.read(toInputStream(), type, mimeType, hint);
                 }
             }
             throw new UnsupportedOperationException();
@@ -706,18 +726,14 @@ public class IO {
 
         public FileReadStage(File file) {
             super(file);
+            sourceName = file.getName();
         }
 
         @Override
-        protected InputStream load() throws IOException {
+        protected InputStream load() {
             return buffered(inputStream(source));
         }
 
-        @Override
-        protected String sourceName() {
-            String sourceName = super.sourceName();
-            return null != sourceName ? sourceName : source.getName();
-        }
     }
 
     public static class CharSequenceReadStage extends ReadStageBase<CharSequence, CharSequenceReadStage> {

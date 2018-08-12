@@ -83,6 +83,16 @@ public final class MimeType {
         return indexByContentType.get(contentType.trim().toLowerCase());
     }
 
+    public static List<MimeType> filterByTrait(Trait trait) {
+        List<MimeType> mimeTypes = new ArrayList<>();
+        for (MimeType mimeType : allMimeTypes()) {
+            if (mimeType.test(trait)) {
+                mimeTypes.add(mimeType);
+            }
+        }
+        return mimeTypes;
+    }
+
     public static Collection<MimeType> allMimeTypes() {
         return indexByFileExtension.values();
     }

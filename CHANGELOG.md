@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Bean copy - add flat copy semantic #155
 * Provide a mechanism to enable application plug in logic to extend the IO read process #154
 * Create new `MimeType` utility #153
 * `IO.write(CharSequence content, Writer writer)` shall not append line separator at the end of the content #152

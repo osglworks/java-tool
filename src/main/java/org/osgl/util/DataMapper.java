@@ -211,6 +211,36 @@ public class DataMapper {
         DEEP_COPY,
 
         /**
+         * Recursively copy data from source data structure into target Map structure.
+         * The nested data will be flatmap to top level. E.g
+         *
+         * ```
+         * {
+         *     id: 123
+         *     name: foo
+         *     address:
+         *        streetNo: 1
+         *        streetName: George St
+         * }
+         * ```
+         *
+         * will be flat into
+         *
+         * ```
+         * {
+         *     id: 123
+         *     name: foo
+         *     address.streetNo: 1
+         *     address.streetName: George St
+         * }
+         * ```
+         *
+         * Note this semantic only applied when target is a Map and key type is String, otherwise
+         * an IllegalStateException will be thrown out.
+         */
+        FLAT_COPY,
+
+        /**
          * Recursively merge data from source data structure into target data structure. This
          * semantic is same as {@link #DEEP_COPY} except:
          * * if there are more properties in the target data, the extra properties will be left
@@ -242,6 +272,10 @@ public class DataMapper {
 
         boolean isDeepCopy() {
             return this == DEEP_COPY;
+        }
+
+        boolean isFlatCopy() {
+            return this == FLAT_COPY;
         }
 
         boolean isCopy() {
@@ -529,6 +563,7 @@ public class DataMapper {
         this.sourceType = source.getClass();
         this.rule = $.requireNotNull(rule);
         this.semantic = $.requireNotNull(semantic);
+        E.illegalStateIf(this.semantic.isFlatCopy() && !Map.class.isAssignableFrom(this.targetType),"flat copy only applied when target type is Map");
         this.filter = new PropertyFilter(filterSpec);
         this.conversionHints = null == conversionHints ? C.<Class, Object>Map() : conversionHints;
         this.instanceFactory = null == instanceFactory ? OsglConfig.globalInstanceFactory() : instanceFactory;
@@ -944,6 +979,13 @@ public class DataMapper {
     }
 
     private Iterable<$.Triple<Object, Keyword, $.Producer<Object>>> sourceProperties() {
+        return sourceProperties(semantic.isFlatCopy());
+    }
+
+    private Iterable<$.Triple<Object, Keyword, $.Producer<Object>>> sourceProperties(boolean flat) {
+        if (flat) {
+            return flatSourceProperties();
+        }
         if (Map.class.isAssignableFrom(sourceType)) {
             return C.list(((Map<Object, Object>) source).entrySet())
                     .map(new $.Transformer<Map.Entry, $.Triple<Object, Keyword, $.Producer<Object>>>() {
@@ -984,6 +1026,79 @@ public class DataMapper {
                             return $.T3(name, keyword, producer);
                         }
                     });
+        }
+    }
+
+    private Iterable<$.Triple<Object, Keyword, $.Producer<Object>>> flatSourceProperties() {
+        List<$.Triple<Object, Keyword, $.Producer<Object>>> retVal = new ArrayList<>();
+        buildFlatSourceProperties(retVal, "", sourceType, source);
+        return retVal;
+    }
+
+    private void buildFlatSourceProperties(List<$.Triple<Object, Keyword, $.Producer<Object>>> retVal, String context, Class<?> sourceType, Object source) {
+        if (Map.class.isAssignableFrom(sourceType)) {
+            for (Object o: ((Map)source).entrySet()) {
+                Map.Entry entry = $.cast(o);
+                final Object v = entry.getValue();
+                if (null == v) {
+                    continue;
+                }
+                Class<?> vType = v.getClass();
+                String key = S.string(entry.getKey());
+                if (S.notBlank(context)) {
+                    key = S.concat(context, ".", key);
+                }
+                if (OsglConfig.globalMappingFilter_shouldIgnore(key)) {
+                    continue;
+                }
+                if (!filter.test(key)) {
+                    continue;
+                }
+                Keyword keyword = null;
+                if (rule.keywordMatching()) {
+                    keyword = Keyword.of(key);
+                }
+                if ($.isImmutable(vType)) {
+                    $.Producer<Object> producer = new $.Producer<Object>() {
+                        @Override
+                        public Object produce() {
+                            return v;
+                        }
+                    };
+                    retVal.add($.T3((Object)key, keyword, producer));
+                } else {
+                    buildFlatSourceProperties(retVal, key, vType, v);
+                }
+            }
+        } else {
+            final List<Field> fields = $.fieldsOf(sourceType);
+            $.Predicate<Field> filter = fieldFilter();
+            for (Field field : fields) {
+                if (filter.test(field)) {
+                    continue;
+                }
+                String key = field.getName();
+                if (S.notBlank(context)) {
+                    key = S.concat(context, ".", key);
+                }
+                Keyword keyword = null;
+                if (rule.keywordMatching()) {
+                    keyword = Keyword.of(key);
+                }
+                Class<?> vType = field.getType();
+                final Object v = $.getFieldValue(source, field);
+                if ($.isImmutable(vType)) {
+                    $.Producer<Object> producer = new $.Producer<Object>() {
+                        @Override
+                        public Object produce() {
+                            return v;
+                        }
+                    };
+                    retVal.add($.T3((Object)key, keyword, producer));
+                } else {
+                    buildFlatSourceProperties(retVal, key, vType, v);
+                }
+            }
         }
     }
 

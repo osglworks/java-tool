@@ -10129,6 +10129,18 @@ public class Lang implements Serializable {
     }
 
     /**
+     * Prepare a Mapping operation with {@link DataMapper.Semantic#FLAT_COPY flat
+     * copy} semantic
+     *
+     * @param source
+     *         the source object
+     * @return a {@link _MappingStage}
+     */
+    public static _MappingStage flatCopy(Object source) {
+        return new _MappingStage(source, FLAT_COPY);
+    }
+
+    /**
      * Prepare a Mapping operation with {@link DataMapper.Semantic#MERGE merge} semantic
      *
      * @param source
