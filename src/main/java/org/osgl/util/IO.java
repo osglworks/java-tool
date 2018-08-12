@@ -92,12 +92,14 @@ public class IO {
          *      the inputstream
          * @param type
          *      the type
+         * @param hint
+         *      the read hint
          * @param <T>
          *      the generic type
          * @return
          *      an instance of the type
          */
-        <T> T read(InputStream is, Type type);
+        <T> T read(InputStream is, Type type, Object hint);
     }
 
     private static class InputStreamHandlerDispatcher implements InputStreamHandler {
@@ -127,37 +129,36 @@ public class IO {
         }
 
         @Override
-        public <T> T read(InputStream is, Type type) {
+        public <T> T read(InputStream is, Type type, Object hint) {
             InputStreamHandler h = priotyHandler;
             if (null != h && h.support(type)) {
-                return h.read(is, type);
+                return h.read(is, type, hint);
             }
             for (InputStreamHandler h0: realHandlers) {
                 if (h0.support(type)) {
                     priotyHandler = h0;
-                    return h0.read(is, type);
+                    return h0.read(is, type, hint);
                 }
             }
             throw new UnsupportedOperationException("Type[%s] not supported");
         }
     }
 
-    private static Map<String, InputStreamHandlerDispatcher> inputStreamHandlerLookupBySuffix = new HashMap<>();
+    private static Map<MimeType, InputStreamHandlerDispatcher> inputStreamHandlerLookupBySuffix = new HashMap<>();
 
     /**
      * Register an {@link InputStreamHandler} to a suffix.
-     * @param suffix
-     *      a file extension suffix.
+     * @param type
+     *      The mimetype the handler listen to
      * @param handler
      *      the handler
      */
-    public static void registerInputStreamHandler(String suffix, InputStreamHandler handler) {
-        suffix = suffix.trim().toLowerCase();
+    public static void registerInputStreamHandler(MimeType type, InputStreamHandler handler) {
         $.requireNotNull(handler);
-        InputStreamHandlerDispatcher dispatcher = inputStreamHandlerLookupBySuffix.get(suffix);
+        InputStreamHandlerDispatcher dispatcher = inputStreamHandlerLookupBySuffix.get(type);
         if (null == dispatcher) {
             dispatcher = new InputStreamHandlerDispatcher(handler);
-            inputStreamHandlerLookupBySuffix.put(suffix, dispatcher);
+            inputStreamHandlerLookupBySuffix.put(type, dispatcher);
         } else {
             dispatcher.add(handler);
         }
@@ -513,6 +514,8 @@ public class IO {
     public static abstract class ReadStageBase<SOURCE, STAGE extends ReadStageBase> {
 
         protected SOURCE source;
+        protected String sourceName;
+        private MimeType mimeType;
         protected Object hint;
         protected Charset charset = StandardCharsets.UTF_8;
 
@@ -535,6 +538,32 @@ public class IO {
 
         public STAGE hint(Object hint) {
             this.hint = hint;
+            return me();
+        }
+
+        public STAGE sourceName(String name) {
+            this.sourceName = name;
+            if (null == mimeType) {
+                mimeType = MimeType.findByFileExtension(S.fileExtension(sourceName));
+            }
+            return me();
+        }
+
+        public STAGE contentType(MimeType type) {
+            this.mimeType = type;
+            return me();
+        }
+
+        public STAGE contentType(String contentType) {
+            MimeType type = MimeType.findByContentType(contentType);
+            if (null == type) {
+                type = MimeType.findByFileExtension(contentType);
+            }
+            if (null != type) {
+                this.mimeType = type;
+            } else {
+                E.unexpected("Content type unrecognized: " + contentType);
+            }
             return me();
         }
 
@@ -588,17 +617,23 @@ public class IO {
 
         private <T> T _to(Type type) {
             Object o;
-            InputStreamHandlerDispatcher h = null;
-            String sourceName = sourceName();
-            if (null != sourceName) {
-                String suffix = S.fileExtension(sourceName);
-                h = inputStreamHandlerLookupBySuffix.get(suffix);
+            InputStreamHandlerDispatcher inputStreamHandler = null;
+            MimeType mimeType = this.mimeType;
+            if (null == mimeType) {
+                String sourceName = sourceName();
+                if (null != sourceName) {
+                    String suffix = S.fileExtension(sourceName);
+                    mimeType = MimeType.findByFileExtension(suffix);
+                }
+                if (null != mimeType) {
+                    inputStreamHandler = inputStreamHandlerLookupBySuffix.get(mimeType);
+                }
             }
             if (String.class == type) {
                 o = toString();
             } else if (TypeReference.LIST_STRING == type) {
-                if (null != h && h.support(type)) {
-                    return h.read(toInputStream(), type);
+                if (null != inputStreamHandler && inputStreamHandler.support(type)) {
+                    return inputStreamHandler.read(toInputStream(), type, hint);
                 }
                 o = toLines();
             } else if (InputStream.class == type) {
@@ -608,8 +643,8 @@ public class IO {
             } else if (ISObject.class == type || SObject.class == type) {
                 o = toSObject();
             } else if (Properties.class == type) {
-                if (null != h && h.support(type)) {
-                    return h.read(toInputStream(), type);
+                if (null != inputStreamHandler && inputStreamHandler.support(type)) {
+                    return inputStreamHandler.read(toInputStream(), type, hint);
                 }
                 o = toProperties();
             } else if (byte[].class == type) {
@@ -634,14 +669,14 @@ public class IO {
             if (S.notBlank(suffix)) {
                 InputStreamHandlerDispatcher h = inputStreamHandlerLookupBySuffix.get(suffix);
                 if (null != h && h.support(type)) {
-                    return h.read(toInputStream(), type);
+                    return h.read(toInputStream(), type, hint);
                 }
             }
             throw new UnsupportedOperationException();
         }
 
         protected String sourceName() {
-            return null == hint ? null : S.string(hint);
+            return sourceName;
         }
     }
 
