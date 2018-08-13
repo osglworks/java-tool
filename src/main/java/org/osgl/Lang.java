@@ -6147,6 +6147,11 @@ public class Lang implements Serializable {
         return ret;
     }
 
+    // to fix https://github.com/actframework/actframework/issues/784
+    public static int hc() {
+        return HC_INIT;
+    }
+
     public static int hc(boolean o) {
         return o ? 1231 : 1237;
     }
