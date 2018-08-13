@@ -2839,6 +2839,15 @@ public class Lang implements Serializable {
          * @return the transformed object
          */
         public abstract TO transform(FROM from);
+
+        public static <F, T> Transformer<F, T> adapt(final Function<F, T> func) {
+            return new Transformer<F, T>() {
+                @Override
+                public T transform(F f) {
+                    return func.apply(f);
+                }
+            };
+        }
     }
 
     /**

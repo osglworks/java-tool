@@ -31,7 +31,7 @@ public final class MimeType {
     private static Map<String, Trait> traitMap = new HashMap<>();
 
     public enum Trait {
-        archive, audio, excel, image, pdf, powerpoint, text, video, word;
+        archive, audio, excel, image, pdf, powerpoint, text, video, word, xls, xlsx;
         public boolean test(MimeType mimeType) {
             return mimeType.test(this);
         }

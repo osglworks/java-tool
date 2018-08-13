@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0
+* StringUtils - add new drop functions #156
 * Bean copy - add flat copy semantic #155
 * Provide a mechanism to enable application plug in logic to extend the IO read process #154
 * Create new `MimeType` utility #153

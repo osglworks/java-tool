@@ -3126,16 +3126,16 @@ public class S {
             return $.predicate(CONTAINS.curry(search));
         }
 
-        public static $.F1<String, String> TO_UPPERCASE = new $.F1<String, String>() {
+        public static $.Transformer<String, String> TO_UPPERCASE = new $.Transformer<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, $.Break {
+            public String transform(String s) throws NotAppliedException, $.Break {
                 return s.toUpperCase();
             }
         };
 
-        public static $.F1<String, String> TO_LOWERCASE = new $.F1<String, String>() {
+        public static $.Transformer<String, String> TO_LOWERCASE = new $.Transformer<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, $.Break {
+            public String transform(String s) throws NotAppliedException, $.Break {
                 return s.toLowerCase();
             }
         };
@@ -3147,23 +3147,23 @@ public class S {
             }
         };
 
-        public static $.F1<String, String> TRIM = new $.F1<String, String>() {
+        public static $.Transformer<String, String> TRIM = new $.Transformer<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, $.Break {
+            public String transform(String s) throws NotAppliedException, $.Break {
                 return s.trim();
             }
         };
 
-        public static $.F1<String, String> CAP_FIRST = new $.F1<String, String>() {
+        public static $.Transformer<String, String> CAP_FIRST = new $.Transformer<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, $.Break {
+            public String transform(String s) throws NotAppliedException, $.Break {
                 return S.capFirst(s);
             }
         };
 
-        public static $.F1<String, String> LOWER_FIRST = new $.F1<String, String>() {
+        public static $.Transformer<String, String> LOWER_FIRST = new $.Transformer<String, String>() {
             @Override
-            public String apply(String s) throws NotAppliedException, $.Break {
+            public String transform(String s) throws NotAppliedException, $.Break {
                 return S.lowerFirst(s);
             }
         };
@@ -3196,19 +3196,19 @@ public class S {
         /**
          * A split function that use the {@link #COMMON_SEP} to split Strings
          */
-        public static $.F1<String, List> SPLIT = split(COMMON_SEP);
+        public static $.Transformer<String, List> SPLIT = split(COMMON_SEP);
 
-        public static $.F1<String, List> split(final String sep) {
-            return new $.F1<String, List>() {
+        public static $.Transformer<String, List> split(final String sep) {
+            return new $.Transformer<String, List>() {
                 @Override
-                public List apply(String s) throws NotAppliedException, $.Break {
+                public List transform(String s) throws NotAppliedException, $.Break {
                     return ImmutableStringList.of(s.split(sep));
                 }
             };
         }
 
-        public static $.F1<String, String> maxLength(int n) {
-            return MAX_LENGTH.curry(n);
+        public static $.Transformer<String, String> maxLength(int n) {
+            return $.Transformer.adapt(MAX_LENGTH.curry(n));
         }
 
         public static $.F2<String, Integer, String> LAST = new $.F2<String, Integer, String>() {
@@ -3218,8 +3218,8 @@ public class S {
             }
         };
 
-        public static $.F1<String, String> last(int n) {
-            return LAST.curry(n);
+        public static $.Transformer<String, String> last(int n) {
+            return $.Transformer.adapt(LAST.curry(n));
         }
 
         public static $.F2<String, Integer, String> FIRST = new $.F2<String, Integer, String>() {
@@ -3229,8 +3229,51 @@ public class S {
             }
         };
 
-        public static $.F1<String, String> first(final int n) {
-            return FIRST.curry(n);
+        public static $.Transformer<String, String> first(final int n) {
+            return $.Transformer.adapt(FIRST.curry(n));
+        }
+
+        public static $.Transformer<String, String> dropHead(final int n) {
+            return new $.Transformer<String, String>() {
+                @Override
+                public String transform(String s) {
+                    if (n > s.length()) {
+                        return "";
+                    }
+                    return s.substring(n);
+                }
+            };
+        }
+
+        public static $.Transformer<String, String> dropHeadIfStartsWith(final String prefix) {
+            return new $.Transformer<String, String>() {
+                @Override
+                public String transform(String s) {
+                    return s.startsWith(prefix) ? s.substring(prefix.length()) : s;
+                }
+            };
+        }
+
+        public static $.Transformer<String, String> dropTail(final int n) {
+            return new $.Transformer<String, String>() {
+                @Override
+                public String transform(String s) {
+                    int len = s.length();
+                    if (n > len) {
+                        return "";
+                    }
+                    return s.substring(0, len - n);
+                }
+            };
+        }
+
+        public static $.Transformer<String, String> dropTailIfEndsWith(final String suffix) {
+            return new $.Transformer<String, String>() {
+                @Override
+                public String transform(String s) {
+                    return s.endsWith(suffix) ? S.cut(s).beforeLast(suffix) : s;
+                }
+            };
         }
 
         public static $.F0<String> RANDOM = new $.F0<String>() {
@@ -3240,9 +3283,9 @@ public class S {
             }
         };
 
-        public static $.F1<Integer, String> RANDOM_N = new $.F1<Integer, String>() {
+        public static $.Transformer<Integer, String> RANDOM_N = new $.Transformer<Integer, String>() {
             @Override
-            public String apply(Integer n) throws NotAppliedException, $.Break {
+            public String transform(Integer n) throws NotAppliedException, $.Break {
                 return S.random(n);
             }
         };
@@ -3255,26 +3298,26 @@ public class S {
             return RANDOM_N.curry(n);
         }
 
-        public static $.F1<String, Integer> LENGTH = new $.F1<String, Integer>() {
+        public static $.Transformer<String, Integer> LENGTH = new $.Transformer<String, Integer>() {
             @Override
-            public Integer apply(String s) throws NotAppliedException, $.Break {
+            public Integer transform(String s) throws NotAppliedException, $.Break {
                 return s.length();
             }
         };
 
-        public static $.F1<String, String> append(final String appendix) {
-            return new $.F1<String, String>() {
+        public static $.Transformer<String, String> append(final String appendix) {
+            return new $.Transformer<String, String>() {
                 @Override
-                public String apply(String s) throws NotAppliedException, $.Break {
+                public String transform(String s) throws NotAppliedException, $.Break {
                     return S.newBuilder(s).append(appendix).toString();
                 }
             };
         }
 
-        public static $.F1<String, String> prepend(final String prependix) {
-            return new $.F1<String, String>() {
+        public static $.Transformer<String, String> prepend(final String prependix) {
+            return new $.Transformer<String, String>() {
                 @Override
-                public String apply(String s) throws NotAppliedException, $.Break {
+                public String transform(String s) throws NotAppliedException, $.Break {
                     return S.newBuilder(prependix).append(s).toString();
                 }
             };

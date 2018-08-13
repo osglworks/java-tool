@@ -394,4 +394,18 @@ public class STest extends UtilTestBase {
         eq("ab ", S.center(s, 3));
     }
 
+    @Test
+    public void testF_dropHead() {
+        String s = "abc123";
+        eq("123", S.F.dropHead(3).transform(s));
+        eq("", S.F.dropHead(6).transform(s));
+        eq("", S.F.dropHead(7).transform(s));
+        eq("123", S.F.dropHeadIfStartsWith("abc").transform(s));
+
+        eq("abc", S.F.dropTail(3).transform(s));
+        eq("", S.F.dropTail(6).transform(s));
+        eq("", S.F.dropTail(7).transform(s));
+        eq("abc", S.F.dropTailIfEndsWith("123").transform(s));
+    }
+
 }

@@ -32,6 +32,10 @@ public class MimeTypeTest extends TestBase {
 
         mimeType = MimeType.findByFileExtension("bz2");
         yes(null != mimeType && mimeType.test(MimeType.Trait.archive));
+
+        mimeType = MimeType.findByFileExtension("xlsx");
+        yes(mimeType.test(MimeType.Trait.xlsx));
+        no(mimeType.test(MimeType.Trait.xls));
     }
 
 }

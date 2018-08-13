@@ -1074,7 +1074,11 @@ public class DataMapper {
             final List<Field> fields = $.fieldsOf(sourceType);
             $.Predicate<Field> filter = fieldFilter();
             for (Field field : fields) {
-                if (filter.test(field)) {
+                if (!filter.test(field)) {
+                    continue;
+                }
+                final Object v = $.getFieldValue(source, field);
+                if (null == v) {
                     continue;
                 }
                 String key = field.getName();
@@ -1086,8 +1090,7 @@ public class DataMapper {
                     keyword = Keyword.of(key);
                 }
                 Class<?> vType = field.getType();
-                final Object v = $.getFieldValue(source, field);
-                if ($.isImmutable(vType)) {
+                if (terminateFlatMap(vType)) {
                     $.Producer<Object> producer = new $.Producer<Object>() {
                         @Override
                         public Object produce() {
@@ -1424,7 +1427,11 @@ public class DataMapper {
     }
 
     private static boolean isImmutable(Class<?> type) {
-        return !type.isArray() && ($.isSimpleType(type) || Lang.isImmutable(type));
+        return !type.isArray() && ($.isSimpleType(type) || $.isImmutable(type));
+    }
+
+    private static boolean terminateFlatMap(Class<?> type) {
+        return isImmutable(type) || Date.class.isAssignableFrom(type) || Calendar.class.isAssignableFrom(type);
     }
 
     private static Map<Keyword.Style, $.Function> keywordTransformers = Collections.synchronizedMap(new EnumMap<Keyword.Style, $.Function>(Keyword.Style.class));
