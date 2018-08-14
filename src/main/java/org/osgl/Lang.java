@@ -3014,7 +3014,23 @@ public class Lang implements Serializable {
         public static TypeConverter<String, Integer> STRING_TO_INTEGER = new TypeConverter<String, Integer>(String.class, Integer.class) {
             @Override
             public Integer convert(String s) {
-                return S.isEmpty(s) ? null : Integer.valueOf(s);
+                if (S.isEmpty(s)) {
+                    return null;
+                }
+                if (N.isInt(s)) {
+                    return Integer.valueOf(s);
+                }
+                // try parse 10 * 60 style
+                if (s.contains("*")) {
+                    List<String> factors = S.fastSplit(s, "*");
+                    int result = 1;
+                    for (String factor: factors) {
+                        int l = Integer.parseInt(factor.trim());
+                        result = result * l;
+                    }
+                    return result;
+                }
+                throw new NumberFormatException(s);
             }
 
             @Override
@@ -3045,7 +3061,20 @@ public class Lang implements Serializable {
                 if (S.isEmpty(s)) {
                     return null;
                 }
-                return Long.valueOf(s);
+                if (N.isInt(s)) {
+                    return Long.valueOf(s);
+                }
+                // try parse 10 * 60 style
+                if (s.contains("*")) {
+                    List<String> factors = S.fastSplit(s, "*");
+                    long result = 1;
+                    for (String factor: factors) {
+                        long l = Long.parseLong(factor.trim());
+                        result = result * l;
+                    }
+                    return result;
+                }
+                throw new NumberFormatException(s);
             }
         };
 
