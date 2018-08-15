@@ -782,6 +782,7 @@ public class IO {
     public static class SObjectReadStage extends ReadStageBase<ISObject, SObjectReadStage> {
         public SObjectReadStage(ISObject isObject) {
             super(isObject);
+            sourceName = isObject.getFilename();
         }
 
         @Override
@@ -793,6 +794,7 @@ public class IO {
     public static class UrlReadStage extends ReadStageBase<URL, UrlReadStage> {
         public UrlReadStage(URL url) {
             super(url);
+            sourceName(url.getPath());
         }
 
         @Override
