@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Add `$.Transformer<String, String> asTransformer()` to `Keyword.Style` #159
 * Converter - support multiple expression for String to Integer/Long conversion #158
 * Add `$.hc()` method #157
 * StringUtils - add new drop functions #156

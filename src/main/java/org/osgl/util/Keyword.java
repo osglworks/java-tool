@@ -160,6 +160,16 @@ public final class Keyword implements Comparable<Keyword> {
             return sb.toString();
         }
 
+        public $.Transformer<String, String> asTransformer() {
+            final Style me = this;
+            return new $.Transformer<String, String>() {
+                @Override
+                public String transform(String s) {
+                    return me.toString(Keyword.of(s));
+                }
+            };
+        }
+
         protected CharSequence processToken(FastStr token, int seq) {
             return token;
         }
