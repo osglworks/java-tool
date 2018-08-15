@@ -1139,6 +1139,7 @@ public class IO {
     /**
      * Use {@link #inputStream(URL)} to replace this method.
      */
+    @Deprecated
     public static InputStream is(URL url) {
         return inputStream(url);
     }
