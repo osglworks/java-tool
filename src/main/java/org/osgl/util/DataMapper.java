@@ -986,6 +986,12 @@ public class DataMapper {
         if (flat) {
             return flatSourceProperties();
         }
+        Class<?> sourceType = this.sourceType;
+        Object source = this.source;
+        if (AdaptiveMap.class.isAssignableFrom(sourceType)) {
+            sourceType = Map.class;
+            source = ((AdaptiveMap) source).asMap();
+        }
         if (Map.class.isAssignableFrom(sourceType)) {
             return C.list(((Map<Object, Object>) source).entrySet())
                     .map(new $.Transformer<Map.Entry, $.Triple<Object, Keyword, $.Producer<Object>>>() {
@@ -1020,7 +1026,7 @@ public class DataMapper {
                             $.Producer<Object> producer = new $.Producer<Object>() {
                                 @Override
                                 public Object produce() {
-                                    return $.getFieldValue(source, field);
+                                    return $.getFieldValue(DataMapper.this.source, field);
                                 }
                             };
                             return $.T3(name, keyword, producer);
@@ -1036,8 +1042,12 @@ public class DataMapper {
     }
 
     private void buildFlatSourceProperties(List<$.Triple<Object, Keyword, $.Producer<Object>>> retVal, String context, Class<?> sourceType, Object source) {
+        if (AdaptiveMap.class.isAssignableFrom(sourceType)) {
+            source = ((AdaptiveMap) source).asMap();
+            sourceType = Map.class;
+        }
         if (Map.class.isAssignableFrom(sourceType)) {
-            for (Object o: ((Map)source).entrySet()) {
+            for (Object o : ((Map) source).entrySet()) {
                 Map.Entry entry = $.cast(o);
                 final Object v = entry.getValue();
                 if (null == v) {
@@ -1065,7 +1075,7 @@ public class DataMapper {
                             return v;
                         }
                     };
-                    retVal.add($.T3((Object)key, keyword, producer));
+                    retVal.add($.T3((Object) key, keyword, producer));
                 } else {
                     buildFlatSourceProperties(retVal, key, vType, v);
                 }
