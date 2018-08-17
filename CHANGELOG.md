@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Provide `S.urlSafeRandom()` methods #161
 * Bean copy/mapping - it does not process `AdaptiveMap` typed source correctly #160
 * Add `$.Transformer<String, String> asTransformer()` to `Keyword.Style` #159
 * Converter - support multiple expression for String to Integer/Long conversion #158

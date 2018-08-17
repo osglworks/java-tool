@@ -2552,7 +2552,7 @@ public class S {
     /**
      * Get the extension of a filename.
      *
-     * The returned string will be trimed and converted to lowercase
+     * The returned string will be trimmed and converted to lowercase
      *
      * @param fileName the (supposed) file name
      * @return the extension from the file name
@@ -2565,7 +2565,29 @@ public class S {
         return UUID.randomUUID().toString();
     }
 
-    final static char[] _COMMON_CHARS_ = {'0', '1', '2', '3', '4',
+    /**
+     * digital characters from `0` to `9`
+     */
+    public static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+    /**
+     * alphabetic characters include both lowercase and uppercase characters
+     */
+    public static final char[] ALPHABETICS = {
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+            'U', 'V', 'W', 'X', 'Y', 'Z',
+    };
+
+    /**
+     * digits plus alphabetic characters
+     */
+    public static final char[] ALPHANUMERICS = $.concat(DIGITS, ALPHABETICS);
+
+    static final char[] _COMMON_CHARS_ = {'0', '1', '2', '3', '4',
             '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
             'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -2576,15 +2598,37 @@ public class S {
             '~', '!', '@'};
     static final int _COMMON_CHARS_LEN_ = _COMMON_CHARS_.length;
 
+    static final char[] _URL_SAFE_CHARS_ = {'0', '1', '2', '3', '4',
+            '5', '6', '7', '8', '9', '-', '.', '_',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+            'U', 'V', 'W', 'X', 'Y', 'Z', '~'
+    };
+    static final int _URL_SAFE_CHARS_LEN = _URL_SAFE_CHARS_.length;
+
     /**
      * Generate random string.
-     * The generated string is safe to be used as filename
+     * The generated string is safe to be used as filename.
      *
      * @param len the number of chars in the returned string
      * @return a random string with specified number of chars
      */
     public static String random(int len) {
         return random(len, ThreadLocalRandom.current());
+    }
+
+    /**
+     * Generate URL safe random string.
+     * The generated string is safe to be used as part of URL.
+     *
+     * @param len the number of chars in the returned string
+     * @return a random string with specified number of chars
+     */
+    public static String urlSafeRandom(int len) {
+        return urlSafeRandom(len, ThreadLocalRandom.current());
     }
 
     /**
@@ -2595,9 +2639,65 @@ public class S {
     }
 
     /**
+     * @return a URL safe random string with 8 chars
+     */
+    public static String urlSafeRandom() {
+        return urlSafeRandom(8);
+    }
+
+    /**
+     * return a random string with 2 to 5 (inclusive) chars.
+     */
+    public static String shortRandom() {
+        return random(2 + N.randInt(4));
+    }
+
+    /**
+     * return a URL safe random string with 2 to 5 (inclusive) chars.
+     */
+    public static String shortUrlSafeRandom() {
+        return urlSafeRandom(2 + N.randInt(4));
+    }
+
+    /**
+     * return a random string with 6 to 15 (inclusive) chars.
+     */
+    public static String mediumRandom() {
+        return random(6 + N.randInt(10));
+    }
+
+    /**
+     * return a URL safe random string with 6 to 15 (inclusive) chars.
+     */
+    public static String mediumUrlSafeRandom() {
+        return urlSafeRandom(6 + N.randInt(10));
+    }
+
+    /**
+     * return a random string with 16 to 100 (inclusive) chars.
+     */
+    public static String longRandom() {
+        return random(16 + N.randInt(85));
+    }
+
+    /**
+     * return a URL safe random string with 16 to 100 (inclusive) chars.
+     */
+    public static String longUrlSafeRandom() {
+        return urlSafeRandom(16 + N.randInt(85));
+    }
+
+    /**
      * This is the secure version of {@link #random(int)}.
      */
     public static String secureRandom(int len) {
+        return random(len, new SecureRandom());
+    }
+
+    /**
+     * This is the secure version of {@link #urlSafeRandom(int)}.
+     */
+    public static String secureUrlSafeRandom(int len) {
         return random(len, new SecureRandom());
     }
 
@@ -2608,13 +2708,60 @@ public class S {
         return secureRandom(8);
     }
 
-    private static String random(int len, Random r) {
-        char[] chars = _COMMON_CHARS_;
-        int charsLen = _COMMON_CHARS_LEN_;
+    /**
+     * This is the secure version of {@link #urlSafeRandom()}.
+     */
+    public static String secureUrlSafeRandom() {
+        return secureUrlSafeRandom(8);
+    }
+
+    /**
+     * Generate a random string with specified length and a random instance
+     * @param len
+     *      the length of the random string
+     * @param r
+     *      the `Random` instance
+     * @return
+     *      the random string
+     */
+    public static String random(int len, Random r) {
+        return random(len, r, _COMMON_CHARS_, _COMMON_CHARS_LEN_);
+    }
+
+    /**
+     * Generate a URL safe random string with specified length and a random instance
+     * @param len
+     *      the length of the random string
+     * @param r
+     *      the `Random` instance
+     * @return
+     *      the random string
+     */
+    public static String urlSafeRandom(int len, Random r) {
+        return random(len, r, _URL_SAFE_CHARS_, _URL_SAFE_CHARS_LEN);
+    }
+
+    /**
+     * Generate a random string with specified length, a `Random` instance, a customized
+     * character pool
+     * @param len
+     *      the generated random string length
+     * @param r
+     *      the `Random` instance
+     * @param pool
+     *      the customized character pool
+     * @return
+     *      the random string
+     */
+    public static String random(int len, Random r, char[] pool) {
+        return random(len, r, pool, pool.length);
+    }
+
+    private static String random(int len, Random r, char[] pool, int poolSize) {
         StringBuilder sb = new StringBuilder(len);
         while (len-- > 0) {
-            int i = r.nextInt(charsLen);
-            sb.append(chars[i]);
+            int i = r.nextInt(poolSize);
+            sb.append(pool[i]);
         }
         return sb.toString();
     }
