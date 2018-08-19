@@ -26,10 +26,7 @@ import org.osgl.exception.NotAppliedException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A String value resolver resolves a {@link String string value} into
