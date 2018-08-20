@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0
+* `IO` write API completeness #162
 * Provide `S.urlSafeRandom()` methods #161
 * Bean copy/mapping - it does not process `AdaptiveMap` typed source correctly #160
 * Add `$.Transformer<String, String> asTransformer()` to `Keyword.Style` #159

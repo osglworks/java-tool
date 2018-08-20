@@ -1602,6 +1602,26 @@ public class IO {
     }
 
     /**
+     * Write string content to a file with encoding specified.
+     *
+     * This is deprecated. Please use {@link #write(CharSequence, File, String)} instead
+     */
+    @Deprecated
+    public static void writeContent(CharSequence content, File file, String encoding) {
+        write(content, file, encoding);
+    }
+
+    /**
+     * Write content into a writer.
+     *
+     * This method is deprecated. Please use {@link #write(CharSequence, Writer)} instead.
+     */
+    @Deprecated
+    public static void writeContent(CharSequence content, Writer writer) {
+        write(content, writer);
+    }
+
+    /**
      * Write string content to a file with UTF-8 encoding.
      *
      * @param content
@@ -1611,16 +1631,6 @@ public class IO {
      */
     public static void write(CharSequence content, File file) {
         write(content, file, "utf-8");
-    }
-
-    /**
-     * Write string content to a file with encoding specified.
-     *
-     * This is deprecated. Please use {@link #write(CharSequence, File, String)} instead
-     */
-    @Deprecated
-    public static void writeContent(CharSequence content, File file, String encoding) {
-        write(content, file, encoding);
     }
 
     /**
@@ -1648,6 +1658,16 @@ public class IO {
         }
     }
 
+    /**
+     * Write a character to a {@link Writer}.
+     *
+     * The writer is leave open after the character after writing.
+     *
+     * @param c
+     *      the character to be written
+     * @param writer
+     *      the writer to which the character is written
+     */
     public static void write(char c, Writer writer) {
         try {
             writer.write(c);
@@ -1657,13 +1677,10 @@ public class IO {
     }
 
     /**
-     * Write content into a writer.
-     *
-     * This method is deprecated. Please use {@link #write(CharSequence, Writer)} instead.
+     * Alias of {@link #write(char, Writer)}
      */
-    @Deprecated
-    public static void writeContent(CharSequence content, Writer writer) {
-        write(content, writer);
+    public static void append(char c, Writer writer) {
+        write(c, writer);
     }
 
     /**
@@ -1700,10 +1717,7 @@ public class IO {
      */
     public static void write(CharSequence content, Writer writer, boolean closeOs) {
         try {
-            PrintWriter printWriter = new PrintWriter(writer);
-            printWriter.print(content);
-            printWriter.flush();
-            writer.flush();
+            writer.write(content.toString());
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
@@ -1714,7 +1728,9 @@ public class IO {
     }
 
     /**
-     * Copy content from input stream to output stream without closing the output stream
+     * Copy content from input stream to output stream without closing the output stream.
+     *
+     * The input stream is closed anyway.
      *
      * @param is
      *         input stream
@@ -1726,14 +1742,33 @@ public class IO {
         return copy(is, os, false);
     }
 
+    /**
+     * Read from InputStream `is` and write to OutputStream `os`.
+     *
+     * After writing both input stream and output stream are closed.
+     *
+     * @param is
+     *      The input stream
+     * @param os
+     *      The output stream
+     * @return
+     *      the number of bytes copied
+     */
     public static int copy(InputStream is, OutputStream os) {
         return copy(is, os, true);
     }
 
     /**
+     * Alias of {@link #copy(java.io.InputStream, java.io.OutputStream)}
+     */
+    public static int write(InputStream is, OutputStream os) {
+        return copy(is, os);
+    }
+
+    /**
      * Copy an stream to another one. It close the input stream anyway.
      *
-     * If the param closeOs is true then close the output stream
+     * If the param closeOs is true then close the output stream.
      *
      * @param is
      *         input stream
@@ -1744,27 +1779,41 @@ public class IO {
      * @return number of bytes copied
      */
     public static int copy(InputStream is, OutputStream os, boolean closeOs) {
-        try {
-            int read, total = 0;
-            byte[] buffer = new byte[8096];
-            while ((read = is.read(buffer)) > 0) {
-                os.write(buffer, 0, read);
-                total += read;
-            }
-            return total;
-        } catch (IOException e) {
-            throw E.ioException(e);
-        } finally {
-            close(is);
-            if (closeOs) {
-                close(os);
-            }
+        if (closeOs) {
+            return write(is).ensureCloseSink().to(os);
+        } else {
+            return write(is).to(os);
         }
     }
 
     /**
-     * Copy from a `Reader` into a `Writer` and close the writer after
-     * operation is done.
+     * Alias of {@link #copy(InputStream, OutputStream, boolean)}
+     */
+    public static int write(InputStream is, OutputStream os, boolean closeSink) {
+        return copy(is, os, closeSink);
+    }
+
+    /**
+     * Read from inputstream and write into file.
+     * @param is
+     *      the inputstream
+     * @param f
+     *      the file
+     * @return
+     *      the number of bytes written to the file
+     */
+    public static int write(InputStream is, File f) {
+        try {
+            return copy(is, new BufferedOutputStream(new FileOutputStream(f)));
+        } catch (FileNotFoundException e) {
+            throw E.ioException(e);
+        }
+    }
+
+    /**
+     * Copy from a `Reader` into a `Writer`.
+     *
+     * Both reader and writer are closed.
      *
      * @param reader
      *         A reader - the source
@@ -1796,31 +1845,28 @@ public class IO {
     }
 
     /**
-     * Alias of {@link #copy(java.io.InputStream, java.io.OutputStream)}
+     * Write a byte into outputstream.
      *
-     * @param is
-     *         input stream
+     * The outputstream is not closed after written.
+     *
+     * @param b
+     *      the byte to be written
      * @param os
-     *         output stream
+     *      the output stream into which the byte is written
      */
-    public static int write(InputStream is, OutputStream os) {
-        return copy(is, os);
-    }
-
-    public static int write(InputStream is, File f) {
-        try {
-            return copy(is, new BufferedOutputStream(new FileOutputStream(f)));
-        } catch (FileNotFoundException e) {
-            throw E.ioException(e);
-        }
-    }
-
     public static void write(byte b, OutputStream os) {
         try {
             os.write(b);
         } catch (IOException e) {
             throw E.ioException(e);
         }
+    }
+
+    /**
+     * Alias of {@link #write(byte, OutputStream)}.
+     */
+    public static void append(byte b, OutputStream outputStream) {
+        write(b, outputStream);
     }
 
     /**
@@ -1840,7 +1886,7 @@ public class IO {
     }
 
     /**
-     * Write binary data to an output steam
+     * Write binary data to an outputstream and then close the outputstream
      *
      * @param data
      *         the binary data to write
@@ -1848,8 +1894,57 @@ public class IO {
      *         the output stream
      */
     public static void write(byte[] data, OutputStream os) {
-        write(new ByteArrayInputStream(data), os);
+        write(data, os, true);
     }
+
+    /**
+     * Write binary data to an output stream without closing the outputstream.
+     *
+     * @param data
+     *      the binary data to be written.
+     * @param os
+     *      the output stream to which the binary data is written
+     */
+    public static void append(byte[] data, OutputStream os) {
+        write(data, os, false);
+    }
+
+    /**
+     * Write binary data to an outputstream.
+     *
+     * @param data
+     *      the binary data to write
+     * @param os
+     *      the output stream
+     * @param closeSink
+     *      if `true` then close the output stream once finished writing
+     */
+    public static void write(byte[] data, OutputStream os, boolean closeSink) {
+        try {
+            os.write(data);
+        } catch (IOException e) {
+            throw E.ioException(e);
+        } finally {
+            if (closeSink) {
+                close(os);
+            }
+        }
+    }
+
+    /**
+     * Alias of {@link #copy(Reader, Writer)}
+     */
+    public static int write(Reader reader, Writer writer) {
+        return copy(reader, writer);
+    }
+
+    /**
+     * Alias of {@link #copy(Reader, Writer, boolean)}
+     */
+    public static int write(Reader reader, Writer writer, boolean closeWriter) {
+        return copy(reader, writer, closeWriter);
+    }
+
 
     // If target does not exist, it will be created.
     public static void copyDirectory(File source, File target) {
@@ -1886,20 +1981,6 @@ public class IO {
                 }
             }
         }
-    }
-
-    /**
-     * Alias of {@link #copy(Reader, Writer)}
-     */
-    public static int write(Reader reader, Writer writer) {
-        return copy(reader, writer);
-    }
-
-    /**
-     * Alias of {@link #copy(Reader, Writer, boolean)}
-     */
-    public static int write(Reader reader, Writer writer, boolean closeWriter) {
-        return copy(reader, writer, closeWriter);
     }
 
     /**

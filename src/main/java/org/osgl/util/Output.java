@@ -220,25 +220,25 @@ public interface Output extends Appendable, Closeable, Flushable {
 
                 @Override
                 public Output append(CharSequence csq) {
-                    IO.write(csq, w);
+                    IO.append(csq, w);
                     return this;
                 }
 
                 @Override
                 public Output append(CharSequence csq, int start, int end) {
-                    IO.write(csq.subSequence(start, end), w);
+                    IO.append(csq.subSequence(start, end), w);
                     return this;
                 }
 
                 @Override
                 public Output append(char c) {
-                    IO.write(c, w);
+                    IO.append(c, w);
                     return this;
                 }
 
                 @Override
                 public Output append(byte[] bytes) {
-                    IO.write(bytes, os);
+                    IO.append(bytes, os);
                     return this;
                 }
 
@@ -254,8 +254,8 @@ public interface Output extends Appendable, Closeable, Flushable {
 
                 @Override
                 public Output append(byte b) {
-                    IO.write(b, os);
-                    return null;
+                    IO.append(b, os);
+                    return this;
                 }
 
                 @Override
@@ -263,8 +263,7 @@ public interface Output extends Appendable, Closeable, Flushable {
                     int len = buffer.remaining();
                     byte[] bytes = new byte[len];
                     buffer.get(bytes);
-                    IO.write(bytes, os);
-                    return this;
+                    return append(bytes);
                 }
 
                 @Override
@@ -298,25 +297,25 @@ public interface Output extends Appendable, Closeable, Flushable {
 
                 @Override
                 public Output append(CharSequence csq) {
-                    IO.write(csq, w);
+                    IO.append(csq, w);
                     return this;
                 }
 
                 @Override
                 public Output append(CharSequence csq, int start, int end) {
-                    IO.write(csq.subSequence(start, end), w);
+                    IO.append(csq.subSequence(start, end), w);
                     return this;
                 }
 
                 @Override
                 public Output append(char c) {
-                    IO.write(c, w);
+                    IO.append(c, w);
                     return this;
                 }
 
                 @Override
                 public Output append(byte[] bytes) {
-                    IO.write(bytes, os);
+                    IO.append(bytes, os);
                     return this;
                 }
 
@@ -332,7 +331,7 @@ public interface Output extends Appendable, Closeable, Flushable {
 
                 @Override
                 public Output append(byte b) {
-                    IO.write(b, os);
+                    IO.append(b, os);
                     return this;
                 }
 
@@ -341,8 +340,7 @@ public interface Output extends Appendable, Closeable, Flushable {
                     int len = buffer.remaining();
                     byte[] bytes = new byte[len];
                     buffer.get(bytes);
-                    IO.write(bytes, os);
-                    return this;
+                    return append(bytes);
                 }
 
                 @Override
@@ -465,22 +463,22 @@ public interface Output extends Appendable, Closeable, Flushable {
                 }
 
                 @Override
-                public void write(byte[] b) throws IOException {
+                public void write(byte[] b) {
                     output.append(b);
                 }
 
                 @Override
-                public void write(byte[] b, int off, int len) throws IOException {
+                public void write(byte[] b, int off, int len) {
                     output.append(b, off, len);
                 }
 
                 @Override
-                public void flush() throws IOException {
+                public void flush() {
                     output.flush();
                 }
 
                 @Override
-                public void close() throws IOException {
+                public void close() {
                     output.close();
                 }
             };
