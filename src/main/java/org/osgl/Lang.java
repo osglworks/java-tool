@@ -24,13 +24,12 @@ import static org.osgl.util.DataMapper.MappingRule.KEYWORD_MATCHING;
 import static org.osgl.util.DataMapper.MappingRule.STRICT_MATCHING;
 import static org.osgl.util.DataMapper.Semantic.*;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.*;
 import org.osgl.cache.CacheService;
 import org.osgl.concurrent.ContextLocal;
 import org.osgl.exception.*;
 import org.osgl.util.*;
+import org.osgl.util.TypeReference;
 import org.osgl.util.converter.TypeConverterRegistry;
 import osgl.version.Version;
 
@@ -40,15 +39,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -3327,6 +3323,52 @@ public class Lang implements Serializable {
             };
         }
 
+
+        public static TypeConverter<ByteBuffer, byte[]> BYTEBUFFER_TO_BYTEARRAY = new TypeConverter<ByteBuffer, byte[]>() {
+            @Override
+            public byte[] convert(ByteBuffer byteBuffer) {
+                ByteBuffer copy = byteBuffer.duplicate();
+                int length = copy.remaining();
+                byte[] retVal = new byte[length];
+                copy.get(retVal, 0, length);
+                return retVal;
+            }
+        };
+
+        public static TypeConverter<byte[], ByteBuffer> BYTEARRAY_TO_BYTEBUFFER = new TypeConverter<byte[], ByteBuffer>() {
+            @Override
+            public ByteBuffer convert(byte[] bytes) {
+                return ByteBuffer.wrap(bytes);
+            }
+        };
+
+        public static TypeConverter<byte[], String> BYTEARRAY_TO_STRING = new TypeConverter<byte[], String>() {
+            @Override
+            public String convert(byte[] bytes) {
+                return new String(bytes, StandardCharsets.UTF_8);
+            }
+
+            @Override
+            public String convert(byte[] bytes, Object hint) {
+                if (null == hint) {
+                    return convert(bytes);
+                }
+                if (hint instanceof Charset) {
+                    return new String(bytes, ((Charset) hint));
+                } else if (hint instanceof String) {
+                    return new String(bytes, Charset.forName(S.string(hint)));
+                }
+                return convert(bytes);
+            }
+        };
+
+        public static TypeConverter<String, byte[]> STRING_TO_BYTEARRAY = new TypeConverter<String, byte[]>() {
+            @Override
+            public byte[] convert(String s) {
+                return s.getBytes(StandardCharsets.UTF_8);
+            }
+        };
+
         public static TypeConverter<Number, Byte> NUM_TO_BYTE = new TypeConverter<Number, Byte>(Number.class, Byte.class) {
             @Override
             public Byte convert(Number number) {
@@ -3658,7 +3700,7 @@ public class Lang implements Serializable {
 
         public <TO> TO to(Class<TO> toType) {
             if (null == from) {
-                return null != defVal ? (TO) defVal : isPrimitive(toType) ? primitiveDefaultValue(toType) : null;
+                return null != defVal ? (TO) defVal : isPrimitiveType(toType) ? primitiveDefaultValue(toType) : null;
             }
             if (fromType == toType || toType.isAssignableFrom(fromType)) {
                 return cast(from);
@@ -3738,6 +3780,14 @@ public class Lang implements Serializable {
 
         public Byte toByte() {
             return to(Byte.class);
+        }
+
+        public byte[] toByteArray() {
+            return to(byte[].class);
+        }
+
+        public ByteBuffer toByteBuffer() {
+            return to(ByteBuffer.class);
         }
 
         public short toShortPrimitive() {

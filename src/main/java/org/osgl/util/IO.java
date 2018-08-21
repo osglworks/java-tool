@@ -48,6 +48,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -535,6 +536,10 @@ public class IO {
         protected String sourceName;
         private MimeType mimeType;
         protected Object hint;
+
+        /**
+         * Used when there are reader/inputstream or writer/outputstream conversion,
+         */
         protected Charset charset = StandardCharsets.UTF_8;
 
         public ReadStageBase(SOURCE source) {
@@ -799,7 +804,18 @@ public class IO {
 
         @Override
         protected InputStream load() {
-            return is(source);
+            return inputStream(source);
+        }
+    }
+
+    public static class ByteBufferReadStage extends ReadStageBase<ByteBuffer, ByteBufferReadStage> {
+        public ByteBufferReadStage(ByteBuffer buffer) {
+            super(buffer);
+        }
+
+        @Override
+        protected InputStream load() {
+            return new ByteBufferInputStream(source);
         }
     }
 
@@ -835,6 +851,10 @@ public class IO {
         return new BufferedImageWriteStage(img, contentType);
     }
 
+    public static InputStreamWriteStage write(ByteBuffer byteBuffer) {
+        return write(new ByteBufferInputStream(byteBuffer));
+    }
+
     public static SObjectWriteStage write(ISObject sobj) {
         return new SObjectWriteStage(sobj);
     }
@@ -861,6 +881,10 @@ public class IO {
 
     public static InputStreamReadStage read(byte[] bytes) {
         return read(new ByteArrayInputStream(bytes));
+    }
+
+    public static ByteBufferReadStage read(ByteBuffer byteBuffer) {
+        return new ByteBufferReadStage(byteBuffer);
     }
 
     public static UrlReadStage read(URL url) {
