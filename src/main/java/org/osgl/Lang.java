@@ -8220,7 +8220,7 @@ public class Lang implements Serializable {
                     i -= 1;
                 }
             } else if (entity instanceof Map) {
-                List<Class<?>> classList = findPropertyParameterizedType(lastEntity, lastProp);
+                List<Class<?>> classList = null == lastEntity ? null : findPropertyParameterizedType(lastEntity, lastProp);
                 if (null == classList) {
                     PropertyGetter getter = propertyGetter(cache, entity, prop, false);
                     lastEntity = entity;

@@ -1,4 +1,4 @@
-package org.osgl.util;
+package org.osgl.issues;
 
 /*-
  * #%L
@@ -20,35 +20,20 @@ package org.osgl.util;
  * #L%
  */
 
+import org.junit.Test;
 import org.osgl.$;
+import org.osgl.TestBase;
+import org.osgl.util.C;
 
-import java.io.InputStream;
-import java.nio.ByteBuffer;
+import java.util.Map;
 
-public class ByteBufferInputStream extends InputStream {
+public class Gh166 extends TestBase {
 
-    private ByteBuffer buf;
-
-    public ByteBufferInputStream(ByteBuffer buf) {
-        this.buf = $.requireNotNull(buf);
+    @Test
+    public void test() {
+        Map<String, Object> innerMap = C.Map("name", "foo");
+        Map<String, Object> outerMap = C.Map("bar", innerMap);
+        eq("foo", $.getProperty(outerMap, "bar.name"));
     }
 
-    @Override
-    public int read(byte[] bytes, int off, int len) {
-        if (!buf.hasRemaining()) {
-            return -1;
-        }
-
-        len = Math.min(len, buf.remaining());
-        buf.get(bytes, off, len);
-        return len;
-    }
-
-    @Override
-    public int read() {
-        if (!buf.hasRemaining()) {
-            return -1;
-        }
-        return buf.get() & 0xFF;
-    }
 }
