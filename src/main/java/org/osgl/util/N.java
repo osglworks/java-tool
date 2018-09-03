@@ -741,11 +741,6 @@ public class N {
         return n;
     }
 
-    public static float requirePositive(float n) {
-        illegalArgumentIf(n <= 0.0f, "positive float required");
-        return n;
-    }
-
     public static int requireNonNegative(int n) {
         illegalArgumentIf(n < 0, "non negative int required");
         return n;
@@ -757,6 +752,7 @@ public class N {
     }
 
     public static class _IntRequire {
+
         private int n;
         private _IntRequire(int n) {
             this.n = n;
@@ -821,6 +817,11 @@ public class N {
         return new _IntRequire(n);
     }
 
+    public static float requirePositive(float n) {
+        illegalArgumentIf(n <= 0.0f, "positive float required");
+        return n;
+    }
+
     /**
      * Image alpha float range is 0.0f to 1.0f inclusive
      * @param f the float number to be tested
@@ -833,8 +834,18 @@ public class N {
     }
 
     public static float requireNotNaN(float f) {
-        illegalArgumentIf(Float.isNaN(f), "f shall not be NaN");
+        illegalArgumentIf(Float.isNaN(f), "f [%s] shall not be NaN", f);
         return f;
+    }
+
+    public static float requireNonNegative(float n) {
+        illegalArgumentIf(n < 0, "non negative float required");
+        return n;
+    }
+
+    public static float requireNegative(float n) {
+        illegalArgumentIf(n > -1, "negative float required");
+        return n;
     }
 
     public static class _FloatRequire {
@@ -842,6 +853,31 @@ public class N {
         private _FloatRequire(float f) {
             this.f = f;
         }
+    }
+
+    public static double requireAlpha(double d) {
+        illegalArgumentIf(d > 1 || d < 0, "d [%s] should be between 0 and 1 inclusive", d);
+        return d;
+    }
+
+    public static double requirePositive(double n) {
+        illegalArgumentIf(n <= 0.0f, "positive double required");
+        return n;
+    }
+
+    public static double requireNotNaN(double d) {
+        illegalArgumentIf(Double.isNaN(d), "d [%s] shall not be NaN", d);
+        return d;
+    }
+
+    public static double requireNonNegative(double n) {
+        illegalArgumentIf(n < 0, "non negative double required");
+        return n;
+    }
+
+    public static double requireNegative(double n) {
+        illegalArgumentIf(n > -1, "negative double required");
+        return n;
     }
 
     public static double exp(double a) {
