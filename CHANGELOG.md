@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Add `Lang.subarray` methods #169
+* add `Lang.setStaticFieldValue` methods #168
 * `N.require` API completeness #167
 * `$.getProperty` issue with `Map` type object #166
 * `IO.read` stage - support ByteBuffer and byte[] #164

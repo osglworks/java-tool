@@ -7058,6 +7058,21 @@ public class Lang implements Serializable {
         }
     }
 
+    public static void setStaticFieldValue(Field field, Object fieldValue) {
+        try {
+            field.setAccessible(true);
+            field.set(null, fieldValue);
+        } catch (IllegalAccessException e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public static void setStaticFieldValue(Class host, String fieldName, Object fieldValue) {
+        Field field = fieldOf(host, fieldName);
+        E.illegalArgumentIf(null == field, "Unknown field: %s.%s", host.getName(), fieldName);
+        setStaticFieldValue(field, fieldValue);
+    }
+
     public static void resetFieldValue(Object obj, Field field) {
         setFieldValue(obj, field, $.convert(null).to(field.getType()));
     }
@@ -8677,6 +8692,123 @@ public class Lang implements Serializable {
             }
             System.arraycopy(empty, 0, array, len - reminder, reminder);
         }
+    }
+
+    public static <T> T[] subarray(T[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        T[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
+    }
+
+    public static boolean[] subarray(boolean[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        boolean[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
+    }
+
+    public static byte[] subarray(byte[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        byte[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
+    }
+
+    public static short[] subarray(short[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        short[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
+    }
+
+    public static char[] subarray(char[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        char[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
+    }
+
+    public static int[] subarray(int[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        int[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
+    }
+
+    public static float[] subarray(float[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        float[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
+    }
+
+    public static long[] subarray(long[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        long[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
+    }
+
+    public static double[] subarray(double[] src, int begin, int end) {
+        E.illegalArgumentIf(begin < 0);
+        E.illegalArgumentIf(begin > end);
+        int arrayLen = src.length;
+        E.illegalArgumentIf(end > arrayLen);
+        if (begin == end) {
+            return newArray(src, 0);
+        }
+        double[] retArray = newArray(src, end - begin);
+        System.arraycopy(src, begin, retArray, 0, end - begin);
+        return retArray;
     }
 
     public static <T> T[] concat(T[] a, T t) {
