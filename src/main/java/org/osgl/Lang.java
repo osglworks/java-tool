@@ -12120,4 +12120,8 @@ public class Lang implements Serializable {
         return OsglConfig.internalCache();
     }
 
+    static {
+        OsglConfig.registerExtensions();
+    }
+
 }

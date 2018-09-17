@@ -27,6 +27,9 @@ import org.osgl.util.*;
 import org.osgl.util.algo.StringReplace;
 import org.osgl.util.algo.StringSearch;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 import javax.inject.Singleton;
@@ -34,6 +37,8 @@ import javax.inject.Singleton;
 public class OsglConfig {
 
     private static CacheService internalCache = new InteralCacheService();
+
+    public static final String OSGL_EXTENSION_LIST = "osgl.ext.list";
 
     public static void setInternalCache(CacheService cache) {
         internalCache = $.requireNotNull(cache);
@@ -260,5 +265,34 @@ public class OsglConfig {
 
     public static int getThreadLocalByteArrayBufferInitSize() {
         return UtilConfig.getThreadLocalByteArrayBufferInitSize();
+    }
+
+    public static void registerExtensions() {
+        try {
+            final Enumeration<URL> systemResources = Lang.class.getClassLoader().getResources(OSGL_EXTENSION_LIST);
+            while (systemResources.hasMoreElements()) {
+                InputStream is = systemResources.nextElement().openStream();
+                List<String> lines = IO.read(is).toLines();
+                for (String extensionClass : lines) {
+                    if (S.blank(extensionClass)) {
+                        continue;
+                    }
+                    extensionClass = extensionClass.trim();
+                    if (extensionClass.startsWith("#")) {
+                        continue;
+                    }
+                    try {
+                        $.classForName(extensionClass);
+                    } catch (Exception e) {
+                        System.out.println("[osgl] Warning: error loading extension class [" + extensionClass + "]");
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("[osgl] Warning: error loading extensions due to IO exception");
+            e.printStackTrace();
+        }
+
     }
 }
