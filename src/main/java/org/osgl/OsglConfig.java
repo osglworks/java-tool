@@ -38,7 +38,7 @@ public class OsglConfig {
 
     private static CacheService internalCache = new InteralCacheService();
 
-    public static final String OSGL_EXTENSION_LIST = "osgl.ext.list";
+    public static final String OSGL_EXTENSION_LIST = "META-INF/osgl/extension.list";
 
     public static void setInternalCache(CacheService cache) {
         internalCache = $.requireNotNull(cache);
