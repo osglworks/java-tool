@@ -595,7 +595,12 @@ public class IO {
         }
 
         public List<String> toLines() {
-            return readLines(toInputStream());
+            return readLines(toReader());
+        }
+
+        public List<String> toLine(int limit) {
+            E.illegalArgumentIf(limit < 0);
+            return readLines(toReader(), limit);
         }
 
         public ISObject toSObject() {
@@ -648,9 +653,9 @@ public class IO {
                     String suffix = S.fileExtension(sourceName);
                     mimeType = MimeType.findByFileExtension(suffix);
                 }
-                if (null != mimeType) {
-                    inputStreamHandler = inputStreamHandlerLookup.get(mimeType);
-                }
+            }
+            if (null != mimeType) {
+                inputStreamHandler = inputStreamHandlerLookup.get(mimeType);
             }
             if (String.class == type) {
                 o = toString();
@@ -697,7 +702,7 @@ public class IO {
                     return h.read(toInputStream(), type, mimeType, hint);
                 }
             }
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("target type not supported: " + type);
         }
 
         protected String sourceName() {
@@ -706,13 +711,39 @@ public class IO {
     }
 
     public static class InputStreamReadStage extends ReadStageBase<InputStream, InputStreamReadStage> {
+
+
         public InputStreamReadStage(InputStream inputStream) {
             super(inputStream);
         }
 
+
         @Override
         protected InputStream load() {
             return source;
+        }
+    }
+
+    public static class BufferedImageReadStage extends ReadStageBase<BufferedImage, BufferedImageReadStage> {
+        private String contentType = "image/png";
+        public BufferedImageReadStage(BufferedImage img) {
+            super(img);
+        }
+        public BufferedImageReadStage(BufferedImage img, String contentType) {
+            super(img);
+            this.contentType = S.requireNotBlank(contentType);
+        }
+
+        @Override
+        protected InputStream load() throws IOException {
+            return inputStream(toByteArray());
+        }
+
+        @Override
+        public byte[] toByteArray() {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Img.source(source).writeTo(baos, contentType);
+            return baos.toByteArray();
         }
     }
 
@@ -893,6 +924,14 @@ public class IO {
 
     public static FileReadStage read(File file) {
         return new FileReadStage(file);
+    }
+
+    public static BufferedImageReadStage read(BufferedImage image) {
+        return new BufferedImageReadStage(image);
+    }
+
+    public static BufferedImageReadStage read(BufferedImage image, String contentType) {
+        return new BufferedImageReadStage(image, contentType);
     }
 
     public static void close(Closeable closeable) {

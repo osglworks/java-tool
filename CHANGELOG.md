@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Add `csv` int MimeType.Trait enum #171
+* Add `toLines(int limit)` API to `ReadStage` #170
 * Add `Lang.subarray` methods #169
 * add `Lang.setStaticFieldValue` methods #168
 * `N.require` API completeness #167
