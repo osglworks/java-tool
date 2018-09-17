@@ -919,12 +919,21 @@ public class DataMapper {
                 continue;
             }
             String specialMap = specialMapping.get(key);
+            if (null != specialMap) {
+                String sourcePrefix = prefix;
+                if (S.notBlank(prefix) && specialMapping.containsKey(prefix)) {
+                    sourcePrefix = specialMapping.get(prefix);
+                }
+                if (specialMap.startsWith(sourcePrefix + ".")) {
+                    specialMap = specialMap.substring(sourcePrefix.length() + 1);
+                }
+            }
             Type type = targetField.getGenericType();
             ParameterizedType targetFieldGenericType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
-            Object sourcePropValue = null == specialMap ? null : $.getProperty(root.source, specialMap);
+            Object sourcePropValue = null;
             if (null == sourcePropValue) {
                 if (null != sourceMapByKeyword) {
-                    sourcePropValue = sourceMapByKeyword.get(Keyword.of(targetFieldName));
+                    sourcePropValue = sourceMapByKeyword.get(Keyword.of(null == specialMap ? targetFieldName : specialMap));
                     if (null == sourcePropValue) {
                         continue;
                     }
@@ -932,9 +941,9 @@ public class DataMapper {
                         sourcePropValue = $.getFieldValue(source, (Field) sourcePropValue);
                     }
                 } else if (null != sourceMap) {
-                    sourcePropValue = sourceMap.get(targetFieldName);
+                    sourcePropValue = sourceMap.get(null == specialMap ? targetFieldName : specialMap);
                 } else {
-                    Field sourceField = $.fieldOf(sourceType, targetFieldName);
+                    Field sourceField = $.fieldOf(sourceType, null == specialMap ? targetFieldName : specialMap);
                     sourcePropValue = null == sourceField ? null : $.getFieldValue(source, sourceField);
                 }
                 if (null == sourcePropValue) {

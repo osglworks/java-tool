@@ -537,6 +537,91 @@ public class MappingTest extends TestBase {
 
     }
 
+    public static class HeaderMapping extends TestBase {
+
+        public static class Foo {
+            String no;
+
+            @Override
+            public boolean equals(Object obj) {
+                if (obj == this) {
+                    return true;
+                }
+                if (obj instanceof Foo) {
+                    return S.eq(((Foo) obj).no, no);
+                }
+                return false;
+            }
+
+            static Foo of(String no) {
+                Foo foo = new Foo();
+                foo.no = no;
+                return foo;
+            }
+        }
+
+        public static class FooHost {
+            Foo foo = Foo.of("2");
+        }
+
+        public static class Bar {
+            int id;
+
+            @Override
+            public boolean equals(Object obj) {
+                if (obj == this) {
+                    return true;
+                }
+                if (obj instanceof Bar) {
+                    return ((Bar) obj).id == id;
+                }
+                return false;
+            }
+
+            static Bar of(int id) {
+                Bar bar = new Bar();
+                bar.id = id;
+                return bar;
+            }
+        }
+
+        public static class BarHost {
+            Bar bar = Bar.of(1);
+        }
+
+        @Test
+        public void testSimpleCase() {
+            Bar bar = Bar.of(12);
+            eq(Foo.of("12"), $.map(bar).mapHead("id").to("no").to(Foo.class));
+        }
+
+        @Test
+        public void testArrayToArray() {
+            Bar[] bars = {Bar.of(1), Bar.of(2)};
+            Foo[] target = new Foo[2];
+            Foo[] expected = {Foo.of("1"), Foo.of("2")};
+            eq(expected, $.map(bars).mapHead("id").to("no").to(target));
+        }
+
+        @Test
+        public void testMapToPojo() {
+            Map<String, String> source = C.Map("key", "123");
+            Bar target = new Bar();
+            $.map(source).mapHead("key").to("id").to(target);
+            eq(123, target.id);
+        }
+
+        @Test
+        public void testNested() {
+            FooHost source = new FooHost();
+            BarHost target = new BarHost();
+            eq(1, target.bar.id);
+            $.map(source).mapHead("foo").to("bar").mapHead("foo.no").to("bar.id").to(target);
+            eq(2, target.bar.id);
+        }
+
+    }
+
     static void eq(Foo foo, Bar bar) {
         eq(foo, bar, false);
     }
@@ -652,4 +737,6 @@ public class MappingTest extends TestBase {
         }
 
     }
+
+
 }

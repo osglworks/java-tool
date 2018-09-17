@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Data mapping framework - issue when there are head mapping used in list/array or nested structure #173
 * Add `csv` int MimeType.Trait enum #171
 * Add `toLines(int limit)` API to `ReadStage` #170
 * Add `Lang.subarray` methods #169

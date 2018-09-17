@@ -9910,7 +9910,15 @@ public class Lang implements Serializable {
             return this;
         }
 
+        /**
+         * This method is deprecated. Please use {@link #withHeadMapping(Map)} instead
+         */
+        @Deprecated
         public _MappingStage map(Map<String, String> mapping) {
+            return withHeadMapping(mapping);
+        }
+
+        public _MappingStage withHeadMapping(Map<String, String> mapping) {
             if (mapping.isEmpty()) {
                 return this;
             }
@@ -9923,7 +9931,15 @@ public class Lang implements Serializable {
             return this;
         }
 
+        /**
+         * This is deprecated. Please use {@link #mapHead(String)} instead
+         */
+        @Deprecated
         public __SpecialMappingStage map(String sourceField) {
+            return mapHead(sourceField);
+        }
+
+        public __SpecialMappingStage mapHead(String sourceField) {
             return new __SpecialMappingStage(sourceField);
         }
 
@@ -10175,6 +10191,9 @@ public class Lang implements Serializable {
          * @see #to(Object)
          */
         public <T> T to(Class<T> targetClass) {
+            if (targetClass.isArray()) {
+                throw E.unsupport("target class must not be an array");
+            }
             return (T) to(instanceFactory.apply(targetClass));
         }
 
