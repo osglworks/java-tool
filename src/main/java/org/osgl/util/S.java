@@ -3243,7 +3243,7 @@ public class S {
         public static $.F2<String, String, Boolean> STARTS_WITH = new $.F2<String, String, Boolean>() {
             @Override
             public Boolean apply(String s, String s2) throws NotAppliedException, $.Break {
-                return s.startsWith(s2);
+                return null != s && s.startsWith(s2);
             }
         };
 
@@ -3254,7 +3254,7 @@ public class S {
         public static $.F2<String, String, Boolean> ENDS_WITH = new $.F2<String, String, Boolean>() {
             @Override
             public Boolean apply(String s, String s2) throws NotAppliedException, $.Break {
-                return s.endsWith(s2);
+                return null != s && s.endsWith(s2);
             }
         };
 
@@ -3265,7 +3265,7 @@ public class S {
         public static $.F2<String, String, Boolean> CONTAINS = new $.F2<String, String, Boolean>() {
             @Override
             public Boolean apply(String s, String s2) throws NotAppliedException, $.Break {
-                return s.contains(s2);
+                return null != s && s.contains(s2);
             }
         };
 
@@ -3276,14 +3276,14 @@ public class S {
         public static $.Transformer<String, String> TO_UPPERCASE = new $.Transformer<String, String>() {
             @Override
             public String transform(String s) throws NotAppliedException, $.Break {
-                return s.toUpperCase();
+                return null == s ? null : s.toUpperCase();
             }
         };
 
         public static $.Transformer<String, String> TO_LOWERCASE = new $.Transformer<String, String>() {
             @Override
             public String transform(String s) throws NotAppliedException, $.Break {
-                return s.toLowerCase();
+                return null == s ? null : s.toLowerCase();
             }
         };
 
@@ -3297,21 +3297,21 @@ public class S {
         public static $.Transformer<String, String> TRIM = new $.Transformer<String, String>() {
             @Override
             public String transform(String s) throws NotAppliedException, $.Break {
-                return s.trim();
+                return null == s ? null : s.trim();
             }
         };
 
         public static $.Transformer<String, String> CAP_FIRST = new $.Transformer<String, String>() {
             @Override
             public String transform(String s) throws NotAppliedException, $.Break {
-                return S.capFirst(s);
+                return null == s ? null : S.capFirst(s);
             }
         };
 
         public static $.Transformer<String, String> LOWER_FIRST = new $.Transformer<String, String>() {
             @Override
             public String transform(String s) throws NotAppliedException, $.Break {
-                return S.lowerFirst(s);
+                return null == s ? null : S.lowerFirst(s);
             }
         };
 
@@ -3336,7 +3336,7 @@ public class S {
         public static $.F2<String, Integer, String> MAX_LENGTH = new $.F2<String, Integer, String>() {
             @Override
             public String apply(String s, Integer n) throws NotAppliedException, $.Break {
-                return S.maxLength(s, n);
+                return null == s ? null : S.maxLength(s, n);
             }
         };
 
@@ -3361,7 +3361,7 @@ public class S {
         public static $.F2<String, Integer, String> LAST = new $.F2<String, Integer, String>() {
             @Override
             public String apply(String s, Integer n) throws NotAppliedException, $.Break {
-                return S.last(s, n);
+                return null == s ? null : S.last(s, n);
             }
         };
 
@@ -3372,7 +3372,7 @@ public class S {
         public static $.F2<String, Integer, String> FIRST = new $.F2<String, Integer, String>() {
             @Override
             public String apply(String s, Integer n) throws NotAppliedException, $.Break {
-                return S.first(s, n);
+                return null == s ? null : S.first(s, n);
             }
         };
 
@@ -3384,6 +3384,9 @@ public class S {
             return new $.Transformer<String, String>() {
                 @Override
                 public String transform(String s) {
+                    if (null == s) {
+                        return null;
+                    }
                     if (n > s.length()) {
                         return "";
                     }
@@ -3396,7 +3399,7 @@ public class S {
             return new $.Transformer<String, String>() {
                 @Override
                 public String transform(String s) {
-                    return s.startsWith(prefix) ? s.substring(prefix.length()) : s;
+                    return null == s ? null : s.startsWith(prefix) ? s.substring(prefix.length()) : s;
                 }
             };
         }
@@ -3405,6 +3408,9 @@ public class S {
             return new $.Transformer<String, String>() {
                 @Override
                 public String transform(String s) {
+                    if (null == s) {
+                        return null;
+                    }
                     int len = s.length();
                     if (n > len) {
                         return "";
@@ -3418,7 +3424,7 @@ public class S {
             return new $.Transformer<String, String>() {
                 @Override
                 public String transform(String s) {
-                    return s.endsWith(suffix) ? S.cut(s).beforeLast(suffix) : s;
+                    return null == s ? null : s.endsWith(suffix) ? S.cut(s).beforeLast(suffix) : s;
                 }
             };
         }

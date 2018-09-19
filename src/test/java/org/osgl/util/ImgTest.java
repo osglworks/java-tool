@@ -34,16 +34,16 @@ public class ImgTest {
 
     private static InputStream img1() {
         URL url = ImgTest.class.getResource("/img/img1.png");
-        return IO.is(url);
+        return IO.inputStream(url);
     }
 
     private static InputStream img2() {
         URL url = ImgTest.class.getResource("/img/img2.jpg");
-        return IO.is(url);
+        return IO.inputStream(url);
     }
 
     private static InputStream img3() {
-        return IO.is(ImgTest.class.getResource("/img/img3.png"));
+        return IO.inputStream(ImgTest.class.getResource("/img/img3.png"));
     }
 
     static void testCrop() {
