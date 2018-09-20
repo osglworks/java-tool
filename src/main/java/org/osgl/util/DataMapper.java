@@ -408,10 +408,10 @@ public class DataMapper {
 
         @Override
         public boolean test(String s) {
-            E.illegalArgumentIf(S.blank(s));
             if (allEmpty) {
                 return true;
             }
+            E.illegalArgumentIf(S.blank(s));
             String context = s.contains(".") ? S.cut(s).beforeLast(".") : "";
             if (whiteList.contains(s) || grayList.contains(s)) {
                 return true;

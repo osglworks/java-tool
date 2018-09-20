@@ -2409,6 +2409,18 @@ public class C {
             return filtered;
         }
 
+        public Map<K, V> valueFilter($.Function<V, Boolean> predicate) {
+            java.util.Map<K, V> map = new HashMap<>();
+            for (java.util.Map.Entry<K, V> entry : entrySet()) {
+                V v = entry.getValue();
+                if (predicate.apply(v)) {
+                    map.put(entry.getKey(), v);
+                }
+            }
+            Map<K, V> filtered = new Map<>(isReadOnly(), map);
+            return filtered;
+        }
+
         public <NV> Map<K, NV> transformValues($.Function<V, NV> valueTransformer) {
             Map<K, NV> newMap = C.newMap();
             for (java.util.Map.Entry<K, V> entry : entrySet()) {
