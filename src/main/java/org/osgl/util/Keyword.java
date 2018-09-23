@@ -481,9 +481,6 @@ public final class Keyword implements Comparable<Keyword> {
         if (start >= sz - 1) {
             return -1;
         }
-        if (start == sz - 2) {
-            return sz - 1;
-        }
         char c0 = str.charAt(start);
         boolean isDigit = Character.isDigit(c0);
         boolean isLetter = !isDigit && Character.isLetter(c0);

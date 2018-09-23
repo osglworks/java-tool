@@ -97,4 +97,11 @@ public class KeywordTest extends TestBase {
         no(Keyword.of("gH111").matches("gh111"));
     }
 
+    @Test
+    public void testX() {
+        Keyword kw1 = Keyword.of("equalsTo");
+        Keyword kw2 = Keyword.of("equals-to");
+        yes(kw1.equals(kw2));
+    }
+
 }
