@@ -82,6 +82,29 @@ public final class Keyword implements Comparable<Keyword> {
             }
         },
 
+        /**
+         * Alias of {@link #CAMEL_CASE}.
+         */
+        UPPER_CAMEL_CASE() {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return CAMEL_CASE.processToken(token, seq);
+            }
+        },
+
+        /**
+         * Alias of {@link #CAMEL_CASE}.
+         */
+        PASCAL_CASE() {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return CAMEL_CASE.processToken(token, seq);
+            }
+        },
+
+        /**
+         * `javaVariableStyle`
+         */
         JAVA_VARIABLE() {
             @Override
             protected CharSequence processToken(FastStr token, int seq) {
@@ -90,9 +113,24 @@ public final class Keyword implements Comparable<Keyword> {
         },
 
         /**
+         * Alias of {@link #javaVariable()}
+         */
+        LOWER_CAMEL_CASE() {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return JAVA_VARIABLE.processToken(token, seq);
+            }
+        },
+
+        /**
          * `underscore_style`
          */
         UNDERSCORE(SEP_UNDERSCORE),
+
+        /**
+         * alias of {@link #UNDERSCORE}
+         */
+        SNAKE_CASE(SEP_UNDERSCORE),
 
         /**
          * `CONSTANT_NAME_STYLE`
@@ -108,6 +146,16 @@ public final class Keyword implements Comparable<Keyword> {
          * `dashed-style`
          */
         DASHED(SEP_DASH),
+
+        /**
+         * Alias of {@link #DASHED}.
+         */
+        KEBAB(SEP_DASH),
+
+        /**
+         * Alias of {@link #DASHED}
+         */
+        HYPHENATED(SEP_DASH),
 
         /**
          * `dotted.style`
@@ -135,7 +183,18 @@ public final class Keyword implements Comparable<Keyword> {
                 }
                 return token;
             }
-        };
+        },
+
+        /**
+         * `Start Case` - See https://en.wikipedia.org/wiki/Letter_case#Case_styles
+         */
+        START_CASE(SEP_SPACE) {
+            @Override
+            protected CharSequence processToken(FastStr token, int seq) {
+                return token.capFirst();
+            }
+        }
+        ;
 
         private String separator;
 
@@ -182,15 +241,46 @@ public final class Keyword implements Comparable<Keyword> {
     }
 
     public boolean matches(CharSequence charSequence) {
-        return $.eq(this, Keyword.of(charSequence));
+        return matches(Keyword.of(charSequence));
     }
 
+    public boolean matches(Keyword keyword) {
+        return $.eq(this, keyword);
+    }
+
+    /**
+     * The `UpperCamelCase` style
+     */
     public String camelCase() {
         return Style.CAMEL_CASE.toString(this);
     }
 
+    /**
+     * Alias of {@link #camelCase()}.
+     */
+    public String upperCamelCase() {
+        return camelCase();
+    }
+
+    /**
+     * Alias of {@link #camelCase()}.
+     */
+    public String pascalCase() {
+        return camelCase();
+    }
+
+    /**
+     * The `lowerCamelCase` style
+     */
     public String javaVariable() {
         return Style.JAVA_VARIABLE.toString(this);
+    }
+
+    /**
+     * Alias of {@link #javaVariable()}
+     */
+    public String lowerCamelCase() {
+        return javaVariable();
     }
 
     public String constantName() {
@@ -202,7 +292,14 @@ public final class Keyword implements Comparable<Keyword> {
     }
 
     /**
-     * Alias of {@link #hyphenated()}
+     * Alias of {@link #underscore()}
+     */
+    public String snakeCase() {
+        return underscore();
+    }
+
+    /**
+     * Returns hyphen separated string.
      * @return hyphen separated string
      */
     public String dashed() {
@@ -211,9 +308,15 @@ public final class Keyword implements Comparable<Keyword> {
 
     /**
      * Alias of {@link #dashed()}
-     * @return hyphen separated string
      */
     public String hyphenated() {
+        return dashed();
+    }
+
+    /**
+     * Alias of {@link #dashed()}
+     */
+    public String kebabCase() {
         return dashed();
     }
 
@@ -223,6 +326,10 @@ public final class Keyword implements Comparable<Keyword> {
 
     public String httpHeader() {
         return Style.HTTP_HEADER.toString(this);
+    }
+
+    public String startCase() {
+        return Style.START_CASE.toString(this);
     }
 
     public String readable() {

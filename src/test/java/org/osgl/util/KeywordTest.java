@@ -50,6 +50,7 @@ public class KeywordTest extends TestBase {
         keyword = Keyword.of("CamelCase and Separators");
         eq("camel-case-and-separators", keyword.dashed());
         eq("Camel-Case-And-Separators", keyword.httpHeader());
+        eq("Camel Case And Separators", keyword.startCase());
         eq(C.listOf("camel", "case", "and", "separators"), keyword.tokens());
     }
 
@@ -67,17 +68,24 @@ public class KeywordTest extends TestBase {
         yes(Keyword.of("HttpV1.1").matches("http-v-1.1"));
         yes(Keyword.of("HTTP v1.1").matches("http-v1.1"));
         yes(Keyword.of("H1").matches("h-1"));
+        yes(Keyword.of("oldHTMLFile").matches("old-html-file"));
     }
 
     private void verify(String s) {
         keyword = Keyword.of(s);
         eq("camel-case", keyword.dashed());
+        eq(keyword.dashed(), keyword.hyphenated());
+        eq(keyword.dashed(), keyword.kebabCase());
         eq("camel_case", keyword.underscore());
+        eq(keyword.underscore(), keyword.snakeCase());
         eq("Camel case", keyword.readable());
         eq("CamelCase", keyword.camelCase());
+        eq(keyword.camelCase(), keyword.pascalCase());
+        eq(keyword.camelCase(), keyword.upperCamelCase());
         eq("CAMEL_CASE", keyword.constantName());
         eq("Camel-Case", keyword.httpHeader());
         eq("camelCase", keyword.javaVariable());
+        eq(keyword.javaVariable(), keyword.lowerCamelCase());
         eq(C.listOf("camel", "case"), keyword.tokens());
         eq("camel.case", keyword.dotted());
     }
