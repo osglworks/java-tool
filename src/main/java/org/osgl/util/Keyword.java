@@ -181,6 +181,10 @@ public final class Keyword implements Comparable<Keyword> {
         init(chars);
     }
 
+    public boolean matches(CharSequence charSequence) {
+        return $.eq(this, Keyword.of(charSequence));
+    }
+
     public String camelCase() {
         return Style.CAMEL_CASE.toString(this);
     }
@@ -353,10 +357,6 @@ public final class Keyword implements Comparable<Keyword> {
                 break;
             }
             FastStr sub = fs.subSequence(last, pos);
-            if (sub.length() == 1 && isUpperCase(sub.charAt(0))) {
-                pos = nextNonUpperCase(fs, pos);
-                sub = fs.subSequence(last, pos);
-            }
             if (!sub.isEmpty()) {
                 list.add(sub.toLowerCase());
             }
@@ -370,15 +370,78 @@ public final class Keyword implements Comparable<Keyword> {
      * 2. separator
      */
     private static int locateNextStop(FastStr str, int start) {
-        int sz = str.length();
+        final int sz = str.length();
         if (start >= sz - 1) {
             return -1;
+        }
+        if (start == sz - 2) {
+            return sz - 1;
+        }
+        char c0 = str.charAt(start);
+        boolean isDigit = Character.isDigit(c0);
+        boolean isLetter = !isDigit && Character.isLetter(c0);
+        boolean isLower = isLetter && Character.isLowerCase(c0);
+        boolean isUpper = isLetter && !isLower;
+        if (isUpper) {
+            char c1 = str.charAt(start + 1);
+            boolean c2IsSeparator = isSeparator(c1);
+            if (c2IsSeparator) {
+                return start + 1;
+            }
+            boolean c2IsDigit = !c2IsSeparator && Character.isDigit(c1);
+            if (c2IsDigit) {
+                // H1
+                return start + 1;
+            }
+            boolean c2IsLetter = Character.isLetter(c1);
+            if (!c2IsLetter) {
+                return start + 1;
+            }
+            boolean c2IsLower = Character.isLowerCase(c1);
+            if (c2IsLower) {
+                // HttpProtocol
+                return locateNextStop(str, start + 1);
+            } else {
+                int pos = start + 2;
+                while (pos < sz) {
+                    char ch = str.charAt(pos);
+                    boolean curIsLetter = Character.isLetter(ch);
+                    if (!curIsLetter) {
+                        // HTTP-Protocol
+                        break;
+                    }
+                    boolean curIsLower = Character.isLowerCase(ch);
+                    if (curIsLower) {
+                        // HTTPProtocol
+                        pos--;
+                        break;
+                    }
+                    pos++;
+                }
+                return pos;
+            }
         }
         int pos = start + 1;
         while (pos < sz) {
             char ch = str.charAt(pos);
-            if (isSeparator(ch) || isUpperCase(ch)) {
+            if (isSeparator(ch)) {
                 break;
+            }
+            if (isDigit) {
+                if (!Character.isDigit(ch)) {
+                    break;
+                }
+            } else {
+                if (Character.isDigit(ch)) {
+                    break;
+                }
+                if (isLower) {
+                    if (!Character.isLowerCase(ch)) {
+                        break;
+                    }
+                } else {
+
+                }
             }
             pos++;
         }
@@ -399,27 +462,8 @@ public final class Keyword implements Comparable<Keyword> {
         return pos;
     }
 
-    private static int nextNonUpperCase(FastStr str, int start) {
-        final int sz = str.size();
-        int pos = start;
-        while (pos < sz) {
-            char ch = str.charAt(pos);
-            if (isUpperCase(ch)) {
-                pos++;
-            } else {
-                break;
-            }
-        }
-        return pos;
-    }
-
     private static boolean isSeparator(char ch) {
         return Arrays.binarySearch(SEPS, ch) >= 0;
     }
-
-    private static boolean isUpperCase(char ch) {
-        return ch >= 'A' && ch <= 'Z';
-    }
-
 
 }

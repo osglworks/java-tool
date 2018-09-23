@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Keyword - fix `HTTPProtocol` style parsing #175
+* Keyword - add support to digits #174
 * Data mapping framework - issue when there are head mapping used in list/array or nested structure #173
 * Provide a mechanism to allow osgl-tool extension libraries to register automatically #172
 * Add `csv` int MimeType.Trait enum #171

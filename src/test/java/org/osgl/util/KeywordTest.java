@@ -61,10 +61,12 @@ public class KeywordTest extends TestBase {
     }
 
     @Test
-    public void testX() {
-        keyword = Keyword.of("thisURLis valid");
-        eq("this-url-is-valid", keyword.dashed());
-        eq(C.listOf("this", "url", "is", "valid"), keyword.tokens());
+    public void testUpperCases() {
+        yes(Keyword.of("HTTPProtocol").matches("http-protocol"));
+        yes(Keyword.of("HTTP-Protocol").matches("http-protocol"));
+        yes(Keyword.of("HttpV1.1").matches("http-v-1.1"));
+        yes(Keyword.of("HTTP v1.1").matches("http-v1.1"));
+        yes(Keyword.of("H1").matches("h-1"));
     }
 
     private void verify(String s) {
@@ -78,6 +80,13 @@ public class KeywordTest extends TestBase {
         eq("camelCase", keyword.javaVariable());
         eq(C.listOf("camel", "case"), keyword.tokens());
         eq("camel.case", keyword.dotted());
+    }
+
+    @Test
+    public void testDigits() {
+        yes(Keyword.of("GH111").matches("gh111"));
+        yes(Keyword.of("Gh111").matches("gh111"));
+        no(Keyword.of("gH111").matches("gh111"));
     }
 
 }
