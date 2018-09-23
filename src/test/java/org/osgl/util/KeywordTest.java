@@ -102,6 +102,8 @@ public class KeywordTest extends TestBase {
         Keyword kw1 = Keyword.of("equalsTo");
         Keyword kw2 = Keyword.of("equals-to");
         yes(kw1.equals(kw2));
+
+        eq(Keyword.of("Lt"), Keyword.of("lt"));
     }
 
 }
