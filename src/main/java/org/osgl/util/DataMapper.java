@@ -1296,6 +1296,9 @@ public class DataMapper {
     }
 
     private void mappingError(Throwable cause, String message, Object... messageArgs) {
+        if (cause instanceof RuntimeException) {
+            throw (RuntimeException) cause;
+        }
         throw new MappingException(source, target, cause, message, messageArgs);
     }
 

@@ -23,16 +23,12 @@ package org.osgl;
 import static org.osgl.Lang.requireNotNull;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.osgl.exception.MappingException;
-import org.osgl.util.C;
-import org.osgl.util.N;
-import org.osgl.util.S;
-import org.osgl.util.TypeReference;
+import org.osgl.exception.UnexpectedClassNotFoundException;
+import org.osgl.util.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -286,7 +282,7 @@ public class MappingTest extends TestBase {
             eq("123", S.join(result).get());
         }
 
-        @Test(expected = MappingException.class)
+        @Test(expected = UnexpectedClassNotFoundException.class)
         public void mapToArrayWithNonConvertibleType() {
             Class[] ca = new Class[3];
             $.map(int_3_array).to(ca);
@@ -502,7 +498,7 @@ public class MappingTest extends TestBase {
             same(source.foo.si, target.foo.si);
         }
 
-        @Test(expected = MappingException.class)
+        @Test(expected = IllegalArgumentException.class)
         public void testShallowCopyToDifferentType() {
             Foo source = new Foo();
             $.copy(source).to(Bar.class);
