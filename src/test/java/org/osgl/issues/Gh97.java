@@ -58,8 +58,8 @@ public class Gh97 extends TestBase {
         Foo foo = new Foo();
         Phoo phoo = new Phoo();
         $.copy(foo)
-                .map("id").to("num")
-                .map("name").to("desc")
+                .mapHead("id").to("num")
+                .mapHead("name").to("desc")
                 .to(phoo);
         eq(foo.id, phoo.num);
         eq(foo.name, phoo.desc);
@@ -81,7 +81,7 @@ public class Gh97 extends TestBase {
         Foo foo = new Foo();
         Phoo phoo = new Phoo();
         $.deepCopy(foo)
-                .map("bar.s1").to("car.x1")
+                .mapHead("bar.s1").to("car.x1")
                 .to(phoo);
         ne(foo.id, phoo.num);
         ne(foo.name, phoo.desc);
@@ -95,7 +95,7 @@ public class Gh97 extends TestBase {
         Foo foo = new Foo();
         Phoo phoo = new Phoo();
         $.deepCopy(foo)
-                .map("name").to("car.x1")
+                .mapHead("name").to("car.x1")
                 .to(phoo);
         eq(foo.name, phoo.car.x1);
         ne(foo.id, phoo.num);
@@ -107,7 +107,7 @@ public class Gh97 extends TestBase {
         Foo foo = new Foo();
         Phoo phoo = new Phoo();
         $.deepCopy(foo)
-                .map("bar.s2").to("desc")
+                .mapHead("bar.s2").to("desc")
                 .to(phoo);
         eq(foo.bar.s2, phoo.desc);
         ne(foo.id, phoo.num);

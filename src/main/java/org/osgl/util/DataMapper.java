@@ -166,7 +166,12 @@ import java.util.*;
  */
 public class DataMapper {
 
-    private static final Object INTERMEDIATE_PLACEHOLDER = $.DUMB;
+    private static final class IntermediatePlaceHolder {
+        private Object rootSource;
+        IntermediatePlaceHolder(Object rootSource) {
+            this.rootSource = rootSource;
+        }
+    }
 
     public enum MappingRule {
 
@@ -883,7 +888,7 @@ public class DataMapper {
             Object targetVal = targetMap.get(targetKey);
             targetVal = prepareTargetComponent(
                     sourceVal, targetVal, targetComponentRawType,
-                    targetComponentType, targetComponentIsContainer, "");
+                    targetComponentType, targetComponentIsContainer, targetKey instanceof String ? (String)targetKey : "");
             targetMap.put(targetKey, targetVal);
         }
     }
@@ -919,19 +924,31 @@ public class DataMapper {
                 continue;
             }
             String specialMap = specialMapping.get(key);
+            Object sourcePropValue = null;
             if (null != specialMap) {
-                String sourcePrefix = prefix;
-                if (S.notBlank(prefix) && specialMapping.containsKey(prefix)) {
-                    sourcePrefix = specialMapping.get(prefix);
-                }
-                if (specialMap.startsWith(sourcePrefix + ".")) {
-                    specialMap = specialMap.substring(sourcePrefix.length() + 1);
+                if (source instanceof IntermediatePlaceHolder) {
+                    Object root = ((IntermediatePlaceHolder) source).rootSource;
+                    sourcePropValue = $.getProperty(root, specialMap);
+                } else {
+                    try {
+                        sourcePropValue = $.getProperty(source, specialMap);
+                    } catch (Exception e) {
+                        String targetPrefix;
+                        if (S.notBlank(prefix) && specialMapping.containsKey(prefix)) {
+                            targetPrefix = specialMapping.get(prefix);
+                            if (specialMap.startsWith(targetPrefix + ".")) {
+                                specialMap = specialMap.substring(targetPrefix.length() + 1);
+                            }
+                        } else if (specialMap.contains(".")) {
+                            specialMap = S.cut(specialMap).afterLast(".");
+                        }
+                    }
                 }
             }
-            Type type = targetField.getGenericType();
-            ParameterizedType targetFieldGenericType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
-            Object sourcePropValue = null;
+            ParameterizedType targetFieldGenericType = null;
             if (null == sourcePropValue) {
+                Type type = targetField.getGenericType();
+                targetFieldGenericType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
                 if (null != sourceMapByKeyword) {
                     sourcePropValue = sourceMapByKeyword.get(Keyword.of(null == specialMap ? targetFieldName : specialMap));
                     if (null == sourcePropValue) {
@@ -946,16 +963,16 @@ public class DataMapper {
                     Field sourceField = $.fieldOf(sourceType, null == specialMap ? targetFieldName : specialMap);
                     sourcePropValue = null == sourceField ? null : $.getFieldValue(source, sourceField);
                 }
+            }
+            if (null == sourcePropValue) {
+                if (!semantic.isShallowCopy() && intermediates.contains(key)) {
+                    sourcePropValue = new IntermediatePlaceHolder(source);
+                }
                 if (null == sourcePropValue) {
-                    if (!semantic.isShallowCopy() && intermediates.contains(key)) {
-                        sourcePropValue = INTERMEDIATE_PLACEHOLDER;
+                    if (semantic.isCopy()) {
+                        $.setFieldValue(target, targetField, $.convert(null).to(targetFieldType));
                     }
-                    if (null == sourcePropValue) {
-                        if (semantic.isCopy()) {
-                            $.setFieldValue(target, targetField, $.convert(null).to(targetFieldType));
-                        }
-                        continue;
-                    }
+                    continue;
                 }
             }
 
@@ -969,15 +986,12 @@ public class DataMapper {
             }
 
             boolean targetFieldIsContainer = isContainer(targetFieldType);
-            if (!targetFieldIsContainer && !semantic.allowTypeConvert() && INTERMEDIATE_PLACEHOLDER != sourcePropValue && !$.is(sourcePropValue).allowBoxing().instanceOf(targetFieldType)) {
+            if (!targetFieldIsContainer && !semantic.allowTypeConvert() && !isIntermediatePlaceHolder(sourcePropValue) && !$.is(sourcePropValue).allowBoxing().instanceOf(targetFieldType)) {
                 logError("Type mismatch copy source [%s] to field[%s|%s]", sourcePropValue.getClass().getName(), targetFieldName, targetFieldType.getName());
                 continue;
             }
 
             Object targetFieldValue = $.getFieldValue(target, targetField);
-            if (INTERMEDIATE_PLACEHOLDER == sourcePropValue) {
-                sourcePropValue = instanceFactory.apply(targetFieldType);
-            }
             targetFieldValue = prepareTargetComponent(
                     sourcePropValue, targetFieldValue, targetFieldType,
                     targetFieldGenericType, targetFieldIsContainer, targetFieldName);
@@ -985,6 +999,10 @@ public class DataMapper {
             mapped.add(key);
         }
         return mapped;
+    }
+
+    private boolean isIntermediatePlaceHolder(Object o) {
+        return o instanceof IntermediatePlaceHolder;
     }
 
     private Iterable<$.Triple<Object, Keyword, $.Producer<Object>>> sourceProperties() {
@@ -1109,7 +1127,7 @@ public class DataMapper {
                     keyword = Keyword.of(key);
                 }
                 Class<?> vType = field.getType();
-                if (terminateFlatMap(vType)) {
+                if (isTerminateType(vType)) {
                     $.Producer<Object> producer = new $.Producer<Object>() {
                         @Override
                         public Object produce() {
@@ -1163,7 +1181,7 @@ public class DataMapper {
             return sourceComponent;
         }
         Object convertedTargetComponent = null;
-        if (!targetComponentIsContainer && semantic.isMapping()) {
+        if (!targetComponentIsContainer && isTerminateType(targetComponentType) && semantic.isMapping()) {
             convertedTargetComponent = convert(sourceComponent, targetComponentType).to(targetComponentType);
         }
         if (null != convertedTargetComponent) {
@@ -1452,7 +1470,7 @@ public class DataMapper {
         return !type.isArray() && ($.isSimpleType(type) || $.isImmutable(type));
     }
 
-    private static boolean terminateFlatMap(Class<?> type) {
+    private static boolean isTerminateType(Class<?> type) {
         return isImmutable(type) || Date.class.isAssignableFrom(type) || Calendar.class.isAssignableFrom(type);
     }
 

@@ -335,7 +335,7 @@ public class BigLines implements Iterable<String> {
             }
 
             // make it easy for the optimizer to tune this loop
-            int count = 0;
+            int count = 1;
             while (readChars == 1024) {
                 for (int i = 0; i < 1024; ) {
                     if (c[i++] == '\n') {
@@ -355,7 +355,7 @@ public class BigLines implements Iterable<String> {
                 readChars = is.read(c);
             }
 
-            return count == 0 ? 1 : count;
+            return count;
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {

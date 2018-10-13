@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.18.0
+* $.map failed to apply filter #177
 * Keyword - fix `HTTPProtocol` style parsing #175
 * Keyword - add support to digits #174
 * Data mapping framework - issue when there are head mapping used in list/array or nested structure #173
