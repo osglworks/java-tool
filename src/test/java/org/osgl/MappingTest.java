@@ -464,7 +464,7 @@ public class MappingTest extends TestBase {
         public void testDeepCopyWithFilter() {
             Bean source = new Bean();
             Bean target = new Bean();
-            $.deepCopy(source).filter("-map.name,-foo.name").to(target);
+            $.deepCopy(source).filter("-map.bar1.name,-foo.name").to(target);
             ne(target, source);
 
             Foo sourceFoo = source.foo;
