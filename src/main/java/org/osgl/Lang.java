@@ -30,7 +30,8 @@ import org.osgl.concurrent.ContextLocal;
 import org.osgl.exception.*;
 import org.osgl.util.*;
 import org.osgl.util.TypeReference;
-import org.osgl.util.converter.TypeConverterRegistry;
+import org.osgl.util.converter.*;
+import org.w3c.dom.Document;
 import osgl.version.Version;
 
 import java.awt.image.BufferedImage;
@@ -3094,7 +3095,8 @@ public class Lang implements Serializable {
             }
         };
 
-        public static TypeConverter<String, BigDecimal> STRING_TO_BIG_DEC = new TypeConverter<String, BigDecimal>(String.class, BigDecimal.class) {
+        public static TypeConverter<String, BigDecimal>
+                STRING_TO_BIG_DEC = new TypeConverter<String, BigDecimal>(String.class, BigDecimal.class) {
             @Override
             public BigDecimal convert(String s) {
                 if (S.isEmpty(s)) {
@@ -3172,6 +3174,16 @@ public class Lang implements Serializable {
                 return new StringReader(s);
             }
         };
+
+        public static final TypeConverter<String, Document> STRING_TO_XML_DOCUMENT = XML.STRING_TO_XML_DOCUMENT;
+
+        public static final TypeConverter<InputStream, Document> IS_TO_XML_DOCUMENT = XML.IS_TO_XML_DOCUMENT;
+
+        public static final TypeConverter<Document, String> XML_DOCUMENT_TO_STRING = XML.XML_DOCUMENT_TO_STRING;
+
+        public static final TypeConverter<Document, JSONObject> XML_DOCUMENT_TO_JSON = new XmlDocumentToJsonObject();
+
+        public static final TypeConverter<JSONObject, Document> JSON_TO_XML_DOCUMENT = new JsonObjectToXmlDocument();
 
         public static TypeConverter<Iterator, Iterable> ITERATOR_TO_ITERABLE = new TypeConverter<Iterator, Iterable>() {
             @Override

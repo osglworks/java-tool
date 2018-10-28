@@ -43,6 +43,7 @@ import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 import org.osgl.storage.ISObject;
 import org.osgl.storage.impl.SObject;
+import org.w3c.dom.Document;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -364,6 +365,31 @@ public class IO {
         protected int doWriteTo(OutputStream sink) {
             Img.source(source).writeTo(sink, contentType);
             return -1;
+        }
+    }
+
+    public static class XMLDocumentWriteStage extends WriteStageBase<Document, XMLDocumentWriteStage> {
+
+        private boolean pretty;
+
+        protected XMLDocumentWriteStage(Document xmldoc) {
+            super(xmldoc);
+        }
+
+        @Override
+        protected int doWriteTo(Writer sink) {
+            return doWriteTo($.convert(sink).to(OutputStream.class));
+        }
+
+        @Override
+        protected int doWriteTo(OutputStream sink) {
+            XML.print(source, pretty, sink);
+            return -1;
+        }
+
+        public XMLDocumentWriteStage pretty() {
+            this.pretty = true;
+            return this;
         }
     }
 
@@ -880,6 +906,10 @@ public class IO {
 
     public static BufferedImageWriteStage write(BufferedImage img, String contentType) {
         return new BufferedImageWriteStage(img, contentType);
+    }
+
+    public static XMLDocumentWriteStage write(Document document) {
+        return new XMLDocumentWriteStage(document);
     }
 
     public static InputStreamWriteStage write(ByteBuffer byteBuffer) {

@@ -1438,7 +1438,11 @@ public class DataMapper {
                 try {
                     target = instanceFactory.apply(targetType);
                 } catch (Exception e) {
-                    throw E.unexpected(e, "");
+                    try {
+                        target = convert(source, targetType).to(targetType);
+                    } catch (Exception e2) {
+                        throw E.unexpected(e, "");
+                    }
                 }
             }
         }

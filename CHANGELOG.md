@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.18.0
+* Add XML utilities #179
+* Add converter between XML Document and JSONObject #178
 * $.map failed to apply filter #177
 * Keyword - fix `HTTPProtocol` style parsing #175
 * Keyword - add support to digits #174
