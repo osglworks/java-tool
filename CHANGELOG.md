@@ -1,6 +1,6 @@
 # OSGL Tool Change Log
 
-1.18.0
+1.18.0 30/Oct/2018
 * Add XML utilities #179
 * Add converter between XML Document and JSONObject #178
 * $.map failed to apply filter #177
