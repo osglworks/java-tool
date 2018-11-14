@@ -3686,26 +3686,26 @@ public class Lang implements Serializable {
             this.fromType = null == from ? Void.class : from.getClass();
         }
 
-        public _ConvertStage defaultTo(Object defVal) {
+        public _ConvertStage<FROM> defaultTo(Object defVal) {
             this.defVal = requireNotNull(defVal);
             return this;
         }
 
-        public _ConvertStage hint(Object hint) {
+        public _ConvertStage<FROM> hint(Object hint) {
             this.hint = hint;
             return this;
         }
 
-        public _ConvertStage reportError() {
+        public _ConvertStage<FROM> reportError() {
             reportError = true;
             return this;
         }
 
-        public _ConvertStage strictMatching() {
+        public _ConvertStage<FROM> strictMatching() {
             return hint(TypeConverter.HINT_STRICT);
         }
 
-        public _ConvertStage customTypeConverters(TypeConverterRegistry typeConverterRegistry) {
+        public _ConvertStage<FROM> customTypeConverters(TypeConverterRegistry typeConverterRegistry) {
             this.converterRegistry = $.requireNotNull(typeConverterRegistry);
             return this;
         }

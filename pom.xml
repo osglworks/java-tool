@@ -45,6 +45,7 @@
     <model-mapper.version>1.1.0</model-mapper.version>
     <hutool.version>4.0.12</hutool.version>
     <fastjson.version>1.2.47</fastjson.version>
+    <genie.version>1.9.0</genie.version>
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
   </properties>
 
@@ -55,6 +56,12 @@
   </scm>
 
   <dependencies>
+    <dependency>
+      <groupId>org.osgl</groupId>
+      <artifactId>genie</artifactId>
+      <version>${genie.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
