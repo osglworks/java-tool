@@ -408,4 +408,11 @@ public class STest extends UtilTestBase {
         eq("abc", S.F.dropTailIfEndsWith("123").transform(s));
     }
 
+    @Test
+    public void test_padLeadingZero() {
+        eq("007", S.padLeadingZero(7, 3));
+        eq("318", S.padLeadingZero(318, 2));
+        eq("318", S.padLeadingZero(318, 3));
+    }
+
 }

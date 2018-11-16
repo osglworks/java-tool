@@ -2332,6 +2332,54 @@ public class S {
     }
 
     /**
+     * Add leading zero to number
+     * @param number
+     *      the number to which leading zero to be padded
+     * @param digits
+     *      the number of digits of the result string, max number is 20.
+     * @return
+     *      a String with leading zero which has `digits` of digits
+     */
+    public static String padLeadingZero(int number, int digits) {
+        if (digits < 2) {
+            return Integer.toString(number);
+        }
+        if (digits > 9) {
+            long l = N.powOfTenLong(digits);
+            if (l > number) {
+                return Long.toString(l + number).substring(1);
+            }
+            return Integer.toString(number);
+        } else {
+            int i = N.powOfTen(digits);
+            if (i > number) {
+                return Integer.toString(i + number).substring(1);
+            }
+            return Integer.toString(number);
+        }
+    }
+
+    public static String padLeadingZero(long number, int digits) {
+        E.illegalArgumentIf(digits > 20);
+        if (digits < 2) {
+            return S.string(number);
+        }
+        if (digits > 9) {
+            long l = N.powOfTenLong(digits);
+            if (l > number) {
+                return Long.toString(l + number).substring(1);
+            }
+            return String.valueOf(number);
+        } else {
+            int i = N.powOfTen(digits);
+            if (i > number) {
+                return String.valueOf(i + number).substring(1);
+            }
+            return Long.toString(number);
+        }
+    }
+
+    /**
      * Left pad a string with character specified
      *
      * @param s      the string

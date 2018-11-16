@@ -302,4 +302,28 @@ public class NTest extends TestBase {
         yes(N.isInt(String.valueOf(Long.MAX_VALUE)));
     }
 
+    @Test
+    public void testPowOfTen() {
+        for (int i = 0; i < 9; ++i) {
+            eq((int)N.pow(10, i), N.powOfTen(i));
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPowOfTenError1() {
+        N.powOfTen(10);
+    }
+
+    @Test
+    public void testPowerOfTenLong() {
+        for (int i = 0; i < 19; ++i) {
+            eq((long) N.pow(10, i), N.powOfTenLong(i));
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPowerOfTenLongError1() {
+        N.powOfTenLong(19);
+    }
+
 }

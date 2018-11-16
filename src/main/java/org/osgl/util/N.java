@@ -21,6 +21,7 @@ package org.osgl.util;
  */
 
 import static org.osgl.util.E.illegalArgumentIf;
+import static org.osgl.util.E.illegalStateIf;
 
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
@@ -72,12 +73,19 @@ public class N {
      */
     public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
 
+    public static final int[] POW_OF_TEN_INT = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+
+    public static final long[] POW_OF_TEN_LONG = {
+            1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000l, 100000000000l
+            , 1000000000000l, 10000000000000l, 100000000000000l, 1000000000000000l, 10000000000000000l, 100000000000000000l
+            , 1000000000000000000l
+    };
+
     private static Random random = ThreadLocalRandom.current();
 
-    N() {
-    }
+    N() {}
 
-    public static enum Type {
+    public enum Type {
         BYTE(1) {
             @Override
             Number add(Number a, Number b) {
@@ -896,7 +904,6 @@ public class N {
         return StrictMath.sqrt(a);
     }
 
-
     public static double cbrt(double a) {
         return StrictMath.cbrt(a);
     }
@@ -911,6 +918,16 @@ public class N {
 
     public static double pow(double a, double b) {
         return StrictMath.pow(a, b);
+    }
+
+    public static int powOfTen(int e) {
+        illegalStateIf(e < 0 || e > 9);
+        return POW_OF_TEN_INT[e];
+    }
+
+    public static long powOfTenLong(int e) {
+        illegalArgumentIf(e < 0 || e > 18);
+        return POW_OF_TEN_LONG[e];
     }
 
     public static int round(float a) {
