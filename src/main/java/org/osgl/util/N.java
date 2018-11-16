@@ -21,15 +21,12 @@ package org.osgl.util;
  */
 
 import static org.osgl.util.E.illegalArgumentIf;
-import static org.osgl.util.E.illegalStateIf;
 
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
+import java.math.*;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -921,7 +918,7 @@ public class N {
     }
 
     public static int powOfTen(int e) {
-        illegalStateIf(e < 0 || e > 9);
+        illegalArgumentIf(e < 0 || e > 9);
         return POW_OF_TEN_INT[e];
     }
 
