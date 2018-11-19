@@ -1,6 +1,6 @@
 # OSGL Tool Change Log
 
-1.18.1
+1.18.1 19/Nov/2018
 * Add `S.padLeadingZero(number, digits)` and `N.powerOfTen(e)` methods #184
 * Generic type info lost when calling `hint(Object)` on `$.convert` #183
 
