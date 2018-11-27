@@ -7186,7 +7186,7 @@ public class Lang implements Serializable {
      * @return `true` if the give type `c` is simple type as described above
      */
     public static boolean isSimpleType(Class<?> c) {
-        return String.class == c || __wrapperToPrmitives.containsKey(c) || __primitiveToWrappers.containsKey(c) || Enum.class.isAssignableFrom(c) || Locale.class == c;
+        return String.class == c || Enum.class.isAssignableFrom(c) || Locale.class == c || Keyword.class == c || __wrapperToPrmitives.containsKey(c) || __primitiveToWrappers.containsKey(c) ;
     }
 
     /**
