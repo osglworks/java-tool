@@ -1,6 +1,6 @@
 # OSGL Tool Change Log
 
-1.18.2
+1.18.2 28/Nov/2018
 * Add `Keyword` into `immutable-classes.list` file #185
 
 1.18.1 19/Nov/2018
