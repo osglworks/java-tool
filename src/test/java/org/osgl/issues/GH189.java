@@ -1,4 +1,4 @@
-package org.osgl.util.converter;
+package org.osgl.issues;
 
 /*-
  * #%L
@@ -20,20 +20,28 @@ package org.osgl.util.converter;
  * #L%
  */
 
-import static org.osgl.util.converter.XmlDocumentToJsonUtil.nameOf;
+import org.junit.Test;
+import org.osgl.$;
+import org.osgl.TestBase;
 
-import com.alibaba.fastjson.JSONObject;
-import org.osgl.Lang;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+public class GH189 extends TestBase {
 
-public class XmlDocumentToJsonObject extends Lang.TypeConverter<Document, JSONObject> {
-    @Override
-    public JSONObject convert(Document document) {
-        Element element = document.getDocumentElement();
-        String name = nameOf(element);
-        JSONObject json = new JSONObject();
-        json.put(name, XmlDocumentToJsonUtil.convert(element));
-        return json;
+    public static class Bean {
+        public Integer id = 1;
+
+        public Bean(Integer id) {
+            this.id = id;
+        }
+
+        public Bean() {
+        }
     }
+
+    @Test
+    public void test() {
+        Bean src = new Bean(null);
+        Bean tgt = $.copy(src).to(Bean.class);
+        isNull(tgt.id);
+    }
+
 }

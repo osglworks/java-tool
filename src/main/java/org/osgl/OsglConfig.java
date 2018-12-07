@@ -295,4 +295,12 @@ public class OsglConfig {
         }
 
     }
+
+    private static String xmlRootTag = "root";
+    public static void setXmlRootTag(String tag) {
+        xmlRootTag = S.requireNotBlank(tag);
+    }
+    public static String xmlRootTag() {
+        return xmlRootTag;
+    }
 }

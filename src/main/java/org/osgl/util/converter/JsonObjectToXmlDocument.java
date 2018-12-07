@@ -22,7 +22,7 @@ package org.osgl.util.converter;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sun.org.apache.xerces.internal.dom.DocumentImpl;
-import org.osgl.Lang;
+import org.osgl.*;
 import org.osgl.util.S;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -33,13 +33,28 @@ import java.util.*;
 public class JsonObjectToXmlDocument extends Lang.TypeConverter<JSONObject, Document> {
     @Override
     public Document convert(JSONObject json) {
+        return _convert(json, OsglConfig.xmlRootTag());
+    }
+
+    @Override
+    public Document convert(JSONObject jsonObject, Object hint) {
+        if (hint instanceof String) {
+            String rootTag = (String) hint;
+            if (S.notBlank(rootTag)) {
+                return _convert(jsonObject, rootTag);
+            }
+        }
+        return _convert(jsonObject, OsglConfig.xmlRootTag());
+    }
+
+    private Document _convert(JSONObject json, String xmlRootTag) {
         Node root;
         DocumentImpl doc = new DocumentImpl();
         int sz = json.size();
         if (sz == 0) {
             return doc;
         } else {
-            root = doc.createElement("root");
+            root = doc.createElement(OsglConfig.xmlRootTag());
             doc.appendChild(root);
             append(root, json, "root", doc);
         }

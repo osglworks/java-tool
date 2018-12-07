@@ -1,5 +1,11 @@
 # OSGL Tool Change Log
 
+1.18.3
+* Add `isCollectionType` to `Lang` #193
+* Add XML to JSONArray converter #192
+* XML document output - allow configure the root tag #190
+* Data mapper - use `JSONObject` in case target type is not determined. #191
+
 1.18.2 28/Nov/2018
 * Add `Keyword` into `immutable-classes.list` file #185
 

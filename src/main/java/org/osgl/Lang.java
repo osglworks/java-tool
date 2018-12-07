@@ -3183,6 +3183,8 @@ public class Lang implements Serializable {
 
         public static final TypeConverter<Document, JSONObject> XML_DOCUMENT_TO_JSON = new XmlDocumentToJsonObject();
 
+        public static final TypeConverter<Document, JSONArray> XML_DOCUMENT_TO_JSON_ARRAY = new XmlDocumentToJsonArray();
+
         public static final TypeConverter<JSONObject, Document> JSON_TO_XML_DOCUMENT = new JsonObjectToXmlDocument();
 
         public static TypeConverter<Iterator, Iterable> ITERATOR_TO_ITERABLE = new TypeConverter<Iterator, Iterable>() {
@@ -7187,6 +7189,18 @@ public class Lang implements Serializable {
      */
     public static boolean isSimpleType(Class<?> c) {
         return String.class == c || Enum.class.isAssignableFrom(c) || Locale.class == c || Keyword.class == c || __wrapperToPrmitives.containsKey(c) || __primitiveToWrappers.containsKey(c) ;
+    }
+
+    /**
+     * Check if a given class `c` is a collection type. A collection type here
+     * means `java.util.Collection` plus an array class.
+     * @param c
+     *          the class to be checked
+     * @return
+     *          `true` if the given type `c` is a Collection or array
+     */
+    public static boolean isCollectionType(Class<?> c) {
+        return Collection.class.isAssignableFrom(c) || c.isArray();
     }
 
     /**

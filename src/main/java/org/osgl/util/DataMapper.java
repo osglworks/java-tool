@@ -21,18 +21,12 @@ package org.osgl.util;
  */
 
 import com.alibaba.fastjson.JSONArray;
-import org.osgl.$;
-import org.osgl.Lang;
-import org.osgl.OsglConfig;
-import org.osgl.exception.MappingException;
-import org.osgl.exception.NotAppliedException;
-import org.osgl.exception.UnexpectedException;
+import com.alibaba.fastjson.JSONObject;
+import org.osgl.*;
+import org.osgl.exception.*;
 import org.osgl.util.converter.TypeConverterRegistry;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -331,11 +325,11 @@ public class DataMapper {
             }
         }
 
-        void remove(String key) {
+        boolean remove(String key) {
             if (useKeyword) {
-                keywordList.remove(Keyword.of(key));
+                return keywordList.remove(Keyword.of(key));
             } else {
-                stringList.remove(key);
+                return stringList.remove(key);
             }
         }
 
@@ -381,7 +375,19 @@ public class DataMapper {
             if (S.blank(spec)) {
                 return;
             }
-            List<String> words = S.fastSplit(spec, ",");
+            List<String> words = C.newList(S.fastSplit(spec, ","));
+            // make sure the black list go first
+            Collections.sort(words, new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    if (o1.startsWith("-")) {
+                        return o2.startsWith("-") ? o1.compareTo(o2) : -1;
+                    } else if (o2.startsWith("-")) {
+                        return 1;
+                    }
+                    return o1.compareTo(o2);
+                }
+            });
             for (String word : words) {
                 boolean isBlackList = false;
                 if (word.startsWith("-")) {
@@ -401,10 +407,12 @@ public class DataMapper {
                         greenList.add(context);
                     }
                 } else {
-                    whiteList.add(word);
-                    if (word.contains(".")) {
-                        blackList.remove(context);
-                        grayList.add(context);
+                    if (!blackList.contains(word)) {
+                        whiteList.add(word);
+                        if (word.contains(".")) {
+                            blackList.remove(context);
+                            grayList.add(context);
+                        }
                     }
                 }
             }
@@ -418,7 +426,7 @@ public class DataMapper {
             }
             E.illegalArgumentIf(S.blank(s));
             String context = s.contains(".") ? S.cut(s).beforeLast(".") : "";
-            if (whiteList.contains(s) || grayList.contains(s)) {
+            if (whiteList.contains(s) || grayList.contains(s) || whiteList.contains(context)) {
                 return true;
             }
             if (blackList.contains(s)) {
@@ -1403,7 +1411,33 @@ public class DataMapper {
             return source;
         }
         Object target = null;
-        if (Object.class == targetType || targetType.isAssignableFrom(sourceType)) {
+        if (Object.class == targetType) {
+            if (sourceType.isArray()) {
+                targetType = sourceType;
+            } else if (List.class.isAssignableFrom(sourceType)) {
+                target = (LinkedList.class.isAssignableFrom(sourceType)) ? new LinkedList() : new ArrayList<>();
+            } else if (Map.class.isAssignableFrom(sourceType)) {
+                if (SortedMap.class.isAssignableFrom(sourceType)) {
+                    target = new TreeMap<>();
+                } else if (LinkedHashMap.class.isAssignableFrom(sourceType)) {
+                    target = new LinkedHashMap<>();
+                } else {
+                    target = new HashMap<>();
+                }
+            } else if (Set.class.isAssignableFrom(sourceType)) {
+                if (SortedSet.class.isAssignableFrom(sourceType)) {
+                    target = new TreeSet<>();
+                } else if (LinkedHashSet.class.isAssignableFrom(sourceType)) {
+                    target = new LinkedHashMap<>();
+                } else {
+                    target = new HashSet<>();
+                }
+            } else if (isTerminateType(sourceType)) {
+                targetType = sourceType;
+            } else {
+                target = new JSONObject();
+            }
+        } else if (targetType.isAssignableFrom(sourceType)) {
             if (!sourceType.isArray()) {
                 try {
                     target = instanceFactory.apply(sourceType);

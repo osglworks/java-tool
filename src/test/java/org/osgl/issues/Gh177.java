@@ -69,10 +69,10 @@ public class Gh177 extends TestBase {
         notNull(json);
         yes(json.containsKey("bar"));
         Object obj = json.get("bar");
-        yes(obj instanceof Bar);
-        Bar bar = $.cast(obj);
-        eq(1, bar.id);
-        isNull(bar.name);
+        yes(obj instanceof JSONObject);
+        JSONObject bar = $.cast(obj);
+        eq(1, bar.getInteger("id"));
+        isNull(bar.getString("name"));
     }
 
 }
