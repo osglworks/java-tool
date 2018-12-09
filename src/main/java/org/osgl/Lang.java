@@ -3185,7 +3185,47 @@ public class Lang implements Serializable {
 
         public static final TypeConverter<Document, JSONArray> XML_DOCUMENT_TO_JSON_ARRAY = new XmlDocumentToJsonArray();
 
-        public static final TypeConverter<JSONObject, Document> JSON_TO_XML_DOCUMENT = new JsonObjectToXmlDocument();
+        public static final TypeConverter<JSONObject, Document> JSON_OBJECT_TO_XML_DOCUMENT = new JsonObjectToXmlDocument();
+
+        public static final TypeConverter<JSONArray, Document> JSON_ARRAY_TO_XML_DOCUMENT = new JsonArrayToXmlDocument();
+
+        public static final TypeConverter<Object, JSONObject> OBJECT_TO_JSON_OBJECT = new TypeConverter<Object, JSONObject>() {
+            @Override
+            public JSONObject convert(Object o) {
+                Object o1 = JSON.toJSON(o);
+                if (o1 instanceof JSONObject) {
+                    return (JSONObject)o1;
+                } else {
+                    throw new IllegalArgumentException("Cannot convert " + o + " to JSONObject");
+                }
+            }
+        };
+
+        public static final TypeConverter<Object, JSONArray> OBJECT_TO_JSON_ARRAY = new TypeConverter<Object, JSONArray>() {
+            @Override
+            public JSONArray convert(Object o) {
+                Object o1 = JSON.toJSON(o);
+                if (o1 instanceof JSONArray) {
+                    return (JSONArray)o1;
+                } else {
+                    throw new IllegalArgumentException("Cannot convert " + o + " to JSONArray");
+                }
+            }
+        };
+
+        public static final TypeConverter<Object, JSON> OBJECT_TO_JSON = new TypeConverter<Object, JSON>() {
+            @Override
+            public JSON convert(Object o) {
+                Object o1 = JSON.toJSON(o);
+                if (o1 instanceof JSONObject) {
+                    return (JSONObject)o1;
+                } else if (o1 instanceof JSONArray) {
+                    return (JSONArray) o1;
+                } else {
+                    throw new IllegalArgumentException("Cannot convert " + o + " to JSON");
+                }
+            }
+        };
 
         public static TypeConverter<Iterator, Iterable> ITERATOR_TO_ITERABLE = new TypeConverter<Iterator, Iterable>() {
             @Override

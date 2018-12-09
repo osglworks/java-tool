@@ -21,22 +21,31 @@ package org.osgl.util.converter;
  */
 
 import com.alibaba.fastjson.*;
-import org.osgl.$;
-import org.osgl.Lang;
+import org.osgl.*;
 import org.osgl.util.IO;
 import org.osgl.util.XML;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import java.io.StringWriter;
 
 public class XmlDocumentToJsonArray extends Lang.TypeConverter<Document, JSONArray> {
     @Override
     public JSONArray convert(Document document) {
-        Element element = document.getDocumentElement();
-        JSONArray array = new JSONArray();
-        array.add(XmlDocumentToJsonUtil.convert(element));
-        return array;
+        return convert(document, null);
+    }
+
+    @Override
+    public JSONArray convert(Document document, Object hint) {
+        String rootTag = OsglConfig.xmlRootTag();
+        String listItemTag = OsglConfig.xmlListItemTag();
+        if (hint instanceof JsonXmlConvertHint) {
+            JsonXmlConvertHint hint1 = $.cast(hint);
+            rootTag = hint1.rootTag;
+            listItemTag = hint1.listItemTag;
+        } else if (hint instanceof String) {
+            rootTag = $.cast(hint);
+        }
+        return (JSONArray) XmlDocumentToJsonUtil.convert(document, rootTag, listItemTag, true);
     }
 
     private static void foo() {

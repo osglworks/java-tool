@@ -125,7 +125,7 @@ public class TypeConverterRegistry {
                 superNode.subTypes.add(this);
             }
             Class<?> superType = type.getSuperclass();
-            while (superType != null && superType != Object.class) {
+            while (superType != null) {
                 Node superNode = registry.nodeOf(superType);
                 superTypes.add(superNode);
                 superNode.subTypes.add(this);
@@ -483,11 +483,11 @@ public class TypeConverterRegistry {
 
     private static int distance(Class<?> type) {
         if (type == Object.class) {
-            return 100;
+            return 1000;
         }
         if (type.isInterface()) {
             Set<Class> interfaces = $.interfacesOf(type);
-            return 100 - interfaces.size();
+            return 999 - interfaces.size();
         }
         if (type.isArray()) {
             return distance(type.getComponentType());

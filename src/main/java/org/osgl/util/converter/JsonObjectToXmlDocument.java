@@ -21,83 +21,27 @@ package org.osgl.util.converter;
  */
 
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.xerces.internal.dom.DocumentImpl;
 import org.osgl.*;
 import org.osgl.util.S;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import java.lang.reflect.Array;
-import java.util.*;
 
 public class JsonObjectToXmlDocument extends Lang.TypeConverter<JSONObject, Document> {
     @Override
     public Document convert(JSONObject json) {
-        return _convert(json, OsglConfig.xmlRootTag());
+        return JsonXmlConvertHint.convert(json, OsglConfig.xmlRootTag(), OsglConfig.xmlListItemTag());
     }
 
     @Override
     public Document convert(JSONObject jsonObject, Object hint) {
-        if (hint instanceof String) {
-            String rootTag = (String) hint;
-            if (S.notBlank(rootTag)) {
-                return _convert(jsonObject, rootTag);
-            }
+        if (hint instanceof JsonXmlConvertHint) {
+            JsonXmlConvertHint jsonXmlConvertHint = $.cast(hint);
+            return JsonXmlConvertHint.convert(jsonObject, jsonXmlConvertHint.rootTag, jsonXmlConvertHint.listItemTag);
         }
-        return _convert(jsonObject, OsglConfig.xmlRootTag());
+        String rootTag = OsglConfig.xmlRootTag();
+        if (hint instanceof String && !S.string(hint).isEmpty()) {
+            rootTag = ((String) hint).trim();
+        }
+        return JsonXmlConvertHint.convert(jsonObject, rootTag, OsglConfig.xmlListItemTag());
     }
 
-    private Document _convert(JSONObject json, String xmlRootTag) {
-        Node root;
-        DocumentImpl doc = new DocumentImpl();
-        int sz = json.size();
-        if (sz == 0) {
-            return doc;
-        } else {
-            root = doc.createElement(OsglConfig.xmlRootTag());
-            doc.appendChild(root);
-            append(root, json, "root", doc);
-        }
-        return doc;
-    }
-
-    private void append(Node parent, Object value, String key, Document doc) {
-        if (null == value) {
-            return;
-        }
-        if (value instanceof Map) {
-            Map<String, Object> map = (Map) value;
-            append(parent, map, doc);
-        } else if (value instanceof List) {
-            List list = (List) value;
-            append(parent, list, key, doc);
-        } else {
-            if (value.getClass().isArray()) {
-                List list = new ArrayList();
-                int len = Array.getLength(value);
-                for (int i = 0; i < len; ++i) {
-                    list.add(Array.get(value, i));
-                }
-                append(parent, list, key, doc);
-            } else {
-                Node node = doc.createElement(key);
-                parent.appendChild(node);
-                node.appendChild(doc.createTextNode(S.string(value)));
-            }
-        }
-    }
-
-    private void append(Node parent, Map<String, Object> map, Document doc) {
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            append(parent, entry.getValue(), entry.getKey(), doc);
-        }
-    }
-
-    private void append(Node parent, List list, String key, Document doc) {
-        for (Object o: list) {
-            Node node = doc.createElement(key);
-            append(node, o, key, doc);
-            parent.appendChild(node);
-        }
-    }
 }

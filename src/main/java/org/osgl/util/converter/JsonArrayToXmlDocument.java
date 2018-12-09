@@ -20,27 +20,28 @@ package org.osgl.util.converter;
  * #L%
  */
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import org.osgl.*;
+import org.osgl.util.S;
 import org.w3c.dom.Document;
 
-public class XmlDocumentToJsonObject extends Lang.TypeConverter<Document, JSONObject> {
+public class JsonArrayToXmlDocument extends Lang.TypeConverter<JSONArray, Document> {
     @Override
-    public JSONObject convert(Document document) {
-        return convert(document, null);
+    public Document convert(JSONArray array) {
+        return JsonXmlConvertHint.convert(array, OsglConfig.xmlRootTag(), OsglConfig.xmlListItemTag());
     }
 
     @Override
-    public JSONObject convert(Document document, Object hint) {
-        String rootTag = OsglConfig.xmlRootTag();
-        String listItemTag = OsglConfig.xmlListItemTag();
+    public Document convert(JSONArray arrray, Object hint) {
         if (hint instanceof JsonXmlConvertHint) {
-            JsonXmlConvertHint hint1 = $.cast(hint);
-            rootTag = hint1.rootTag;
-            listItemTag = hint1.listItemTag;
-        } else if (hint instanceof String) {
-            rootTag = $.cast(hint);
+            JsonXmlConvertHint jsonXmlConvertHint = $.cast(hint);
+            return JsonXmlConvertHint.convert(arrray, jsonXmlConvertHint.rootTag, jsonXmlConvertHint.listItemTag);
         }
-        return (JSONObject) XmlDocumentToJsonUtil.convert(document, rootTag, listItemTag, false);
+        String rootTag = OsglConfig.xmlRootTag();
+        if (hint instanceof String && !S.string(hint).isEmpty()) {
+            rootTag = ((String) hint).trim();
+        }
+        return JsonXmlConvertHint.convert(arrray, rootTag, OsglConfig.xmlListItemTag());
     }
+
 }

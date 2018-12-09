@@ -296,11 +296,19 @@ public class OsglConfig {
 
     }
 
-    private static String xmlRootTag = "root";
+    private static String xmlRootTag = "xml";
     public static void setXmlRootTag(String tag) {
         xmlRootTag = S.requireNotBlank(tag);
     }
     public static String xmlRootTag() {
         return xmlRootTag;
+    }
+
+    private static String xmlListItemTag = "xmlListItem";
+    public static void setXmlListItemTag(String tag) {
+        xmlListItemTag = tag;
+    }
+    public static String xmlListItemTag() {
+        return xmlListItemTag;
     }
 }

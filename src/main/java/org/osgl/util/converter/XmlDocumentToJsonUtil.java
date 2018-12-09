@@ -23,26 +23,33 @@ package org.osgl.util.converter;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.osgl.util.S;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 
 import java.util.List;
 
 class XmlDocumentToJsonUtil {
 
-    static Object convert(Node node) {
+    static Object convert(Document document, String rootTag, String listItemTag, boolean array) {
+        NodeList list = document.getChildNodes();
+        if (0 == list.getLength()) {
+            return array ? new JSONArray() : new JSONObject();
+        }
+        Node root = list.item(0);
+        return convert(root.getChildNodes(), listItemTag);
+    }
+
+    static Object convert(Node node, String listItemTag) {
         switch (node.getNodeType()) {
             case Node.TEXT_NODE:
                 return convert(node.getTextContent());
             case Node.ELEMENT_NODE:
-                return convert(node.getChildNodes());
+                return convert(node.getChildNodes(), listItemTag);
             default:
                 return null;
         }
     }
 
-    private static Object convert(NodeList list) {
-        JSONObject json = new JSONObject();
+    private static Object convert(NodeList list, String listItemTag) {
         int size = list.getLength();
         if (1 == size) {
             Node node = list.item(0);
@@ -50,14 +57,22 @@ class XmlDocumentToJsonUtil {
                 return convert(node.getTextContent());
             }
         }
+        JSONObject json = new JSONObject();
+        List array = null;
+        boolean retArray = false;
         for (int i = 0; i < size; ++i) {
             Node node = list.item(i);
             if (node.getNodeType() == Node.TEXT_NODE) {
                 continue;
             }
             String name = nameOf(node);
-            if (json.containsKey(name)) {
-                List array;
+            if (listItemTag.equals(name)) {
+                retArray = true;
+                if (null == array) {
+                    array = new JSONArray();
+                }
+                array.add(convert(node, listItemTag));
+            } else if (json.containsKey(name)) {
                 Object o = json.get(name);
                 if (o instanceof List) {
                     array = (List)o;
@@ -65,13 +80,13 @@ class XmlDocumentToJsonUtil {
                     array = new JSONArray();
                     array.add(o);
                 }
-                array.add(convert(node));
+                array.add(convert(node, listItemTag));
                 json.put(name, array);
             } else {
-                json.put(name, convert(node));
+                json.put(name, convert(node, listItemTag));
             }
         }
-        return json;
+        return retArray ? array : json;
     }
 
     static Object convert(String s) {

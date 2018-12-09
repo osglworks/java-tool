@@ -1,0 +1,14 @@
+{
+  "barList":[
+    {
+      "id": 1,
+      "name": "abc"
+    },
+    {
+      "id": 2,
+      "name": "xyz"
+    }
+  ],
+  "id": 1,
+  "name": "foo"
+}
