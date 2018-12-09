@@ -20,6 +20,8 @@ package org.osgl.util.converter;
  * #L%
  */
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.osgl.$;
 import org.osgl.Lang;
 import org.osgl.util.C;
@@ -37,7 +39,11 @@ public class TypeConverterRegistry {
         private Comparator<Node> nodeComparator = new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
-                return distanceTo(o1.type) - distanceTo(o2.type);
+                int delta = distanceTo(o1.type) - distanceTo(o2.type);
+                if (0 != delta) {
+                    return delta;
+                }
+                return o1.type.getName().compareTo(o2.type.getName());
             }
 
             private int distanceTo(Class<?> target) {
@@ -125,7 +131,7 @@ public class TypeConverterRegistry {
                 superNode.subTypes.add(this);
             }
             Class<?> superType = type.getSuperclass();
-            while (superType != null) {
+            while (superType != null && superType != Object.class) {
                 Node superNode = registry.nodeOf(superType);
                 superTypes.add(superNode);
                 superNode.subTypes.add(this);
@@ -288,6 +294,12 @@ public class TypeConverterRegistry {
                 paths.put(key, converter);
             } else if (Boolean.class == toType) {
                 converter = $.TypeConverter.ANY_TO_BOOLEAN;
+                paths.put(key, converter);
+            } else if (JSONObject.class == toType) {
+                converter = $.TypeConverter.ANY_TO_JSON_OBJECT;
+                paths.put(key, converter);
+            } else if (JSONArray.class == toType) {
+                converter = $.TypeConverter.ANY_TO_JSON_ARRAY;
                 paths.put(key, converter);
             }
         }

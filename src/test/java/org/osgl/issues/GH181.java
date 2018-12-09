@@ -20,11 +20,13 @@ package org.osgl.issues;
  * #L%
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgl.TestBase;
 import org.osgl.inject.Genie;
 import org.osgl.issues.gh181.Order;
 
+@Ignore
 public class GH181 extends TestBase {
 
     @Test

@@ -3189,7 +3189,7 @@ public class Lang implements Serializable {
 
         public static final TypeConverter<JSONArray, Document> JSON_ARRAY_TO_XML_DOCUMENT = new JsonArrayToXmlDocument();
 
-        public static final TypeConverter<Object, JSONObject> OBJECT_TO_JSON_OBJECT = new TypeConverter<Object, JSONObject>() {
+        public static final TypeConverter<Object, JSONObject> ANY_TO_JSON_OBJECT = new TypeConverter<Object, JSONObject>() {
             @Override
             public JSONObject convert(Object o) {
                 Object o1 = JSON.toJSON(o);
@@ -3201,7 +3201,7 @@ public class Lang implements Serializable {
             }
         };
 
-        public static final TypeConverter<Object, JSONArray> OBJECT_TO_JSON_ARRAY = new TypeConverter<Object, JSONArray>() {
+        public static final TypeConverter<Object, JSONArray> ANY_TO_JSON_ARRAY = new TypeConverter<Object, JSONArray>() {
             @Override
             public JSONArray convert(Object o) {
                 Object o1 = JSON.toJSON(o);
