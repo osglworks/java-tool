@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.19.0
+* Add `getReturnType(Method, Class)` method to `Generics` #194
+
 1.18.3 9/Dec/2018
 * Add `isCollectionType` to `Lang` #193
 * Add XML to JSONArray converter #192

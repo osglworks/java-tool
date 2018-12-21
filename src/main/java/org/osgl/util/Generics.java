@@ -24,13 +24,8 @@ import org.osgl.$;
 import org.osgl.exception.UnexpectedException;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Provides utilities for generic relevant operations
@@ -123,6 +118,57 @@ public class Generics {
         }
 
         buildTypeParamImplLookup(theClass.getSuperclass(), lookup);
+    }
+
+    /**
+     * Return the real return type of a method.
+     *
+     * Normally it returns {@link Method#getReturnType()}
+     *
+     * In case a method is declared in a super type and the return type is declared as a generic {@link TypeVariable},
+     * when a sub class with type variable implementation presented, then it shall return the implementation type. E.g
+     *
+     * Super type:
+     *
+     * ```java
+     * public abstract class Foo<T> {
+     *     T getFoo();
+     * }
+     * ```
+     *
+     * Sub type:
+     *
+     * ```java
+     * public class StringFoo extends Foo<String> {
+     *     String getFoo() {return "foo";}
+     * }
+     * ```
+     *
+     * Usage of `getReturnType`:
+     *
+     * ```java
+     * Method method = Foo.class.getMethod("getFoo");
+     * Class<?> realReturnType = Generics.getReturnType(method, StringFoo.class); // return String.class
+     * ```
+     *
+     * @param method the method
+     * @param theClass the class on which the method is invoked
+     * @return the return type
+     */
+    public static Class<?> getReturnType(Method method, Class<?> theClass) {
+        Type type = method.getGenericReturnType();
+        if (type == Class.class) {
+            return $.cast(type);
+        }
+        if (type instanceof TypeVariable) {
+            Map<String, Class> lookup = Generics.buildTypeParamImplLookup(theClass);
+            String name = ((TypeVariable) type).getName();
+            Class<?> realType = lookup.get(name);
+            if (null != realType) {
+                return realType;
+            }
+        }
+        return method.getReturnType();
     }
 
     private static List<Type> typeParamImplementations(Class theClass, Class rootClass, List<Type> subClassTypeParams) {
