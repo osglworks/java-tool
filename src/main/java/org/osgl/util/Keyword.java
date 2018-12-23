@@ -379,6 +379,51 @@ public final class Keyword implements Comparable<Keyword> {
         return style.toString(this);
     }
 
+    /**
+     * Check if specified keyword is sub sequence of this keyword.
+     *
+     * @param keyword
+     *      the keyword to check
+     * @return `true` if the keyword specified is sub sequence of this keyword
+     */
+    public boolean contains(Keyword keyword) {
+        return toString().contains(keyword.toString());
+    }
+
+    public boolean contains(String string) {
+        return toString().contains(string.toLowerCase()) || contains(of(string));
+    }
+
+    /**
+     * Check if specified keyword equals to or is prefix of this keyword.
+     *
+     * @param keyword
+     *      the keyword to check
+     * @return `true` if this keyword starts with the specified keyword
+     */
+    public boolean startsWith(Keyword keyword) {
+        return toString().startsWith(keyword.toString());
+    }
+
+    public boolean startsWith(String string) {
+        return toString().startsWith(string) || startsWith(of(string));
+    }
+
+    /**
+     * Check if specified keyword equals to or is suffix of this keyword.
+     *
+     * @param keyword
+     *      the keyword to check
+     * @return `true` if this keyword ends with the specified keyword
+     */
+    public boolean endsWith(Keyword keyword) {
+        return toString().endsWith(keyword.toString());
+    }
+
+    public boolean endsWith(String string) {
+        return toString().endsWith(string.toLowerCase()) || endsWith(of(string));
+    }
+
     @Override
     public int compareTo(Keyword o) {
         return camelCase().compareTo(o.camelCase());
@@ -568,6 +613,16 @@ public final class Keyword implements Comparable<Keyword> {
 
     private static boolean isSeparator(char ch) {
         return Arrays.binarySearch(SEPS, ch) >= 0;
+    }
+
+    public enum F {
+        ;
+        public static $.Transformer<String, Keyword> FROM_STRING = new $.Transformer<String, Keyword>() {
+            @Override
+            public Keyword transform(String s) {
+                return Keyword.of(s);
+            }
+        };
     }
 
 }

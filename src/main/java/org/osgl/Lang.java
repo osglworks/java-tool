@@ -3175,6 +3175,13 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<String, Keyword> STRING_TO_KEYWORD = new TypeConverter<String, Keyword>() {
+            @Override
+            public Keyword convert(String s) {
+                return Keyword.of(s);
+            }
+        };
+
         public static final TypeConverter<String, Document> STRING_TO_XML_DOCUMENT = XML.STRING_TO_XML_DOCUMENT;
 
         public static final TypeConverter<InputStream, Document> IS_TO_XML_DOCUMENT = XML.IS_TO_XML_DOCUMENT;

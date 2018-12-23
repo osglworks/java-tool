@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.19.0
+* Keyword improvement #195
 * Add `getReturnType(Method, Class)` method to `Generics` #194
 
 1.18.3 9/Dec/2018
