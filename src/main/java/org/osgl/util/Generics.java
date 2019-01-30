@@ -91,42 +91,51 @@ public class Generics {
             ParameterizedType ptype = $.cast(superType);
             Type[] typeParams = ptype.getActualTypeArguments();
             TypeVariable[] typeArgs = theClass.getSuperclass().getTypeParameters();
-            int len = typeParams.length;
-            for (int i = 0; i < len; ++i) {
-                Type typeParam = typeParams[i];
-                if (typeParam instanceof Class) {
-                    TypeVariable typeVar = typeArgs[i];
-                    lookup.put(typeVar.getName(), (Class) typeParam);
-                } else if (typeParam instanceof TypeVariable) {
-                    TypeVariable var = $.cast(typeParam);
-                    String name = var.getName();
-                    Class impl = lookup.get(name);
-                    TypeVariable typeVar = typeArgs[i];
-                    if (null != impl) {
-                        lookup.put(typeVar.getName(), impl);
-                    } else {
-                        Type[] ta = var.getBounds();
-                        if (null != ta && ta.length == 1) {
-                            Type bound = ta[0];
-                            if (bound instanceof Class) {
-                                lookup.put(typeVar.getName(), (Class) bound);
-                            }
-                        }
-                    }
-                } else if (typeParam instanceof ParameterizedType) {
-                    ParameterizedType ptype0 = (ParameterizedType) typeParam;
-                    TypeVariable typeVar = typeArgs[i];
-                    Type rawType = ptype0.getRawType();
-                    if (rawType instanceof Class) {
-                        lookup.put(typeVar.getName(), (Class) rawType);
-                    } else {
-                        throw new UnexpectedException("Unknown typeParam: " + ptype0);
-                    }
-                }
-            }
+            buildTypeParamImplLookup("", typeParams, typeArgs, lookup);
         }
 
         buildTypeParamImplLookup(theClass.getSuperclass(), lookup);
+    }
+
+    private static void buildTypeParamImplLookup(String prefix, Type[] typeParams, TypeVariable[] typeArgs, Map<String, Class> lookup) {
+        int len = typeParams.length;
+        for (int i = 0; i < len; ++i) {
+            Type typeParam = typeParams[i];
+            if (typeParam instanceof Class) {
+                TypeVariable typeVar = typeArgs[i];
+                lookup.put(lookupKey(typeVar, prefix), (Class) typeParam);
+            } else if (typeParam instanceof TypeVariable) {
+                TypeVariable var = $.cast(typeParam);
+                String name = var.getName();
+                Class impl = lookup.get(name);
+                TypeVariable typeVar = typeArgs[i];
+                if (null != impl) {
+                    lookup.put(lookupKey(typeVar, prefix), impl);
+                } else {
+                    Type[] ta = var.getBounds();
+                    if (null != ta && ta.length == 1) {
+                        Type bound = ta[0];
+                        if (bound instanceof Class) {
+                            lookup.put(lookupKey(typeVar, prefix), (Class) bound);
+                        }
+                    }
+                }
+            } else if (typeParam instanceof ParameterizedType) {
+                ParameterizedType ptype0 = (ParameterizedType) typeParam;
+                TypeVariable typeVar = typeArgs[i];
+                Type rawType = ptype0.getRawType();
+                if (rawType instanceof Class) {
+                    lookup.put(lookupKey(typeVar, prefix), (Class) rawType);
+                    buildTypeParamImplLookup(lookupKey(typeVar, prefix), ptype0.getActualTypeArguments(), ((Class) rawType).getTypeParameters(), lookup);
+                } else {
+                    throw new UnexpectedException("Unknown typeParam: " + ptype0);
+                }
+            }
+        }
+    }
+
+    private static String lookupKey(TypeVariable typeVar, String prefix) {
+        return S.isBlank(prefix) ? typeVar.getName() : S.concat(prefix, ".", typeVar.getName());
     }
 
     /**

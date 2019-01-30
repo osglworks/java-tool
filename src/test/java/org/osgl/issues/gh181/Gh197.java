@@ -1,4 +1,4 @@
-package org.osgl.issues;
+package org.osgl.issues.gh181;
 
 /*-
  * #%L
@@ -25,25 +25,30 @@ import org.osgl.TestBase;
 import org.osgl.util.Generics;
 
 import java.util.Map;
-import java.util.TreeMap;
 
-public class Gh196 extends TestBase {
+public class Gh197 extends TestBase {
 
     public static class GrandParent<T> {
         T t;
     }
 
-    public static class Parent<K, V, M extends Map<K, V>> extends GrandParent<M> {
+    public static class Req<V, ID> {
+        ID id;
+        V v;
     }
 
-    public static class Me extends Parent<String, Integer, TreeMap<String, Integer>> {}
+    public static class Parent<K, V, RQ extends Req<K, V>> extends GrandParent<RQ> {
+    }
+
+    public static class Me extends Parent<String, Integer, Req<String, Integer>> {}
 
     @Test
     public void test() {
         Map<String, Class> lookup = Generics.buildTypeParamImplLookup(Me.class);
         eq(String.class, lookup.get("K"));
         eq(Integer.class, lookup.get("V"));
-        eq(TreeMap.class, lookup.get("M"));
+        eq(Req.class, lookup.get("RQ"));
+        eq(String.class, lookup.get("RQ.V"));
     }
 
 }

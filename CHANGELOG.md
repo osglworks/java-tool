@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.19.1
+* `Generics.buildTypeParamImplLookup` - support nested type params #197
 * `Generics.buildTypeParamImplLookup` fails to on `ParameterizedTypeImpl` #196
 
 1.19.0
