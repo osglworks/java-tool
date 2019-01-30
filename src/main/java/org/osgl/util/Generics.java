@@ -68,6 +68,23 @@ public class Generics {
         }
     }
 
+    public static Map<String, Class> subLookup(Map<String, Class> lookup, String prefix) {
+        if (S.blank(prefix)) {
+            return lookup;
+        }
+        if (!prefix.endsWith(".")) {
+            prefix += ".";
+        }
+        Map<String, Class> subLookup = new HashMap<>();
+        for (Map.Entry<String, Class> entry : lookup.entrySet()) {
+            String key = entry.getKey();
+            if (key.startsWith(prefix)) {
+                subLookup.put(key.substring(prefix.length()), entry.getValue());
+            }
+        }
+        return subLookup;
+    }
+
     /**
      * Build class type variable name and type variable implementation lookup
      *
