@@ -113,6 +113,15 @@ public class Generics {
                             }
                         }
                     }
+                } else if (typeParam instanceof ParameterizedType) {
+                    ParameterizedType ptype0 = (ParameterizedType) typeParam;
+                    TypeVariable typeVar = typeArgs[i];
+                    Type rawType = ptype0.getRawType();
+                    if (rawType instanceof Class) {
+                        lookup.put(typeVar.getName(), (Class) rawType);
+                    } else {
+                        throw new UnexpectedException("Unknown typeParam: " + ptype0);
+                    }
                 }
             }
         }

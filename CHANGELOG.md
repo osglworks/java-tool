@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.19.1
+* `Generics.buildTypeParamImplLookup` fails to on `ParameterizedTypeImpl` #196
+
 1.19.0
 * Keyword improvement #195
 * Add `getReturnType(Method, Class)` method to `Generics` #194
