@@ -76,6 +76,9 @@ public class Generics {
             prefix += ".";
         }
         Map<String, Class> subLookup = new HashMap<>();
+        if (null == lookup) {
+            return subLookup;
+        }
         for (Map.Entry<String, Class> entry : lookup.entrySet()) {
             String key = entry.getKey();
             if (key.startsWith(prefix)) {
@@ -135,6 +138,14 @@ public class Generics {
                         if (bound instanceof Class) {
                             lookup.put(lookupKey(typeVar, prefix), (Class) bound);
                         }
+                    }
+                }
+                // cascade populate nested type lookup pairs
+                Map<String, Class> subLookup = subLookup(lookup, name);
+                if (!subLookup.isEmpty()) {
+                    String newPrefix = typeVar.getName() + ".";
+                    for (Map.Entry<String, Class> entry : subLookup.entrySet()) {
+                        lookup.put(newPrefix + entry.getKey(), entry.getValue());
                     }
                 }
             } else if (typeParam instanceof ParameterizedType) {
