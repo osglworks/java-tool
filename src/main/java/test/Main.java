@@ -20,14 +20,29 @@ package test;
  * #L%
  */
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import org.osgl.$;
+import org.osgl.util.C;
+import org.osgl.util.XML;
+import org.w3c.dom.Document;
+
 public class Main {
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main1(String[] args) throws Exception {
         String s = "## <a name=\"intro\"></a>1. 介绍";
         System.out.println(s.indexOf("<"));
         System.out.println(s.charAt(2));
         System.out.println(s.substring(12));
+    }
+
+    public static void main(String[] args) {
+        JSONArray array = new JSONArray();
+        array.add(C.Map("foo", 1));
+        JSON json = array;
+        Document document = $.convert(json).to(Document.class);
+        System.out.println(XML.toString(document));
     }
 
 

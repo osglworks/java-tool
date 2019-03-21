@@ -269,6 +269,7 @@ public class Generics {
                         if ($.eq(declared, stp)) {
                             nextList.add(subClassTypeParams.get(i));
                             found = true;
+                            break;
                         }
                     }
                     E.illegalStateIf(!found, "Cannot find type implementation for %s", theClass);

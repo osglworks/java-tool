@@ -62,7 +62,11 @@ public abstract class SObject implements ISObject {
     protected boolean valid = true;
     protected Throwable cause = null;
 
-    SObject(String key) {
+    /*
+     * got to make this public to fix the cross classloader
+     * init issue in ActFramework application
+     */
+    public SObject(String key) {
         if (null == key) {
             throw new NullPointerException();
         }

@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.19.2
+* Make `SObject` constructor be public to workaround https://github.com/actframework/actframework/issues/1082
+
 1.19.1 04/Feb/2019
 * `Generics.buildTypeParamImplLookup` - support nested type params #197
 * `Generics.buildTypeParamImplLookup` fails to on `ParameterizedTypeImpl` #196
