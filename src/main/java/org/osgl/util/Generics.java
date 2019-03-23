@@ -300,7 +300,7 @@ public class Generics {
                         }
                     }
                     if (raiseExceptionIfNotFound) {
-                        E.illegalStateIf(!found, "Cannot find type implementation for %s", theClass);
+                        E.illegalArgumentIf(!found, "Cannot find type implementation for %s", theClass);
                     } else {
                         return C.list();
                     }

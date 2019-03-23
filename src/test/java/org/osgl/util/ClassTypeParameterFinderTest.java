@@ -68,4 +68,9 @@ public class ClassTypeParameterFinderTest extends TestBase {
         yes(typeParams.isEmpty());
     }
 
+    @Test
+    public void testIllegalArgumentWithoutException() {
+        isEmpty(Generics.tryGetTypeParamImplementations(C2.class, C1.class));
+    }
+
 }
