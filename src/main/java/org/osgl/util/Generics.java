@@ -62,7 +62,28 @@ public class Generics {
             return C.list();
         }
         try {
-            return typeParamImplementations(theClass, rootClass, new ArrayList<Type>());
+            return typeParamImplementations(theClass, rootClass, new ArrayList<Type>(), true);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException(S.fmt("Cannot infer type parameter implementation on %s against %s", theClass.getName(), rootClass.getName()), e);
+        }
+    }
+
+    /**
+     * Same function with {@link #typeParamImplementations(Class, Class)}.
+     *
+     * However this method will return an empty list instead of throwing out exception when
+     * type parameter not found.
+     *
+     * @param theClass  the end class
+     * @param rootClass the root class or interface
+     * @return a list of type variable implementation on root class
+     */
+    public static List<Type> tryGetTypeParamImplementations(Class theClass, Class rootClass) {
+        if (rootClass.getTypeParameters().length == 0) {
+            return C.list();
+        }
+        try {
+            return typeParamImplementations(theClass, rootClass, new ArrayList<Type>(), false);
         } catch (IndexOutOfBoundsException e) {
             throw new IllegalArgumentException(S.fmt("Cannot infer type parameter implementation on %s against %s", theClass.getName(), rootClass.getName()), e);
         }
@@ -217,7 +238,7 @@ public class Generics {
         return method.getReturnType();
     }
 
-    private static List<Type> typeParamImplementations(Class theClass, Class rootClass, List<Type> subClassTypeParams) {
+    private static List<Type> typeParamImplementations(Class theClass, Class rootClass, List<Type> subClassTypeParams, boolean raiseExceptionIfNotFound) {
         Type superType = null;
         Type[] interfaces = theClass.getGenericInterfaces();
         for (Type intf : interfaces) {
@@ -240,6 +261,9 @@ public class Generics {
                         superClass = theClass;
                     }
                     Type[] types = superClass.getGenericInterfaces();
+                    if (types.length == 0) {
+                        break;
+                    }
                     superType = types[0];
                     Class[] intfs = theClass.getInterfaces();
                     superClass = intfs[0];
@@ -265,6 +289,9 @@ public class Generics {
                 } else if (stp instanceof TypeVariable) {
                     boolean found = false;
                     for (int i = 0; i < declaredTypeVariables.length; ++i) {
+                        if (subClassTypeParams.size() <= i) {
+                            break;
+                        }
                         TypeVariable declared = declaredTypeVariables[i];
                         if ($.eq(declared, stp)) {
                             nextList.add(subClassTypeParams.get(i));
@@ -272,16 +299,23 @@ public class Generics {
                             break;
                         }
                     }
-                    E.illegalStateIf(!found, "Cannot find type implementation for %s", theClass);
+                    if (raiseExceptionIfNotFound) {
+                        E.illegalStateIf(!found, "Cannot find type implementation for %s", theClass);
+                    } else {
+                        return C.list();
+                    }
                 }
             }
             superClass = (Class) pSuperType.getRawType();
             if ($.eq(superClass, rootClass)) {
                 return nextList;
             }
-            return typeParamImplementations(superClass, rootClass, nextList);
+            return typeParamImplementations(superClass, rootClass, nextList, raiseExceptionIfNotFound);
         }
-        throw E.unexpected("Cannot find type param implementation: super type %s of %s is not a parameterized type", superType, theClass);
+        if (raiseExceptionIfNotFound) {
+            throw E.unexpected("Cannot find type param implementation: super type %s of %s is not a parameterized type", superType, theClass);
+        }
+        return C.list();
     }
 
     public static void main(String[] args) {

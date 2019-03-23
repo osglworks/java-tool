@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.19.2
+* Generics - provide exception free `typeParamImplementations` method #199
 * Make `SObject` constructor be public to workaround https://github.com/actframework/actframework/issues/1082
 
 1.19.1 04/Feb/2019
