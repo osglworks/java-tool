@@ -299,9 +299,10 @@ public class Generics {
                             break;
                         }
                     }
-                    if (raiseExceptionIfNotFound) {
-                        E.illegalArgumentIf(!found, "Cannot find type implementation for %s", theClass);
-                    } else {
+                    if (!found) {
+                        if (raiseExceptionIfNotFound) {
+                            E.illegalArgumentIf(!found, "Cannot find type implementation for %s", theClass);
+                        }
                         return C.list();
                     }
                 }
