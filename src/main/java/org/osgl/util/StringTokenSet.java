@@ -292,4 +292,9 @@ public class StringTokenSet implements Set<String> {
         return new StringTokenSet(data);
     }
 
+    public static String merge(String a, String b) {
+        String s = S.concat(a, SEPARATOR, b);
+        return StringTokenSet.of(s).toString();
+    }
+
 }
