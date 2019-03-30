@@ -309,15 +309,15 @@ public class StringTokenSet implements Set<String> {
         return of(s).toString();
     }
 
-    public String merge(String a, String ... others) {
+    public static String merge(String a, String ... others) {
         return of(S.concat(a, S.join(others).by(SEPARATOR))).toString();
     }
 
-    public String merge(String[] sa) {
+    public static String merge(String[] sa) {
         return of(S.join(sa).by(SEPARATOR).get()).toString();
     }
 
-    public String merge(Collection<String> sa) {
+    public static String merge(Collection<String> sa) {
         return of(S.join(sa).by(SEPARATOR).get()).toString();
     }
 
