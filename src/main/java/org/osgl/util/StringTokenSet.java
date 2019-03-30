@@ -235,7 +235,7 @@ public class StringTokenSet implements Set<String> {
 
     @Override
     public String toString() {
-        return super.toString();
+        return data;
     }
 
     public StringTokenSet sort() {
