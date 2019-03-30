@@ -55,12 +55,21 @@ public class StringTokenSetTest extends TestBase {
     }
 
     @Test
+    public void testDuplicateElementSet() {
+        StringTokenSet set = new StringTokenSet("a,b,a");
+        eq(2, set.size());
+    }
+
+    @Test
     public void testAdd() {
         StringTokenSet set = new StringTokenSet();
         set.add("abc");
         eq(1, set.size());
         eq(new String[]{"abc"}, set.toArray());
         set.add("xyz");
+        eq(2, set.size());
+        eq(new String[]{"abc", "xyz"}, set.toArray());
+        set.add("abc");
         eq(2, set.size());
         eq(new String[]{"abc", "xyz"}, set.toArray());
     }

@@ -60,8 +60,8 @@ public class StringTokenSet implements Set<String> {
      * @param data the string contains tokens separated by {@link #SEPARATOR}
      */
     public StringTokenSet(String data) {
-        this.data = data;
-        this.size = null == data ? 0 : S.count(SEPARATOR).in(data) + 1;
+        StringTokenSet set = StringTokenSet.of(data);
+        $.copy(set).to(this);
     }
 
     @Override
@@ -289,7 +289,9 @@ public class StringTokenSet implements Set<String> {
     }
 
     public static StringTokenSet of(String data) {
-        return new StringTokenSet(data);
+        StringTokenSet set = new StringTokenSet();
+        set.addAll(S.fastSplit(data, SEPARATOR));
+        return set;
     }
 
     public static String merge(String a, String b) {
