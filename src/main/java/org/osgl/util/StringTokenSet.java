@@ -290,13 +290,35 @@ public class StringTokenSet implements Set<String> {
 
     public static StringTokenSet of(String data) {
         StringTokenSet set = new StringTokenSet();
-        set.addAll(S.fastSplit(data, SEPARATOR));
+        if (null != data) {
+            set.addAll(S.fastSplit(data, SEPARATOR));
+        }
         return set;
     }
 
     public static String merge(String a, String b) {
+        if (null == a) {
+            if (null == b) {
+                return null;
+            }
+            return of(b).toString();
+        } else if (null == b) {
+            return of(a).toString();
+        }
         String s = S.concat(a, SEPARATOR, b);
-        return StringTokenSet.of(s).toString();
+        return of(s).toString();
+    }
+
+    public String merge(String a, String ... others) {
+        return of(S.concat(a, S.join(others).by(SEPARATOR))).toString();
+    }
+
+    public String merge(String[] sa) {
+        return of(S.join(sa).by(SEPARATOR).get()).toString();
+    }
+
+    public String merge(Collection<String> sa) {
+        return of(S.join(sa).by(SEPARATOR).get()).toString();
     }
 
 }
