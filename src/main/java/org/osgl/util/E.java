@@ -331,21 +331,21 @@ public class E {
     }
 
     /**
-     * Throws out a {@link UnsupportedException} with message `to be implemented`.
+     * Throws out a {@link ToBeImplemented} with message `to be implemented`.
      */
-    public static UnsupportedException tbd() {
-        throw new UnsupportedException("to be implemented");
+    public static ToBeImplemented tbd() {
+        throw new ToBeImplemented("to be implemented");
     }
 
     /**
-     * Throws out a {@link UnsupportedException} with `feature` specified.
+     * Throws out a {@link ToBeImplemented} with `feature` specified.
      *
      * The error message will be `"${feature} to be implemented"`
      * @param feature
      *      the feature name
      */
-    public static UnsupportedException tbd(String feature) {
-        throw new UnsupportedException("%s to be implemented", feature);
+    public static ToBeImplemented tbd(String feature) {
+        throw new ToBeImplemented("%s to be implemented", feature);
     }
 
     /**

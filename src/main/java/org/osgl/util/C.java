@@ -2958,7 +2958,7 @@ public class C {
      * @return an immutable list contains specified elements
      */
     public static List<Boolean> list(boolean[] elements) {
-        if (elements.length == 0) {
+        if (null == elements || 0 == elements.length) {
             return Nil.list();
         }
         Boolean[] ba = $.asObject(elements);
@@ -2988,7 +2988,7 @@ public class C {
      * @return an immutable list contains specified elements
      */
     public static List<Byte> list(byte[] elements) {
-        if (elements.length == 0) {
+        if (null == elements || 0 == elements.length) {
             return Nil.list();
         }
         Byte[] ba = $.asObject(elements);
@@ -3018,7 +3018,7 @@ public class C {
      * @return an immutable list contains specified elements
      */
     public static List<Character> list(char[] elements) {
-        if (0 == elements.length) {
+        if (null == elements || 0 == elements.length) {
             return Nil.list();
         }
         Character[] a = $.asObject(elements);
@@ -3048,7 +3048,7 @@ public class C {
      * @return an immutable list contains specified elements
      */
     public static List<Short> list(short[] elements) {
-        if (0 == elements.length) {
+        if (null == elements || 0 == elements.length) {
             return Nil.list();
         }
         Short[] a = $.asObject(elements);
@@ -3078,7 +3078,7 @@ public class C {
      * @return an immutable list contains specified elements
      */
     public static List<Integer> list(int[] elements) {
-        if (elements.length == 0) {
+        if (null == elements || 0 == elements.length) {
             return Nil.list();
         }
         Integer[] a = $.asObject(elements);
@@ -3108,7 +3108,7 @@ public class C {
      * @return an immutable list contains specified elements
      */
     public static List<Long> list(long[] elements) {
-        if (0 == elements.length) {
+        if (null == elements || 0 == elements.length) {
             return list();
         }
         return ImmutableList.of($.asObject(elements));
@@ -3137,7 +3137,7 @@ public class C {
      * @return an immutable list contains specified elements
      */
     public static List<Float> list(float[] elements) {
-        if (0 == elements.length) {
+        if (null == elements || 0 == elements.length) {
             return list();
         }
         return ImmutableList.of($.asObject(elements));
@@ -3166,29 +3166,32 @@ public class C {
      * @return an immutable list contains specified elements
      */
     public static List<Double> list(double[] elements) {
-        if (0 == elements.length) {
+        if (null == elements || 0 == elements.length) {
             return list();
         }
         return ImmutableList.of($.asObject(elements));
     }
 
     public static <T> List<T> list(Iterable<? extends T> iterable) {
-        return ListBuilder.toList(iterable);
+        return null == iterable ? C.<T>list() : ListBuilder.toList(iterable);
     }
 
     public static <T> List<T> list(Iterator<? extends T> iterator) {
-        return ListBuilder.toList(iterator);
+        return null == iterator ? C.<T>list() : ListBuilder.toList(iterator);
     }
 
     public static <T> List<T> list(Enumeration<? extends T> enumeration) {
-        return ListBuilder.toList(enumeration);
+        return null == enumeration ? C.<T>list() : ListBuilder.toList(enumeration);
     }
 
     public static <T> List<T> list(Collection<? extends T> col) {
-        return ListBuilder.toList(col);
+        return null == col ? C.<T>list() : ListBuilder.toList(col);
     }
 
     public static <T> List<T> list(java.util.List<? extends T> javaList) {
+        if (null == javaList) {
+            return C.list();
+        }
         if (javaList instanceof List) {
             List<T> list = $.cast(javaList);
 
@@ -3206,7 +3209,7 @@ public class C {
     }
 
     public static <T> List<T> wrap(java.util.List<T> list) {
-        return DelegatingList.wrap(list);
+        return null == list ? C.<T>list() : DelegatingList.wrap(list);
     }
 
     public static <T> List<T> newSizedList(int size) {
@@ -3218,7 +3221,7 @@ public class C {
     }
 
     public static <T> List<T> newList(Iterable<? extends T> iterable) {
-        return new DelegatingList<T>(iterable);
+        return null == iterable ? C.<T>newList() : new DelegatingList<T>(iterable);
     }
 
     public static <T> List<T> newList(T t) {
@@ -3241,7 +3244,7 @@ public class C {
     }
 
     public static <T> List<T> newListOf(T[] ts) {
-        return new DelegatingList<>(C.listOf(ts));
+        return null == ts ? C.<T>newList() : new DelegatingList<>(C.listOf(ts));
     }
 
     /**
@@ -3253,6 +3256,9 @@ public class C {
      */
     @SuppressWarnings("unchecked")
     public static <T> Sequence<T> seq(Iterable<? extends T> iterable) {
+        if (null == iterable) {
+            return C.list();
+        }
         if (iterable instanceof Sequence) {
             return ((Sequence<T>) iterable);
         }
@@ -3260,11 +3266,11 @@ public class C {
     }
 
     public static <T> Sequence<T> seq(Iterator<? extends T> iterator) {
-        return IteratorSeq.of(iterator);
+        return null == iterator ? C.<T>list() : IteratorSeq.of(iterator);
     }
 
     public static <T> Sequence<T> seq(Enumeration<? extends T> enumeration) {
-        return IteratorSeq.of(new EnumerationIterator<T>(enumeration));
+        return null == enumeration ? C.<T>list() : IteratorSeq.of(new EnumerationIterator<T>(enumeration));
     }
 
 
@@ -3276,7 +3282,7 @@ public class C {
      * @return
      */
     public static <PROPERTY> C.List<PROPERTY> extract(java.util.Collection<?> collection, final String propertyPath) {
-        if (collection.isEmpty()) {
+        if (null == collection || collection.isEmpty()) {
             return C.list();
         }
         $.Transformer<Object, PROPERTY> extractor = new $.Transformer<Object, PROPERTY>() {
@@ -3318,11 +3324,14 @@ public class C {
     }
 
     public static <T> Sequence<T> filter(Iterable<? extends T> iterable, $.Function<? super T, Boolean> predicate) {
-        return new FilteredSeq<>(iterable, predicate);
+        return null == iterable ? C.<T>list() : new FilteredSeq<>(iterable, predicate);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> Sequence<T> prepend(T t, Sequence<T> sequence) {
+        if (null == sequence) {
+            return C.list(t);
+        }
         if (sequence instanceof ReversibleSequence) {
             return prepend(t, (ReversibleSequence) sequence);
         } else {
@@ -3338,6 +3347,12 @@ public class C {
      * @return the concatenated sequence
      */
     public static <T> Sequence<T> concat(Sequence<T> s1, Sequence<T> s2) {
+        if (null == s1) {
+            return null == s2 ? C.<T>list() : s2;
+        }
+        if (null == s2) {
+            return s1;
+        }
         return s1.append(s2);
     }
 
@@ -3350,6 +3365,12 @@ public class C {
      */
     @SuppressWarnings("unused")
     public static <T> ReversibleSequence<T> concat(ReversibleSequence<T> s1, ReversibleSequence<T> s2) {
+        if (null == s1) {
+            return null == s2 ? C.<T>list() : s2;
+        }
+        if (null == s2) {
+            return s1;
+        }
         return s1.append(s2);
     }
 
@@ -3365,6 +3386,12 @@ public class C {
      */
     @SuppressWarnings("unused")
     public static <T> List<T> concat(List<T> l1, List<T> l2) {
+        if (null == l1) {
+            return null == l2 ? C.<T>list() : l2;
+        }
+        if (null == l2) {
+            return l1;
+        }
         return l1.append(l2);
     }
 
@@ -3441,7 +3468,7 @@ public class C {
      * @see #newSet(Collection)
      */
     public static <T> Set<T> Set(Collection<? extends T> col) {
-        return ImmutableSet.of(col);
+        return null == col ? C.<T>Set() : ImmutableSet.of(col);
     }
 
     /**
@@ -3494,35 +3521,59 @@ public class C {
      * @see #set(Collection)
      */
     public static <T> Set<T> newSet(Collection<? extends T> col) {
-        return new DelegatingSet<>(col);
+        return null == col ? C.<T>Set() : new DelegatingSet<>(col);
     }
 
     public static <T> Set<T> unionOf(Collection<? extends T> col1, Collection<? extends T> col2) {
-        return C.set(col1).with(col2);
+        if (null == col1) {
+            return null == col2 ? C.<T>Set() : Set(col2);
+        }
+        if (null == col2) {
+            return C.Set(col1);
+        }
+        return C.Set(col1).with(col2);
     }
 
     public static <T> Set<T> unionOf(Collection<? extends T> col1, Collection<? extends T> col2, Collection<? extends T> col3, Collection<? extends T> ... otherCols) {
         Set<T> union = C.newSet(col1);
-        union.addAll(col2);
-        union.addAll(col3);
+        if (null != col2) {
+            union.addAll(col2);
+        }
+        if (null != col3) {
+            union.addAll(col3);
+        }
         for (Collection<? extends T> col : otherCols) {
-            union.addAll(col);
+            if (null != col) {
+                union.addAll(col);
+            }
         }
         return C.set(union);
     }
 
     public static <T> Set<T> intercectionOf(Collection<? extends T> col1, Collection<? extends T> col2) {
-        return C.set(col1).withIn(col2);
+        return C.Set(col1).withIn(col2);
     }
 
     public static <T> Set<T> interceptionOf(Collection<? extends T> col1, Collection<? extends T> col2, Collection<? extends T> col3, Collection<? extends T>... otherCols) {
         Set<T> interception = C.newSet(col1);
+        if (interception.isEmpty()) {
+            return interception;
+        }
+        if (null == col2) {
+            return C.Set();
+        }
         interception.retainAll(col2);
+        if (null == col3) {
+            return C.Set();
+        }
         interception.retainAll(col3);
         for (Collection<? extends T> col : otherCols) {
+            if (null == col) {
+                return C.Set();
+            }
             interception.retainAll(col);
         }
-        return C.set(interception);
+        return interception;
     }
 
     /**

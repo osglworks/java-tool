@@ -640,6 +640,10 @@ public class N {
         }
     }
 
+    public static Pair Pair(Integer a, Integer b) {
+        return new Pair(a, b);
+    }
+
     public static class WH extends Dimension {
         public WH(Integer width, Integer height) {
             super(width, height);
