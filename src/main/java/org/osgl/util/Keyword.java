@@ -9,9 +9,9 @@ package org.osgl.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,9 +47,10 @@ import java.util.List;
  * * semi-colon: `;`
  * * slash: `\`
  * * forward slash: `/`
- *
  */
 public final class Keyword implements Comparable<Keyword> {
+
+    public static final Keyword NULL = new Keyword();
 
     public static final char SEP_SPACE = ' ';
     public static final char SEP_UNDERSCORE = '_';
@@ -75,7 +76,7 @@ public final class Keyword implements Comparable<Keyword> {
         /**
          * `CamelCaseStyle`
          */
-        CAMEL_CASE () {
+        CAMEL_CASE() {
             @Override
             protected CharSequence processToken(FastStr token, int seq) {
                 return token.capFirst();
@@ -193,8 +194,7 @@ public final class Keyword implements Comparable<Keyword> {
             protected CharSequence processToken(FastStr token, int seq) {
                 return token.capFirst();
             }
-        }
-        ;
+        };
 
         private String separator;
 
@@ -235,6 +235,9 @@ public final class Keyword implements Comparable<Keyword> {
     }
 
     private C.List<FastStr> list = C.newList();
+
+    private Keyword() {
+    }
 
     public Keyword(CharSequence chars) {
         init(chars);
@@ -300,6 +303,7 @@ public final class Keyword implements Comparable<Keyword> {
 
     /**
      * Returns hyphen separated string.
+     *
      * @return hyphen separated string
      */
     public String dashed() {
@@ -363,6 +367,7 @@ public final class Keyword implements Comparable<Keyword> {
     /**
      * Returns string representation of this keyword using
      * {@link Style#UNDERSCORE underscore style}
+     *
      * @return the underscore style representation of this keyword
      */
     @Override
@@ -372,6 +377,7 @@ public final class Keyword implements Comparable<Keyword> {
 
     /**
      * Return string representation of this keyword using style specified
+     *
      * @param style the style used to print this keyword
      * @return the printed string of this keyword by style specified
      */
@@ -382,8 +388,7 @@ public final class Keyword implements Comparable<Keyword> {
     /**
      * Check if specified keyword is sub sequence of this keyword.
      *
-     * @param keyword
-     *      the keyword to check
+     * @param keyword the keyword to check
      * @return `true` if the keyword specified is sub sequence of this keyword
      */
     public boolean contains(Keyword keyword) {
@@ -397,8 +402,7 @@ public final class Keyword implements Comparable<Keyword> {
     /**
      * Check if specified keyword equals to or is prefix of this keyword.
      *
-     * @param keyword
-     *      the keyword to check
+     * @param keyword the keyword to check
      * @return `true` if this keyword starts with the specified keyword
      */
     public boolean startsWith(Keyword keyword) {
@@ -412,8 +416,7 @@ public final class Keyword implements Comparable<Keyword> {
     /**
      * Check if specified keyword equals to or is suffix of this keyword.
      *
-     * @param keyword
-     *      the keyword to check
+     * @param keyword the keyword to check
      * @return `true` if this keyword ends with the specified keyword
      */
     public boolean endsWith(Keyword keyword) {
@@ -432,12 +435,11 @@ public final class Keyword implements Comparable<Keyword> {
     /**
      * Create a `Keyword` for the given `chars`
      *
-     * @param chars
-     *      A `CharSequence`
+     * @param chars A `CharSequence`
      * @return a `Keyword` of the `chars`
      */
     public static Keyword of(CharSequence chars) {
-        return new Keyword(chars);
+        return null == chars ? NULL : new Keyword(chars);
     }
 
     /**
@@ -445,10 +447,8 @@ public final class Keyword implements Comparable<Keyword> {
      *
      * This method is an alias of {@link #equals(CharSequence, CharSequence)}.
      *
-     * @param a
-     *      the first char sequence
-     * @param b
-     *      the second char sequence
+     * @param a the first char sequence
+     * @param b the second char sequence
      * @return `true` if `a` and `b` are keyword identical
      */
     public static boolean eq(CharSequence a, CharSequence b) {
@@ -457,10 +457,9 @@ public final class Keyword implements Comparable<Keyword> {
 
     /**
      * Check if two {@link CharSequence}s are not keyword identical.
-     * @param a
-     *      the first char sequence
-     * @param b
-     *      the second char sequence
+     *
+     * @param a the first char sequence
+     * @param b the second char sequence
      * @return `true` if `a` and `b` are not keyword identical
      */
     public static boolean neq(CharSequence a, CharSequence b) {
@@ -472,10 +471,8 @@ public final class Keyword implements Comparable<Keyword> {
      *
      * This method is an alias of {@link #notEquals(CharSequence, CharSequence)}.
      *
-     * @param a
-     *      the first char sequence
-     * @param b
-     *      the second char sequence
+     * @param a the first char sequence
+     * @param b the second char sequence
      * @return `true` if `a` and `b` are keyword identical
      */
     public static boolean equals(CharSequence a, CharSequence b) {
@@ -484,10 +481,9 @@ public final class Keyword implements Comparable<Keyword> {
 
     /**
      * Check if two {@link CharSequence}s are not keyword identical.
-     * @param a
-     *      the first char sequence
-     * @param b
-     *      the second char sequence
+     *
+     * @param a the first char sequence
+     * @param b the second char sequence
      * @return `true` if `a` and `b` are not keyword identical
      */
     public static boolean notEquals(CharSequence a, CharSequence b) {
