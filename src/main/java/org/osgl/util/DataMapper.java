@@ -419,23 +419,30 @@ public class DataMapper {
             allEmpty = blackList.isEmpty() && whiteList.isEmpty();
         }
 
+        private boolean isContextIn(String s, NameList list) {
+            if (s.contains(".")) {
+                String context = S.beforeLast(s, ".");
+                return list.contains(context) || isContextIn(context, list);
+            }
+            return list.contains(s);
+        }
+
         @Override
         public boolean test(String s) {
             if (allEmpty) {
                 return true;
             }
             E.illegalArgumentIf(S.blank(s));
-            String context = s.contains(".") ? S.cut(s).beforeLast(".") : "";
-            if (whiteList.contains(s) || grayList.contains(s) || whiteList.contains(context)) {
+            if (whiteList.contains(s) || grayList.contains(s) || isContextIn(s, whiteList)) {
                 return true;
             }
             if (blackList.contains(s)) {
                 return false;
             }
-            if (grayList.contains(context)) {
+            if (isContextIn(s, grayList)) {
                 return false;
             }
-            if (greenList.contains(context)) {
+            if (isContextIn(s, greenList)) {
                 return true;
             }
             return whiteList.isEmpty();
