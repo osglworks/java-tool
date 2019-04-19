@@ -1,6 +1,6 @@
 # OSGL Tool Change Log
 
-1.19.2
+1.19.2 19/Apr/2019
 * Data mapping - Error merge into AdaptiveRecord #181
 * Bean copy - missing map inner structure when filter applied #202
 * Add `ToBeImplemented` Exception #201
