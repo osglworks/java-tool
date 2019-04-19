@@ -545,6 +545,8 @@ public class DataMapper {
      */
     private boolean targetIsMap;
 
+    private boolean targetIsSimpleType;
+
     private boolean targetIsPojo;
 
     /**
@@ -663,6 +665,14 @@ public class DataMapper {
             } else {
                 if (targetIsMap) {
                     toMap();
+                } else if (targetIsSimpleType) {
+                    if (targetType.isInstance(source)) {
+                        target = source;
+                    } else if (semantic.allowTypeConvert()) {
+                        target = convert(source, targetType).to(targetType);
+                    } else {
+                        logMappingFailure();
+                    }
                 } else {
                     Set<String> mapped = toPojo();
                     if (target instanceof AdaptiveMap) {
@@ -1341,13 +1351,16 @@ public class DataMapper {
 
     private void probeTargetType() {
         targetIsArray = targetType.isArray();
-        targetCollection = !targetIsArray && Collection.class.isAssignableFrom(targetType) ? (Collection) target : null;
-        targetIsCollection = null != targetCollection;
-        targetList = targetIsCollection && List.class.isAssignableFrom(targetType) ? (List) target : null;
-        targetIsList = null != targetList;
-        targetMap = !targetIsArray && null == targetCollection && Map.class.isAssignableFrom(targetType) ? (Map) target : null;
-        targetIsMap = null != targetMap;
-        targetIsPojo = !targetIsArray && !targetIsCollection && !targetIsMap;
+        targetIsSimpleType = !targetIsArray && $.isSimpleType(targetType);
+        if (!targetIsSimpleType) {
+            targetCollection = !targetIsArray && Collection.class.isAssignableFrom(targetType) ? (Collection) target : null;
+            targetIsCollection = null != targetCollection;
+            targetList = targetIsCollection && List.class.isAssignableFrom(targetType) ? (List) target : null;
+            targetIsList = null != targetList;
+            targetMap = !targetIsArray && null == targetCollection && Map.class.isAssignableFrom(targetType) ? (Map) target : null;
+            targetIsMap = null != targetMap;
+            targetIsPojo = !targetIsArray && !targetIsCollection && !targetIsMap;
+        }
         if (targetIsArray) {
             targetLength = Array.getLength(target);
             targetComponentRawType = targetType.getComponentType();

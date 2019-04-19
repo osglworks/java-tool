@@ -20,8 +20,11 @@ package org.osgl.issues;
  * #L%
  */
 
+import act.util.AdaptiveBean;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.osgl.$;
 import org.osgl.TestBase;
 import org.osgl.inject.Genie;
 import org.osgl.issues.gh181.Order;
@@ -29,11 +32,17 @@ import org.osgl.issues.gh181.Order;
 @Ignore
 public class GH181 extends TestBase {
 
+    // Damn! I don't know which issue this test is really testing against
+    // but it is not GH181
     @Test
     public void test() {
         Genie genie = Genie.create();
         Order.Dao orderDao = genie.get(Order.Dao.class);
         notNull(orderDao.accDao);
+    }
+
+    public static class Kit extends AdaptiveBean {
+        public String DisplayName;
     }
 
 }

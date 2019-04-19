@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.19.2
+* Data mapping - Error merge into AdaptiveRecord #181
 * Bean copy - missing map inner structure when filter applied #202
 * Add `ToBeImplemented` Exception #201
 * Generics - provide exception free `typeParamImplementations` method #199

@@ -58,6 +58,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.actframework</groupId>
+      <artifactId>act</artifactId>
+      <version>1.8.19</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.osgl</groupId>
       <artifactId>genie</artifactId>
       <version>${genie.version}</version>
