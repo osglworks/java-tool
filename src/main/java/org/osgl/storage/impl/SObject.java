@@ -605,7 +605,7 @@ public abstract class SObject implements ISObject {
         }
     }
 
-    static class StringSObject extends SObject {
+    public static class StringSObject extends SObject {
         private String s_ = null;
         private boolean dumb = false;
 
@@ -674,7 +674,7 @@ public abstract class SObject implements ISObject {
         }
     }
 
-    static class FileSObject extends SObject {
+    public static class FileSObject extends SObject {
         private File file_;
         private SoftReference<byte[]> cache;
 
@@ -726,7 +726,7 @@ public abstract class SObject implements ISObject {
 
     }
 
-    static class ByteArraySObject extends SObject {
+    public static class ByteArraySObject extends SObject {
         protected byte[] buf_;
 
         ByteArraySObject(String key, byte[] buf) {
@@ -771,7 +771,7 @@ public abstract class SObject implements ISObject {
         }
     }
 
-    static class InputStreamSObject extends SObject {
+    public static class InputStreamSObject extends SObject {
         private final InputStream is_;
 
         InputStreamSObject(String key, InputStream is) {
@@ -813,7 +813,7 @@ public abstract class SObject implements ISObject {
         }
     }
 
-    static class LazyLoadSObject extends SObject {
+    public static class LazyLoadSObject extends SObject {
         private volatile ISObject sobj_;
         private IStorageService ss_;
 

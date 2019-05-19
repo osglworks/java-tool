@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.19.3 20/May/2019
+* Make nested classes in `SObject` be public to avoid class loading issue in ActFramework
+
 1.19.2 19/Apr/2019
 * Data mapping - Error merge into AdaptiveRecord #181
 * Bean copy - missing map inner structure when filter applied #202
