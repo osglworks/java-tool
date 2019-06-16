@@ -1,6 +1,6 @@
 # OSGL Tool Change Log
 
-1.19.4
+1.19.4 - 16/Jun/2019
 * Add `N.Comparator` enum #207
 * MimeType - trait test failed for `text/plain` against text trait #206
 * MimeType - add traits for `doc`, `docx`, `ppt` and `pptx` #205
