@@ -23,6 +23,7 @@ package org.osgl.util;
 import static org.osgl.util.E.illegalArgumentIf;
 
 import org.osgl.$;
+import org.osgl.Lang;
 import org.osgl.exception.NotAppliedException;
 
 import java.io.Serializable;
@@ -270,7 +271,72 @@ public class N {
         }
     }
 
-    public static enum Op implements $.Func2<Number, Number, Number> {
+    public enum Comparator implements $.Func2<Number, Number, Boolean> {
+        GT("greaterThan", "大于") {
+            @Override
+            public Boolean apply(Number number, Number number2) throws NotAppliedException, Lang.Break {
+                return number.doubleValue() > number2.doubleValue();
+            }
+        },
+        GTE("greaterThanOrEqualTo", "atLeast", "noLessThan", "大于等于", "大于或等于") {
+            @Override
+            public Boolean apply(Number number, Number number2) throws NotAppliedException, Lang.Break {
+                return number.doubleValue() > number2.doubleValue() || number.equals(number2);
+            }
+        },
+        LT("lessThan", "小于"){
+            @Override
+            public Boolean apply(Number number, Number number2) throws NotAppliedException, Lang.Break {
+                return number.doubleValue() < number2.doubleValue();
+            }
+        },
+        LTE("lessThanOrEqualTo", "atMost", "noGreaterThan", "小于等于", "小于或等于") {
+            @Override
+            public Boolean apply(Number number, Number number2) throws NotAppliedException, Lang.Break {
+                return number.doubleValue() < number2.doubleValue() || number.equals(number2);
+            }
+        },
+        EQ("equalTo", "equalsTo", "等于") {
+            @Override
+            public Boolean apply(Number number, Number number2) throws NotAppliedException, Lang.Break {
+                return number.equals(number2);
+            }
+        },
+        NE("neq", "notEqualTo", "notEqualsTo", "不等于") {
+            @Override
+            public Boolean apply(Number number, Number number2) throws NotAppliedException, Lang.Break {
+                return !number.equals(number2);
+            }
+        }
+        ;
+        private static Map<Keyword, Comparator> lookup = new HashMap<>();
+
+        private Set<String> aliases = new HashSet<>();
+
+        Comparator(String ... aliases) {
+            this.aliases.addAll(C.listOf(aliases));
+        }
+
+        public boolean compare(Number n1, Number n2) {
+            return apply(n1, n2);
+        }
+
+        static {
+            for (Comparator comp : values()) {
+                lookup.put(Keyword.of(comp.name()), comp);
+                for (String alias : comp.aliases) {
+                    lookup.put(Keyword.of(alias), comp);
+                }
+            }
+        }
+
+        public static Comparator of(String s) {
+            return lookup.get(Keyword.of(s));
+        }
+
+    }
+
+    public enum Op implements $.Func2<Number, Number, Number> {
         ADD {
             @Override
             public Number apply(Number a, Number b) {

@@ -1,5 +1,11 @@
 # OSGL Tool Change Log
 
+1.19.4
+* Add `N.Comparator` enum #207
+* MimeType - trait test failed for `text/plain` against text trait #206
+* MimeType - add traits for `doc`, `docx`, `ppt` and `pptx` #205
+* Lang.bool - support eval Map typed instance #204
+
 1.19.3 20/May/2019
 * Make nested classes in `SObject` be public to avoid class loading issue in ActFramework
 

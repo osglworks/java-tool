@@ -31,7 +31,7 @@ public final class MimeType {
     private static Map<String, Trait> traitMap = new HashMap<>();
 
     public enum Trait {
-        archive, audio, csv, excel, image, pdf, powerpoint, text, video, word, xls, xlsx, xml;
+        archive, audio, csv, doc, docx, excel, image, pdf, powerpoint, ppt, pptx, text, video, word, xls, xlsx, xml;
         public boolean test(MimeType mimeType) {
             return mimeType.test(this);
         }
@@ -119,7 +119,7 @@ public final class MimeType {
     }
 
     private static void init() {
-        for (Trait trait : traitMap.values()) {
+        for (Trait trait : Trait.values()) {
             traitMap.put(trait.name(), trait);
         }
         List<String> lines = IO.read(MimeType.class.getResource("/org/osgl/mime-types2.properties")).toLines();
@@ -144,6 +144,15 @@ public final class MimeType {
                     return Trait.valueOf(s);
                 }
             }));
+            if (mimeType.test(Trait.xls) || mimeType.test(Trait.xlsx)) {
+                mimeType.traits.add(Trait.excel);
+            } else if (mimeType.test(Trait.ppt) || mimeType.test(Trait.pptx)) {
+                mimeType.traits.add(Trait.powerpoint);
+            } else if (mimeType.test(Trait.doc) || mimeType.test(Trait.docx)) {
+                mimeType.traits.add(Trait.word);
+            } else if (mimeType.test(Trait.xml)) {
+                mimeType.traits.add(Trait.text);
+            }
             indexByFileExtension.put(fileExtension, mimeType);
             indexByContentType.put(type, mimeType);
         }

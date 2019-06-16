@@ -22,20 +22,38 @@ package org.osgl.util;
 
 import org.junit.Test;
 import org.osgl.TestBase;
+import org.osgl.util.MimeType.Trait;
+
+import static org.osgl.util.MimeType.Trait.*;
+import static org.osgl.util.MimeType.findByContentType;
+import static org.osgl.util.MimeType.findByFileExtension;
 
 public class MimeTypeTest extends TestBase {
 
     @Test
     public void test() {
-        MimeType mimeType = MimeType.findByFileExtension("pdf");
-        yes(null != mimeType && mimeType.test(MimeType.Trait.pdf));
+        MimeType mimeType = findByFileExtension("pdf");
+        yes(null != mimeType && mimeType.test(pdf));
 
-        mimeType = MimeType.findByFileExtension("bz2");
-        yes(null != mimeType && mimeType.test(MimeType.Trait.archive));
+        mimeType = findByFileExtension("bz2");
+        yes(null != mimeType && mimeType.test(archive));
 
-        mimeType = MimeType.findByFileExtension("xlsx");
-        yes(mimeType.test(MimeType.Trait.xlsx));
-        no(mimeType.test(MimeType.Trait.xls));
+        mimeType = findByContentType("text/plain");
+        yes(mimeType.test(text));
+
+        mimeType = findByFileExtension("xlsx");
+        yes(mimeType.test(excel));
+        yes(mimeType.test(xlsx));
+        no(mimeType.test(xls));
+
+        mimeType = findByFileExtension("pptx");
+        yes(mimeType.test(powerpoint));
+        yes(mimeType.test(pptx));
+        no(mimeType.test(ppt));
+
+        mimeType = findByContentType("application/javascript");
+        yes(mimeType.test(text));
+
     }
 
 }

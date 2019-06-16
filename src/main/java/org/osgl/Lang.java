@@ -5829,6 +5829,9 @@ public class Lang implements Serializable {
         if (v instanceof Collection) {
             return bool((Collection) v);
         }
+        if (v instanceof Map) {
+            return bool((Map) v);
+        }
         if (v.getClass().isArray()) {
             return 0 < Array.getLength(v);
         }
@@ -5894,6 +5897,18 @@ public class Lang implements Serializable {
      */
     public static boolean bool(Collection<?> c) {
         return null != c && !c.isEmpty();
+    }
+
+    /**
+     * Do bool evaluation on a map.
+     *
+     * @param m
+     *         the map to be evaluated
+     * @return {@code true} if the map is not empty
+     * @see java.util.Map#isEmpty()
+     */
+    public static boolean bool(Map<?, ?> m) {
+        return null != m && !m.isEmpty();
     }
 
     /**
