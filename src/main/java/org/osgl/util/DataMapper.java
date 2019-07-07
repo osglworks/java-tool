@@ -388,6 +388,7 @@ public class DataMapper {
                     return o1.compareTo(o2);
                 }
             });
+            boolean removeDefaultContextFromGreenList = false;
             for (String word : words) {
                 boolean isBlackList = false;
                 if (word.startsWith("-")) {
@@ -412,9 +413,14 @@ public class DataMapper {
                         if (word.contains(".")) {
                             blackList.remove(context);
                             grayList.add(context);
+                        } else {
+                            removeDefaultContextFromGreenList = true;
                         }
                     }
                 }
+            }
+            if (removeDefaultContextFromGreenList) {
+                greenList.remove("");
             }
             allEmpty = blackList.isEmpty() && whiteList.isEmpty();
         }
@@ -424,7 +430,7 @@ public class DataMapper {
                 String context = S.beforeLast(s, ".");
                 return list.contains(context) || isContextIn(context, list);
             }
-            return list.contains(s);
+            return list.contains("");
         }
 
         @Override

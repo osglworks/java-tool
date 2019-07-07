@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.19.5
+* DataMapping - filter failure with nested structure #208
+
 1.19.4 - 16/Jun/2019
 * Add `N.Comparator` enum #207
 * MimeType - trait test failed for `text/plain` against text trait #206
