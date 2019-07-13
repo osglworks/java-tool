@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.19.5
+* Lang.cloneOf(Cloneable) failed #209
 * DataMapping - filter failure with nested structure #208
 
 1.19.4 - 16/Jun/2019

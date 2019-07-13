@@ -1326,7 +1326,7 @@ public class S {
         return new _IterableJoiner(C.listOf(array));
     }
 
-    public static _IterableJoiner join(Object[] array) {
+    public static _IterableJoiner join(Object ... array) {
         return new _IterableJoiner(C.listOf(array));
     }
 

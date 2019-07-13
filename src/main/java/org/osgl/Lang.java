@@ -7844,7 +7844,7 @@ public class Lang implements Serializable {
      * @return a list of fields
      */
     public static List<Field> fieldsOf(Class<?> c, Class<?> rootClass, boolean noStatic) {
-        return fieldsOf(c, rootClass, false, noStatic);
+        return fieldsOf(c, rootClass, c == rootClass, noStatic);
     }
 
     /**
@@ -10423,9 +10423,6 @@ public class Lang implements Serializable {
     public static <T> T cloneOf(T source, Function<Class, ?> instanceFactory) {
         if (OsglConfig.isSingleton(source)) {
             return source;
-        }
-        if (source instanceof Cloneable) {
-            return (T) $.invokeVirtual(source, "clone");
         }
         Class type = source.getClass();
         Object target;
