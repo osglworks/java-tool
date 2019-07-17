@@ -71,6 +71,17 @@ public class KeywordTest extends TestBase {
         yes(Keyword.of("oldHTMLFile").matches("old-html-file"));
     }
 
+    @Test
+    public void testAcronyms() {
+        verifyAcronym("FBZ", "fooBarZee");
+        verifyAcronym("<5M", "<500m");
+        verifyAcronym("HW!", "Hello World!");
+    }
+
+    private void verifyAcronym(String expected, String source) {
+        eq(expected, Keyword.of(source).acronym());
+    }
+
     private void verify(String s) {
         keyword = Keyword.of(s);
         eq("camel-case", keyword.dashed());
@@ -88,6 +99,7 @@ public class KeywordTest extends TestBase {
         eq(keyword.javaVariable(), keyword.lowerCamelCase());
         eq(C.listOf("camel", "case"), keyword.tokens());
         eq("camel.case", keyword.dotted());
+        eq("CC", keyword.acronym());
     }
 
     @Test

@@ -312,6 +312,24 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             return Short.valueOf(value);
         }
     };
+    private static final StringValueResolver<Number> _Number = new StringValueResolver<Number>() {
+        @Override
+        public Number resolve(String value) {
+            if (S.blank(value)) {
+                return null;
+            }
+            if (S.isIntOrLong(value)) {
+                long l = Long.parseLong(value);
+                if ((l <= Integer.MAX_VALUE) && (l >= Integer.MIN_VALUE)) {
+                    return (int)l;
+                } else {
+                    return l;
+                }
+            } else {
+                return Double.parseDouble(value);
+            }
+        }
+    };
 
     private static int _int(String s) {
         s = s.trim();
@@ -498,6 +516,7 @@ public abstract class StringValueResolver<T> extends $.F1<String, T> {
             Byte.class, _Byte,
             short.class, _short,
             Short.class, _Short,
+            Number.class, _Number,
             int.class, _int,
             Integer.class, _Integer,
             long.class, _long,

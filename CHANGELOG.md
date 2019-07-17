@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
-1.19.5
+1.20.0
+* Keyword - add acronym method #210
 * Lang.cloneOf(Cloneable) failed #209
 * DataMapping - filter failure with nested structure #208
 

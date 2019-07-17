@@ -251,6 +251,14 @@ public final class Keyword implements Comparable<Keyword> {
         return $.eq(this, keyword);
     }
 
+    public String acronym() {
+        S.Buffer buf = S.buffer();
+        for (FastStr fs : list) {
+            buf.a(Character.toUpperCase(fs.charAt(0)));
+        }
+        return buf.toString();
+    }
+
     /**
      * The `UpperCamelCase` style
      */
