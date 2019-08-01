@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.20.1
+* TypeReference - provide helper method to generate type for container and map #212
+* DataMapper - it shall copy reference for transient fields #211
+
 1.20.0
 * Keyword - add acronym method #210
 * Lang.cloneOf(Cloneable) failed #209
@@ -25,7 +29,7 @@
 * `Generics.buildTypeParamImplLookup` - support nested type params #197
 * `Generics.buildTypeParamImplLookup` fails to on `ParameterizedTypeImpl` #196
 
-1.19.0
+1.19.0 23/Dec/2018
 * Keyword improvement #195
 * Add `getReturnType(Method, Class)` method to `Generics` #194
 

@@ -20,9 +20,14 @@ package org.osgl.util;
  * #L%
  */
 
+import com.alibaba.fastjson.util.ParameterizedTypeImpl;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -77,6 +82,30 @@ public class TypeReference<T> {
      */
     public Type getType() {
         return type;
+    }
+
+    public static Type listOf(Class<?> elementType) {
+        return create(new Type[]{elementType}, List.class);
+    }
+
+    public static Type setOf(Class<?> elementType) {
+        return create(new Type[]{elementType}, Set.class);
+    }
+
+    public static Type collectionOf(Class<?> elementType) {
+        return create(new Type[]{elementType}, Collection.class);
+    }
+
+    public static Type mapOf(Class<?> keyType, Class<?> valType) {
+        return create(new Type[]{keyType, valType}, Map.class);
+    }
+
+    public static Type IterableOf(Class<?> elementType) {
+        return create(new Type[]{elementType}, Iterable.class);
+    }
+
+    private static Type create(Type[] actualTypeArguments, Type rawType) {
+        return new ParameterizedTypeImpl(actualTypeArguments, null, rawType);
     }
 
     public final static Type LIST_STRING = new TypeReference<List<String>>() {}.getType();

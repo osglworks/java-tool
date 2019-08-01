@@ -26,6 +26,7 @@ import org.osgl.*;
 import org.osgl.exception.*;
 import org.osgl.util.converter.TypeConverterRegistry;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -1007,7 +1008,7 @@ public class DataMapper {
                 }
             }
 
-            if (semantic.isShallowCopy()) {
+            if (semantic.isShallowCopy() || isTransient(targetField)) {
                 try {
                     $.setFieldValue(target, targetField, sourcePropValue);
                 } catch (Exception e) {
@@ -1030,6 +1031,10 @@ public class DataMapper {
             mapped.add(key);
         }
         return mapped;
+    }
+
+    private boolean isTransient(Field field) {
+        return Modifier.isTransient(field.getModifiers());
     }
 
     private boolean isIntermediatePlaceHolder(Object o) {
