@@ -1,10 +1,10 @@
 # OSGL Tool Change Log
 
-1.20.1
+1.20.1 - 15/Sep/2019
 * TypeReference - provide helper method to generate type for container and map #212
 * DataMapper - it shall copy reference for transient fields #211
 
-1.20.0
+1.20.0 - 21/Jul/2019
 * Keyword - add acronym method #210
 * Lang.cloneOf(Cloneable) failed #209
 * DataMapping - filter failure with nested structure #208
