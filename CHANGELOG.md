@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.21.0
+* MimeType - add support to rfc7807 types #216
+* MimeType - add support to yaml type #215
+
 1.20.2
 * IO - read from InputStream return value check logic error #214
 

@@ -31,7 +31,8 @@ public final class MimeType {
     private static Map<String, Trait> traitMap = new HashMap<>();
 
     public enum Trait {
-        archive, audio, csv, doc, docx, excel, image, pdf, powerpoint, ppt, pptx, text, video, word, xls, xlsx, xml;
+        archive, audio, css, csv, doc, docx, excel, image, javascript, json, pdf,
+        powerpoint, ppt, pptx, problem, text, video, word, xls, xlsx, xml, yaml;
         public boolean test(MimeType mimeType) {
             return mimeType.test(this);
         }
@@ -123,22 +124,84 @@ public final class MimeType {
             traitMap.put(trait.name(), trait);
         }
         List<String> lines = IO.read(MimeType.class.getResource("/org/osgl/mime-types2.properties")).toLines();
+        load(lines);
+    }
+
+    private static void load(List<String> lines) {
+        List<String> lowPriorityLines = new ArrayList<>();
         for (String line : lines) {
-            S.Pair pair = S.binarySplit(line, '=');
-            String fileExtension = pair.left();
-            C.List<String> traits = C.newList();
-            String type = pair.right();
-            if (type.contains("|")) {
-                pair = S.binarySplit(type, '|');
-                type = pair.left();
-                traits.addAll(S.fastSplit(pair.right(), ","));
+            boolean parsed = parse(line, true);
+            if (!parsed) {
+                lowPriorityLines.add(line);
             }
-            String prefix = S.cut(type).before("/");
-            Trait trait = traitMap.get(prefix);
+        }
+        for (String line : lowPriorityLines) {
+            parse(line, false);
+        }
+    }
+
+    private static boolean parse(String line, boolean first) {
+        if (line.startsWith("#")) {
+            return true;
+        }
+        boolean hasDecoration = line.contains("+");
+        if (hasDecoration && first) {
+            return false;
+        }
+        S.Pair pair = S.binarySplit(line, '=');
+        String fileExtension = pair.left();
+        if (fileExtension.contains(".")) {
+            // process content type alias
+            fileExtension = S.cut(fileExtension).beforeFirst(".");
+            MimeType mimeType = indexByFileExtension.get(fileExtension);
+            E.illegalStateIf(null == mimeType, "error parsing line: " + line);
+            indexByContentType.put(pair.right(), mimeType);
+            return true;
+        }
+        C.List<String> traits = C.newList();
+        String type = pair.right();
+        if (type.contains("|")) {
+            pair = S.binarySplit(type, '|');
+            type = pair.left();
+            traits.addAll(S.fastSplit(pair.right(), ","));
+        }
+        pair = S.binarySplit(type, '/');
+        String prefix = pair.left();
+        String suffix = pair.right();
+        Trait trait = traitMap.get(prefix);
+        if (null != trait) {
+            traits.add(trait.name());
+        }
+        // treat the case like `problem+json`
+        if (hasDecoration) {
+            pair = S.binarySplit(suffix, '+');
+            String decorator = pair.left(); // e.g. problem
+            trait = traitMap.get(decorator);
             if (null != trait) {
                 traits.add(trait.name());
             }
-            MimeType mimeType = new MimeType(fileExtension, type, traits.map(new $.Transformer<String, Trait>() {
+            String realType = pair.right();
+            String originalType = S.concat(prefix, "/", realType);
+            MimeType mimeType = indexByContentType.get(originalType);
+            if (null != mimeType) {
+                for (Trait element : mimeType.traits) {
+                    traits.add(element.name());
+                }
+            } else {
+                trait = traitMap.get(realType);
+                if (null != trait) {
+                    traits.add(trait.name());
+                }
+            }
+        } else {
+            trait = traitMap.get(suffix);
+            if (null != trait) {
+                traits.add(trait.name());
+            }
+        }
+        MimeType mimeType = indexByContentType.get(type);
+        if (null == mimeType) {
+            mimeType = new MimeType(fileExtension, type, traits.map(new $.Transformer<String, Trait>() {
                 @Override
                 public Trait transform(String s) {
                     return Trait.valueOf(s);
@@ -153,8 +216,9 @@ public final class MimeType {
             } else if (mimeType.test(Trait.xml)) {
                 mimeType.traits.add(Trait.text);
             }
-            indexByFileExtension.put(fileExtension, mimeType);
             indexByContentType.put(type, mimeType);
         }
+        indexByFileExtension.put(fileExtension, mimeType);
+        return true;
     }
 }

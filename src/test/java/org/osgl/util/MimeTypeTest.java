@@ -56,4 +56,42 @@ public class MimeTypeTest extends TestBase {
 
     }
 
+    @Test
+    public void test215() {
+        MimeType yml = findByFileExtension("yml");
+        yes(null != yml && yml.test(Trait.yaml));
+        MimeType yaml = findByFileExtension("yaml");
+        same(yml, yaml);
+
+        MimeType yml2 = findByContentType("application/x-yaml");
+        same(yml2, yml);
+    }
+
+    @Test
+    public void test216() {
+        MimeType ejson = findByContentType("application/problem+json");
+        MimeType json = findByContentType("application/json");
+        ne(json, ejson);
+        eq("application/problem+json", ejson.type());
+        yes(ejson.test(problem));
+        yes(ejson.test(Trait.json));
+        no(json.test(problem));
+
+        MimeType exml = findByContentType("application/problem+xml");
+        MimeType xml = findByContentType("text/xml");
+        ne(xml, exml);
+        eq("application/problem+xml", exml.type());
+        yes(exml.test(problem));
+        yes(exml.test(Trait.xml));
+        no(xml.test(problem));
+
+        MimeType eyaml = findByContentType("application/problem+yaml");
+        MimeType yaml = findByContentType("text/vnd.yaml");
+        ne(yaml, eyaml);
+        eq("application/problem+yaml", eyaml.type());
+        yes(eyaml.test(problem));
+        yes(eyaml.test(Trait.yaml));
+        no(yaml.test(problem));
+    }
+
 }
