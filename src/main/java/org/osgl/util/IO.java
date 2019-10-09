@@ -462,7 +462,7 @@ public class IO {
             try {
                 int read, total = 0;
                 byte[] buffer = new byte[8096];
-                while ((read = source.read(buffer)) > 0) {
+                while ((read = source.read(buffer)) > -1) {
                     sink.write(buffer, 0, read);
                     total += read;
                 }

@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.20.2
+* IO - read from InputStream return value check logic error #214
+
 1.20.1 - 15/Sep/2019
 * TypeReference - provide helper method to generate type for container and map #212
 * DataMapper - it shall copy reference for transient fields #211
