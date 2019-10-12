@@ -1,6 +1,10 @@
 # OSGL Tool Change Log
 
 1.21.0
+* N.requireXxx - add overload methods to allow customized error message
+* S.requireXxx - add overload methods to allow customized error message
+* Lang.requireNull - add overload methods to allow customized error message
+* Update fastjson to 1.2.62
 * MimeType - add support to rfc7807 types #216
 * MimeType - add support to yaml type #215
 

@@ -20,8 +20,6 @@ package org.osgl.util;
  * #L%
  */
 
-import static org.osgl.util.E.illegalArgumentIf;
-
 import org.osgl.$;
 import org.osgl.Lang;
 import org.osgl.exception.NotAppliedException;
@@ -33,6 +31,8 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static org.osgl.util.E.*;
 
 /**
  * The namespace under which number relevant structures, functions and logics are
@@ -806,85 +806,140 @@ public class N {
      */
     public static final double PI = 3.14159265358979323846;
 
-    public static int requirePositive(int n) {
-        illegalArgumentIf(n < 1, "positive int required");
-        return n;
-    }
 
-    public static int requirePositive(int n, String err, Object ... errArgs) {
-        illegalArgumentIf(n < 1, err, errArgs);
-        return n;
-    }
-
-    public static int requireNonNegative(int n) {
-        illegalArgumentIf(n < 0, "non negative int required");
-        return n;
-    }
-
-    public static int requireNegative(int n) {
-        illegalArgumentIf(n > -1, "negative int required");
-        return n;
-    }
+    // --- Integer requires ---
 
     public static class _IntRequire {
 
         private int n;
+
         private _IntRequire(int n) {
             this.n = n;
         }
+
         public int positive() {
             return requirePositive(n);
         }
         public int positive(String err, Object ... errArgs) {
             return requirePositive(n, err, errArgs);
         }
+
         public int negative() {
             return requireNegative(n);
         }
+        public int negative(String err, Object ... errArgs) {
+            return requireNegative(n, err, errArgs);
+        }
+
         public int nonNegative() {
             return requireNonNegative(n);
         }
+
+        public int nonNegative(String err, Object... args) {
+            return requireNonNegative(n, err, args);
+        }
+
         public int equalTo(int x) {
-            illegalArgumentIf(n == x, "n[%s] should be equal to %s", n, x);
+            return equalTo(x, "n[%s] should be equal to %s", n, x);
+        }
+
+        public int equalTo(int x, String err, Object... errArgs) {
+            illegalStateIfNot(n == x, err, errArgs);
             return n;
         }
+
         public int eq(int x) {
             return equalTo(x);
         }
+
+        public int eq(int x, String err, Object... errArgs) {
+            return equalTo(x, err, errArgs);
+        }
+
+
         public int notEqualTo(int x) {
-            illegalArgumentIf(n != x, "n[%s] should not be equal to %s", n, x);
+            return notEqualTo(x, "n[%s] should not be equal to %s", n, x);
+        }
+
+        public int notEqualTo(int x, String err, Object... errArgs) {
+            illegalArgumentIfNot(n != x, err, errArgs);
             return n;
         }
+
         public int neq(int x) {
             return notEqualTo(x);
         }
+
+        public int neq(int x, String err, Object... errArgs) {
+            return notEqualTo(x, err, errArgs);
+        }
+
         public int greaterThan(int x) {
-            illegalArgumentIf(n <= x, "n[%s] should be greater than %s", n, x);
+            return greaterThan(x, "n[%s] should be greater than %s", n, x);
+        }
+
+        public int greaterThan(int x, String err, Object... errArgs) {
+            illegalArgumentIfNot(n > x, err, errArgs);
             return n;
         }
+
         public int gt(int x) {
             return greaterThan(x);
         }
+
+        public int gt(int x, String err, Object... errArgs) {
+            return greaterThan(x, err, errArgs);
+        }
+
         public int greaterThanOrEqualTo(int x) {
-            illegalArgumentIf(n < x, "n[%s] should be greater than or equal to %s", n, x);
+            return greaterThanOrEqualTo(x, "n[%s] should be greater than or equal to %s", n, x);
+        }
+
+        public int greaterThanOrEqualTo(int x, String err, Object... errArgs) {
+            illegalArgumentIfNot(n >= x, err, errArgs);
             return n;
         }
+
         public int gte(int x) {
             return greaterThan(x);
         }
+
+        public int gte(int x, String err, Object... errArgs) {
+            return greaterThanOrEqualTo(x, err, errArgs);
+        }
+
         public int lessThan(int x) {
-            illegalArgumentIf(n >= x, "n[%s] should be less than %s", n, x);
+            return lessThan(x, "n[%s] should be less than %s", n, x);
+        }
+
+        public int lessThan(int x, String err, Object ... errArgs) {
+            illegalArgumentIfNot(n > x, err, errArgs);
             return n;
         }
+
         public int lt(int x) {
             return lessThan(x);
         }
+
+        public int lt(int x, String err, Object... errArgs) {
+            return lessThan(x, err, errArgs);
+        }
+
         public int lessThanOrEqualTo(int x) {
-            illegalArgumentIf(n > x, "n[%s] should be less than or equal to %s", n, x);
+            return lessThanOrEqualTo(x, "n[%s] should be less than or equal to %s", n, x);
+        }
+
+        public int lessThanOrEqualTo(int x, String err, Object ... errArgs) {
+            illegalArgumentIfNot(n <= x, err, errArgs);
             return n;
         }
+
         public int lte(int x) {
             return lessThan(x);
+        }
+
+        public int lte(int x, String err, Object ... errArgs) {
+            return lessThanOrEqualTo(x, err, errArgs);
         }
     }
 
@@ -892,34 +947,110 @@ public class N {
         return new _IntRequire(n);
     }
 
+    public static int requirePositive(int n) {
+        return requirePositive(n, "positive int required");
+    }
+
+    public static int requirePositive(int n, String errorTemplate, Object ... errorArgs) {
+        illegalArgumentIfNot(n > 0, errorTemplate, errorArgs);
+        return n;
+    }
+
+    public static int requireNonNegative(int n) {
+        return requireNonNegative(n, "non negative int required");
+    }
+
+    public static int requireNonNegative(int n, String errorTemplate, Object ... errorArgs) {
+        illegalArgumentIfNot(n >= 0, errorTemplate, errorArgs);
+        return n;
+    }
+
+    public static int requireNegative(int n) {
+        return requireNegative(n, "negative int required");
+    }
+
+    public static int requireNegative(int n, String errorTemplate, Object ... errorArgs) {
+        illegalArgumentIfNot(n < 0, errorTemplate, errorArgs);
+        return n;
+    }
+
+    /**
+     * Return a positive float `n`. If the passed in `n` is 0 or negative then
+     * it raised a `IllegalArgumentException`.
+     *
+     * @param n a float number.
+     * @return the number `n` if it is greater than `0.0f`.
+     * @throws IllegalArgumentException if `n` is not greater than `0.0f`.
+     */
     public static float requirePositive(float n) {
         illegalArgumentIf(n <= 0.0f, "positive float required");
         return n;
     }
 
     /**
-     * Image alpha float range is 0.0f to 1.0f inclusive
-     * @param f the float number to be tested
+     * Return a positive float `n`. If the passed in `n` is 0 or negative then
+     * it raised a `IllegalArgumentException` using the error template and arguments
+     * provided.
+     *
+     * @param n a float number.
+     * @param errorTemplate the error message template
+     * @param errorArgs the error message arguments
+     * @return the number `n` if it is greater than `0.0f`.
+     * @throws IllegalArgumentException if `n` is not greater than `0.0f`.
+     */
+    public static float requirePositive(float n, String errorTemplate, Object ... errorArgs) {
+        illegalArgumentIf(n <= 0.0f, "positive float required");
+        return n;
+    }
+
+    /**
+     * Check if a float `f` is alpha - Image alpha float range is 0.0f to 1.0f inclusive.
+     * @param f the float number to be tested.
+     * @return `true` if `f` fall into alpha range or `false` otherwise
+     */
+    public static boolean isAlpha(float f) {
+        return 0 <= f && f <= 1;
+    }
+
+    /**
+     * Return a float value if it {@link #isAlpha(float)} or raise an
+     * `IllegalArgumentException` if not.
+     *
+     * @param n the float number to be tested
      * @return the float number if fall in image alpha float rage
      * @throws IllegalArgumentException if the number is beyond the range
      */
-    public static float requireAlpha(float f) {
-        illegalArgumentIf(f > 1 || f < 0, "f [%s] should be between 0 and 1 inclusive", f);
-        return f;
+    public static float requireAlpha(float n) {
+        return requireAlpha(n, "f [%s] should be between 0 and 1 inclusive", n);
+    }
+
+    /**
+     * Return a float value if it {@link #isAlpha(float)} or raise an
+     * `IllegalArgumentException` with given error message specified if not.
+     *
+     * @param n a float number.
+     * @param errorTemplate the error message template
+     * @param errorArgs the error message arguments
+     * @return the number `n` if it is greater than `0.0f`.
+     * @throws IllegalArgumentException if `n` is not greater than `0.0f`.
+     */
+    public static float requireAlpha(float n, String errorTemplate, Object ... errorArgs) {
+        illegalArgumentIfNot(isAlpha(n), errorTemplate, errorArgs);
+        return n;
     }
 
     public static float requireNotNaN(float f) {
-        illegalArgumentIf(Float.isNaN(f), "f [%s] shall not be NaN", f);
+        illegalArgumentIfNot(!Float.isNaN(f), "f [%s] shall not be NaN", f);
         return f;
     }
 
     public static float requireNonNegative(float n) {
-        illegalArgumentIf(n < 0, "non negative float required");
+        illegalArgumentIfNot(n >= 0, "non negative float required");
         return n;
     }
 
     public static float requireNegative(float n) {
-        illegalArgumentIf(n > -1, "negative float required");
+        illegalArgumentIfNot(n < 0, "negative float required");
         return n;
     }
 
@@ -930,28 +1061,37 @@ public class N {
         }
     }
 
-    public static double requireAlpha(double d) {
-        illegalArgumentIf(d > 1 || d < 0, "d [%s] should be between 0 and 1 inclusive", d);
-        return d;
+    /**
+     * Check if a double `d` is alpha - Image alpha float range is 0.0f to 1.0f inclusive.
+     * @param n the float number to be tested.
+     * @return `true` if `f` fall into alpha range or `false` otherwise
+     */
+    public static boolean isAlpha(double n) {
+        return 0 <= n && n <= 1;
+    }
+
+    public static double requireAlpha(double n) {
+        illegalArgumentIfNot(isAlpha(n), "d [%s] should be between 0 and 1 inclusive", n);
+        return n;
     }
 
     public static double requirePositive(double n) {
-        illegalArgumentIf(n <= 0.0f, "positive double required");
+        illegalArgumentIfNot(0.0d < n, "positive double required");
         return n;
     }
 
     public static double requireNotNaN(double d) {
-        illegalArgumentIf(Double.isNaN(d), "d [%s] shall not be NaN", d);
+        illegalArgumentIfNot(!Double.isNaN(d), "d [%s] shall not be NaN", d);
         return d;
     }
 
     public static double requireNonNegative(double n) {
-        illegalArgumentIf(n < 0, "non negative double required");
+        illegalArgumentIfNot(0.0d <= n, "non negative double required");
         return n;
     }
 
     public static double requireNegative(double n) {
-        illegalArgumentIf(n > -1, "negative double required");
+        illegalArgumentIfNot(0.0d > n, "negative double required");
         return n;
     }
 

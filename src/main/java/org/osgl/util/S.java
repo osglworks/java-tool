@@ -487,6 +487,25 @@ public class S {
     /**
      * Throw IllegalArgumentException if the string specified
      * {@link #isBlank(String) is blank}, otherwise return
+     * the string specified.
+     *
+     * Error message template and arguments will be used
+     * to construct the error message if `s` is blank
+     *
+     * @param s the string to be tested
+     * @param errorTemplate error message template
+     * @param errorArgs error message arguments
+     * @return the string if it is not blank
+     * @throws IllegalArgumentException if the string `s` is blank
+     */
+    public static String requireNotBlank(String s, String errorTemplate, Object ... errorArgs) {
+        E.illegalArgumentIf(isBlank(s), errorTemplate, errorArgs);
+        return s;
+    }
+
+    /**
+     * Throw IllegalArgumentException if the string specified
+     * {@link #isBlank(String) is blank}, otherwise return
      * the string specified
      *
      * @param s the string to be tested
@@ -508,6 +527,25 @@ public class S {
      * @throws IllegalArgumentException if the string `s` is empty
      */
     public static String requireNotEmpty(String s) {
+        E.illegalArgumentIf(isEmpty(s));
+        return s;
+    }
+
+    /**
+     * Throw IllegalArgumentException if the string specified
+     * {@link #isEmpty(String)}  is empty}, otherwise return
+     * the string specified.
+     *
+     * Error message template and arguments will be used
+     * to construct the error message if `s` is blank
+     *
+     * @param s the string to be tested
+     * @param errorTemplate error message template
+     * @param errorArgs error message arguments
+     * @return the string if it is not empty
+     * @throws IllegalArgumentException if the string `s` is empty
+     */
+    public static String requireNotEmpty(String s, String errorTemplate, Object ... errorArgs) {
         E.illegalArgumentIf(isEmpty(s));
         return s;
     }

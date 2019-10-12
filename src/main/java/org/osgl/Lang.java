@@ -7040,6 +7040,30 @@ public class Lang implements Serializable {
     }
 
     /**
+     * Return the object if it is not null, otherwise throw
+     * out `NullPointerException` with error message specified
+     *
+     * @param o
+     *        the object
+     * @param errorTemplate
+     *        the error message template
+     * @param errorArgs
+     *        the error message arguments
+     * @param <T>
+     *         the type parameter of object
+     * @return the object if it is not null
+     * @throws NullPointerException
+     *         if `o` is `null`
+     */
+    public static <T> T requireNotNull(T o, String errorTemplate, Object ... errorArgs) {
+        if (null == o) {
+            String errorMsg = S.fmt(errorTemplate, errorArgs);
+            throw new NullPointerException(errorMsg);
+        }
+        return o;
+    }
+
+    /**
      *
      * Set an object field value using reflection.
      *

@@ -20,7 +20,7 @@
 
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.21.1-SNAPSHOT</version>
+  <version>1.21.0-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
@@ -44,9 +44,8 @@
     <commons-lang3.version>3.7</commons-lang3.version>
     <model-mapper.version>1.1.0</model-mapper.version>
     <hutool.version>[4.1.12,)</hutool.version>
-    <fastjson.version>1.2.58</fastjson.version>
+    <fastjson.version>1.2.62</fastjson.version>
     <genie.version>1.10.0</genie.version>
-    <osgl-ut.version>2.0.0-BETA-4-JAVA7</osgl-ut.version>
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
   </properties>
 
