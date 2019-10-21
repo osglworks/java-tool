@@ -44,6 +44,22 @@ package org.osgl.cache;
  */
 public interface CacheService {
 
+    enum State {
+        INITIALIZED, STARTED, SHUTDOWN;
+
+        public boolean isInitialized() {
+            return INITIALIZED == this;
+        }
+
+        public boolean isStarted() {
+            return STARTED == this;
+        }
+
+        public boolean isShutdown() {
+            return SHUTDOWN == this;
+        }
+    }
+
     String DEF_CACHE_NAME = "osgl-cache";
 
     /**
@@ -163,5 +179,11 @@ public interface CacheService {
      * should be started after initialized</p>
      */
     void startup();
+
+    /**
+     * Return state of this cache service.
+     * @return {@link State} of this cache service.
+     */
+    State state();
 
 }

@@ -2668,11 +2668,6 @@ public class S {
             'U', 'V', 'W', 'X', 'Y', 'Z',
     };
 
-    /**
-     * digits plus alphabetic characters
-     */
-    public static final char[] ALPHANUMERICS = $.concat(DIGITS, ALPHABETICS);
-
     static final char[] _COMMON_CHARS_ = {'0', '1', '2', '3', '4',
             '5', '6', '7', '8', '9', '$', '#', '^', '&', '_',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -5837,4 +5832,13 @@ public class S {
         System.out.println(S.join(new int[]{1,2,3}).by("-").get());
     }
 
+
+    // Note we must move this down here as when it invokes $.concat
+    // it will call static constructor of $ and in turn call back
+    // to S static methods which involves `_buf` by when is not
+    // initialized yet
+    /**
+     * digits plus alphabetic characters
+     */
+    public static final char[] ALPHANUMERICS = $.concat(DIGITS, ALPHABETICS);
 }

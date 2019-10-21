@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.21.0
+* CacheService - add state() method #217
 * N.requireXxx - add overload methods to allow customized error message
 * S.requireXxx - add overload methods to allow customized error message
 * Lang.requireNull - add overload methods to allow customized error message

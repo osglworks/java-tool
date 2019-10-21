@@ -35,6 +35,8 @@ public class InteralCacheService implements CacheService {
     private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
+    private State state = State.INITIALIZED;
+
     @Override
     public void put(String key, Object value, int ttl) {
         E.unsupport();
@@ -107,9 +109,16 @@ public class InteralCacheService implements CacheService {
 
     @Override
     public void shutdown() {
+        this.state = State.SHUTDOWN;
     }
 
     @Override
     public void startup() {
+        this.state = State.STARTED;
+    }
+
+    @Override
+    public State state() {
+        return this.state;
     }
 }

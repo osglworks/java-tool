@@ -20,14 +20,14 @@ package org.osgl.util;
  * #L%
  */
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
+import org.osgl.$;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -44,6 +44,12 @@ import java.util.concurrent.ConcurrentMap;
  *
  * ```java
  * TypeReference<List<String>> list = new TypeReference<List<String>>() {};
+ * ```
+ *
+ * To create a generic list of type with given class:
+ *
+ * ```java
+ * Type type = TypeReference.listOf(clazz);
  * ```
  *
  * This syntax cannot be used to create type literals that have wildcard
@@ -110,7 +116,4 @@ public class TypeReference<T> {
 
     public final static Type LIST_STRING = new TypeReference<List<String>>() {}.getType();
 
-    public static void main(String[] args) {
-        System.out.println(LIST_STRING);
-    }
 }
