@@ -146,6 +146,7 @@ public class PropertyTest extends TestBase {
         };
         CacheService cache = new CacheService() {
             private Map<String, Object> map = C.newMap();
+            private State state = State.INITIALIZED;
             @Override
             public void put(String key, Object value, int ttl) {
                 map.put(key, value);
@@ -199,11 +200,17 @@ public class PropertyTest extends TestBase {
             @Override
             public void shutdown() {
                 clear();
+                this.state = State.SHUTDOWN;
             }
 
             @Override
             public void startup() {
+                this.state = State.STARTED;
+            }
 
+            @Override
+            public State state() {
+                return this.state;
             }
         };
 
