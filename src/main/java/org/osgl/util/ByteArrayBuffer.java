@@ -41,7 +41,7 @@ class ByteArrayBuffer extends ByteArrayOutputStream {
 
     public final byte[] consume() {
         consumed = true;
-        return toByteArray();
+        return super.toByteArray();
     }
 
     String consumeToString() {
@@ -64,6 +64,15 @@ class ByteArrayBuffer extends ByteArrayOutputStream {
 
     public final int length() {
         return count;
+    }
+
+    @Override
+    public synchronized byte[] toByteArray() {
+        return consume();
+    }
+
+    public byte[] view() {
+        return super.toByteArray();
     }
 
     public ByteArrayBuffer append(byte[] bytes) {

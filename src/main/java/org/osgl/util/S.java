@@ -1597,12 +1597,16 @@ public class S {
                 return s;
             default:
                 int slen = s.length();
+//                if (1 == slen) {
+//                    return times(s.charAt(0), times);
+//                }
                 int len = slen * times;
-                StringBuilder sb = len > 100 ? builder() : newSizedBuilder(len);
+                char[] src = s.toCharArray();
+                char[] sink = new char[len];
                 for (int i = 0; i < times; ++i) {
-                    sb.append(s);
+                    System.arraycopy(src, 0, sink, i * slen, slen);
                 }
-                return sb.toString();
+                return Unsafe.stringOf(sink);
         }
     }
 
@@ -1668,7 +1672,7 @@ public class S {
         for (int i = 0; i < times; ++i) {
             ca[i] = c;
         }
-        return new String(ca);
+        return Unsafe.stringOf(ca);
     }
 
     public static class _WrapStringBuilder {
@@ -3645,9 +3649,8 @@ public class S {
             return consumed;
         }
 
-        private Buffer consume() {
-            this.consumed = true;
-            return this;
+        private String consume() {
+            return toString();
         }
 
         public Buffer reset() {
@@ -5462,8 +5465,12 @@ public class S {
         public String toString() {
             // Create a copy, don't share the array
             String retval = new String(value, 0, count);
-            consume();
+            this.consumed = true;
             return retval;
+        }
+
+        public String view() {
+            return new String(value, 0, count);
         }
 
         /**

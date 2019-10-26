@@ -225,7 +225,7 @@ public class BufferedOutput implements Output {
             return;
         }
         String s = charBuf.toString();
-        charBuf.clear();
+        charBuf.reset();
         sink.append(s);
     }
 
@@ -234,7 +234,7 @@ public class BufferedOutput implements Output {
             return;
         }
         byte[] bytes = byteBuf.consume();
-        byteBuf.clear();
+        byteBuf.reset();
         sink.append(bytes);
     }
 
