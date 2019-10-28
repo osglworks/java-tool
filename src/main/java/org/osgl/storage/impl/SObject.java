@@ -50,6 +50,8 @@ import org.osgl.util.*;
 
 import java.io.*;
 import java.lang.ref.SoftReference;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -314,6 +316,23 @@ public abstract class SObject implements ISObject {
      */
     public static SObject of(InputStream is) {
         return of(randomKey(), $.requireNotNull(is));
+    }
+
+    /**
+     * Construct an sobject with specified URL.
+     * @param url
+     * @return an sobject encapsulate the data represented by the URL
+     */
+    public static SObject of(URL url) {
+        String protocol = url.getProtocol();
+        if ("file".equals(protocol)) {
+            return of(new File(url.getFile()));
+        }
+        try {
+            return of(url.openStream());
+        } catch (IOException e) {
+            throw E.ioException(e);
+        }
     }
 
     /**
