@@ -238,4 +238,10 @@ public interface ISObject extends Serializable {
      */
     boolean isDumb();
 
+    /**
+     * Probe if the storage object is binary or text
+     * @return `true` if the storage object is binary, `false` otherwise
+     */
+    boolean isBinary();
+
 }

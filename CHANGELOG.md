@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.21.0
+* ISObject - add isBinary method #219
+* Add Lang.sleep(long) method #218
 * CacheService - add state() method #217
 * N.requireXxx - add overload methods to allow customized error message
 * S.requireXxx - add overload methods to allow customized error message

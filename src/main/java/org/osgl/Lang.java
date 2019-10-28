@@ -10529,6 +10529,21 @@ public class Lang implements Serializable {
         return new _MappingStage(source, MERGE_MAP).keywordMatching();
     }
 
+    /**
+     * A convenient shortcut for `Thread.sleep(long)`.
+     * It throws an `RuntimeException` version of `InterruptedException` when current thread is interrupted:
+     * {@link UnexpectedInterruptedException}
+     *
+     * @param ms the milliseconds to sleep the current thread
+     */
+    public static void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            throw new UnexpectedInterruptedException(e);
+        }
+    }
+
     // --- eof common utilities
 
     /**

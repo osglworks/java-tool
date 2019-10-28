@@ -30,6 +30,7 @@ import org.osgl.util.algo.StringSearch;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.CharBuffer;
 import java.util.*;
 import java.util.regex.Pattern;
 import javax.inject.Singleton;
@@ -295,6 +296,41 @@ public class OsglConfig {
         }
 
     }
+
+    public static $.Predicate<Readable> binaryDataProbe() {
+        return binaryDataProbe;
+    }
+
+    public static void registerBinaryDataProbe($.Predicate<Readable> probe) {
+        binaryDataProbe = $.requireNotNull(probe);
+    }
+
+    private static $.Predicate<Readable> binaryDataProbe = new $.Predicate<Readable>() {
+        @Override
+        public boolean test(Readable readable) {
+            CharBuffer buf = CharBuffer.allocate(100);
+            try {
+                int n = readable.read(buf);
+                if (n < 0) {
+                    return false;
+                }
+                buf.flip();
+                for (int i = 0; i < n; ++i) {
+                    char c = buf.charAt(i);
+                    if (Character.isISOControl(c)) {
+                        if (c != '\n' && c != '\r') {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            } catch (IOException e) {
+                throw E.ioException(e);
+            } finally {
+                buf.clear();
+            }
+        }
+    };
 
     private static String xmlRootTag = "xml";
     public static void setXmlRootTag(String tag) {

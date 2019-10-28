@@ -40,6 +40,9 @@ package org.osgl.storage.impl;
  */
 
 import org.osgl.$;
+import org.osgl.Lang;
+import org.osgl.OsglConfig;
+import org.osgl.exception.NotAppliedException;
 import org.osgl.exception.UnexpectedIOException;
 import org.osgl.storage.ISObject;
 import org.osgl.storage.IStorageService;
@@ -173,6 +176,34 @@ public abstract class SObject implements ISObject {
         } finally {
             IO.close(is);
         }
+    }
+
+    @Override
+    public boolean isBinary() {
+        if (isDumb() || !isValid()) {
+            return false;
+        }
+        return probeBinary();
+    }
+
+    protected boolean probeBinary() {
+        String contentType = getContentType();
+        if (null != contentType) {
+            MimeType mimeType = MimeType.findByContentType(contentType);
+            if (null != mimeType) {
+                return !mimeType.test(MimeType.Trait.text);
+            }
+        }
+        final $.Var<Boolean> var = new $.Var<>(false);
+        consumeOnce(new $.F1<InputStream, Object>() {
+            @Override
+            public Object apply(InputStream is) throws NotAppliedException, Lang.Break {
+                boolean isBinary = OsglConfig.binaryDataProbe().apply($.convert(is).to(Reader.class));
+                var.set(isBinary);
+                return null;
+            }
+        });
+        return var.get();
     }
 
     protected final String suffix() {
@@ -662,6 +693,11 @@ public abstract class SObject implements ISObject {
         }
 
         @Override
+        public boolean isBinary() {
+            return false;
+        }
+
+        @Override
         public boolean equals(Object obj) {
             if (obj == this) {
                 return true;
@@ -724,6 +760,36 @@ public abstract class SObject implements ISObject {
             return IO.inputStream(file_);
         }
 
+        @Override
+        public String getFilename() {
+            return file_.getName();
+        }
+
+        @Override
+        public String getContentType() {
+            String fn = getFilename();
+            if (fn.contains(".")) {
+                String suffix = S.cut(getFilename()).afterLast(".");
+                MimeType type = MimeType.findByFileExtension(suffix);
+                if (null != type) {
+                    return type.type();
+                }
+            }
+            return super.getContentType();
+        }
+
+        @Override
+        protected boolean probeBinary() {
+            String fn = getFilename();
+            if (fn.contains(".")) {
+                String suffix = S.cut(getFilename()).afterLast(".");
+                MimeType type = MimeType.findByFileExtension(suffix);
+                if (null != type) {
+                    return !type.test(MimeType.Trait.text);
+                }
+            }
+            return super.probeBinary();
+        }
     }
 
     public static class ByteArraySObject extends SObject {
@@ -862,6 +928,7 @@ public abstract class SObject implements ISObject {
             return force().asInputStream();
         }
     }
+
 
     private static String randomKey() {
         return Codec.encodeUrl(S.random());
