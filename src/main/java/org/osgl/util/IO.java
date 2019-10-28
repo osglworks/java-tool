@@ -856,7 +856,7 @@ public class IO {
     public static class UrlReadStage extends ReadStageBase<URL, UrlReadStage> {
         public UrlReadStage(URL url) {
             super(url);
-            sourceName(url.getPath());
+            sourceName(url.getFile());
         }
 
         @Override
