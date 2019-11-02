@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.21.0
+* Add peusdo mime type for qrcode and barcode
 * ISObject - add isBinary method #219
 * Add Lang.sleep(long) method #218
 * CacheService - add state() method #217

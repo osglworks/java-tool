@@ -76,6 +76,15 @@ public final class MimeType {
         return null != trait;
     }
 
+    private MimeType() {}
+    private MimeType newInstance(String fileExtension) {
+        MimeType newInstance = new MimeType();
+        newInstance.fileExtension = S.requireNotBlank(fileExtension);
+        newInstance.type = this.type;
+        newInstance.traits = this.traits;
+        return newInstance;
+    }
+
     public static MimeType findByFileExtension(String fileExtension) {
         return indexByFileExtension.get(fileExtension.trim().toLowerCase());
     }
@@ -217,6 +226,8 @@ public final class MimeType {
                 mimeType.traits.add(Trait.text);
             }
             indexByContentType.put(type, mimeType);
+        } else if (S.neq(fileExtension, mimeType.fileExtension)) {
+            mimeType = mimeType.newInstance(fileExtension);
         }
         indexByFileExtension.put(fileExtension, mimeType);
         return true;

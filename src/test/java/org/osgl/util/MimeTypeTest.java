@@ -53,7 +53,11 @@ public class MimeTypeTest extends TestBase {
 
         mimeType = findByContentType("application/javascript");
         yes(mimeType.test(text));
+    }
 
+    @Test
+    public void testTxt() {
+        eq("txt", findByFileExtension("txt").fileExtension());
     }
 
     @Test
@@ -61,10 +65,10 @@ public class MimeTypeTest extends TestBase {
         MimeType yml = findByFileExtension("yml");
         yes(null != yml && yml.test(Trait.yaml));
         MimeType yaml = findByFileExtension("yaml");
-        same(yml, yaml);
+        same(yml.type(), yaml.type());
 
         MimeType yml2 = findByContentType("application/x-yaml");
-        same(yml2, yml);
+        same(yml2, yaml);
     }
 
     @Test
