@@ -9580,6 +9580,62 @@ public class Lang implements Serializable {
         return ta[i];
     }
 
+    public static int random(int[] a) {
+        int l = a.length;
+        E.illegalArgumentIf(0 == l);
+        int i = ThreadLocalRandom.current().nextInt(l);
+        return a[i];
+    }
+
+    public static long random(long[] a) {
+        int l = a.length;
+        E.illegalArgumentIf(0 == l);
+        int i = ThreadLocalRandom.current().nextInt(l);
+        return a[i];
+    }
+
+    public static boolean random(boolean[] a) {
+        int l = a.length;
+        E.illegalArgumentIf(0 == l);
+        int i = ThreadLocalRandom.current().nextInt(l);
+        return a[i];
+    }
+
+    public static float random(float[] a) {
+        int l = a.length;
+        E.illegalArgumentIf(0 == l);
+        int i = ThreadLocalRandom.current().nextInt(l);
+        return a[i];
+    }
+
+    public static double random(double[] a) {
+        int l = a.length;
+        E.illegalArgumentIf(0 == l);
+        int i = ThreadLocalRandom.current().nextInt(l);
+        return a[i];
+    }
+
+    public static short random(short[] a) {
+        int l = a.length;
+        E.illegalArgumentIf(0 == l);
+        int i = ThreadLocalRandom.current().nextInt(l);
+        return a[i];
+    }
+
+    public static byte random(byte[] a) {
+        int l = a.length;
+        E.illegalArgumentIf(0 == l);
+        int i = ThreadLocalRandom.current().nextInt(l);
+        return a[i];
+    }
+
+    public static char random(char[] a) {
+        int l = a.length;
+        E.illegalArgumentIf(0 == l);
+        int i = ThreadLocalRandom.current().nextInt(l);
+        return a[i];
+    }
+    
     /**
      * Returns a random element picked from elements in `ta`.
      *
