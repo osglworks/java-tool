@@ -303,6 +303,15 @@ public class TypeConverterRegistry {
                 paths.put(key, converter);
             }
         }
+        if (null == converter) {
+            if (Enum.class.isAssignableFrom(toType)) {
+                converter = Lang.TypeConverter.stringToEnum((Class<Enum>) toType);
+                if (String.class != fromType) {
+                    converter = new ChainedConverter($.TypeConverter.ANY_TO_STRING, converter);
+                }
+                paths.put(key, converter);
+            }
+        }
         return converter;
     }
 

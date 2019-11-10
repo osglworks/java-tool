@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 
 /**
  * Utility class to throw common exceptions
@@ -263,6 +264,15 @@ public class E {
      */
     public static UnexpectedIOException ioException(String msg, Object... args) {
         throw new UnexpectedIOException(msg, args);
+    }
+
+    /**
+     * Wrap the {@link SQLException} into {@link UnexpectedSqlException} and throw it out.
+     * @param cause
+     *      the {@link SQLException}.
+     */
+    public static UnexpectedSqlException sqlException(SQLException cause) {
+        throw new UnexpectedSqlException(cause);
     }
 
     /**

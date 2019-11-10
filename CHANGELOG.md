@@ -1,6 +1,9 @@
 # OSGL Tool Change Log
 
-1.21.0
+1.21.1
+* Add ResultSet converters #220
+
+1.21.0 - 3/Nov/2019
 * Add peusdo mime type for qrcode and barcode
 * ISObject - add isBinary method #219
 * Add Lang.sleep(long) method #218

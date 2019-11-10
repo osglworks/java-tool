@@ -28,6 +28,8 @@ import org.osgl.util.converter.TypeConverterRegistry;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -586,6 +588,34 @@ public class DataMapper {
             String filterSpec, boolean ignoreError, boolean ignoreGlobalFilter, $.Function keyTransformer, Map<Class, Object> conversionHints,
             $.Function<Class, ?> instanceFactory, TypeConverterRegistry typeConverterRegistry, Class<?> rootClass,
             Map<String, String> specialMapping) {
+        if (source instanceof ResultSet) {
+            ResultSet rs = $.cast(source);
+            if (target instanceof List) {
+                List targetList = (List) target;
+                if (null != targetGenericType) {
+                    Class targetElementType = $.cast(targetGenericType.getActualTypeArguments()[0]);
+                    try {
+                        while (rs.next()) {
+                            targetList.add(new ResultSetRecordConverter<>(rs, targetElementType).doConvert());
+                        }
+                    } catch (SQLException e) {
+                        throw E.sqlException(e);
+                    }
+                } else {
+                    try {
+                        while (rs.next()) {
+                            targetList.add(new ResultSetRecordConverter<>(rs, Map.class).doConvert());
+                        }
+                    } catch (SQLException e) {
+                        throw E.sqlException(e);
+                    }
+                }
+                this.target = targetList;
+            } else {
+                this.target = new ResultSetRecordConverter<>(rs, target.getClass()).doConvert();
+            }
+            return;
+        }
         this.targetType = target.getClass();
         E.illegalArgumentIf(isImmutable(targetType), "target type is immutable: " + targetType.getName());
         this.targetGenericType = targetGenericType;

@@ -46,6 +46,7 @@
     <hutool.version>[4.1.12,)</hutool.version>
     <fastjson.version>1.2.62</fastjson.version>
     <genie.version>1.10.0</genie.version>
+    <jpa.version>1.0.0.Final</jpa.version>
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
   </properties>
 
@@ -137,6 +138,12 @@
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
       <version>${fastjson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
+      <version>${jpa.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

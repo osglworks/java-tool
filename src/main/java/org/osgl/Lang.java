@@ -45,6 +45,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.sql.ResultSet;
 import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -2916,7 +2917,6 @@ public class Lang implements Serializable {
             return charset;
         }
 
-
         @Override
         public final TO transform(FROM from) {
             return convert(from);
@@ -3384,7 +3384,6 @@ public class Lang implements Serializable {
             };
         }
 
-
         public static TypeConverter<ByteBuffer, byte[]> BYTEBUFFER_TO_BYTEARRAY = new TypeConverter<ByteBuffer, byte[]>() {
             @Override
             public byte[] convert(ByteBuffer byteBuffer) {
@@ -3720,6 +3719,21 @@ public class Lang implements Serializable {
             }
         };
 
+        public static TypeConverter<ResultSet, List> RESULTSET_TO_LIST = new TypeConverter<ResultSet, List>() {
+
+            @Override
+            public List convert(ResultSet resultSet) {
+                return convert(resultSet, Map.class);
+            }
+
+            @Override
+            public List convert(ResultSet resultSet, Object hint) {
+                E.illegalArgumentIfNot(hint instanceof Class, "require list element type hint");
+                Class elementType = (Class) hint;
+                return ResultSetConverter.convert(resultSet, elementType);
+            }
+        };
+
     }
 
     public static class _ConvertStage<FROM> {
@@ -3766,37 +3780,34 @@ public class Lang implements Serializable {
             if (fromType == toType || toType.isAssignableFrom(fromType)) {
                 return cast(from);
             }
-            TypeConverter<FROM, TO> converter = cast(converterRegistry.get(fromType, toType));
-            if (null == converter) {
-                if (Enum.class.isAssignableFrom(toType)) {
-                    TypeConverter<String, Enum> enumConverter = TypeConverter.stringToEnum((Class<Enum>) toType);
-                    return (TO) enumConverter.convert(TypeConverter.ANY_TO_STRING.convert(from), hint);
-                } else if (fromType.isArray()) {
-                    if (Iterable.class.isAssignableFrom(toType)) {
-                        Iterable iterable = new Iterable() {
-                            @Override
-                            public Iterator iterator() {
-                                return new ArrayObjectIterator(from);
-                            }
-                        };
-                        return $.convert(iterable).to(toType);
-                    } else if (Iterator.class.isAssignableFrom(toType)) {
-                        Iterator iterator = new ArrayObjectIterator(from);
-                        return $.convert(iterator).to(toType);
-                    } else if (toType.isArray()) {
-                        Class<?> fromComponentType = fromType.getComponentType();
-                        Class<?> toComponentType = toType.getComponentType();
-                        final TypeConverter componentConverter = converterRegistry.get(fromComponentType, toComponentType);
-                        if (null != componentConverter) {
-                            int len = Array.getLength(from);
-                            Object toArray = Array.newInstance(toComponentType, len);
-                            for (int i = 0; i < len; ++i) {
-                                Array.set(toArray, i, componentConverter.convert(Array.get(from, i)));
-                            }
-                            return (TO) toArray;
+            if (fromType.isArray()) {
+                if (Iterable.class.isAssignableFrom(toType)) {
+                    Iterable iterable = new Iterable() {
+                        @Override
+                        public Iterator iterator() {
+                            return new ArrayObjectIterator(from);
                         }
+                    };
+                    return $.convert(iterable).to(toType);
+                } else if (Iterator.class.isAssignableFrom(toType)) {
+                    Iterator iterator = new ArrayObjectIterator(from);
+                    return $.convert(iterator).to(toType);
+                } else if (toType.isArray()) {
+                    Class<?> fromComponentType = fromType.getComponentType();
+                    Class<?> toComponentType = toType.getComponentType();
+                    final TypeConverter componentConverter = converterRegistry.get(fromComponentType, toComponentType);
+                    if (null != componentConverter) {
+                        int len = Array.getLength(from);
+                        Object toArray = Array.newInstance(toComponentType, len);
+                        for (int i = 0; i < len; ++i) {
+                            Array.set(toArray, i, componentConverter.convert(Array.get(from, i)));
+                        }
+                        return (TO) toArray;
                     }
                 }
+            }
+            TypeConverter<FROM, TO> converter = cast(converterRegistry.get(fromType, toType));
+            if (null == converter) {
                 if (null != defVal) {
                     return (TO) defVal;
                 } else {
