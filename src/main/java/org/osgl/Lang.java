@@ -8229,8 +8229,10 @@ public class Lang implements Serializable {
             if (null == c) {
                 c = o.getClass();
             }
-            Method[] ma = c.getMethods();
-            for (Method m : ma) {
+            Set<Method> methods = C.newSet();
+            methods.addAll(C.listOf(c.getMethods()));
+            methods.addAll(C.listOf(c.getDeclaredMethods()));
+            for (Method m : methods) {
                 if (!m.getName().equals(methodName)) {
                     continue;
                 }

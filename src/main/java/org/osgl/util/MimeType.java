@@ -43,8 +43,8 @@ public final class MimeType {
     private EnumSet<Trait> traits = EnumSet.noneOf(Trait.class);
 
     private MimeType(String fileExtension, String type, List<Trait> traitList) {
-        this.fileExtension = fileExtension;
-        this.type = type;
+        this.fileExtension = fileExtension.intern();
+        this.type = type.intern();
         this.traits.addAll(traitList);
     }
 
@@ -97,7 +97,7 @@ public final class MimeType {
     private MimeType() {}
     private MimeType newInstance(String fileExtension) {
         MimeType newInstance = new MimeType();
-        newInstance.fileExtension = S.requireNotBlank(fileExtension);
+        newInstance.fileExtension = fileExtension.intern();
         newInstance.type = this.type;
         newInstance.traits = this.traits;
         return newInstance;
