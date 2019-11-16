@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.21.1
+* Allow MimeType to create alias to support pseudo mimetype
 * Add ResultSet converters #220
 
 1.21.0 - 3/Nov/2019

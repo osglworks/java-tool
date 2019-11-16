@@ -61,6 +61,24 @@ public final class MimeType {
         return type;
     }
 
+    /**
+     * Create an new MimeType with traits and type of this MimeType instance and associate
+     * it with a fileExtension.
+     *
+     * If the fileExtension is already registered, then an {@link IllegalArgumentException}
+     * will be thrown out.
+     *
+     * @param fileExtension the file extension to be associated with the new MimeType instance
+     * @return the new MimeType instance.
+     */
+    public MimeType createAlias(String fileExtension) {
+        MimeType mimeType = indexByFileExtension.get(fileExtension);
+        E.illegalArgumentIf(null != mimeType, "file extension already reig");
+        mimeType = newInstance(fileExtension);
+        indexByFileExtension.put(fileExtension, mimeType);
+        return mimeType;
+    }
+
     public boolean test(Trait trait) {
         return traits.contains(trait);
     }
@@ -83,6 +101,10 @@ public final class MimeType {
         newInstance.type = this.type;
         newInstance.traits = this.traits;
         return newInstance;
+    }
+
+    static {
+        init();
     }
 
     public static MimeType findByFileExtension(String fileExtension) {
@@ -122,10 +144,6 @@ public final class MimeType {
     public static String typeOfSuffix(String fileExtension) {
         MimeType mimeType = indexByFileExtension.get(fileExtension);
         return null == mimeType ? fileExtension : mimeType.type;
-    }
-
-    static {
-        init();
     }
 
     private static void init() {
