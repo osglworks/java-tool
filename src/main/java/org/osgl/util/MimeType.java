@@ -26,7 +26,7 @@ import java.util.*;
 
 public final class MimeType {
 
-    private static Map<String, MimeType> indexByFileExtension = new HashMap<>();
+    private static Map<String, MimeType> indexByName = new HashMap<>();
     private static Map<String, MimeType> indexByContentType = new HashMap<>();
     private static Map<String, Trait> traitMap = new HashMap<>();
 
@@ -38,12 +38,14 @@ public final class MimeType {
         }
     }
 
-    private String fileExtension;
+    private String name;
     private String type;
     private EnumSet<Trait> traits = EnumSet.noneOf(Trait.class);
 
-    private MimeType(String fileExtension, String type, List<Trait> traitList) {
-        this.fileExtension = fileExtension.intern();
+    private MimeType() {}
+
+    private MimeType(String name, String type, List<Trait> traitList) {
+        this.name = name.intern();
         this.type = type.intern();
         this.traits.addAll(traitList);
     }
@@ -53,8 +55,24 @@ public final class MimeType {
         return type;
     }
 
+    /**
+     * Return file extension of this MimeType.
+     *
+     * Note this method is obsolete, please use {@link #name() instead}
+     *
+     * @return file extension of this MimeType
+     */
+    @Deprecated
     public String fileExtension() {
-        return fileExtension;
+        return name;
+    }
+
+    /**
+     * Return name of this MimeType.
+     * @return name of this MimeType
+     */
+    public String name() {
+        return name;
     }
 
     public String type() {
@@ -62,29 +80,99 @@ public final class MimeType {
     }
 
     /**
-     * Create an new MimeType with traits and type of this MimeType instance and associate
-     * it with a fileExtension.
+     * Check if the mime type specified has the same {@link #type}
+     * of this mime type.
+     * @param mimeType the mime type to be test
+     * @return `true` if the mime type has the same type with this mime type.
+     */
+    public boolean isSameType(MimeType mimeType) {
+        return type == mimeType.type;
+    }
+
+    /**
+     * Check if this mime type is same type of any one specified in the
+     * var arg list.
      *
-     * If the fileExtension is already registered, then an {@link IllegalArgumentException}
+     * @param types a var arg list of mime types.
+     * @return `true` if this mime type is same type of any one specified in the list.
+     */
+    public boolean isSameTypeOfAny(MimeType ... types) {
+        for (MimeType type : types) {
+            if (isSameType(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if the mime type specified is an alias of this mime type.
+     * Calling this method has the same effect with calling {@link #isSameType(MimeType)}.
+     *
+     * @param mimeType the mime type to be tested.
+     * @return `true` if the mime type has the same type with this mime type.
+     */
+    public boolean isAlias(MimeType mimeType) {
+        return type == mimeType.type;
+    }
+
+    /**
+     * Create an new MimeType with traits and type of this MimeType instance and associate
+     * it with an new name.
+     *
+     * If the name specified is already registered, then an {@link IllegalArgumentException}
      * will be thrown out.
      *
-     * @param fileExtension the file extension to be associated with the new MimeType instance
+     * @param name the name to be associated with the new MimeType instance
      * @return the new MimeType instance.
      */
-    public MimeType createAlias(String fileExtension) {
-        MimeType mimeType = indexByFileExtension.get(fileExtension);
-        E.illegalArgumentIf(null != mimeType, "file extension already reig");
-        mimeType = newInstance(fileExtension);
-        indexByFileExtension.put(fileExtension, mimeType);
+    public MimeType createAlias(String name) {
+        MimeType mimeType = indexByName.get(name);
+        E.illegalArgumentIf(null != mimeType, "name already reigistered");
+        mimeType = newInstance(name);
+        indexByName.put(name, mimeType);
         return mimeType;
     }
 
+    /**
+     * This method is deprecated. Please use {@link #hasTrait(Trait)} instead.
+     * 
+     * Check if this `MimeType` has the trait specified.
+     *
+     * @param trait the trait to test this mime type.
+     * @return `true` if this mime type has the trait specified.
+     */
+    @Deprecated
     public boolean test(Trait trait) {
         return traits.contains(trait);
     }
 
+    /**
+     * Check if this `MimeType` has the trait specified.
+     *
+     * @param trait the trait to test this mime type.
+     * @return `true` if this mime type has the trait specified.
+     */
+    public boolean hasTrait(Trait trait) {
+        return traits.contains(trait);
+    }
+
+    /**
+     * This method is deprecated. Please use {@link #matches(String)} instead
+     *
+     * Check if this `MimeType` matches a string specified.
+     *
+     * This method will
+     *
+     * - check if the string matches the name, if not then
+     * - check if the string matches the type, if not then
+     * - check if the string represent a trait and contained in this MimeType.
+     *
+     * @param s the string to be tested.
+     * @return `true` if the `s` matches as per logic specified above.
+     */
     public boolean test(String s) {
-        if (fileExtension.equalsIgnoreCase(s)) {
+        if (name.equalsIgnoreCase(s)) {
             return true;
         }
         if (type.equalsIgnoreCase(s)) {
@@ -94,10 +182,32 @@ public final class MimeType {
         return null != trait;
     }
 
-    private MimeType() {}
+    /**
+     * Check if this `MimeType` matches a string specified.
+     *
+     * This method will
+     *
+     * - check if the string matches the name, if not then
+     * - check if the string matches the type, if not then
+     * - check if the string represent a trait and contained in this MimeType.
+     *
+     * @param s the string to be tested.
+     * @return `true` if the `s` matches as per logic specified above.
+     */
+    public boolean matches(String s) {
+        if (name.equalsIgnoreCase(s)) {
+            return true;
+        }
+        if (type.equalsIgnoreCase(s)) {
+            return true;
+        }
+        Trait trait = traitMap.get(s);
+        return null != trait;
+    }
+
     private MimeType newInstance(String fileExtension) {
         MimeType newInstance = new MimeType();
-        newInstance.fileExtension = fileExtension.intern();
+        newInstance.name = fileExtension.intern();
         newInstance.type = this.type;
         newInstance.traits = this.traits;
         return newInstance;
@@ -107,14 +217,41 @@ public final class MimeType {
         init();
     }
 
+    /**
+     * This method is deprecated. Please use {@link #findByName(String)} instead.
+     *
+     * @param fileExtension the file extension.
+     * @return the MimeType associated with the file extension (name)
+     */
+    @Deprecated
     public static MimeType findByFileExtension(String fileExtension) {
-        return indexByFileExtension.get(fileExtension.trim().toLowerCase());
+        return indexByName.get(fileExtension.trim().toLowerCase());
     }
 
+    /**
+     * Return a MimeType by name.
+     * @param name the name to locate the MimeType.
+     * @return the MimeType associated with the name specified.
+     */
+    public static MimeType findByName(String name) {
+        return indexByName.get(name.trim().toLowerCase());
+    }
+
+    /**
+     * Find MimeType by content type.
+     * @param contentType the content type.
+     * @return MimeType with the content type specified.
+     */
     public static MimeType findByContentType(String contentType) {
         return indexByContentType.get(contentType.trim().toLowerCase());
     }
 
+    /**
+     * Get a list of `MimeType` with each item contains the trait specified.
+     *
+     * @param trait the trait to filter `MimeType` list
+     * @return a list of `MimeType` matches the trait.
+     */
     public static List<MimeType> filterByTrait(Trait trait) {
         List<MimeType> mimeTypes = new ArrayList<>();
         for (MimeType mimeType : allMimeTypes()) {
@@ -125,11 +262,17 @@ public final class MimeType {
         return mimeTypes;
     }
 
+    /**
+     * Returns a collection of all managed mime types.
+     * @return all managed mime types.
+     */
     public static Collection<MimeType> allMimeTypes() {
-        return indexByFileExtension.values();
+        return indexByName.values();
     }
 
     /**
+     * This method is deprecated. Please use {@link #typeOfName(String)} instead.
+     *
      * Return a content type string corresponding to a given file extension suffix.
      *
      * If there is no MimeType corresponding to the file extension, then returns the file
@@ -141,9 +284,25 @@ public final class MimeType {
      *      A content type string corresponding to the file extension suffix
      *      or the file extension suffix itself if no corresponding mimetype found.
      */
+    @Deprecated
     public static String typeOfSuffix(String fileExtension) {
-        MimeType mimeType = indexByFileExtension.get(fileExtension);
+        MimeType mimeType = indexByName.get(fileExtension);
         return null == mimeType ? fileExtension : mimeType.type;
+    }
+
+    /**
+     * Return a content type string corresponding to a given name.
+     *
+     * If there is no MimeType corresponding to the name, then returns the name string directly.
+     *
+     * @param name the name
+     * @return
+     *      A content type string corresponding to the file extension suffix
+     *      or the file extension suffix itself if no corresponding mimetype found.
+     */
+    public static String typeOfName(String name) {
+        MimeType mimeType = indexByName.get(name);
+        return null == mimeType ? name : mimeType.type;
     }
 
     private static void init() {
@@ -180,7 +339,7 @@ public final class MimeType {
         if (fileExtension.contains(".")) {
             // process content type alias
             fileExtension = S.cut(fileExtension).beforeFirst(".");
-            MimeType mimeType = indexByFileExtension.get(fileExtension);
+            MimeType mimeType = indexByName.get(fileExtension);
             E.illegalStateIf(null == mimeType, "error parsing line: " + line);
             indexByContentType.put(pair.right(), mimeType);
             return true;
@@ -244,10 +403,10 @@ public final class MimeType {
                 mimeType.traits.add(Trait.text);
             }
             indexByContentType.put(type, mimeType);
-        } else if (S.neq(fileExtension, mimeType.fileExtension)) {
+        } else if (S.neq(fileExtension, mimeType.name)) {
             mimeType = mimeType.newInstance(fileExtension);
         }
-        indexByFileExtension.put(fileExtension, mimeType);
+        indexByName.put(fileExtension, mimeType);
         return true;
     }
 }
