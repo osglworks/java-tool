@@ -85,7 +85,7 @@ public final class MimeType {
      * @param mimeType the mime type to be test
      * @return `true` if the mime type has the same type with this mime type.
      */
-    public boolean isSameType(MimeType mimeType) {
+    public boolean isSameTypeWith(MimeType mimeType) {
         return type == mimeType.type;
     }
 
@@ -96,9 +96,9 @@ public final class MimeType {
      * @param types a var arg list of mime types.
      * @return `true` if this mime type is same type of any one specified in the list.
      */
-    public boolean isSameTypeOfAny(MimeType ... types) {
+    public boolean isSameTypeWithAny(MimeType ... types) {
         for (MimeType type : types) {
-            if (isSameType(type)) {
+            if (isSameTypeWith(type)) {
                 return true;
             }
         }
