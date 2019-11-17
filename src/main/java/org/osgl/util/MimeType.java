@@ -305,6 +305,24 @@ public final class MimeType {
         return null == mimeType ? name : mimeType.type;
     }
 
+    /**
+     * Register an new MimeType with name, contentType and traits.
+     *
+     * Note if there are existing MimeType associated with the name, the existing one will be
+     * replaced.
+     *
+     * @param name the name of the new mime type
+     * @param contentType the content type of the new mime type
+     * @param traits the traits of the new mimetype
+     */
+    public static void registerMimeType(String name, String contentType, Trait ... traits) {
+        MimeType mimeType = new MimeType(name, contentType, C.listOf(traits));
+        indexByName.put(name, mimeType);
+        if (!indexByContentType.containsKey(contentType)) {
+            indexByContentType.put(contentType, mimeType);
+        }
+    }
+
     private static void init() {
         for (Trait trait : Trait.values()) {
             traitMap.put(trait.name(), trait);
