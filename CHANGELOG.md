@@ -1,9 +1,10 @@
 # OSGL Tool Change Log
 
-1.21.1
-* MimeType - use String.intern() to set fileExtension and type
-* Allow Lang.invokeMethod invoke non public method
-* Allow MimeType to create alias to support pseudo mimetype
+1.22.0 - 23/Nov/2019
+* MimeType enhancements #221
+    - use String.intern() to set fileExtension and type
+    - add `createAlias` to support pseudo mimetype
+* Lang - allow `invokeMethod` to invoke on non public methods #222
 * Add ResultSet converters #220
 
 1.21.0 - 3/Nov/2019
