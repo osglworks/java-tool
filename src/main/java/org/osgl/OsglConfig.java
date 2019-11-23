@@ -347,4 +347,15 @@ public class OsglConfig {
     public static String xmlListItemTag() {
         return xmlListItemTag;
     }
+
+    private static int BIGLINE_ITERATOR_BUF_SIZE = 20000;
+    public static void setBiglineIteratorBufSize(int size) {
+        if (size < 1000) {
+            size = 1000;
+        }
+        BIGLINE_ITERATOR_BUF_SIZE = size;
+    }
+    public static int getBiglineIteratorBufSize() {
+        return BIGLINE_ITERATOR_BUF_SIZE;
+    }
 }

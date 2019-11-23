@@ -20,6 +20,8 @@ package org.osgl.util;
  * #L%
  */
 
+import org.osgl.OsglConfig;
+
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -52,7 +54,9 @@ public class BigLines implements Iterable<String> {
     public BigLines(File file) {
         E.illegalArgumentIfNot(file.exists() && file.isFile() && file.canRead(), "file must exists and be a readable file: " + file);
         this.file = file;
-        this.firstLine = fetch(0);
+        if (lines() > 0) {
+            this.firstLine = fetch(0);
+        }
     }
 
     public String getName() {
@@ -60,7 +64,7 @@ public class BigLines implements Iterable<String> {
     }
 
     public boolean isEmpty() {
-        return null == firstLine;
+        return 0 == lines();
     }
 
     public String firstLine() {
@@ -140,6 +144,14 @@ public class BigLines implements Iterable<String> {
      * @return a number of lines as specified.
      */
     public List<String> fetch(int offset, int limit) {
+        return fetch(offset, limit, new ArrayList<String>(limit));
+    }
+
+    private List<String> fetch(int offset, int limit, List<String> buf) {
+        buf.clear();
+        if (isEmpty()) {
+            return buf;
+        }
         E.illegalArgumentIf(offset < 0, "offset must not be negative number");
         E.illegalArgumentIf(offset >= lines(), "offset is out of range: " + offset);
         E.illegalArgumentIf(limit < 1, "limit must be at least 1");
@@ -153,19 +165,18 @@ public class BigLines implements Iterable<String> {
         } catch (IOException e) {
             throw E.ioException(e);
         }
-        List<String> lines = new ArrayList<>();
         try {
             for (int i = 0; i < limit; ++i) {
                 String line = reader.readLine();
                 if (null == line) {
                     break;
                 }
-                lines.add(line);
+                buf.add(line);
             }
         } catch (IOException e) {
             throw E.ioException(e);
         }
-        return lines;
+        return buf;
     }
 
     public List<String> fetchAround(int lineNumber, int before, int after) {
@@ -299,27 +310,55 @@ public class BigLines implements Iterable<String> {
         }
     }
 
-    @Override
-    public Iterator<String> iterator() {
-        return new Iterator<String>() {
+    class BigLinesIterator implements Iterator<String> {
+        private int bufSize;
+        private List<String> buf;
+        private int offset;
+        private int bufCursor;
 
-            int cursor = iterateFirstLine ? 0 : 1;
+        BigLinesIterator(int bufSize) {
+            this.bufSize = bufSize;
+            this.buf = fetch(offset, bufSize);
+            this.offset = bufSize;
+        }
 
-            @Override
-            public boolean hasNext() {
-                return cursor < lines();
+        @Override
+        public boolean hasNext() {
+            return (offset - bufSize + bufCursor) < lines();
+        }
+
+        @Override
+        public String next() {
+            if (bufSize <= bufCursor) {
+                fetch(this.offset, this.bufSize, this.buf);
+                this.offset += this.bufSize;
+                bufCursor = 0;
             }
+            return buf.get(bufCursor++);
+        }
 
-            @Override
-            public String next() {
-                return fetch(cursor++);
-            }
+        @Override
+        public void remove() {
+            throw E.unsupport();
+        }
+    }
 
+    public Iterable<String> asIterable(int bufSize) {
+        if (bufSize < 1000) {
+            bufSize = 1000;
+        }
+        final int BUF_SZ = bufSize;
+        return new Iterable<String>() {
             @Override
-            public void remove() {
-                throw E.unsupport();
+            public Iterator<String> iterator() {
+                return new BigLinesIterator(BUF_SZ);
             }
         };
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return new BigLinesIterator(OsglConfig.getBiglineIteratorBufSize());
     }
 
     // see https://stackoverflow.com/questions/453018/number-of-lines-in-a-file-in-java
@@ -335,7 +374,7 @@ public class BigLines implements Iterable<String> {
             }
 
             // make it easy for the optimizer to tune this loop
-            int count = 1;
+            int count = 0;
             while (readChars == 1024) {
                 for (int i = 0; i < 1024; ) {
                     if (c[i++] == '\n') {

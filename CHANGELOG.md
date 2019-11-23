@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.22.1 - 23/Nov/2019
+* BigLines - improve iterator performance #223
+
 1.22.0 - 23/Nov/2019
 * MimeType enhancements #221
     - use String.intern() to set fileExtension and type
