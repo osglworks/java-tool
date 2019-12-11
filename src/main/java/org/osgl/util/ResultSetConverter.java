@@ -24,12 +24,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ResultSetConverter {
 
     public static <T> List<T> convert(ResultSet rs, Class<T> listElementType) {
+        return convert(rs, listElementType, null);
+    }
+
+    public static <T> List<T> convert(ResultSet rs, Class<T> listElementType, Map<String, String> specialMaps) {
         try {
-            ResultSetRecordConverter<T> rsrc = new ResultSetRecordConverter<>(rs, listElementType);
+            ResultSetRecordConverter<T> rsrc = new ResultSetRecordConverter<>(rs, listElementType, specialMaps);
             List<T> list = new ArrayList<>();
             while (rs.next()) {
                 T record = rsrc.doConvert();

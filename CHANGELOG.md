@@ -1,5 +1,12 @@
 # OSGL Tool Change Log
 
+1.22.2
+* ResultSetDataConverter enhancement #227
+* XML to JSON converter - it failed on very big number #226
+* XML to JSON converter - handle `[CDATA` #225
+* Convert framework - convert from Date to javax.sql.Timestamp returns Date #224
+
+
 1.22.1 - 23/Nov/2019
 * BigLines - improve iterator performance #223
 

@@ -29,6 +29,8 @@ import org.osgl.util.S;
 import org.osgl.util.converter.TypeConverterRegistry;
 
 import java.lang.reflect.Field;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -310,6 +312,16 @@ public class LangTest extends TestBase {
             eq("3", target[2]);
             Iterable iterable = $.convert(source).to(Iterable.class);
             eq("123", S.join(iterable).get());
+        }
+
+        @Test
+        public void testSqlDateTypeConverters() {
+            Date now = new Date();
+            Timestamp ts = $.convert(now).to(Timestamp.class);
+            eq(ts.getTime(), now.getTime());
+
+            Time time = $.convert(now).to(Time.class);
+            eq(time.getTime(), now.getTime());
         }
     }
 

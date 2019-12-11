@@ -273,7 +273,7 @@ public class TypeConverterRegistry {
     public synchronized <FROM, TO> $.TypeConverter<FROM, TO> get(Class<FROM> fromType, Class<TO> toType) {
         fromType = fromType.isArray() ? fromType : $.wrapperClassOf(fromType);
         toType = toType.isArray() ? toType : $.wrapperClassOf(toType);
-        if (fromType == toType || fromType.isAssignableFrom(toType)) {
+        if (fromType == toType || toType.isAssignableFrom(fromType)) {
             return ME_TO_ME;
         }
         $.Pair<Class, Class> key = keyOf(fromType, toType);

@@ -38,10 +38,16 @@ public class ResultSetRecordConverter<T> {
     private Class<T> targetType;
     private ResultSet rs;
     private ResultSetMetaData rsMeta;
+    private Map<String, String> specialMaps;
+    private Map<String, String> reverseSpecialMaps;
     private static Map<ResultSetMetaData, Map<String, Integer>> resultSetMetaDataColumnNameLookup = new HashMap<>();
 
-    public ResultSetRecordConverter(ResultSet rs, Class<T> targetType) {
+    public ResultSetRecordConverter(ResultSet rs, Class<T> targetType, Map<String, String> specialMaps) {
         this.targetType = $.requireNotNull(targetType);
+        this.specialMaps = specialMaps;
+        if (null != specialMaps) {
+            this.reverseSpecialMaps = C.Map(specialMaps).flipped();
+        }
         try {
             this.rsMeta = rs.getMetaData();
         } catch (SQLException e) {
@@ -82,6 +88,12 @@ public class ResultSetRecordConverter<T> {
         int n = rsMeta.getColumnCount();
         for (int i = 1; i <= n; ++i) {
             String label = rsMeta.getColumnLabel(i);
+            if (null != specialMaps) {
+                String newLabel = specialMaps.get(label);
+                if (null != newLabel) {
+                    label = newLabel;
+                }
+            }
             map.put(label, getFieldValue(i));
         }
         return map;
@@ -91,6 +103,12 @@ public class ResultSetRecordConverter<T> {
         int n = rsMeta.getColumnCount();
         for (int i = 1; i <= n; ++i) {
             String label = rsMeta.getColumnLabel(i);
+            if (null != specialMaps) {
+                String newLabel = specialMaps.get(label);
+                if (null != newLabel) {
+                    label = newLabel;
+                }
+            }
             map.putValue(label, getFieldValue(i));
         }
         return map;
@@ -106,6 +124,12 @@ public class ResultSetRecordConverter<T> {
         for (Field f : fields) {
             Column column = f.getAnnotation(Column.class);
             String label = null != column ? column.name() : f.getName();
+            if (null != reverseSpecialMaps) {
+                String newLabel = reverseSpecialMaps.get(label);
+                if (null != newLabel) {
+                    label = newLabel;
+                }
+            }
             Integer n = columnNameLookup.get(label);
             if (null == n) {
                 continue;

@@ -596,7 +596,7 @@ public class DataMapper {
                     Class targetElementType = $.cast(targetGenericType.getActualTypeArguments()[0]);
                     try {
                         while (rs.next()) {
-                            targetList.add(new ResultSetRecordConverter<>(rs, targetElementType).doConvert());
+                            targetList.add(new ResultSetRecordConverter<>(rs, targetElementType, specialMapping).doConvert());
                         }
                     } catch (SQLException e) {
                         throw E.sqlException(e);
@@ -604,7 +604,7 @@ public class DataMapper {
                 } else {
                     try {
                         while (rs.next()) {
-                            targetList.add(new ResultSetRecordConverter<>(rs, Map.class).doConvert());
+                            targetList.add(new ResultSetRecordConverter<>(rs, Map.class, specialMapping).doConvert());
                         }
                     } catch (SQLException e) {
                         throw E.sqlException(e);
@@ -612,7 +612,7 @@ public class DataMapper {
                 }
                 this.target = targetList;
             } else {
-                this.target = new ResultSetRecordConverter<>(rs, target.getClass()).doConvert();
+                this.target = new ResultSetRecordConverter<>(rs, target.getClass(), specialMapping).doConvert();
             }
             return;
         }

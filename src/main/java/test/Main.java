@@ -22,7 +22,10 @@ package test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.osgl.$;
+import org.osgl.Lang;
+import org.osgl.OsglConfig;
 import org.osgl.util.C;
 import org.osgl.util.XML;
 import org.w3c.dom.Document;
@@ -37,12 +40,19 @@ public class Main {
         System.out.println(s.substring(12));
     }
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         JSONArray array = new JSONArray();
         array.add(C.Map("foo", 1));
         JSON json = array;
         Document document = $.convert(json).to(Document.class);
         System.out.println(XML.toString(document));
+    }
+
+    public static void main(String[] args) throws Exception {
+        String s = "<xml><ToUserName><![CDATA[Tom Mark]]></ToUserName></xml>";
+        Document doc = XML.read(s);
+        JSONObject json = $.convert(doc).to(JSONObject.class);
+        System.out.println(JSON.toJSONString(json, true));
     }
 
 

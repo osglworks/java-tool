@@ -22,9 +22,11 @@ package org.osgl.util.converter;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.osgl.util.E;
 import org.osgl.util.S;
 import org.w3c.dom.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 class XmlDocumentToJsonUtil {
@@ -40,6 +42,7 @@ class XmlDocumentToJsonUtil {
 
     static Object convert(Node node, String listItemTag) {
         switch (node.getNodeType()) {
+            case Node.CDATA_SECTION_NODE:
             case Node.TEXT_NODE:
                 return convert(node.getTextContent());
             case Node.ELEMENT_NODE:
@@ -53,7 +56,8 @@ class XmlDocumentToJsonUtil {
         int size = list.getLength();
         if (1 == size) {
             Node node = list.item(0);
-            if (node.getNodeType() == Node.TEXT_NODE) {
+            short nodeType = node.getNodeType();
+            if (nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE) {
                 return convert(node.getTextContent());
             }
         }
@@ -95,14 +99,27 @@ class XmlDocumentToJsonUtil {
         } else if ("false".equals(s)) {
             return Boolean.FALSE;
         } else if (S.isInt(s)) {
-            if (9 < s.length()) {
-                return Long.parseLong(s);
+            if (9 >= s.length()) {
+                return Integer.parseInt(s);
+            } else if (19 >= s.length()) {
+                long l = Long.parseLong(s);
+                if (l <= Integer.MAX_VALUE) {
+                    return (int)l;
+                }
+                return l;
+            } else {
+                try {
+                    return Long.parseLong(s);
+                } catch (NumberFormatException e) {
+                    return new BigInteger(s);
+                }
             }
-            return Integer.parseInt(s);
-        } else if (S.isNumeric(s)) {
-            return Double.parseDouble(s);
         } else {
-            return s;
+            try {
+                return Double.parseDouble(s);
+            } catch (NumberFormatException e) {
+                return s;
+            }
         }
     }
 

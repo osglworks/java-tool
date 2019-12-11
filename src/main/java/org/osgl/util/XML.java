@@ -153,34 +153,12 @@ public class XML {
         }
     }
 
-    public static final Lang.TypeConverter<String, Document> STRING_TO_XML_DOCUMENT = new Lang.TypeConverter<String, Document>() {
-        @Override
-        public Document convert(String s) {
-            return read(s);
-        }
-    };
+    public static final Lang.TypeConverter<String, Document> STRING_TO_XML_DOCUMENT = Lang.TypeConverter.STRING_TO_XML_DOCUMENT;
 
-    public static final Lang.TypeConverter<InputStream, Document> IS_TO_XML_DOCUMENT = new Lang.TypeConverter<InputStream, Document>() {
-        @Override
-        public Document convert(InputStream inputStream) {
-            return read(inputStream);
-        }
-    };
+    public static final Lang.TypeConverter<InputStream, Document> IS_TO_XML_DOCUMENT = Lang.TypeConverter.IS_TO_XML_DOCUMENT;
 
-    public static final Lang.TypeConverter<Document, String> XML_DOCUMENT_TO_STRING = new Lang.TypeConverter<Document, String>() {
+    public static final Lang.TypeConverter<Document, String> XML_DOCUMENT_TO_STRING = Lang.TypeConverter.XML_DOCUMENT_TO_STRING;
 
-        @Override
-        public String convert(Document document) {
-            return convert(document, null);
-        }
-
-        @Override
-        public String convert(Document document, Object hint) {
-            if (HINT_PRETTY == hint) {
-                return XML.toString(document, true);
-            }
-            return XML.toString(document);
-        }
-    };
+    public static void init() {}
 
 }

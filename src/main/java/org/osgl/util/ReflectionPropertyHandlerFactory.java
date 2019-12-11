@@ -73,7 +73,17 @@ public class ReflectionPropertyHandlerFactory implements PropertyHandlerFactory 
                     Method m = c.getMethod(propName);
                     propertyGetter = newGetter(c, m, null);
                 } catch (NoSuchMethodException e2) {
-                    propertyGetter = getterViaField(c, propName);
+                    try {
+                        propertyGetter = getterViaField(c, propName);
+                    } catch (RuntimeException e3) {
+                        if (Map.class.isAssignableFrom(c)) {
+                            return new MapPropertyGetter(String.class, Object.class);
+                        } else if (AdaptiveMap.class.isAssignableFrom(c)) {
+                            return new AdaptiveMapPropertyGetter(String.class, Object.class);
+                        } else {
+                            throw e3;
+                        }
+                    }
                 }
             }
         }

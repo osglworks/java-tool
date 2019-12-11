@@ -23,6 +23,7 @@ package org.osgl;
 import static org.osgl.util.DataMapper.MappingRule.KEYWORD_MATCHING;
 import static org.osgl.util.DataMapper.MappingRule.STRICT_MATCHING;
 import static org.osgl.util.DataMapper.Semantic.*;
+import static org.osgl.util.XML.HINT_PRETTY;
 
 import com.alibaba.fastjson.*;
 import org.osgl.cache.CacheService;
@@ -46,6 +47,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -3182,11 +3184,35 @@ public class Lang implements Serializable {
             }
         };
 
-        public static final TypeConverter<String, Document> STRING_TO_XML_DOCUMENT = XML.STRING_TO_XML_DOCUMENT;
+        public static final TypeConverter<String, Document> STRING_TO_XML_DOCUMENT = new Lang.TypeConverter<String, Document>() {
+            @Override
+            public Document convert(String s) {
+                return XML.read(s);
+            }
+        };
 
-        public static final TypeConverter<InputStream, Document> IS_TO_XML_DOCUMENT = XML.IS_TO_XML_DOCUMENT;
+        public static final TypeConverter<InputStream, Document> IS_TO_XML_DOCUMENT = new Lang.TypeConverter<InputStream, Document>() {
+            @Override
+            public Document convert(InputStream inputStream) {
+                return XML.read(inputStream);
+            }
+        };
 
-        public static final TypeConverter<Document, String> XML_DOCUMENT_TO_STRING = XML.XML_DOCUMENT_TO_STRING;
+        public static final TypeConverter<Document, String> XML_DOCUMENT_TO_STRING = new Lang.TypeConverter<Document, String>() {
+
+            @Override
+            public String convert(Document document) {
+                return convert(document, null);
+            }
+
+            @Override
+            public String convert(Document document, Object hint) {
+                if (HINT_PRETTY == hint) {
+                    return XML.toString(document, true);
+                }
+                return XML.toString(document);
+            }
+        };
 
         public static final TypeConverter<Document, JSONObject> XML_DOCUMENT_TO_JSON = new XmlDocumentToJsonObject();
 
@@ -12313,8 +12339,11 @@ public class Lang implements Serializable {
         return OsglConfig.internalCache();
     }
 
-    static {
+    public static void init() {
         OsglConfig.registerExtensions();
     }
 
+    static {
+        init();
+    }
 }
