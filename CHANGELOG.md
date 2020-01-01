@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
-1.22.2
+1.23.0
+* Add `S.pluralize(String)` and `S.singularize(String)` method #229
+* add pseudo type msa=application/x-ms-application - support IE
 * ResultSetDataConverter enhancement #227
 * XML to JSON converter - it failed on very big number #226
 * XML to JSON converter - handle `[CDATA` #225

@@ -1,6 +1,7 @@
 package org.osgl.util;
 
 /*
+ * #%L
  * JBoss DNA (http://www.jboss.org/dna)
  * See the COPYRIGHT.txt file distributed with this work for information
  * regarding copyright ownership.  Some portions may be licensed
@@ -22,6 +23,7 @@ package org.osgl.util;
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * #L%
  */
 
 import java.util.HashSet;
