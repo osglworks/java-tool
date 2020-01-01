@@ -415,4 +415,20 @@ public class STest extends UtilTestBase {
         eq("318", S.padLeadingZero(318, 3));
     }
 
+    @Test
+    public void test_pluralize() {
+        eq("permissions", S.pluralize("permission"));
+        eq("Permissions", S.pluralize("Permissions"));
+        eq("categories", S.pluralize("category"));
+        eq("桌子", S.pluralize("桌子"));
+    }
+
+    @Test
+    public void test_singularize() {
+        eq("permission", S.singularize("permissions"));
+        eq("Permission", S.singularize("Permission"));
+        eq("category", S.singularize("categories"));
+        eq("桌子", S.singularize("桌子"));
+    }
+
 }

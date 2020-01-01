@@ -5648,6 +5648,14 @@ public class S {
         }
     }
 
+    public static String pluralize(Object word) {
+        return Inflector.getInstance().pluralize(word);
+    }
+
+    public static String singularize(Object word) {
+        return Inflector.getInstance().singularize(word);
+    }
+
     public static class Binary extends $.T2<String, String> {
         public Binary(String _1, String _2) {
             super(_1, _2);

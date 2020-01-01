@@ -21,6 +21,8 @@ package org.osgl.util;
  */
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -122,4 +124,45 @@ public interface BeanInfo<T extends BeanInfo> extends AnnotationAware {
      * @return `true` if `o` is an instance of the type of this Bean
      */
     boolean isInstance(Object o);
+
+    // this will move to upper level using Java8 default method in next major version
+    class Util {
+        public static boolean isGetter(Method method) {
+            int modifiers = method.getModifiers();
+            if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
+                return false;
+            }
+            Class<?> returnType = method.getReturnType();
+            if (void.class == returnType || Void.class == returnType) {
+                return false;
+            }
+            if (method.getParameterTypes().length > 0) {
+                return false;
+            }
+            String name = method.getName();
+            if (name.length() < 4) {
+                return false;
+            }
+            return name.startsWith("get") && !name.equals("getClass");
+        }
+
+        public static boolean isSetter(Method method) {
+            int modifiers = method.getModifiers();
+            if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
+                return false;
+            }
+            Class<?> returnType = method.getReturnType();
+            if (void.class != returnType) {
+                return false;
+            }
+            if (method.getParameterTypes().length != 1) {
+                return false;
+            }
+            String name = method.getName();
+            if (name.length() < 4) {
+                return false;
+            }
+            return name.startsWith("set");
+        }
+    }
 }

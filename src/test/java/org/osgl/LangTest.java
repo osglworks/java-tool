@@ -342,5 +342,16 @@ public class LangTest extends TestBase {
         }
     }
 
+    public static class PropertyTest extends TestBase {
+
+        @Test
+        public void testSetterOnMap() {
+            Map<String, Object> map = new HashMap<>();
+            $.setProperty(map, 123, "xyz");
+            eq(123, map.get("xyz"));
+        }
+
+    }
+
 
 }
