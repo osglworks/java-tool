@@ -20,7 +20,7 @@
 
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.23.0</version>
+  <version>1.23.1-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
