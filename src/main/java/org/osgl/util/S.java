@@ -2056,6 +2056,10 @@ public class S {
         return Keyword.of(s).dotted();
     }
 
+    public static String acronym(CharSequence s) {
+        return Keyword.of(s).acronym();
+    }
+
     public static String capFirst(String s) {
         if (null == s || "" == s) {
             return "";

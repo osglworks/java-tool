@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.AccessDeniedException;
 import java.sql.SQLException;
 
 /**
@@ -252,6 +253,9 @@ public class E {
      *      the {@link IOException}.
      */
     public static UnexpectedIOException ioException(IOException cause) {
+        if (cause instanceof AccessDeniedException) {
+            throw new org.osgl.exception.AccessDeniedException(cause);
+        }
         throw new UnexpectedIOException(cause);
     }
 

@@ -1,13 +1,16 @@
 # OSGL Tool Change Log
 
-1.23.0
+1.24.0
+* Add `org.osgl.exceptions.AccessDeniedException`
+* Add `S.acronym(CharSequence)` static method.
+
+1.23.0 - 02/Jan/2020
 * Add `S.pluralize(String)` and `S.singularize(String)` method #229
 * add pseudo type msa=application/x-ms-application - support IE
 * ResultSetDataConverter enhancement #227
 * XML to JSON converter - it failed on very big number #226
 * XML to JSON converter - handle `[CDATA` #225
 * Convert framework - convert from Date to javax.sql.Timestamp returns Date #224
-
 
 1.22.1 - 23/Nov/2019
 * BigLines - improve iterator performance #223
