@@ -41,6 +41,7 @@ package org.osgl.util;
 
 import org.osgl.$;
 import org.osgl.exception.NotAppliedException;
+import org.osgl.exception.ResourceNotFoundException;
 import org.osgl.storage.ISObject;
 import org.osgl.storage.impl.SObject;
 import org.w3c.dom.Document;
@@ -52,6 +53,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -250,6 +252,8 @@ public class IO {
         public int to(Writer sink) {
             try {
                 return doWriteTo(sink);
+            } catch (AccessDeniedException e) {
+                throw new org.osgl.exception.AccessDeniedException(e);
             } catch (IOException e) {
                 throw E.ioException(e);
             } finally {
@@ -271,6 +275,8 @@ public class IO {
         public int to(OutputStream sink) {
             try {
                 return doWriteTo(sink);
+            } catch (AccessDeniedException e) {
+                throw new org.osgl.exception.AccessDeniedException(e);
             } catch (IOException e) {
                 throw E.ioException(e);
             } finally {
@@ -644,6 +650,10 @@ public class IO {
         public InputStream toInputStream() {
             try {
                 return load();
+            } catch (AccessDeniedException e) {
+                throw new org.osgl.exception.AccessDeniedException(e);
+            } catch (FileNotFoundException e) {
+                throw new ResourceNotFoundException(e);
             } catch (IOException e) {
                 throw E.ioException(e);
             } finally {
@@ -1028,6 +1038,10 @@ public class IO {
         }
         try {
             return File.createTempFile(prefix, suffix, dir);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1065,7 +1079,7 @@ public class IO {
         try {
             return new FileOutputStream(file);
         } catch (FileNotFoundException e) {
-            throw E.ioException(e);
+            throw new ResourceNotFoundException(e);
         }
     }
 
@@ -1102,6 +1116,10 @@ public class IO {
     public static Writer writer(File file) {
         try {
             return new FileWriter(file);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1142,12 +1160,12 @@ public class IO {
             file = file.getAbsoluteFile();
         }
         if (!file.exists()) {
-            throw E.ioException("File does not exists: %s", file.getPath());
+            throw new ResourceNotFoundException(file.getPath());
         }
         try {
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            throw E.ioException(e);
+            throw new ResourceNotFoundException(e);
         }
     }
 
@@ -1224,6 +1242,10 @@ public class IO {
     public static InputStream inputStream(URL url) {
         try {
             return url.openStream();
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1257,6 +1279,8 @@ public class IO {
         E.illegalArgumentIfNot(file.canRead(), "file not readable: " + file.getPath());
         try {
             return new FileReader(file);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1273,6 +1297,10 @@ public class IO {
     public static Reader reader(URL url) {
         try {
             return reader(url.openStream());
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1359,6 +1387,10 @@ public class IO {
             return sb.toString();
         } catch (NoSuchAlgorithmException e) {
             throw E.unexpected("SHA1 algorithm not found");
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1441,6 +1473,10 @@ public class IO {
         Properties prop = new Properties();
         try {
             prop.load(inputStream);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
@@ -1460,6 +1496,10 @@ public class IO {
         Properties prop = new Properties();
         try {
             prop.load(reader);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
@@ -1491,7 +1531,7 @@ public class IO {
         try {
             copy(new BufferedInputStream(new FileInputStream(file)), baos);
         } catch (FileNotFoundException e) {
-            throw E.ioException(e);
+            throw new ResourceNotFoundException(e);
         }
         return baos.toByteArray();
     }
@@ -1525,6 +1565,10 @@ public class IO {
     public static String readContentAsString(URL url, String encoding) {
         try {
             return readContentAsString(url.openStream(), encoding);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1554,7 +1598,7 @@ public class IO {
         try {
             return readContentAsString(new FileInputStream(file), encoding);
         } catch (FileNotFoundException e) {
-            throw E.ioException(e);
+            throw new ResourceNotFoundException(e);
         }
     }
 
@@ -1574,6 +1618,10 @@ public class IO {
                 out.print(line);
             }
             return result.toString();
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
@@ -1598,6 +1646,8 @@ public class IO {
         try {
             is = new FileInputStream(file);
             return readLines(is, encoding, limit);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException ex) {
             throw E.ioException(ex);
         } finally {
@@ -1649,6 +1699,10 @@ public class IO {
                 list.add(line);
                 line = reader.readLine();
             }
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1662,6 +1716,10 @@ public class IO {
     public static List<String> readLines(URL url, int limit) {
         try {
             return readLines(url.openStream(), limit);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1674,6 +1732,10 @@ public class IO {
     public static List<String> readLines(URL url, String encode, int limit) {
         try {
             return readLines(url.openStream(), encode, limit);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1744,6 +1806,10 @@ public class IO {
             printWriter.print(content);
             printWriter.flush();
             os.flush();
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.unexpected(e);
         } finally {
@@ -1764,6 +1830,8 @@ public class IO {
     public static void write(char c, Writer writer) {
         try {
             writer.write(c);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1811,6 +1879,8 @@ public class IO {
     public static void write(CharSequence content, Writer writer, boolean closeOs) {
         try {
             writer.write(content.toString());
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
@@ -1950,6 +2020,8 @@ public class IO {
     public static void write(byte b, OutputStream os) {
         try {
             os.write(b);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -1974,7 +2046,7 @@ public class IO {
         try {
             write(new ByteArrayInputStream(data), new BufferedOutputStream(new FileOutputStream(file)));
         } catch (FileNotFoundException e) {
-            throw E.ioException(e);
+            throw new ResourceNotFoundException(e);
         }
     }
 
@@ -2015,6 +2087,8 @@ public class IO {
     public static void write(byte[] data, OutputStream os, boolean closeSink) {
         try {
             os.write(data);
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
@@ -2069,8 +2143,8 @@ public class IO {
                 }
                 try {
                     write(new FileInputStream(source), new FileOutputStream(target));
-                } catch (IOException e0) {
-                    throw E.ioException(e0);
+                } catch (FileNotFoundException e0) {
+                    throw new ResourceNotFoundException(e);
                 }
             }
         }
@@ -2094,6 +2168,10 @@ public class IO {
                 copy(is, zos, false);
                 zos.closeEntry();
             }
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
@@ -2115,6 +2193,10 @@ public class IO {
             File temp = File.createTempFile("osgl", ".zip");
             zipInto(temp, files);
             return temp;
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         }
@@ -2144,6 +2226,10 @@ public class IO {
                 zos.closeEntry();
                 IO.close(is);
             }
+        } catch (AccessDeniedException e) {
+            throw new org.osgl.exception.AccessDeniedException(e);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e);
         } catch (IOException e) {
             throw E.ioException(e);
         } finally {
@@ -2184,8 +2270,8 @@ public class IO {
             public InputStream apply(File file) throws NotAppliedException, $.Break {
                 try {
                     return new BufferedInputStream(new FileInputStream(file));
-                } catch (IOException e) {
-                    throw E.ioException(e);
+                } catch (FileNotFoundException e) {
+                    throw new ResourceNotFoundException(e);
                 }
             }
         };
