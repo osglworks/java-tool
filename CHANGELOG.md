@@ -2,6 +2,7 @@
 
 1.24.0
 * Add `org.osgl.exceptions.AccessDeniedException`
+* Add `org.osgl.exceptions.ResourceNotFoundException`
 * Add `S.acronym(CharSequence)` static method.
 
 1.23.0 - 02/Jan/2020

@@ -41,10 +41,7 @@ package org.osgl.util;
 
 import org.osgl.exception.*;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.file.AccessDeniedException;
 import java.sql.SQLException;
 
@@ -255,6 +252,8 @@ public class E {
     public static UnexpectedIOException ioException(IOException cause) {
         if (cause instanceof AccessDeniedException) {
             throw new org.osgl.exception.AccessDeniedException(cause);
+        } else if (cause instanceof FileNotFoundException) {
+            throw new ResourceNotFoundException(cause);
         }
         throw new UnexpectedIOException(cause);
     }
