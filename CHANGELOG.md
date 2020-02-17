@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.24.0
+* Add `isExists()` and `isAccessDenied()` methods to `ISObject` interface.
 * Add `org.osgl.exceptions.AccessDeniedException`
 * Add `org.osgl.exceptions.ResourceNotFoundException`
 * Add `S.acronym(CharSequence)` static method.

@@ -54,7 +54,7 @@ import java.util.Map;
  *
  * @author greenl
  */
-public interface ISObject extends Serializable {
+interface ISObject extends Serializable {
 
 
     Version VERSION = Version.of(ISObject.class);
@@ -63,32 +63,32 @@ public interface ISObject extends Serializable {
     /**
      * A standard attribute: content-type
      */
-    public static final String ATTR_CONTENT_TYPE = "content-type";
+    String ATTR_CONTENT_TYPE = "content-type";
 
     /**
      * A standard attribute: filename
      */
-    public static final String ATTR_FILE_NAME = "filename";
+    String ATTR_FILE_NAME = "filename";
 
     /**
      * The storage service ID
      */
-    public static final String ATTR_SS_ID = "ss_id";
+    String ATTR_SS_ID = "ss_id";
 
     /**
      * The storage service context path
      */
-    public static final String ATTR_SS_CTX = "ss_ctx";
+    String ATTR_SS_CTX = "ss_ctx";
 
     /**
      * Store the URL point to this sobject
      */
-    public static final String ATTR_URL = "url";
+    String ATTR_URL = "url";
 
     /**
      * Store the content length
      */
-    public static final String ATTR_CONTENT_LENGTH = "length";
+    String ATTR_CONTENT_LENGTH = "length";
 
     /**
      * @return key of this object
@@ -177,24 +177,43 @@ public interface ISObject extends Serializable {
     /**
      * Is content is empty
      *
-     * @return if the instance is empty
+     * @return `true` if the sobject is empty, `false` otherwise
      */
-    public boolean isEmpty();
+    boolean isEmpty();
+
+    /**
+     * Is the resource exists.
+     *
+     * Note if this method returns `true` then {@link #isValid()} must return `false`.
+     *
+     * @return `true` if the resource back this sobject exists, `false` otherwise
+     */
+    boolean isExists();
 
     /**
      * Is this storage object valid. A storage object is not valid
      * if the file/input stream is not readable
      *
-     * @return true if this instance is valid or false otherwise
+     * @return `true` if this sobject is valid or `false` otherwise
      */
-    public boolean isValid();
+    boolean isValid();
+
+    /**
+     * Is access to the resource represented by this sobject denied.
+     *
+     * Note if this method returns `true` then `{@link #isValid()} must
+     * return `false`
+     *
+     * @return `true` if access to the resource back this sobject denied, `false` otherwise.
+     */
+    boolean isAccessDenied();
 
     /**
      * Return previous exception that cause the sobject invalid
      *
      * @return the previous exception
      */
-    public Throwable getException();
+    Throwable getException();
 
     /**
      * @return the the stuff content as an file
