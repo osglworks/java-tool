@@ -20,13 +20,19 @@ package org.osgl.exception;
  * #L%
  */
 
+import java.io.File;
+
 /**
  * A generic exception thrown when a resource tried to access cannot be found.
  */
 public class ResourceNotFoundException extends UnexpectedException {
 
+    public ResourceNotFoundException(File file) {
+        super("Resource not found: " + file.getPath());
+    }
+
     public ResourceNotFoundException() {
-        super("Access Denied");
+        super("Resource not found");
     }
 
     public ResourceNotFoundException(String message) {

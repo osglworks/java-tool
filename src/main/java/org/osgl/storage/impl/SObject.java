@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2013 The Java Storage project
  * Gelin Luo <greenlaw110(at)gmail.com>
  *
@@ -8,15 +8,15 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 package org.osgl.storage.impl;
 
 /*-
@@ -28,9 +28,9 @@ package org.osgl.storage.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,15 +42,19 @@ package org.osgl.storage.impl;
 import org.osgl.$;
 import org.osgl.Lang;
 import org.osgl.OsglConfig;
+import org.osgl.exception.AccessDeniedException;
 import org.osgl.exception.NotAppliedException;
+import org.osgl.exception.ResourceNotFoundException;
 import org.osgl.exception.UnexpectedIOException;
 import org.osgl.storage.ISObject;
 import org.osgl.storage.IStorageService;
 import org.osgl.util.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.ref.SoftReference;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -64,8 +68,9 @@ public abstract class SObject implements ISObject {
 
     private String key;
     private Map<String, String> attrs = new HashMap<>();
-    protected boolean valid = true;
-    protected Throwable cause = null;
+    protected boolean exists = true;
+    protected boolean accessDenied = false;
+    protected RuntimeException cause = null;
 
     /*
      * got to make this public to fix the cross classloader
@@ -83,85 +88,104 @@ public abstract class SObject implements ISObject {
         return false;
     }
 
-    public static SObject getInvalidObject(String key, Throwable cause) {
-        SObject sobj = of(key, "");
-        sobj.valid = false;
-        sobj.cause = cause;
-        return sobj;
-    }
-
     public String getKey() {
         return key;
     }
 
+    protected void setCause(Throwable cause) {
+        setCause(cause, this);
+    }
+
     protected void setAttrs(Map<String, String> attrs) {
+        assertValid();
         if (null == attrs) return;
         this.attrs.putAll(attrs);
     }
 
     @Override
     public String getUrl() {
+        assertValid();
         return attrs.get(ATTR_URL);
     }
 
     @Override
     public String getFilename() {
+        assertValid();
         return getAttribute(ATTR_FILE_NAME);
     }
 
     @Override
     public String getContentType() {
+        assertValid();
         return getAttribute(ATTR_CONTENT_TYPE);
     }
 
     @Override
     public void setFilename(String filename) {
         E.illegalArgumentIf(S.blank(filename));
+        assertValid();
         setAttribute(ATTR_FILE_NAME, filename);
     }
 
     @Override
     public void setContentType(String contentType) {
         E.illegalArgumentIf(S.blank(contentType));
+        assertValid();
         setAttribute(ATTR_CONTENT_TYPE, contentType);
     }
 
     @Override
     public String getAttribute(String key) {
+        assertValid();
         return attrs.get(key);
     }
 
     @Override
     public ISObject setAttribute(String key, String val) {
+        assertValid();
         attrs.put(key, val);
         return this;
     }
 
     @Override
     public ISObject setAttributes(Map<String, String> attrs) {
+        assertValid();
         setAttrs(attrs);
         return this;
     }
 
     @Override
     public boolean hasAttribute() {
+        assertValid();
         return !attrs.isEmpty();
     }
 
     @Override
     public Map<String, String> getAttributes() {
+        assertValid();
         return C.newMap(attrs);
     }
 
     @Override
     public boolean isEmpty() {
+        assertValid();
         String s = asString();
         return null == s || "".equals(s);
     }
 
     @Override
+    public boolean isExists() {
+        return exists;
+    }
+
+    @Override
     public boolean isValid() {
-        return valid;
+        return null == cause;
+    }
+
+    @Override
+    public boolean isAccessDenied() {
+        return accessDenied;
     }
 
     @Override
@@ -171,6 +195,7 @@ public abstract class SObject implements ISObject {
 
     @Override
     public void consumeOnce($.Function<InputStream, ?> consumer) {
+        assertValid();
         InputStream is = null;
         try {
             is = asInputStream();
@@ -185,6 +210,7 @@ public abstract class SObject implements ISObject {
         if (isDumb() || !isValid()) {
             return false;
         }
+        assertValid();
         return probeBinary();
     }
 
@@ -209,6 +235,7 @@ public abstract class SObject implements ISObject {
     }
 
     protected final String suffix() {
+        assertValid();
         String originalFilename = getAttribute(ATTR_FILE_NAME);
         if (S.notBlank(originalFilename)) {
             int pos = originalFilename.lastIndexOf(".");
@@ -217,6 +244,49 @@ public abstract class SObject implements ISObject {
             }
         }
         return "";
+    }
+
+    private void assertValid() {
+        if (null != cause) {
+            throw cause;
+        }
+    }
+
+    private static void setCause(Throwable cause, SObject sobj) {
+        if (cause instanceof RuntimeException) {
+            sobj.cause = $.cast(cause);
+        } else if (cause instanceof IOException) {
+            sobj.cause = E.ioException((IOException) cause);
+        } else {
+            sobj.cause = E.unexpected(cause);
+        }
+    }
+
+    public static SObject getInvalidObject(String key, Throwable cause) {
+        SObject sobj = of(key, "");
+        setCause(cause, sobj);
+        Keyword className = Keyword.of(cause.getClass().getSimpleName());
+        sobj.accessDenied = className.contains("AccessDenied") || className.contains("NoAccess");
+        sobj.exists = !sobj.accessDenied && className.contains("NotFound");
+        return sobj;
+    }
+
+    public static SObject invalidObject(String key, Throwable cause) {
+        return getInvalidObject(key, cause);
+    }
+
+    public static SObject notFoundObject(String key, Throwable cause) {
+        SObject sobj = of(key, "");
+        setCause(cause, sobj);
+        sobj.exists = false;
+        return sobj;
+    }
+
+    public static SObject accessDeniedObject(String key, Throwable cause) {
+        SObject sobj = of(key, "");
+        setCause(cause, sobj);
+        sobj.accessDenied = true;
+        return sobj;
     }
 
     /**
@@ -236,19 +306,24 @@ public abstract class SObject implements ISObject {
      * @see #of(String, File, Map)
      */
     public static SObject of(String key, File file) {
-        if (file.canRead() && file.isFile()) {
-            SObject sobj = new FileSObject(key, file);
-            String fileName = file.getName();
-            sobj.setAttribute(ATTR_FILE_NAME, file.getName());
-            String fileExtension = S.fileExtension(fileName);
-            MimeType mimeType = MimeType.findByFileExtension(fileExtension);
-            String type = null != mimeType ? mimeType.type() : null;
-            sobj.setAttribute(ATTR_CONTENT_TYPE, type);
-            sobj.setAttribute(ATTR_CONTENT_LENGTH, S.string(file.length()));
-            return sobj;
-        } else {
-            return getInvalidObject(key, new IOException("File is a directory or not readable"));
+        if (!file.exists()) {
+            return notFoundObject(key, new ResourceNotFoundException("File not found: %s", file.getPath()));
         }
+        if (!file.canRead()) {
+            return accessDeniedObject(key, new AccessDeniedException("File not readable: %s", file.getPath()));
+        }
+        if (!file.isFile()) {
+            return getInvalidObject(key, new IllegalArgumentException("Cannot create SObject from directory: " + file.getPath()));
+        }
+        SObject sobj = new FileSObject(key, file);
+        String fileName = file.getName();
+        sobj.setAttribute(ATTR_FILE_NAME, file.getName());
+        String fileExtension = S.fileExtension(fileName);
+        MimeType mimeType = MimeType.findByFileExtension(fileExtension);
+        String type = null != mimeType ? mimeType.type() : null;
+        sobj.setAttribute(ATTR_CONTENT_TYPE, type);
+        sobj.setAttribute(ATTR_CONTENT_LENGTH, S.string(file.length()));
+        return sobj;
     }
 
     /**
@@ -320,6 +395,7 @@ public abstract class SObject implements ISObject {
 
     /**
      * Construct an sobject with specified URL.
+     *
      * @param url
      * @return an sobject encapsulate the data represented by the URL
      */
@@ -337,7 +413,7 @@ public abstract class SObject implements ISObject {
 
     /**
      * Load an sobject from classpath by given url path
-     *
+     * <p>
      * This method will call {@link Class#getResource(String)} method to open
      * an inputstream to the resource and then construct an SObject with the
      * inputstream
@@ -531,7 +607,7 @@ public abstract class SObject implements ISObject {
 
     /**
      * Construct an sobject with specified key and byte array.
-     *
+     * <p>
      * Note the byte array will be used directly without copying into an new array.
      *
      * @see #of(String, byte[], Map)
@@ -542,6 +618,7 @@ public abstract class SObject implements ISObject {
 
     /**
      * Construct an SObject with random generated key, byte array and number of bytes
+     *
      * @param buf the source byte array
      * @param len the number of bytes in the array should be stored in the returing object
      * @return an SObject as described above
@@ -552,6 +629,7 @@ public abstract class SObject implements ISObject {
 
     /**
      * Construct an SObject with specified key, byte array and number of bytes
+     *
      * @param key the key
      * @param buf the source byte array
      * @param len the number of bytes in the array should be stored in the returing object
@@ -947,7 +1025,6 @@ public abstract class SObject implements ISObject {
             return force().asInputStream();
         }
     }
-
 
     private static String randomKey() {
         return Codec.encodeUrl(S.random());

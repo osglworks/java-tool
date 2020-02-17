@@ -20,12 +20,16 @@ package org.osgl.exception;
  * #L%
  */
 
-import org.osgl.exception.UnexpectedException;
+import java.io.File;
 
 /**
  * A generic exception thrown when access to a certain resource is denied.
  */
 public class AccessDeniedException extends UnexpectedException {
+
+    public AccessDeniedException(File file) {
+        super("Access denied: " + file);
+    }
 
     public AccessDeniedException() {
         super("Access Denied");

@@ -20,6 +20,7 @@ package org.osgl.web.util;
  * #L%
  */
 
+import org.omg.CORBA.UNKNOWN;
 import org.osgl.util.S;
 
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class UserAgent {
     }
 
     public static enum Browser {
-        IE_6, IE_7, IE_8, IE_9, IE_10, IE_11,
+        IE_6, IE_7, IE_8, IE_9, IE_10, IE_11, EDGE,
         CHROME, SAFARI, FIREFOX_3, FIREFOX, OPERA, UCWEB, BOT, UNKNOWN
     }
 
@@ -121,6 +122,11 @@ public class UserAgent {
     public final boolean isIE11Up() {
         Browser b = browser_;
         return Browser.IE_11 == b;
+    }
+
+    public final boolean isEdge() {
+        Browser b = browser_;
+        return Browser.EDGE == b;
     }
 
     public final boolean isIE() {
@@ -220,11 +226,12 @@ public class UserAgent {
         IE8(Pattern.compile(".*MSIE\\s+[8]\\.0.*"), Device.PC, Browser.IE_8, null),
         IE9(Pattern.compile(".*MSIE\\s+(9)\\.0.*"), Device.PC, Browser.IE_9, null),
         IE10(Pattern.compile(".*MSIE\\s+(10)\\.0.*"), null, Browser.IE_10, null),
-        IE11(Pattern.compile(".*Windows\\s+NT.+rv:(11|12)\\.0.*"), null, Browser.IE_11, null),
+        IE11(Pattern.compile(".*Windows\\s+NT.+rv:(11|12)\\.0.*"), Device.PC, Browser.IE_11, null),
         FIREFOX(Pattern.compile(".*Firefox.*"), null, Browser.FIREFOX, null),
         FIREFOX3(Pattern.compile(".*Firefox/3.*"), null, Browser.FIREFOX_3, null),
         SAFARI(Pattern.compile(".*Safari.*"), null, Browser.SAFARI, null),
         CHROME(Pattern.compile(".*Chrome.*"), null, Browser.CHROME, null),
+        EDGE(Pattern.compile(".*\\s+Edg\\/.*"), null, Browser.EDGE, null),
         OPERA(Pattern.compile(".*Opera.*"), null, Browser.OPERA, null),
         BOT(Pattern.compile(".*(Googlebot|msn-bot|msnbot|Bot|bot|Baiduspider|SeznamBot|facebookexternalhit).*", Pattern.CASE_INSENSITIVE), Device.BOT, Browser.BOT, OS.BOT);
 
@@ -310,6 +317,11 @@ public class UserAgent {
         s = "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko";
         ua = valueOf(s);
         assert_(ua.isIE10Up(), "IE 10");
+
+        s = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43";
+        ua = valueOf(s);
+        assert_(ua.isEdge(), "Edge");
+        assert_(ua.is(Device.PC), "pc");
 
         System.out.println("success!");
     }

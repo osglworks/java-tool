@@ -54,7 +54,7 @@ import java.util.Map;
  *
  * @author greenl
  */
-interface ISObject extends Serializable {
+public interface ISObject extends Serializable {
 
 
     Version VERSION = Version.of(ISObject.class);

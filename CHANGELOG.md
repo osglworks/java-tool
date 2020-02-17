@@ -1,6 +1,8 @@
 # OSGL Tool Change Log
 
 1.24.0
+* Improve storage logic on handling resource not found and access denied exceptions #231
+* UserAgent - support Microsoft Edge #230
 * Add `isExists()` and `isAccessDenied()` methods to `ISObject` interface.
 * Add `org.osgl.exceptions.AccessDeniedException`
 * Add `org.osgl.exceptions.ResourceNotFoundException`

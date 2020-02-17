@@ -185,6 +185,9 @@ public class E {
      *      the cause of the unexpected exception.
      */
     public static UnexpectedException unexpected(Throwable cause) {
+        if (cause instanceof IOException) {
+            throw E.ioException((IOException) cause);
+        }
         throw new UnexpectedException(cause);
     }
 
@@ -199,6 +202,9 @@ public class E {
      *      the error message format arguments.
      */
     public static UnexpectedException unexpected(Throwable cause, String msg, Object... args) {
+        if (cause instanceof IOException) {
+            throw E.ioException((IOException) cause, msg, args);
+        }
         throw new UnexpectedException(cause, msg, args);
     }
 
@@ -256,6 +262,15 @@ public class E {
             throw new ResourceNotFoundException(cause);
         }
         throw new UnexpectedIOException(cause);
+    }
+
+    public static UnexpectedException ioException(IOException cause, String msg, Object... args) {
+        if (cause instanceof AccessDeniedException) {
+            throw new org.osgl.exception.AccessDeniedException(cause, msg, args);
+        } else if (cause instanceof FileNotFoundException) {
+            throw new ResourceNotFoundException(cause, msg, args);
+        }
+        throw new UnexpectedIOException(cause, msg, args);
     }
 
     /**
