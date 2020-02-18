@@ -39,19 +39,23 @@ package org.osgl.util;
  * #L%
  */
 
+import com.alibaba.fastjson.JSON;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import static sun.security.x509.CertificateAlgorithmId.ALGORITHM;
 
 /**
  * Cryptography utils. Comes from play!framework under apache license
@@ -412,6 +416,51 @@ public enum Crypto {
         }
     }
 
+    public static final String ALGO_RSA = "RSA";
+
+    public static String encryptRSA(String value, byte[] publicKey) {
+        try {
+            PublicKey key = KeyFactory.getInstance(ALGO_RSA).generatePublic(new X509EncodedKeySpec(publicKey));
+            Cipher cipher = Cipher.getInstance(ALGO_RSA);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] ba = cipher.doFinal(value.getBytes(Charsets.UTF_8));
+            return Codec.byteToHexString(ba);
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public static String decryptRSA(String value, byte[] privateKey) {
+        try {
+            PrivateKey key = KeyFactory.getInstance(ALGO_RSA)
+                    .generatePrivate(new PKCS8EncodedKeySpec(privateKey));
+
+            Cipher cipher = Cipher.getInstance(ALGO_RSA);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+
+            byte[] ba = cipher.doFinal(Codec.hexStringToByte(value));
+            return new String(ba);
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
+    public static KeyPair generateKeyPair() {
+        return generateKeyPair(1024);
+    }
+
+    public static KeyPair generateKeyPair(int keysize) {
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGO_RSA);
+            SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+            keyGen.initialize(keysize, random);
+            KeyPair generateKeyPair = keyGen.generateKeyPair();
+            return generateKeyPair;
+        } catch (Exception e) {
+            throw E.unexpected(e);
+        }
+    }
+
 
     /**
      * Generate a secret string from random byte array
@@ -546,7 +595,12 @@ public enum Crypto {
     }
 
     public static void main(String[] args) {
-        System.out.println(Crypto.generatePassword());
+        KeyPair keyPair = Crypto.generateKeyPair();
+        byte[] privateKey = keyPair.getPrivate().getEncoded();
+        byte[] publicKey = keyPair.getPublic().getEncoded();
+        String s = "Hello world";
+        String encrypted = encryptRSA(s, publicKey);
+        System.out.println(decryptRSA(encrypted, privateKey));
     }
 
 }

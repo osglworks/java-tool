@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.24.0
+* Crypto - add RSA encrypt/decrypt method #233
 * Improve storage logic on handling resource not found and access denied exceptions #231
 * UserAgent - support Microsoft Edge #230
 * Add `isExists()` and `isAccessDenied()` methods to `ISObject` interface.

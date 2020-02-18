@@ -900,6 +900,8 @@ public class DataMapper {
         }
     }
 
+    private static final Set<Class<?>> WAIVE_TYPE_LIST = C.setOf(Class.class, Object.class);
+
     private void toMap() {
         targetMap.clear();
 
@@ -927,7 +929,7 @@ public class DataMapper {
                 continue;
             }
             Object sourceVal = sourceProperty.last().produce();
-            if (null == sourceVal) {
+            if (null == sourceVal || WAIVE_TYPE_LIST.contains(sourceVal.getClass())) {
                 continue;
             }
             Keyword sourceKeyword = sourceProperty.second();
