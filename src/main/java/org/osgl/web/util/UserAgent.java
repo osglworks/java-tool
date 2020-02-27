@@ -20,14 +20,38 @@ package org.osgl.web.util;
  * #L%
  */
 
-import org.omg.CORBA.UNKNOWN;
 import org.osgl.util.S;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-
+/*
+ * PC
+ *      Windows
+ *          Chrome
+ *          Firefox
+ *          Edge (old)
+ *          Edge (new)
+ *          IE11
+ *          IE8
+ *          IE7
+ *          IE6
+ *          Netscape Navigator
+ *          Opera
+ *          Vivaldi
+ *      Linux
+ *          Chrome
+ *          Firefox
+ *  Macintosh
+ *  macOs
+ * IPhone
+ * Android
+ * Windows Mobile
+ * HP system
+ * Sun system
+ * IBM mainframe
+ */
 public class UserAgent {
 
     public final static UserAgent UNKNOWN = new UserAgent();
@@ -40,7 +64,7 @@ public class UserAgent {
         return os_;
     }
 
-    public static enum Device {
+    public enum Device {
         IPHONE,
         IPAD,
         IPOD,

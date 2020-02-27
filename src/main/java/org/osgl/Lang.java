@@ -7311,7 +7311,7 @@ public class Lang implements Serializable {
      * @return `true` if the give type `c` is simple type as described above
      */
     public static boolean isSimpleType(Class<?> c) {
-        return String.class == c || Enum.class.isAssignableFrom(c) || Locale.class == c || Keyword.class == c || __wrapperToPrmitives.containsKey(c) || __primitiveToWrappers.containsKey(c) ;
+        return String.class == c || Locale.class == c || Keyword.class == c || c.isEnum() || __wrapperToPrmitives.containsKey(c) || __primitiveToWrappers.containsKey(c) ;
     }
 
     /**
@@ -7527,7 +7527,15 @@ public class Lang implements Serializable {
         if (null != o) {
             return (T) o;
         }
-        if (c.isInterface()) {
+        if (String.class == c) {
+            return (T) "";
+        } else if (c.isEnum()) {
+            return c.getEnumConstants()[0];
+        } else if (Locale.class == c) {
+            return (T) Locale.getDefault();
+        } else if (Keyword.class == c) {
+            return (T) Keyword.of("");
+        } if (c.isInterface()) {
             if (Map.class == c) {
                 return (T) new HashMap();
             } else if (List.class == c) {
