@@ -418,6 +418,10 @@ public enum Crypto {
 
     public static final String ALGO_RSA = "RSA";
 
+    public static String encryptRSA(String value, String urlSafeBase64EncodedPublicKey) {
+        return encryptRSA(value, Codec.decodeUrlSafeBase64(urlSafeBase64EncodedPublicKey));
+    }
+
     public static String encryptRSA(String value, byte[] publicKey) {
         try {
             PublicKey key = KeyFactory.getInstance(ALGO_RSA).generatePublic(new X509EncodedKeySpec(publicKey));
@@ -428,6 +432,10 @@ public enum Crypto {
         } catch (Exception e) {
             throw E.unexpected(e);
         }
+    }
+
+    public static String decryptRSA(String value, String urlSafeBase64EncodedPrivateKey) {
+        return decryptRSA(value, Codec.decodeUrlSafeBase64(urlSafeBase64EncodedPrivateKey));
     }
 
     public static String decryptRSA(String value, byte[] privateKey) {
@@ -454,8 +462,7 @@ public enum Crypto {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGO_RSA);
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
             keyGen.initialize(keysize, random);
-            KeyPair generateKeyPair = keyGen.generateKeyPair();
-            return generateKeyPair;
+            return new KeyPair(keyGen.generateKeyPair());
         } catch (Exception e) {
             throw E.unexpected(e);
         }
@@ -596,10 +603,11 @@ public enum Crypto {
 
     public static void main(String[] args) {
         KeyPair keyPair = Crypto.generateKeyPair();
-        byte[] privateKey = keyPair.getPrivate().getEncoded();
-        byte[] publicKey = keyPair.getPublic().getEncoded();
+        String privateKey = keyPair.getPrivateKeyAsString();
+        String publicKey = keyPair.getPublicKeyAsString();
         String s = "Hello world";
         String encrypted = encryptRSA(s, publicKey);
+        System.out.println("publicKey: " + publicKey);
         System.out.println(decryptRSA(encrypted, privateKey));
     }
 
