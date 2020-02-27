@@ -34,6 +34,7 @@ import org.osgl.util.TypeReference;
 import org.osgl.util.converter.*;
 import org.w3c.dom.Document;
 import osgl.version.Version;
+import sun.security.util.BigInt;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -7270,6 +7271,16 @@ public class Lang implements Serializable {
         __primitiveInstances.put(long.class, 0l);
         __primitiveInstances.put(float.class, 0f);
         __primitiveInstances.put(double.class, 0d);
+        __primitiveInstances.put(Integer.class, 0);
+        __primitiveInstances.put(Boolean.class, false);
+        __primitiveInstances.put(Byte.class, 0);
+        __primitiveInstances.put(Short.class, 0);
+        __primitiveInstances.put(Character.class, 0);
+        __primitiveInstances.put(Long.class, 0l);
+        __primitiveInstances.put(Float.class, 0f);
+        __primitiveInstances.put(Double.class, 0d);
+        __primitiveInstances.put(BigDecimal.class, new BigDecimal("0"));
+        __primitiveInstances.put(BigInteger.class, new BigInteger("0"));
     }
 
     private static Map<Class, Class> __primitiveToWrappers = new HashMap<Class, Class>();
