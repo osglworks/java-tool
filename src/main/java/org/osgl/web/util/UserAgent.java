@@ -20,6 +20,7 @@ package org.osgl.web.util;
  * #L%
  */
 
+import org.osgl.util.LFUCache;
 import org.osgl.util.S;
 
 import java.util.HashMap;
@@ -196,7 +197,7 @@ public class UserAgent {
         return str_;
     }
 
-    private static Map<String, UserAgent> cache_ = new HashMap<String, UserAgent>();
+    private static LFUCache<String, UserAgent> cache_ = new LFUCache<>(1000, 0.2);
     public static UserAgent parse(String userAgent) {
         if (S.empty(userAgent)) {
             return UserAgent.UNKNOWN;
@@ -204,7 +205,7 @@ public class UserAgent {
         UserAgent ua = cache_.get(userAgent);
         if (null != ua) return ua;
         ua = new UserAgent(userAgent);
-        cache_.put(userAgent, ua);
+        cache_.set(userAgent, ua);
         return ua;
     }
 
