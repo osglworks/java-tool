@@ -1,12 +1,32 @@
 package org.osgl.util;
 
+/*-
+ * #%L
+ * Java Tool
+ * %%
+ * Copyright (C) 2014 - 2020 OSGL (Open Source General Library)
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import org.osgl.$;
 
 import java.util.*;
 
 /**
  * A simple thread-safe LFU cache.
- *
+ * <p>
  * Disclaim: the source code is adapted from https://github.com/Tsien/LFUCache/
  *
  * @param <K>
@@ -30,8 +50,9 @@ public class LFUCache<K, V> {
 
     /**
      * Create a new LFU cache.
-     * @param  cap           the size of the cache
-     * @param  evictFactor   the percentage of elements for replacement
+     *
+     * @param cap         the size of the cache
+     * @param evictFactor the percentage of elements for replacement
      * @return a newly created LFU cache
      */
     @SuppressWarnings("unchecked")
@@ -41,9 +62,9 @@ public class LFUCache<K, V> {
         }
         capacity = cap;
         minFreq = 0;  // the initial smallest frequency
-        evict_num = Math.min(cap, (int)Math.ceil(cap * evictFactor));
+        evict_num = Math.min(cap, (int) Math.ceil(cap * evictFactor));
 
-        cache = new HashMap<K, $.Pair<Integer, V>>();
+        cache = new HashMap<>();
         freqList = new LinkedHashSet[cap];
         for (int i = 0; i < cap; ++i) {
             freqList[i] = new LinkedHashSet<K>();
@@ -54,6 +75,7 @@ public class LFUCache<K, V> {
      * Update frequency of the key-value pair in the cache if the key exists.
      * Increase the frequency of this pair and move it to the next frequency set.
      * If the frequency reaches the capacity, move it the end of current frequency set.
+     *
      * @return
      */
     private synchronized void touch(K key) {
@@ -71,8 +93,7 @@ public class LFUCache<K, V> {
                     // update current minimum frequency
                     ++minFreq;
                 }
-            }
-            else {
+            } else {
                 // LRU: put the most recent visited to the end of set
                 freqList[freq].add(key);
             }
@@ -82,6 +103,7 @@ public class LFUCache<K, V> {
     /**
      * Evict the least frequent elements in the cache
      * The number of evicted elements is configured by eviction factor
+     *
      * @return
      */
     private synchronized void evict() {
@@ -100,7 +122,8 @@ public class LFUCache<K, V> {
     /**
      * Get the value of key.
      * If the key does not exist, return null.
-     * @param  key   the key to query
+     *
+     * @param key the key to query
      * @return the value of the key
      */
     public synchronized V get(K key) {
@@ -115,8 +138,9 @@ public class LFUCache<K, V> {
     /**
      * Set key to hold the value.
      * If key already holds a value, it is overwritten.
-     * @param  key   the key of the pair
-     * @param  value the value of the pair
+     *
+     * @param key   the key of the pair
+     * @param value the value of the pair
      * @return
      */
     public synchronized void set(K key, V value) {
@@ -124,7 +148,7 @@ public class LFUCache<K, V> {
             Integer freq = cache.get(key)._1;
             cache.put(key, $.T2(freq, value));  // update value
             touch(key);  // update frequency
-            return ;
+            return;
         }
         if (cache.size() >= capacity) {
             evict();
@@ -138,7 +162,8 @@ public class LFUCache<K, V> {
     /**
      * Returns the values of all specified keys.
      * For every key that does not exist, null is returned.
-     * @param  keys a list of keys to query
+     *
+     * @param keys a list of keys to query
      * @return query results, a list of key-value pairs
      */
     public synchronized List<$.Pair<K, V>> mget(List<K> keys) {
@@ -152,7 +177,8 @@ public class LFUCache<K, V> {
     /**
      * Sets the given keys to their respective values.
      * MSET replaces existing values with new values, just as regular SET.
-     * @param  pairs a list of key-value pairs to be set
+     *
+     * @param pairs a list of key-value pairs to be set
      * @return
      */
     public synchronized void mset(List<$.Pair<K, V>> pairs) {
@@ -166,8 +192,9 @@ public class LFUCache<K, V> {
      * If the key does not exist, it is set to 0 before performing the operation.
      * Only works for integer value.
      * This function will increase frequency by 2
-     * @param  key   the key needed to be increased
-     * @param  delta increment
+     *
+     * @param key   the key needed to be increased
+     * @param delta increment
      * @return the value after increment
      */
     @SuppressWarnings("unchecked")
@@ -186,8 +213,9 @@ public class LFUCache<K, V> {
      * If the key does not exist, it is set to 0 before performing the operation.
      * Only works for integer value.
      * This function will increase frequency by 2
-     * @param  key   the key needed to be decreased
-     * @param  delta decrement
+     *
+     * @param key   the key needed to be decreased
+     * @param delta decrement
      * @return the value after decrement
      */
     public synchronized Integer decr(K key, Integer delta) {

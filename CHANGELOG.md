@@ -1,8 +1,7 @@
 # OSGL Tool Change Log
 
-1.24.0
+1.24.0 - 02/Mar/2020
 * `UserAgent` - use LFU cache to replace hash map #234
-* Add `ProgressGauge` into `org.osgl.util` package
 * Crypto - add RSA encrypt/decrypt method #233
 * Improve storage logic on handling resource not found and access denied exceptions #231
 * UserAgent - support Microsoft Edge #230
