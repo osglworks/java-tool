@@ -34,7 +34,6 @@ import org.osgl.util.TypeReference;
 import org.osgl.util.converter.*;
 import org.w3c.dom.Document;
 import osgl.version.Version;
-import sun.security.util.BigInt;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
