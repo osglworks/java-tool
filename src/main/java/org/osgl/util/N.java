@@ -1479,7 +1479,7 @@ public class N {
         if (null == b) {
             return false;
         }
-        return (a.doubleValue() - b.doubleValue()) <= Double.MIN_NORMAL;
+        return Math.abs(a.doubleValue() - b.doubleValue()) <= Double.MIN_NORMAL;
     }
 
     public static final boolean neq(Number a, Number b) {
