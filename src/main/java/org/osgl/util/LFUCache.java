@@ -20,24 +20,37 @@ package org.osgl.util;
  * #L%
  */
 
-import org.osgl.$;
-
 import java.util.*;
 
 /**
  * A simple thread-safe LFU cache.
- * <p>
+ *
  * Disclaim: the source code is adapted from https://github.com/Tsien/LFUCache/
  *
  * @param <K>
  * @param <V>
  */
 public class LFUCache<K, V> {
-    // a hash map holding <key, <frequency, value>> pairs
-    private final Map<K, $.Pair<Integer, V>> cache;
 
-    // a list of LinkedHashSet, freqList[i] has elements with frequency = i
-    private final LinkedHashSet<K>[] freqList;
+    private class Node {
+        private V v;
+        private int count;
+
+        Node(V v) {
+            this.v = v;
+            this.count = 0;
+        }
+
+        int touch() {
+            return ++this.count;
+        }
+    }
+
+    // a hash map holding <key, <frequency, value>> nodes
+    private final Map<K, Node> store;
+
+    // a list of LinkedHashSet, accessCountList[i] has elements with accessCount = i
+    private final LinkedHashSet<K>[] accessCountList;
 
     // the minimum frequency in the cache
     private int minFreq;
@@ -46,7 +59,7 @@ public class LFUCache<K, V> {
     private final int capacity;
 
     // the number of evicted elements when reaching capacity
-    private final int evict_num;
+    private final int evictNum;
 
     /**
      * Create a new LFU cache.
@@ -62,40 +75,36 @@ public class LFUCache<K, V> {
         }
         capacity = cap;
         minFreq = 0;  // the initial smallest frequency
-        evict_num = Math.min(cap, (int) Math.ceil(cap * evictFactor));
+        evictNum = Math.min(cap, (int) Math.ceil(cap * evictFactor));
 
-        cache = new HashMap<>();
-        freqList = new LinkedHashSet[cap];
+        store = new HashMap<>();
+        accessCountList = new LinkedHashSet[cap];
         for (int i = 0; i < cap; ++i) {
-            freqList[i] = new LinkedHashSet<K>();
+            accessCountList[i] = new LinkedHashSet<K>();
         }
     }
 
     /**
-     * Update frequency of the key-value pair in the cache if the key exists.
-     * Increase the frequency of this pair and move it to the next frequency set.
-     * If the frequency reaches the capacity, move it the end of current frequency set.
-     *
-     * @return
+     * Update access count of the node in the cache if the key exists.
+     * Increase the access count of this node and move it to the next counter set.
+     * If the access count reaches the capacity, move it the end of current frequency set.
      */
     private synchronized void touch(K key) {
-        if (cache.containsKey(key)) { // sanity checking
-            int freq = cache.get(key)._1;
-            V val = cache.get(key)._2;
-            // first remove it from current frequency set
-            freqList[freq].remove(key);
-
-            if (freq + 1 < capacity) {
-                // update frequency
-                cache.put(key, $.T2(freq + 1, val));
-                freqList[freq + 1].add(key);
-                if (freq == minFreq && freqList[minFreq].isEmpty()) {
+        if (store.containsKey(key)) { // sanity checking
+            Node node = store.get(key);
+            int id = Math.min(node.count, capacity - 1);
+            accessCountList[id].remove(key);
+            int newCount = node.touch();
+            if (newCount < capacity) {
+                store.put(key, node);
+                accessCountList[newCount].add(key);
+                if (id == minFreq && accessCountList[minFreq].isEmpty()) {
                     // update current minimum frequency
                     ++minFreq;
                 }
             } else {
                 // LRU: put the most recent visited to the end of set
-                freqList[freq].add(key);
+                accessCountList[id].add(key);
             }
         }
     }
@@ -103,16 +112,14 @@ public class LFUCache<K, V> {
     /**
      * Evict the least frequent elements in the cache
      * The number of evicted elements is configured by eviction factor
-     *
-     * @return
      */
     private synchronized void evict() {
-        for (int i = 0; i < evict_num && minFreq < capacity; ++i) {
+        for (int i = 0; i < evictNum && minFreq < capacity; ++i) {
             // get the first element in the current minimum frequency set
-            K key = (K) freqList[minFreq].iterator().next();
-            freqList[minFreq].remove(key);
-            cache.remove(key);
-            while (minFreq < capacity && freqList[minFreq].isEmpty()) {
+            K key = (K) accessCountList[minFreq].iterator().next();
+            accessCountList[minFreq].remove(key);
+            store.remove(key);
+            while (minFreq < capacity && accessCountList[minFreq].isEmpty()) {
                 // skip empty frequency sets
                 ++minFreq;
             }
@@ -127,36 +134,36 @@ public class LFUCache<K, V> {
      * @return the value of the key
      */
     public synchronized V get(K key) {
-        if (!cache.containsKey(key)) {
+        if (!store.containsKey(key)) {
             return null;
         }
         // update frequency
         touch(key);
-        return cache.get(key)._2;
+        return store.get(key).v;
     }
 
     /**
      * Set key to hold the value.
      * If key already holds a value, it is overwritten.
      *
-     * @param key   the key of the pair
-     * @param value the value of the pair
+     * @param key   the key of the node
+     * @param value the value of the node
      * @return
      */
     public synchronized void set(K key, V value) {
-        if (cache.containsKey(key)) {
-            Integer freq = cache.get(key)._1;
-            cache.put(key, $.T2(freq, value));  // update value
+        Node node = store.get(key);
+        if (null != node) {
+            node.v = value;
             touch(key);  // update frequency
             return;
         }
-        if (cache.size() >= capacity) {
+        if (store.size() >= capacity) {
             evict();
         }
+        store.put(key, new Node(value));
+        accessCountList[0].add(key);
         // set the minimum frequency back to 0
         minFreq = 0;
-        cache.put(key, $.T2(minFreq, value));
-        freqList[minFreq].add(key);
     }
 
     /**
@@ -164,12 +171,15 @@ public class LFUCache<K, V> {
      * For every key that does not exist, null is returned.
      *
      * @param keys a list of keys to query
-     * @return query results, a list of key-value pairs
+     * @return query results, a map of key/val extracted
      */
-    public synchronized List<$.Pair<K, V>> mget(List<K> keys) {
-        List<$.Pair<K, V>> ret = new ArrayList<$.Pair<K, V>>();
+    public synchronized Map<K, V> mget(List<K> keys) {
+        Map<K, V> ret = new LinkedHashMap<>();
         for (K key : keys) {
-            ret.add($.T2(key, get(key)));
+            V val = get(key);
+            if (null != val) {
+                ret.put(key, val);
+            }
         }
         return ret;
     }
@@ -178,12 +188,11 @@ public class LFUCache<K, V> {
      * Sets the given keys to their respective values.
      * MSET replaces existing values with new values, just as regular SET.
      *
-     * @param pairs a list of key-value pairs to be set
-     * @return
+     * @param data a map contains the key/val pairs to be set.
      */
-    public synchronized void mset(List<$.Pair<K, V>> pairs) {
-        for ($.Pair<K, V> pair : pairs) {
-            set(pair._1, pair._2);
+    public synchronized void mset(Map<K, V> data) {
+        for (Map.Entry<K, V> entry : data.entrySet()) {
+            set(entry.getKey(), entry.getValue());
         }
     }
 
@@ -191,7 +200,7 @@ public class LFUCache<K, V> {
      * Increments the value stored at key by delta.
      * If the key does not exist, it is set to 0 before performing the operation.
      * Only works for integer value.
-     * This function will increase frequency by 2
+     * This function will increase frequency by 1
      *
      * @param key   the key needed to be increased
      * @param delta increment
@@ -199,13 +208,20 @@ public class LFUCache<K, V> {
      */
     @SuppressWarnings("unchecked")
     public synchronized Integer incr(K key, Integer delta) {
-        Integer value = (Integer) get(key);
-        if (value == null) {
-            value = 0;
+        if (!store.containsKey(key)) {
+            set(key, (V) delta);
+            return delta;
         }
-        value += delta;
-        set(key, (V) value);
-        return value;
+        Node node = store.get(key);
+        Integer I = (Integer) node.v;
+        if (null == I) {
+            I = 0;
+        }
+        I += delta;
+        node.v = (V) I;
+        // update frequency
+        touch(key);
+        return I;
     }
 
     /**
@@ -220,6 +236,24 @@ public class LFUCache<K, V> {
      */
     public synchronized Integer decr(K key, Integer delta) {
         return incr(key, -delta);
+    }
+
+    /**
+     * Only for testing purpose
+     * Print the content of the cache in the order of frequency
+     * @return
+     */
+    public void print() {
+        int f = minFreq;
+        System.out.println("=========================");
+        System.out.println("What is in cache?");
+        while (f < capacity) {
+            for (Object key : accessCountList[f]) {
+                System.out.print("(" + key + ", " + store.get(key).count + " : " + store.get(key).v + "), ");
+            }
+            ++f;
+        }
+        System.out.println("\n=========================");
     }
 
 }

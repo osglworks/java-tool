@@ -1,5 +1,10 @@
 # OSGL Tool Change Log
 
+1.24.1
+* Add Lang.not(Map)
+* Improve LFUCache - decr/incr operations now increase access count by one; added unit tests
+* BigLines - Improve performance on sequential access #235
+
 1.24.0 - 02/Mar/2020
 * `UserAgent` - use LFU cache to replace hash map #234
 * Crypto - add RSA encrypt/decrypt method #233

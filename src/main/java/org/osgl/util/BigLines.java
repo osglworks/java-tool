@@ -54,9 +54,6 @@ public class BigLines implements Iterable<String> {
     public BigLines(File file) {
         E.illegalArgumentIfNot(file.exists() && file.isFile() && file.canRead(), "file must exists and be a readable file: " + file);
         this.file = file;
-        if (lines() > 0) {
-            this.firstLine = fetch(0);
-        }
     }
 
     public String getName() {
@@ -68,6 +65,15 @@ public class BigLines implements Iterable<String> {
     }
 
     public String firstLine() {
+        if (null == lines) {
+            synchronized (this) {
+                if (null == lines) {
+                    if (lines() > 0) {
+                        firstLine = fetch(0);
+                    }
+                }
+            }
+        }
         return firstLine;
     }
 
@@ -343,22 +349,52 @@ public class BigLines implements Iterable<String> {
         }
     }
 
+    /**
+     * This method is deprecated. Please use BigLines as an `Iterable` directly.
+     */
+    @Deprecated
     public Iterable<String> asIterable(int bufSize) {
-        if (bufSize < 1000) {
-            bufSize = 1000;
-        }
-        final int BUF_SZ = bufSize;
-        return new Iterable<String>() {
-            @Override
-            public Iterator<String> iterator() {
-                return new BigLinesIterator(BUF_SZ);
-            }
-        };
+        return this;
     }
 
     @Override
     public Iterator<String> iterator() {
-        return new BigLinesIterator(OsglConfig.getBiglineIteratorBufSize());
+        final BufferedReader br = IO.buffered(IO.reader(file));
+        Iterator<String> iter = new Iterator<String>() {
+            String nextLine = null;
+
+            @Override
+            public boolean hasNext() {
+                if (nextLine != null) {
+                    return true;
+                } else {
+                    try {
+                        nextLine = br.readLine();
+                        return (nextLine != null);
+                    } catch (IOException e) {
+                        throw E.ioException(e);
+                    }
+                }
+            }
+
+            @Override
+            public String next() {
+                if (nextLine != null || hasNext()) {
+                    String line = nextLine;
+                    nextLine = null;
+                    return line;
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw E.unsupport();
+            }
+        };
+
+        return iter;
     }
 
     // see https://stackoverflow.com/questions/453018/number-of-lines-in-a-file-in-java

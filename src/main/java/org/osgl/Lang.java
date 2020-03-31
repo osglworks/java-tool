@@ -6095,6 +6095,18 @@ public class Lang implements Serializable {
     }
 
     /**
+     * Returns negative of {@link #bool(java.util.Map)}
+     *
+     * @param m
+     *         a map to be evauated
+     * @return {@code !(bool(c))}
+     * @see #bool(java.util.Map)
+     */
+    public static boolean not(Map<?, ?> m) {
+        return null == m || m.isEmpty();
+    }
+
+    /**
      * Returns negative of {@link #bool(java.util.Collection)}
      *
      * @param c
