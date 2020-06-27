@@ -1,6 +1,6 @@
 # OSGL Tool Change Log
 
-1.24.1
+1.25.0
 * Support java9 and above #238
 * N.eq's bug #237
 * Add Lang.not(Map)
