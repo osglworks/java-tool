@@ -359,7 +359,7 @@ public class FastStr extends StrBase<FastStr>
         boolean done = false;
         if (sz2 > 512) {
             try {
-                char[] sBuf = Unsafe.bufOf(s);
+                char[] sBuf = s.toCharArray();
                 System.arraycopy(sBuf, 0, newBuf, sz, sz2);
                 done = true;
             } catch (RuntimeException e) {
@@ -461,7 +461,7 @@ public class FastStr extends StrBase<FastStr>
         boolean done = false;
         if (sz2 > 512) {
             try {
-                char[] sBuf = Unsafe.bufOf(s);
+                char[] sBuf = s.toCharArray();
                 System.arraycopy(sBuf, 0, newBuf, 0, sz2);
                 done = true;
             } catch (RuntimeException e) {
@@ -580,11 +580,7 @@ public class FastStr extends StrBase<FastStr>
     @Override
     public String toString() {
         char[] newBuf = charArray();
-        try {
-            return Unsafe.stringOf(newBuf);
-        } catch (Exception e) {
-            return new String(newBuf);
-        }
+        return new String(newBuf);
     }
 
     public FastStr toFastStr() {
@@ -664,18 +660,7 @@ public class FastStr extends StrBase<FastStr>
         if (sz == 0) {
             return new byte[0];
         }
-        try {
-            char[] chars;
-            if (sz == buf.length && begin == 0) {
-                chars = buf;
-            } else {
-                chars = new char[sz];
-                System.arraycopy(buf, begin, chars, 0, sz);
-            }
-            return Unsafe.stringOf(chars).getBytes(Charsets.US_ASCII);
-        } catch (Exception e) {
-            return toString().getBytes(Charsets.US_ASCII);
-        }
+        return toString().getBytes(Charsets.US_ASCII);
     }
 
     @Override
@@ -684,18 +669,7 @@ public class FastStr extends StrBase<FastStr>
         if (sz == 0) {
             return new byte[0];
         }
-        try {
-            char[] chars;
-            if (sz == buf.length && begin == 0) {
-                chars = buf;
-            } else {
-                chars = new char[sz];
-                System.arraycopy(buf, begin, chars, 0, sz);
-            }
-            return Unsafe.stringOf(chars).getBytes(Charsets.UTF_8);
-        } catch (Exception e) {
-            return toString().getBytes(Charsets.UTF_8);
-        }
+        return toString().getBytes(Charsets.UTF_8);
     }
 
     /**
@@ -755,7 +729,7 @@ public class FastStr extends StrBase<FastStr>
         int lim = Math.min(len1, len2);
         char v1[] = buf;
         try {
-            char v2[] = Unsafe.bufOf(x);
+            char v2[] = FastStr.bufOf(x);
             int k = 0;
             while (k < lim) {
                 char c1 = v1[toInternalId(k)];
@@ -814,7 +788,7 @@ public class FastStr extends StrBase<FastStr>
         int k = 0;
 
         try {
-            char v2[] = Unsafe.bufOf(o);
+            char v2[] = FastStr.of(o).unsafeChars();
             while (k < lim) {
                 char c1 = v1[toInternalId(k)];
                 char c2 = v2[k];
@@ -930,7 +904,7 @@ public class FastStr extends StrBase<FastStr>
         int po = 0, pc = sz2, to = toffset;
         char[] buf1 = buf;
         try {
-            char[] buf2 = Unsafe.bufOf(suffix);
+            char[] buf2 = FastStr.bufOf(suffix);
             while (--pc >= 0) {
                 if (buf1[toInternalId(to++)] != buf2[po++]) {
                     return false;
@@ -1434,33 +1408,15 @@ public class FastStr extends StrBase<FastStr>
     }
 
     public FastStr urlEncode() {
-        String s;
-        try {
-            s = Unsafe.stringOf(buf);
-        } catch (Exception e) {
-            s = toString();
-        }
-        return unsafeOf(S.urlEncode(s));
+        return unsafeOf(S.urlEncode(new String(buf)));
     }
 
     public FastStr decodeBASE64() {
-        String s;
-        try {
-            s = Unsafe.stringOf(buf);
-        } catch (Exception e) {
-            s = toString();
-        }
-        return unsafeOf(S.decodeBASE64(s));
+        return unsafeOf(S.decodeBASE64(new String(buf)));
     }
 
     public FastStr encodeBASE64() {
-        String s;
-        try {
-            s = Unsafe.stringOf(buf);
-        } catch (Exception e) {
-            s = toString();
-        }
-        return unsafeOf(S.encodeBASE64(s));
+        return unsafeOf(S.encodeBASE64(new String(buf)));
     }
 
     @Override
@@ -1475,7 +1431,7 @@ public class FastStr extends StrBase<FastStr>
 
     @Override
     public int count(String search, boolean overlap) {
-        char[] searchBuf = bufOf(search);
+        char[] searchBuf = search.toCharArray();
         return count(searchBuf, 0, searchBuf.length, overlap);
     }
 
@@ -1662,7 +1618,7 @@ public class FastStr extends StrBase<FastStr>
     public static FastStr unsafeOf(String s) {
         int sz = s.length();
         if (sz == 0) return EMPTY_STR;
-        char[] buf = bufOf(s);
+        char[] buf = s.toCharArray();
         return new FastStr(buf, 0, sz);
     }
 
@@ -1700,6 +1656,7 @@ public class FastStr extends StrBase<FastStr>
      * @return an array of chars of the char sequence
      */
     @SuppressWarnings("unused")
+    @Deprecated
     public static char[] bufOf(CharSequence chars) {
         return FastStr.of(chars).charArray();
     }

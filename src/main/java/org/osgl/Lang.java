@@ -7508,6 +7508,9 @@ public class Lang implements Serializable {
     }
 
     public static <T> T newInstance(final String className, ClassLoader cl) {
+        if (null == cl) {
+            return newInstance(className);
+        }
         Object o = __primitiveInstances.get(className);
         if (null != o) return (T) o;
         try {

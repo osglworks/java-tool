@@ -25,22 +25,20 @@ import org.osgl.$;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+@Deprecated
 public enum Unsafe {
     ;
 
     private static final char[] EMPTY_CHAR_ARRAY = new char[]{};
-    private static Field STRING_BUF;
     private static Field FASTSTR_BUF;
     private static Constructor<String> SHARED_STR_CONSTRUCTOR = null;
 
     static {
         try {
-            STRING_BUF = String.class.getDeclaredField("value");
-            STRING_BUF.setAccessible(true);
             FASTSTR_BUF = FastStr.class.getDeclaredField("buf");
             FASTSTR_BUF.setAccessible(true);
             char[] ca = new char[0];
-            if ($.JAVA_VERSION >= 7) {
+            if ($.JAVA_VERSION == 8) {
                 SHARED_STR_CONSTRUCTOR = String.class.getDeclaredConstructor(ca.getClass(), Boolean.TYPE);
                 SHARED_STR_CONSTRUCTOR.setAccessible(true);
             }
@@ -59,12 +57,7 @@ public enum Unsafe {
      */
     public static char[] bufOf(String s) {
         if (null == s) return EMPTY_CHAR_ARRAY;
-        if (s.length() < 128) return s.toCharArray();
-        try {
-            return (char[]) STRING_BUF.get(s);
-        } catch (IllegalAccessException e) {
-            throw E.unexpected(e);
-        }
+        return s.toCharArray();
     }
 
     /**

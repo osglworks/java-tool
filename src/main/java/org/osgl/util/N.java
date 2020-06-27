@@ -36,7 +36,9 @@ import static org.osgl.util.E.*;
 
 /**
  * The namespace under which number relevant structures, functions and logics are
- * defined
+ * defined.
+ *
+ * Alias of {@link NumberUtil}
  */
 public class N {
 

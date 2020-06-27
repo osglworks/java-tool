@@ -55,6 +55,7 @@ import java.util.*;
 
 /**
  * The namespace for OSGL collection utilities
+ * Alias of {@link CollectionUtil}
  */
 public class C {
 

@@ -36,7 +36,7 @@ public class FastStrTest extends StrTestBase<FastStr> {
     @Test
     public void testRevertBeginPointer() {
         final String s = "http://abc.com:8038/xyz/123";
-        char[] buf = Unsafe.bufOf(s);
+        char[] buf = s.toCharArray();
         FastStr fs = FastStr.unsafeOf(s);
         fs = fs.afterFirst("://").afterFirst('/');
         ceq(fs, "xyz/123");

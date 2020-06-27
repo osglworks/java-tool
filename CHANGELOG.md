@@ -1,6 +1,7 @@
 # OSGL Tool Change Log
 
 1.24.1
+* Support java9 and above #238
 * N.eq's bug #237
 * Add Lang.not(Map)
 * Improve LFUCache - decr/incr operations now increase access count by one; added unit tests

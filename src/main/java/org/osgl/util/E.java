@@ -47,6 +47,8 @@ import java.sql.SQLException;
 
 /**
  * Utility class to throw common exceptions
+ *
+ * Alias of {@link ExceptionUtil}
  */
 public class E {
 

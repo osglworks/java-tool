@@ -42,7 +42,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 /**
- * String utilities
+ * The namespace for OSGL string utilities.
+ *
+ * Alias of {@link StringUtil}
  */
 public class S {
 
@@ -1058,11 +1060,11 @@ public class S {
             if (firstId < 0) {
                 return text;
             }
-            char[] textArray = Unsafe.bufOf(text);
+            char[] textArray = text.toCharArray();
             char[] target = this.keyword.toCharArray();
             char[] replace = replacement.toCharArray();
             char[] result = this.replacer.replace(textArray, target, replace, firstId);
-            return (result == textArray) ? text : Unsafe.stringOf(result);
+            return (result == textArray) ? text : new String(result);
         }
     }
 
@@ -1108,11 +1110,11 @@ public class S {
                 if (firstId < 0) {
                     return this.text;
                 }
-                char[] text = Unsafe.bufOf(this.text);
+                char[] text = this.text.toCharArray();
                 char[] target = this.keyword.toCharArray();
                 char[] replace = replacement.toCharArray();
                 char[] result = this.replacer.replace(text, target, replace, firstId);
-                return (result == text) ? this.text : Unsafe.stringOf(result);
+                return (result == text) ? this.text : new String(result);
             }
         }
     }
@@ -1606,7 +1608,7 @@ public class S {
                 for (int i = 0; i < times; ++i) {
                     System.arraycopy(src, 0, sink, i * slen, slen);
                 }
-                return Unsafe.stringOf(sink);
+                return new String(sink);
         }
     }
 
@@ -1672,7 +1674,7 @@ public class S {
         for (int i = 0; i < times; ++i) {
             ca[i] = c;
         }
-        return Unsafe.stringOf(ca);
+        return new String(ca);
     }
 
     public static class _WrapStringBuilder {
@@ -2079,10 +2081,10 @@ public class S {
             return "";
         }
         try {
-            char[] buf = Unsafe.bufOf(s);
+            char[] buf = s.toCharArray();
             char[] newBuf = unsafeCapFirst(buf, 0, buf.length);
             if (newBuf == buf) return s;
-            return Unsafe.stringOf(newBuf);
+            return new String(newBuf);
         } catch (Exception e) {
             return capFirst(s);
         }
@@ -3319,11 +3321,7 @@ public class S {
     }
 
     static char[] bufOf(String s) {
-        try {
-            return Unsafe.bufOf(s);
-        } catch (Exception e) {
-            return s.toCharArray();
-        }
+        return s.toCharArray();
     }
 
     public enum F {
