@@ -961,42 +961,42 @@ public enum Img {
                 super(source, new Resizer());
             }
 
-            Stage dimension(int w, int h) {
+            public Stage dimension(int w, int h) {
                 processor.w = requireNonNegative(w);
                 processor.h = requireNonNegative(h);
                 return this;
             }
 
-            Stage dimension($.Tuple<Integer, Integer> dimension) {
+            public Stage dimension($.Tuple<Integer, Integer> dimension) {
                 return to(dimension);
             }
 
-            Stage dimension(Dimension dimension) {
+            public Stage dimension(Dimension dimension) {
                 return dimension(dimension.width, dimension.height);
             }
 
-            Stage to(int w, int h) {
+            public Stage to(int w, int h) {
                 return dimension(w, h);
             }
 
-            Stage to($.Tuple<Integer, Integer> dimension) {
+            public Stage to($.Tuple<Integer, Integer> dimension) {
                 return to(dimension.left(), dimension.right());
             }
 
-            Stage to(Dimension dimension) {
+            public Stage to(Dimension dimension) {
                 return to(dimension.width, dimension.height);
             }
 
-            Stage to(float scale) {
+            public Stage to(float scale) {
                 return scale(scale);
             }
 
-            Stage scale(float scale) {
+            public Stage scale(float scale) {
                 processor.scale = requirePositive(scale);
                 return this;
             }
 
-            Stage keepRatio() {
+            public Stage keepRatio() {
                 processor.keepRatio = true;
                 return this;
             }
@@ -1090,13 +1090,13 @@ public enum Img {
                 super(source, new Cropper());
             }
 
-            Stage from(int x, int y) {
+            public Stage from(int x, int y) {
                 processor.x1 = x;
                 processor.y1 = y;
                 return this;
             }
 
-            Stage to(int x, int y) {
+            public Stage to(int x, int y) {
                 processor.x2 = x;
                 processor.y2 = y;
                 return this;
@@ -1157,17 +1157,17 @@ public enum Img {
                 super(source, new Flip());
             }
 
-            Flip.Stage vertically() {
+            public Flip.Stage vertically() {
                 processor.dir = Direction.VERTICAL;
                 return this;
             }
 
-            Flip.Stage horizontally() {
+            public Flip.Stage horizontally() {
                 processor.dir = Direction.HORIZONTAL;
                 return this;
             }
 
-            Flip.Stage dir(Direction dir) {
+            public Flip.Stage dir(Direction dir) {
                 processor.dir = requireNotNull(dir);
                 return this;
             }
@@ -1207,7 +1207,7 @@ public enum Img {
                 super(source, processor);
             }
 
-            Stage level(int level) {
+            public Stage level(int level) {
                 processor.setLevel(level);
                 return this;
             }

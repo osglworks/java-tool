@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.25.1 - 12/Jul/2020
+* Img.resize(...).to() method can't be accessed #239
+
 1.25.0 - 27/Jun/2020
 * Support java9 and above #238
 * N.eq's bug #237
