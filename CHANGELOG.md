@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.25.2 - 18/Aug/2020
+* Update fastjson to 1.2.73
+
 1.25.1 - 12/Jul/2020
 * Img.resize(...).to() method can't be accessed #239
 
