@@ -22,12 +22,16 @@ package org.osgl.util.converter;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.osgl.$;
+import org.osgl.util.C;
 import org.osgl.util.E;
 import org.osgl.util.S;
 import org.w3c.dom.*;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class XmlDocumentToJsonUtil {
 
@@ -46,10 +50,27 @@ class XmlDocumentToJsonUtil {
             case Node.TEXT_NODE:
                 return convert(node.getTextContent());
             case Node.ELEMENT_NODE:
-                return convert(node.getChildNodes(), listItemTag);
+                Object ret = convert(node.getChildNodes(), listItemTag);
+                if (ret instanceof JSONObject) {
+                    ((JSONObject) ret).putAll(convertAttributes(node));
+                } else {
+                    ((JSONArray) ret).add(C.Map("_attributes", convertAttributes(node)));
+                }
+                return ret;
             default:
                 return null;
         }
+    }
+
+    static Map<String, String> convertAttributes(Node node) {
+        NamedNodeMap attributes = node.getAttributes();
+        if (null == attributes) return C.EMPTY_MAP;
+        Map<String, String> ret = new HashMap<>();
+        for (int i = attributes.getLength() - 1; i >= 0; --i) {
+            Node attribute = attributes.item(i);
+            ret.put(attribute.getNodeName(), attribute.getNodeValue());
+        }
+        return ret;
     }
 
     private static Object convert(NodeList list, String listItemTag) {

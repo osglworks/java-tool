@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.26.0 - 21/Dec/2020
+* XML to JSON conversion - convert attributes #240
+
 1.25.2 - 18/Aug/2020
 * Update fastjson to 1.2.73
 
