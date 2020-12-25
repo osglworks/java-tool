@@ -1,5 +1,9 @@
 # OSGL Tool Change Log
 
+1.26.1 - 26/Dec/2020
+* Drop `javax.xml.bind` dependency #242
+* OS util cannot detect `Mac OS X` #241
+
 1.26.0 - 21/Dec/2020
 * XML to JSON conversion - convert attributes #240
 

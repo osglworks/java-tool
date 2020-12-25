@@ -24,10 +24,79 @@ package org.osgl.util;
  * Operating system enum
  */
 public enum OS {
-    WINDOWS, MAC_OS_X, LINUX, OS2, HP_UX, AIX, IRIX, SOLARIS, SUN_OS, MPE_IX, OS_390, FREEBSD, DIGITAL_UNIX, OSF1, UNKNOWN;
+    WINDOWS,
+    MAC_OS() {
+        @Override
+        public String toString() {
+            return "macOS";
+        }
+    },
+    LINUX,
+    OS_2() {
+        @Override
+        public String toString() {
+            return "OS/2";
+        }
+    },
+    HP_UX() {
+        @Override
+        public String toString() {
+            return "HP-UX";
+        }
+    },
+    AIX() {
+        @Override
+        public String toString() {
+            return "AIX";
+        }
+    },
+    IRIX() {
+        @Override
+        public String toString() {
+            return "IRIX";
+        }
+    },
+    SOLARIS,
+    SUN_OS() {
+        @Override
+        public String toString() {
+            return "SunOS";
+        }
+    },
+    MPE_IX() {
+        @Override
+        public String toString() {
+            return "MPE/iX";
+        }
+    },
+    OS_390() {
+        @Override
+        public String toString() {
+            return "OS/390";
+        }
+    },
+    FREEBSD() {
+        @Override
+        public String toString() {
+            return "FreeBSD";
+        }
+    },
+    DIGITAL_UNIX() {
+        @Override
+        public String toString() {
+            return "Digital UNIX";
+        }
+    },
+    OSF_1() {
+        @Override
+        public String toString() {
+            return "OSF/1";
+        }
+    },
+    UNKNOWN;
 
     private static OS os = null; static {
-        String s = System.getProperty("os.name").toUpperCase();
+        String s = Keyword.of(System.getProperty("os.name")).snakeCase().toUpperCase();
         for (OS x: OS.values()) {
             if (s.startsWith(x.name())) {
                 os = x;
@@ -35,15 +104,7 @@ public enum OS {
             }
         }
         if (null == os) {
-            if (s.startsWith("OS/2")) {
-                os = OS2;
-            } else if (s.startsWith("OS/390")) {
-                os = OS_390;
-            } else if (s.startsWith("DIGITAL UNIX")) {
-                os = DIGITAL_UNIX;
-            } else {
-                os = UNKNOWN;
-            }
+            os = UNKNOWN;
         }
     }
 
@@ -55,7 +116,7 @@ public enum OS {
         return WINDOWS == this;
     }
     public boolean isMacOsX() {
-        return MAC_OS_X == this;
+        return MAC_OS == this;
     }
     public boolean isLinux() {
         return LINUX == this;
@@ -74,6 +135,10 @@ public enum OS {
 
     public String fileSeparator() {
         return fileSeparator;
+    }
+
+    public String toString() {
+        return Keyword.of(name()).readable();
     }
 
     public static OS get() {
