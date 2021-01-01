@@ -25,7 +25,7 @@ import org.osgl.*;
 import org.osgl.util.S;
 import org.w3c.dom.Document;
 
-public class JsonArrayToXmlDocument extends Lang.TypeConverter<JSONArray, Document> {
+public class JsonArrayToXml extends Lang.TypeConverter<JSONArray, Document> {
     @Override
     public Document convert(JSONArray array) {
         return JsonXmlConvertHint.convert(array, OsglConfig.xmlRootTag(), OsglConfig.xmlListItemTag());

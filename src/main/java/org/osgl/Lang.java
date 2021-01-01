@@ -47,7 +47,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -3214,13 +3213,11 @@ public class Lang implements Serializable {
             }
         };
 
-        public static final TypeConverter<Document, JSONObject> XML_DOCUMENT_TO_JSON = new XmlDocumentToJsonObject();
+        public static final TypeConverter<Document, JSONObject> XML_DOCUMENT_TO_JSON = new XmlToJson();
 
-        public static final TypeConverter<Document, JSONArray> XML_DOCUMENT_TO_JSON_ARRAY = new XmlDocumentToJsonArray();
+        public static final TypeConverter<JSONObject, Document> JSON_OBJECT_TO_XML_DOCUMENT = new JsonObjectToXml();
 
-        public static final TypeConverter<JSONObject, Document> JSON_OBJECT_TO_XML_DOCUMENT = new JsonObjectToXmlDocument();
-
-        public static final TypeConverter<JSONArray, Document> JSON_ARRAY_TO_XML_DOCUMENT = new JsonArrayToXmlDocument();
+        public static final TypeConverter<JSONArray, Document> JSON_ARRAY_TO_XML_DOCUMENT = new JsonArrayToXml();
 
         public static final TypeConverter<Object, JSONObject> ANY_TO_JSON_OBJECT = new TypeConverter<Object, JSONObject>() {
             @Override

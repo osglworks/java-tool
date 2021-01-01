@@ -22,25 +22,26 @@ package org.osgl.util.converter;
 
 import com.alibaba.fastjson.JSONObject;
 import org.osgl.*;
+import org.osgl.util.S;
 import org.w3c.dom.Document;
 
-public class XmlDocumentToJsonObject extends Lang.TypeConverter<Document, JSONObject> {
+public class JsonObjectToXml extends Lang.TypeConverter<JSONObject, Document> {
     @Override
-    public JSONObject convert(Document document) {
-        return convert(document, null);
+    public Document convert(JSONObject json) {
+        return JsonXmlConvertHint.convert(json, OsglConfig.xmlRootTag(), OsglConfig.xmlListItemTag());
     }
 
     @Override
-    public JSONObject convert(Document document, Object hint) {
-        String rootTag = OsglConfig.xmlRootTag();
-        String listItemTag = OsglConfig.xmlListItemTag();
+    public Document convert(JSONObject jsonObject, Object hint) {
         if (hint instanceof JsonXmlConvertHint) {
-            JsonXmlConvertHint hint1 = $.cast(hint);
-            rootTag = hint1.rootTag;
-            listItemTag = hint1.listItemTag;
-        } else if (hint instanceof String) {
-            rootTag = $.cast(hint);
+            JsonXmlConvertHint jsonXmlConvertHint = $.cast(hint);
+            return JsonXmlConvertHint.convert(jsonObject, jsonXmlConvertHint.rootTag, jsonXmlConvertHint.listItemTag);
         }
-        return (JSONObject) XmlDocumentToJsonUtil.convert(document, rootTag, listItemTag, false);
+        String rootTag = OsglConfig.xmlRootTag();
+        if (hint instanceof String && !S.string(hint).isEmpty()) {
+            rootTag = ((String) hint).trim();
+        }
+        return JsonXmlConvertHint.convert(jsonObject, rootTag, OsglConfig.xmlListItemTag());
     }
+
 }

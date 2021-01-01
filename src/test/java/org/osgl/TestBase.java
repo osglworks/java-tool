@@ -21,6 +21,7 @@ package org.osgl;
  */
 
 import org.junit.runner.JUnitCore;
+import org.osgl.util.IO;
 import org.osgl.util.S;
 
 import java.util.Random;
@@ -40,5 +41,9 @@ public abstract class TestBase extends osgl.ut.TestBase {
 
     protected static String newRandStr() {
         return S.random(new Random().nextInt(30) + 15);
+    }
+
+    protected String loadFileAsString(String path) {
+        return IO.read(getClass().getClassLoader().getResource(path)).toString();
     }
 }
