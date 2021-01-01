@@ -1,0 +1,433 @@
+<!--
+  #%L
+  Java Tool
+  %%
+  Copyright (C) 2014 - 2021 OSGL (Open Source General Library)
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="ehcache.xsd"
+         updateCheck="true"
+         monitoring="autodetect"
+         dynamicConfig="true">
+
+    <foo>abc</foo>
+
+    <cache name="charityCache"
+           maxEntriesLocalHeap="1000"
+           eternal="false"
+           timeToIdleSeconds="2" timeToLiveSeconds="20"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="charityTagsCache"
+           maxEntriesLocalHeap="1000"
+           eternal="false"
+           timeToIdleSeconds="20" timeToLiveSeconds="60"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyCache"
+           maxEntriesLocalHeap="100"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="officeCache"
+           maxEntriesLocalHeap="100"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyThemeModuleCache"
+           maxEntriesLocalHeap="100"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyDefaultOfficeCache"
+           maxEntriesLocalHeap="100"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyCharityConfigCache"
+           maxEntriesLocalHeap="1000"
+           eternal="false"
+           timeToIdleSeconds="2" timeToLiveSeconds="10"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="campaignsByCompany"
+           maxEntriesLocalHeap="500"
+           eternal="false"
+           timeToIdleSeconds="60" timeToLiveSeconds="60"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="userById"
+           maxEntriesLocalHeap="5000"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="userByEmail"
+           maxEntriesLocalHeap="5000"
+           eternal="false"
+           timeToIdleSeconds="120" timeToLiveSeconds="120"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="userByEmailWithData"
+           maxEntriesLocalHeap="5000"
+           eternal="false"
+           timeToIdleSeconds="120" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="userByExternalIdCache"
+           maxEntriesLocalHeap="5000"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="userByIdWithCompany"
+           maxEntriesLocalHeap="5000"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="accessToken"
+           maxEntriesLocalHeap="5000"
+           eternal="false"
+           timeToIdleSeconds="360" timeToLiveSeconds="360"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="baseEmailTemplate"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="defaultBaseEmailTemplate"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="3600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="emailTheme"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="defaultEmailTheme"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="3600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="emailContentByCompany"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="defaultEmailContentTemplate"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="3600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyDonationsArchive"
+           maxEntriesLocalHeap="50"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyContributions"
+           maxEntriesLocalHeap="50"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyDonationStatisticsCache"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="60" timeToLiveSeconds="60"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyDonationSummariesCache"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="60" timeToLiveSeconds="60"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="eventRegistrationStatistics"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="60" timeToLiveSeconds="60"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="events"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="120" timeToLiveSeconds="120"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+    
+    <cache name="eventsById"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="120" timeToLiveSeconds="120"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="eventstermsconditions"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="6000" timeToLiveSeconds="6000"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+    
+    <cache name="eventLocations"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="eventGivingOpportunities"
+           maxEntriesLocalHeap="1000"
+           eternal="false"
+           timeToIdleSeconds="10" timeToLiveSeconds="60"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="myDonationSummary"
+           maxEntriesLocalHeap="1000"
+           eternal="false"
+           timeToIdleSeconds="120" timeToLiveSeconds="120"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="moduleCache"
+           maxEntriesLocalHeap="100"
+           eternal="false"
+           timeToIdleSeconds="30" timeToLiveSeconds="3600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="matchingSchemesDescriptions"
+           maxEntriesLocalHeap="100"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="3600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="countryCache"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="86400" timeToLiveSeconds="86400"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="systemSettingsCache"
+           maxEntriesLocalHeap="20"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="maxSyncDateCache"
+           maxEntriesLocalHeap="1"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="exchangeRateBySyncDateCache"
+           maxEntriesLocalHeap="300"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="exchangeRateByPublishDateCache"
+           maxEntriesLocalHeap="300"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="defaultContentCache"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="86400" timeToLiveSeconds="86400"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyContentCache"
+           maxEntriesLocalHeap="50"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyHomepageConfigCache"
+           maxEntriesLocalHeap="50"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="employeeTypeCache"
+           maxEntriesLocalHeap="1000"
+           eternal="false"
+           timeToIdleSeconds="600" timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companySamlConfigCache"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="3600" timeToLiveSeconds="3600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="companyIdSamlConfigCache"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="3600" timeToLiveSeconds="3600"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+    <cache name="homepageOpportunities"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="300" timeToLiveSeconds="300"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="none" />
+    </cache>
+
+</ehcache>
