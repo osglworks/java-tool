@@ -1,5 +1,8 @@
 # OSGL Tool Change Log
 
+1.26.3
+* Support loading UTF-8 encoded properties file before Java 9 #244
+
 1.26.2 - 01/Jan/2021
 * Improve XML to JSON convert logic #243
 
