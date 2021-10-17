@@ -1472,7 +1472,13 @@ public class IO {
     public static Properties loadProperties(InputStream inputStream) {
         Properties prop = new Properties();
         try {
-            prop.load(inputStream);
+            String encoding = System.getProperty("java.util.PropertyResourceBundle.encoding");
+            if (S.blank(encoding) || Keyword.eq(encoding, "ISO-8859-1")) {
+                prop.load(inputStream);
+            } else {
+                InputStreamReader isr = new InputStreamReader(inputStream, encoding);
+                prop.load(isr);
+            }
         } catch (AccessDeniedException e) {
             throw new org.osgl.exception.AccessDeniedException(e);
         } catch (FileNotFoundException e) {
