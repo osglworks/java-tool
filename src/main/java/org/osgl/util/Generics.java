@@ -138,7 +138,7 @@ public class Generics {
         buildTypeParamImplLookup(theClass.getSuperclass(), lookup);
     }
 
-    private static void buildTypeParamImplLookup(String prefix, Type[] typeParams, TypeVariable[] typeArgs, Map<String, Class> lookup) {
+    public static void buildTypeParamImplLookup(String prefix, Type[] typeParams, TypeVariable[] typeArgs, Map<String, Class> lookup) {
         int len = typeParams.length;
         for (int i = 0; i < len; ++i) {
             Type typeParam = typeParams[i];

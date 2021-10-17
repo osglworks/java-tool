@@ -7976,7 +7976,6 @@ public class Lang implements Serializable {
         List<Field> fields = cache().get(key);
         if (null == fields) {
             fields = new ArrayList<>();
-            cache().put(key, fields);
             $.Predicate<Field> filter = noStatic ? new $.Predicate<Field>() {
                 @Override
                 public boolean test(Field field) {
@@ -7984,6 +7983,7 @@ public class Lang implements Serializable {
                 }
             } : null;
             addFieldsToList(fields, c, rootClass, includeRootClass, filter);
+            cache().put(key, fields);
         }
         return fields;
     }
