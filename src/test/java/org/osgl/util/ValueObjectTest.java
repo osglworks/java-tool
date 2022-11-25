@@ -21,6 +21,8 @@ package org.osgl.util;
  */
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 import org.osgl.TestBase;
 
 import java.text.DateFormat;

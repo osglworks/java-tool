@@ -43,7 +43,7 @@ public class ValueObject implements Serializable {
 
     private static final long serialVersionUID = -6103505642730947577L;
 
-    public static interface Codec<T> {
+    public interface Codec<T> {
         Class<T> targetClass();
 
         T parse(String s);
@@ -357,7 +357,8 @@ public class ValueObject implements Serializable {
         abstract void set(Object o, ValueObject vo);
 
         String toString(ValueObject vo) {
-            return S.string(get(vo));
+            Object o = get(vo);
+            return S.string(o);
         }
 
         String toJSONString(ValueObject vo) {
@@ -511,7 +512,8 @@ public class ValueObject implements Serializable {
 
     @Override
     public int hashCode() {
-        return $.hc(type().get(this));
+        Object v = type().get(this);
+        return $.hc(v);
     }
 
     @Override

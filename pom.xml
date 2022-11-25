@@ -20,7 +20,7 @@
 
   <artifactId>osgl-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.26.3-SNAPSHOT</version>
+  <version>1.30.0-SNAPSHOT</version>
 
   <name>Java Tool</name>
   <description>A simple Java toolkit</description>
@@ -30,7 +30,7 @@
   <parent>
     <groupId>org.osgl</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0-BETA-5</version>
+    <version>1.0.0-BETA-11</version>
   </parent>
 
   <properties>
@@ -62,12 +62,28 @@
       <artifactId>act</artifactId>
       <version>1.8.19</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.rythmengine</groupId>
+          <artifactId>rythm-engine</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.osgl</groupId>
       <artifactId>genie</artifactId>
       <version>${genie.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>

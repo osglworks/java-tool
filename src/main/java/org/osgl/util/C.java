@@ -2621,6 +2621,10 @@ public class C {
         @Override
         <R> ListOrSet<R> map($.Function<? super T, ? extends R> mapper);
 
+        @Override
+        default Spliterator<T> spliterator() {
+            return Spliterators.spliterator(this, Spliterator.DISTINCT);
+        }
     }
 
     /**
@@ -3532,7 +3536,7 @@ public class C {
         if (null == col2) {
             return C.Set(col1);
         }
-        return C.Set(col1).with(col2);
+        return ((Set<T>)C.Set(col1)).with(col2);
     }
 
     public static <T> Set<T> unionOf(Collection<? extends T> col1, Collection<? extends T> col2, Collection<? extends T> col3, Collection<? extends T> ... otherCols) {
@@ -3552,7 +3556,7 @@ public class C {
     }
 
     public static <T> Set<T> intercectionOf(Collection<? extends T> col1, Collection<? extends T> col2) {
-        return C.Set(col1).withIn(col2);
+        return ((Set<T>) C.Set(col1)).withIn(col2);
     }
 
     public static <T> Set<T> interceptionOf(Collection<? extends T> col1, Collection<? extends T> col2, Collection<? extends T> col3, Collection<? extends T>... otherCols) {

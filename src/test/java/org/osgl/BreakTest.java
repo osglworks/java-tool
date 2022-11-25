@@ -30,6 +30,4 @@ public class BreakTest extends TestBase {
         $.Break b = new $.Break(payload);
         eq(payload, b.get());
     }
-
-
 }
