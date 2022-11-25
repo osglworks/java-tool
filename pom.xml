@@ -44,7 +44,7 @@
     <commons-lang3.version>3.7</commons-lang3.version>
     <model-mapper.version>1.1.0</model-mapper.version>
     <hutool.version>5.5.4</hutool.version>
-    <fastjson.version>1.2.75</fastjson.version>
+    <fastjson.version>1.2.83</fastjson.version>
     <genie.version>1.10.0</genie.version>
     <jpa.version>1.0.0.Final</jpa.version>
     <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
