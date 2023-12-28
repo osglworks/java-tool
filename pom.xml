@@ -43,7 +43,7 @@
     <orika.version>1.5.2</orika.version>
     <commons-lang3.version>3.7</commons-lang3.version>
     <model-mapper.version>1.1.0</model-mapper.version>
-    <hutool.version>5.5.4</hutool.version>
+    <hutool.version>5.8.24</hutool.version>
     <fastjson.version>1.2.83</fastjson.version>
     <genie.version>1.10.0</genie.version>
     <jpa.version>1.0.0.Final</jpa.version>
